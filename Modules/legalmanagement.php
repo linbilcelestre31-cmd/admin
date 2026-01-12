@@ -1125,12 +1125,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Password Gate Modal -->
     <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background-color: #0d1b3e; background-image: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:2000;">
+        style="display:none; position:fixed; inset:0; background: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); align-items:center; justify-content:center; z-index:99999;">
         <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0; overflow: hidden;">
-            <!-- Internal Logo Watermark -->
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0.05; pointer-events: none; z-index: 0;">
+            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.3); border:1px solid #e2e8f0; overflow: hidden; text-align: center;">
+            <div style="margin-bottom: 25px;">
+                <img src="../assets/image/logo.png" alt="Logo" style="width: 180px; height: auto;">
+            </div>
 
             <div style="position: relative; z-index: 1;">
                 <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
