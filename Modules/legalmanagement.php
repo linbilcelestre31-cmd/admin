@@ -610,23 +610,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
-        <!-- Background Branding -->
-        <div class="login-branding"
-            style="position: absolute; left: 8%; top: 50%; transform: translateY(-50%); color: white; width: 40%; pointer-events: none;">
-            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
-                <img src="../assets/image/logo2.png"
-                    style="width: 50px; height: auto; filter: brightness(0) invert(1);">
-                <h1 style="font-size: 2.5rem; letter-spacing: 2px; font-weight: 300;">ATIÉRA</h1>
-            </div>
-            <div style="font-size: 3.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px;">
-                ATIÉRA <span style="color: #f39c12;">HOTEL &</span><br>
-                RESTAURANT<br>
-                Management
-            </div>
-            <div style="font-size: 1.1rem; color: rgba(255,255,255,0.7); display: flex; gap: 15px;">
-                <span>Secure</span> • <span>Fast</span> • <span>Intuitive</span>
-            </div>
-        </div>
         <div class="login-form">
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
@@ -1365,7 +1348,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
 
     <script>
-        (function () {
+    (function () {
             const detailsModal = document.getElementById('detailsModal');
             const detailsTitle = document.getElementById('detailsTitle');
             const detailsBody = document.getElementById('detailsBody');
