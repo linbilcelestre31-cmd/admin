@@ -423,28 +423,18 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link" data-category="Inventory">Inventory</a></li>
                     <li><a href="#" class="category-link" data-category="Compliance">Compliance</a></li>
                     <li><a href="#" class="category-link" data-category="Marketing">Marketing</a></li>
-                    <li><a href="#" class="category-link" data-category="trash">Trash Bin</a></li>
-                </ul>
-
-                <h3>Quick Stats</h3>
-                <ul id="quickStats">
-                    <li>Total Files: <span id="totalFiles">0</span></li>
-                    <li>Storage Used: <span id="storageUsed">0 GB</span></li>
-                    <li>Files in Trash: <span id="filesInTrash">0</span></li>
-                </ul>
+                    </ul>
             </aside>
 
             <div class="content">
                 <div class="content-header">
                     <h2 id="contentTitle">Document Management</h2>
-                    <button class="btn btn-primary" id="uploadBtn">Upload Document</button>
                 </div>
 
                 <!-- All Documents View -->
                 <div class="category-content active" id="all-content">
                     <div class="tabs">
                         <div class="tab active" data-tab="active">Active Files</div>
-                        <div class="tab" data-tab="trash">Trash Bin</div>
                     </div>
                     <div class="tab-content active" id="active-tab">
                         <div class="search-box">
@@ -453,69 +443,61 @@ function formatFileSize($bytes)
                         </div>
                         <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
                     </div>
-                    <div class="tab-content" id="trash-tab">
-                        <div class="alert alert-danger">Files in trash will be permanently deleted after 30 days.</div>
-                        <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
+                </div>
+
+                    <!-- Financial Records View -->
+                    <div class="category-content" id="financial-records-content">
+                        <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
                     </div>
-                </div>
 
-                <!-- Financial Records View -->
-                <div class="category-content" id="financial-records-content">
-                    <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
-                </div>
-
-                <!-- HR Documents View -->
-                <div class="category-content" id="hr-documents-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search HR documents...">
-                        <button>Search</button>
+                    <!-- HR Documents View -->
+                    <div class="category-content" id="hr-documents-content">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search HR documents...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
                     </div>
-                    <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
-                </div>
 
-                <!-- Guest Records View -->
-                <div class="category-content" id="guest-records-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search guest records...">
-                        <button>Search</button>
+                    <!-- Guest Records View -->
+                    <div class="category-content" id="guest-records-content">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search guest records...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
                     </div>
-                    <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
-                </div>
 
-                <!-- Inventory View -->
-                <div class="category-content" id="inventory-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search inventory documents...">
-                        <button>Search</button>
+                    <!-- Inventory View -->
+                    <div class="category-content" id="inventory-content">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search inventory documents...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
                     </div>
-                    <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
-                </div>
 
-                <!-- Compliance View -->
-                <div class="category-content" id="compliance-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search compliance documents...">
-                        <button>Search</button>
+                    <!-- Compliance View -->
+                    <div class="category-content" id="compliance-content">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search compliance documents...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here -->
+                        </div>
                     </div>
-                    <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here --></div>
-                </div>
 
-                <!-- Marketing View -->
-                <div class="category-content" id="marketing-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search marketing documents...">
-                        <button>Search</button>
+                    <!-- Marketing View -->
+                    <div class="category-content" id="marketing-content">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search marketing documents...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
                     </div>
-                    <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
-                </div>
 
-                <!-- Trash View -->
-                <div class="category-content" id="trash-content">
-                    <div class="alert alert-danger">Files in trash will be permanently deleted after 30 days.</div>
-                    <div class="file-grid" id="allTrashFiles"><!-- All trash files will be populated here --></div>
                 </div>
             </div>
-        </div>
     </main>
 
     <!-- Upload Modal -->
