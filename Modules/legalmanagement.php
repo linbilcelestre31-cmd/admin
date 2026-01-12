@@ -566,7 +566,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
-    <link rel="stylesheet" href="../assets/css/legalmanagement.css">
+    <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1.1">
 
     <style>
         /* Center all table header and cell content within this module */
@@ -611,8 +611,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-form">
-            <div style="text-align: left; margin-bottom: 20px;">
-                <img src="../assets/image/logo.png" alt="Logo" style="width: 45px; height: auto;">
+            <div style="text-align: left; margin-bottom: 25px;">
+                <img src="../assets/image/logo.png" alt="Logo" style="width: 120px; height: auto;">
             </div>
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
