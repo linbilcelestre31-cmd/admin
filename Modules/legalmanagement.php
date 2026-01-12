@@ -611,8 +611,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-form">
-            <div style="margin: -40px -40px 30px -40px; overflow: hidden; border-radius: 24px 24px 0 0;">
-                <img src="../assets/image/logo.png" alt="Logo" style="width: 100%; height: auto; display: block;">
+            <div
+                style="margin: -40px -40px 30px -40px; overflow: hidden; border-radius: 24px 24px 0 0; background: #f8fafc;">
+                <img src="../assets/image/logo.png" alt="Logo"
+                    style="width: 100%; height: 200px; object-fit: cover; display: block;">
             </div>
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
