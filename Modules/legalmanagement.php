@@ -610,151 +610,148 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
-        <div class="login-form" style="position: relative; overflow: hidden; z-index: 5;">
-            <!-- Internal Logo Watermark -->
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0.05; pointer-events: none; z-index: 0;">
-
-            <div style="position: relative; z-index: 1;">
-                <h2>Legal Management System</h2>
-                <p>Enter your PIN to access the system</p>
-                <div class="pin-input">
-                    <input type="password" maxlength="1" class="pin-digit" id="pin1">
-                    <input type="password" maxlength="1" class="pin-digit" id="pin2">
-                    <input type="password" maxlength="1" class="pin-digit" id="pin3">
-                    <input type="password" maxlength="1" class="pin-digit" id="pin4">
-                </div>
-                <button class="login-btn" id="loginBtn">Login</button>
-                <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
+        <div class="login-form">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <img src="../assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
             </div>
+            <h2>Legal Management System</h2>
+            <p>Enter your PIN to access the system</p>
+            <div class="pin-input">
+                <input type="password" maxlength="1" class="pin-digit" id="pin1">
+                <input type="password" maxlength="1" class="pin-digit" id="pin2">
+                <input type="password" maxlength="1" class="pin-digit" id="pin3">
+                <input type="password" maxlength="1" class="pin-digit" id="pin4">
+            </div>
+            <button class="login-btn" id="loginBtn">Login</button>
+            <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
         </div>
-        <!-- Employee Information Modal (Create/Update) -->
-        <div id="employeeInfoModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1250;">
-            <div
-                style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-                <button type="button" id="closeEmployeeInfo"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <h3 id="employeeInfoTitle" style="margin-top:0;">Employee Information</h3>
-                <form method="POST" id="employeeInfoForm">
-                    <input type="hidden" name="save_employee" value="1">
-                    <input type="hidden" name="employee_id" id="info_emp_id" value="">
-                    <div class="form-group">
-                        <label for="info_emp_name">Name</label>
-                        <input type="text" id="info_emp_name" name="employee_name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="info_emp_position">Position</label>
-                        <input type="text" id="info_emp_position" name="employee_position" class="form-control"
-                            required>
-                    </div>
-                    <div class="form-group">
-                        <label for="info_emp_email">Email</label>
-                        <input type="email" id="info_emp_email" name="employee_email" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="info_emp_phone">Phone</label>
-                        <input type="text" id="info_emp_phone" name="employee_phone" class="form-control" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelEmployeeInfo">Cancel</button>
-                        <button type="submit" class="save-btn" id="saveEmployeeInfoBtn">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="dashboard" id="dashboard">
-            <div class="header">
-                <div class="container">
-                    <div class="header-content">
-                        <div class="logo">Legal Management System</div>
-                        <div class="user-info">
-                            <span>Welcome, Admin</span>
-                            <button type="button" class="logout-btn" id="backDashboardBtn"
-                                onclick="window.location.href='../Modules/facilities-reservation.php'">
-                                <span class="icon-img-placeholder">⏻</span> logout
-                            </button>
-                        </div>
-                    </div>
+    </div>
+    <!-- Employee Information Modal (Create/Update) -->
+    <div id="employeeInfoModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1250;">
+        <div
+            style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <button type="button" id="closeEmployeeInfo"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <h3 id="employeeInfoTitle" style="margin-top:0;">Employee Information</h3>
+            <form method="POST" id="employeeInfoForm">
+                <input type="hidden" name="save_employee" value="1">
+                <input type="hidden" name="employee_id" id="info_emp_id" value="">
+                <div class="form-group">
+                    <label for="info_emp_name">Name</label>
+                    <input type="text" id="info_emp_name" name="employee_name" class="form-control" required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="info_emp_position">Position</label>
+                    <input type="text" id="info_emp_position" name="employee_position" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="info_emp_email">Email</label>
+                    <input type="email" id="info_emp_email" name="employee_email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="info_emp_phone">Phone</label>
+                    <input type="text" id="info_emp_phone" name="employee_phone" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelEmployeeInfo">Cancel</button>
+                    <button type="submit" class="save-btn" id="saveEmployeeInfoBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
             <div class="container">
-                <!-- Success/Error Messages -->
-                <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success"><?php echo $success_message; ?></div>
-                <?php endif; ?>
-
-                <?php if (isset($error_message)): ?>
-                    <div class="alert alert-error"><?php echo $error_message; ?></div>
-                <?php endif; ?>
-
-                <div class="nav-tabs">
-                    <div class="nav-tab active" data-target="employees">Employees</div>
-                    <div class="nav-tab" data-target="documents">Documents</div>
-                    <div class="nav-tab" data-target="billing">Billing</div>
-                    <div class="nav-tab" data-target="contracts">Contracts</div>
-                    <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
-                    <div class="nav-tab" data-target="members">Members</div>
-                </div>
-
-                <!-- Employees Section -->
-                <div class="content-section active" id="employees">
-                    <div class="section-header">
-                        <h2 class="section-title">Employee Information</h2>
-                        <button class="add-btn" id="addEmployeeBtn">
-                            <i>+</i> Add Employee
+                <div class="header-content">
+                    <div class="logo">Legal Management System</div>
+                    <div class="user-info">
+                        <span>Welcome, Admin</span>
+                        <button type="button" class="logout-btn" id="backDashboardBtn"
+                            onclick="window.location.href='../Modules/facilities-reservation.php'">
+                            <span class="icon-img-placeholder">⏻</span> logout
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Add Employee Form -->
-                    <div class="form-container" id="employeeForm">
-                        <h3>Add Employee</h3>
-                        <form method="POST" id="employeeFormData">
-                            <div class="form-group">
-                                <label for="employeeName">Name</label>
-                                <input type="text" id="employeeName" name="employee_name" class="form-control"
-                                    placeholder="Enter employee name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="employeePosition">Position</label>
-                                <input type="text" id="employeePosition" name="employee_position" class="form-control"
-                                    placeholder="Enter position" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="employeeEmail">Email</label>
-                                <input type="email" id="employeeEmail" name="employee_email" class="form-control"
-                                    placeholder="Enter email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="employeePhone">Phone</label>
-                                <input type="text" id="employeePhone" name="employee_phone" class="form-control"
-                                    placeholder="Enter phone number" required>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
-                                <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
-                                    Employee</button>
-                            </div>
-                        </form>
-                    </div>
+        <div class="container">
+            <!-- Success/Error Messages -->
+            <?php if (isset($success_message)): ?>
+                    <div class="alert alert-success"><?php echo $success_message; ?></div>
+            <?php endif; ?>
 
-                    <!-- Employees Table -->
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Employee ID</th>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employeesTableBody">
-                            <?php foreach ($employees as $employee): ?>
+            <?php if (isset($error_message)): ?>
+                    <div class="alert alert-error"><?php echo $error_message; ?></div>
+            <?php endif; ?>
+
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-target="employees">Employees</div>
+                <div class="nav-tab" data-target="documents">Documents</div>
+                <div class="nav-tab" data-target="billing">Billing</div>
+                <div class="nav-tab" data-target="contracts">Contracts</div>
+                <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
+                <div class="nav-tab" data-target="members">Members</div>
+            </div>
+
+            <!-- Employees Section -->
+            <div class="content-section active" id="employees">
+                <div class="section-header">
+                    <h2 class="section-title">Employee Information</h2>
+                    <button class="add-btn" id="addEmployeeBtn">
+                        <i>+</i> Add Employee
+                    </button>
+                </div>
+
+                <!-- Add Employee Form -->
+                <div class="form-container" id="employeeForm">
+                    <h3>Add Employee</h3>
+                    <form method="POST" id="employeeFormData">
+                        <div class="form-group">
+                            <label for="employeeName">Name</label>
+                            <input type="text" id="employeeName" name="employee_name" class="form-control"
+                                placeholder="Enter employee name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeePosition">Position</label>
+                            <input type="text" id="employeePosition" name="employee_position" class="form-control"
+                                placeholder="Enter position" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeEmail">Email</label>
+                            <input type="email" id="employeeEmail" name="employee_email" class="form-control"
+                                placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeePhone">Phone</label>
+                            <input type="text" id="employeePhone" name="employee_phone" class="form-control"
+                                placeholder="Enter phone number" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
+                            <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
+                                Employee</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Employees Table -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        <?php foreach ($employees as $employee): ?>
                                 <tr>
                                     <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
                                     <td><?php echo htmlspecialchars($employee['name']); ?></td>
@@ -768,235 +765,231 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Documents Section -->
-                <div class="content-section" id="documents">
-                    <div class="section-header">
-                        <h2 class="section-title">Case Documents</h2>
-                        <button class="add-btn" id="addDocumentBtn">
-                            <i>+</i> Upload Document
-                        </button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Document Name</th>
-                                <th>Case</th>
-                                <th>Date Uploaded</th>
-                                <th>Actions</th>
-                            </tr>
-                        <tbody id="documentsTableBody">
-                            <?php if (!empty($documents)): ?>
+            <!-- Documents Section -->
+            <div class="content-section" id="documents">
+                <div class="section-header">
+                    <h2 class="section-title">Case Documents</h2>
+                    <button class="add-btn" id="addDocumentBtn">
+                        <i>+</i> Upload Document
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Case</th>
+                            <th>Date Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    <tbody id="documentsTableBody">
+                        <?php if (!empty($documents)): ?>
                                 <?php foreach ($documents as $doc): ?>
-                                    <tr>
-                                        <td>
-                                            <?php if (!empty($doc['file_path'])): ?>
-                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline"
+                                        <tr>
+                                            <td>
+                                                <?php if (!empty($doc['file_path'])): ?>
+                                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
+                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                <?php else: ?>
+                                                        <?php echo htmlspecialchars($doc['name']); ?>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                            <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                            </td>
+                                            <td>
+                                                <button class="action-btn view-btn" data-type="doc-edit"
+                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
+                                                <button class="action-btn download-btn" data-type="doc-download"
                                                     data-pdf-type="document"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                            <?php else: ?>
-                                                <?php echo htmlspecialchars($doc['name']); ?>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                        </td>
-                                        <td>
-                                            <button class="action-btn view-btn" data-type="doc-edit"
-                                                data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
-                                            <button class="action-btn download-btn" data-type="doc-download"
-                                                data-pdf-type="document"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                                style="background:#059669;color:#fff;">Download PDF</button>
-                                            <button class="action-btn" data-type="doc-delete"
-                                                data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
-                                        </td>
-                                    </tr>
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                    style="background:#059669;color:#fff;">Download PDF</button>
+                                                <button class="action-btn" data-type="doc-delete"
+                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
+                                            </td>
+                                        </tr>
                                 <?php endforeach; ?>
-                            <?php else: ?>
+                        <?php else: ?>
                                 <tr>
                                     <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
                                     </td>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="content-section" id="billing">
-                    <div class="section-header">
-                        <h2 class="section-title">Billing & Invoices</h2>
-                        <button class="add-btn" id="addInvoiceBtn">
-                            <i>+</i> Create Invoice
-                        </button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Invoice #</th>
-                                <th>Client</th>
-                                <th>Amount</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="billingTableBody">
-                            <?php if (!empty($billing)): ?>
+            <div class="content-section" id="billing">
+                <div class="section-header">
+                    <h2 class="section-title">Billing & Invoices</h2>
+                    <button class="add-btn" id="addInvoiceBtn">
+                        <i>+</i> Create Invoice
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Client</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billingTableBody">
+                        <?php if (!empty($billing)): ?>
                                 <?php foreach ($billing as $b): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                        <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                        <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                        <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                        <td>
-                                            <button class="action-btn view-btn" data-type="invoice-view"
-                                                data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                            <button class="action-btn download-btn" data-type="invoice-download"
-                                                data-pdf-type="billing"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                                style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                                PDF</button>
-                                            <button class="action-btn"
-                                                style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                                data-type="invoice-pay"
-                                                data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
+                                            <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
+                                            <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
+                                            <td>
+                                                <button class="action-btn view-btn" data-type="invoice-view"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
+                                                <button class="action-btn download-btn" data-type="invoice-download"
+                                                    data-pdf-type="billing"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
+                                                    style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
+                                                    PDF</button>
+                                                <button class="action-btn"
+                                                    style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
+                                                    data-type="invoice-pay"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                            </td>
+                                        </tr>
                                 <?php endforeach; ?>
-                            <?php else: ?>
+                        <?php else: ?>
                                 <tr>
                                     <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
                                         found.
                                     </td>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Contracts Section -->
-                <div class="content-section" id="contracts" style="display:none;">
-                    <div class="section-header">
-                        <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
-                        <div style="display: flex; gap: 10px;">
-                            <!-- Button para sa Secured PDF Report (Idinagdag) -->
-                            <button class="add-btn" id="exportPdfBtn"
-                                style="background: #e74c3c; /* Pula para sa ulat */">
-                                &#x1F4C4; Generate Secured PDF
-                            </button>
-                            <button class="add-btn" id="addContractBtn">
-                                <i>+</i> Upload Contract
+            <!-- Contracts Section -->
+            <div class="content-section" id="contracts" style="display:none;">
+                <div class="section-header">
+                    <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
+                    <div style="display: flex; gap: 10px;">
+                        <!-- Button para sa Secured PDF Report (Idinagdag) -->
+                        <button class="add-btn" id="exportPdfBtn" style="background: #e74c3c; /* Pula para sa ulat */">
+                            &#x1F4C4; Generate Secured PDF
+                        </button>
+                        <button class="add-btn" id="addContractBtn">
+                            <i>+</i> Upload Contract
+                        </button>
+                    </div>
+                </div>
+                <!-- Hidden form to trigger secured PDF generation via POST -->
+                <form id="exportPdfForm" method="POST" style="display:none">
+                    <input type="hidden" name="action" value="export_pdf">
+                </form>
+
+                <!-- Add Contract Form -->
+                <div class="form-container" id="contractForm">
+                    <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
+                    <form method="POST" enctype="multipart/form-data" id="contractFormData">
+                        <div class="form-group">
+                            <label for="contractName">Contract Name</label>
+                            <input type="text" id="contractName" name="contract_name" class="form-control"
+                                placeholder="Enter contract name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractCase">Case ID</label>
+                            <input type="text" id="contractCase" name="contract_case" class="form-control"
+                                placeholder="Enter case ID (e.g., C-001)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractDescription">Contract Description</label>
+                            <textarea id="contractDescription" name="contract_description" class="form-control"
+                                placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
+                                rows="4"></textarea>
+                            <div class="file-info">AI will analyze this description to detect risk factors</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractFile">Contract File</label>
+                            <input type="file" id="contractFile" name="contract_file" class="form-control"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                            <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
+                            <input type="file" id="contractImage" name="contract_image" class="form-control"
+                                accept="image/*">
+                            <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
+                        </div>
+
+                        <div class="ai-analysis-section">
+                            <h4><i class="fa-solid fa-wand-magic-sparkles"
+                                    style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
+                            <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
+                                automatically analyze your contract for:</p>
+                            <ul class="ai-features-list">
+                                <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
+                                    rent
+                                    structure)</li>
+                                <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
+                                    suppliers,
+                                    staffing)</li>
+                                <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
+                                    guarantees)</li>
+                                <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
+                            </ul>
+                            <div class="ai-note">
+                                <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
+                                calculated
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
+                            <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
+                                <i>+</i> Upload & Analyze Contract
                             </button>
                         </div>
-                    </div>
-                    <!-- Hidden form to trigger secured PDF generation via POST -->
-                    <form id="exportPdfForm" method="POST" style="display:none">
-                        <input type="hidden" name="action" value="export_pdf">
                     </form>
+                </div>
 
-                    <!-- Add Contract Form -->
-                    <div class="form-container" id="contractForm">
-                        <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
-                        <form method="POST" enctype="multipart/form-data" id="contractFormData">
-                            <div class="form-group">
-                                <label for="contractName">Contract Name</label>
-                                <input type="text" id="contractName" name="contract_name" class="form-control"
-                                    placeholder="Enter contract name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="contractCase">Case ID</label>
-                                <input type="text" id="contractCase" name="contract_case" class="form-control"
-                                    placeholder="Enter case ID (e.g., C-001)" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="contractDescription">Contract Description</label>
-                                <textarea id="contractDescription" name="contract_description" class="form-control"
-                                    placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
-                                    rows="4"></textarea>
-                                <div class="file-info">AI will analyze this description to detect risk factors</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contractFile">Contract File</label>
-                                <input type="file" id="contractFile" name="contract_file" class="form-control"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                                <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
-                                <input type="file" id="contractImage" name="contract_image" class="form-control"
-                                    accept="image/*">
-                                <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
-                            </div>
-
-                            <div class="ai-analysis-section">
-                                <h4><i class="fa-solid fa-wand-magic-sparkles"
-                                        style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
-                                <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
-                                    automatically analyze your contract for:</p>
-                                <ul class="ai-features-list">
-                                    <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
-                                        rent
-                                        structure)</li>
-                                    <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
-                                        suppliers,
-                                        staffing)</li>
-                                    <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
-                                        guarantees)</li>
-                                    <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
-                                </ul>
-                                <div class="ai-note">
-                                    <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
-                                    calculated
-                                </div>
-                            </div>
-
-                            <div class="form-actions">
-                                <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
-                                <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
-                                    <i>+</i> Upload & Analyze Contract
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Contracts Table -->
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Contract Name</th>
-                                <th>Case</th>
-                                <th>Risk Level</th>
-                                <th>Risk Score</th>
-                                <th>Upload Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="contractsTableBody">
-                            <?php foreach ($contracts as $contract):
-                                $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
-                                $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
-                                ?>
+                <!-- Contracts Table -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Contract Name</th>
+                            <th>Case</th>
+                            <th>Risk Level</th>
+                            <th>Risk Score</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contractsTableBody">
+                        <?php foreach ($contracts as $contract):
+                            $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
+                            $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
+                            ?>
                                 <tr>
                                     <td>
                                         <?php if (!empty($contract['file_path'])): ?>
-                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline"
-                                                data-pdf-type="contract"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
                                         <?php else: ?>
-                                            <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                                <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
                                         <?php endif; ?>
                                     </td>
                                     <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
                                     <td>
-                                        <span
-                                            class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                        <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
                                             <?php echo htmlspecialchars($contract['risk_level']); ?>
                                         </span>
                                     </td>
@@ -1014,64 +1007,64 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         </button>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="content-section" id="risk_analysis">
-                    <div class="section-header">
-                        <h2 class="section-title">Contract Risk Analysis</h2>
+            <div class="content-section" id="risk_analysis">
+                <div class="section-header">
+                    <h2 class="section-title">Contract Risk Analysis</h2>
+                </div>
+                <div id="riskChartContainer">
+                    <canvas id="riskChart" width="400" height="200"></canvas>
+                </div>
+                <div id="analysisResults">
+                    <!-- Analysis results will be displayed here -->
+                    <div class="risk-summary" style="padding:12px;">
+                        <p><strong>Total contracts:</strong> <?php echo $totalContracts; ?></p>
+                        <p><strong>High:</strong> <?php echo $riskCounts['High']; ?> (<?php echo $highPct; ?>%)</p>
+                        <p><strong>Medium:</strong> <?php echo $riskCounts['Medium']; ?>
+                            (<?php echo $mediumPct; ?>%)
+                        </p>
+                        <p><strong>Low:</strong> <?php echo $riskCounts['Low']; ?> (<?php echo $lowPct; ?>%)</p>
                     </div>
-                    <div id="riskChartContainer">
-                        <canvas id="riskChart" width="400" height="200"></canvas>
-                    </div>
-                    <div id="analysisResults">
-                        <!-- Analysis results will be displayed here -->
-                        <div class="risk-summary" style="padding:12px;">
-                            <p><strong>Total contracts:</strong> <?php echo $totalContracts; ?></p>
-                            <p><strong>High:</strong> <?php echo $riskCounts['High']; ?> (<?php echo $highPct; ?>%)</p>
-                            <p><strong>Medium:</strong> <?php echo $riskCounts['Medium']; ?>
-                                (<?php echo $mediumPct; ?>%)
-                            </p>
-                            <p><strong>Low:</strong> <?php echo $riskCounts['Low']; ?> (<?php echo $lowPct; ?>%)</p>
-                        </div>
-                        <?php
-                        $highContracts = array_filter($contracts, function ($c) {
-                            return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
-                        });
-                        if (!empty($highContracts)): ?>
+                    <?php
+                    $highContracts = array_filter($contracts, function ($c) {
+                        return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
+                    });
+                    if (!empty($highContracts)): ?>
                             <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
                             <ul>
                                 <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                    <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
-                                        <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
-                                    </li>
+                                        <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
+                                            <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
+                                        </li>
                                 <?php endforeach; ?>
                             </ul>
-                        <?php endif; ?>
-                    </div>
+                    <?php endif; ?>
                 </div>
+            </div>
 
-                <div class="content-section" id="members">
-                    <div class="section-header">
-                        <h2 class="section-title">Team Members</h2>
-                        <button class="add-btn" id="addMemberBtn">
-                            <i>+</i> Add Member
-                        </button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="membersTableBody">
-                            <?php foreach ($employees as $employee): ?>
+            <div class="content-section" id="members">
+                <div class="section-header">
+                    <h2 class="section-title">Team Members</h2>
+                    <button class="add-btn" id="addMemberBtn">
+                        <i>+</i> Add Member
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <?php foreach ($employees as $employee): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($employee['name']); ?></td>
                                     <td><?php echo htmlspecialchars($employee['position']); ?></td>
@@ -1084,290 +1077,288 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
 
 
-        <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
+    <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
 
-        <!-- Details Modal -->
-        <div id="detailsModal"
-            style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <!-- Details Modal -->
+    <div id="detailsModal"
+        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div
+            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
             <div
-                style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-                <div
-                    style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #fff;">
-                    <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">
-                        Details
-                    </h3>
-                    <button id="closeDetails"
-                        style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div id="detailsBody" style="padding: 24px; overflow-y: auto;">
-                    <!-- Fallback content shown if no dynamic content is provided -->
-                    <form id="genericModalForm" style="display:block">
-                        <div
-                            style="padding:12px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:10px;">
-                            <h4 style="margin:0 0 6px;">Quick Note</h4>
-                            <p style="margin:0 0 8px; color:#475569;">Enter an optional note then submit. This is a
-                                default
-                                content view that appears when no specific details are loaded.</p>
-                            <textarea name="note" rows="3" class="form-control" placeholder="Type your note here…"
-                                style="width:100%;"></textarea>
-                        </div>
-                        <div style="display:flex; gap:10px; justify-content:flex-end;">
-                            <button type="submit" class="save-btn">Submit</button>
-                        </div>
-                    </form>
-                </div>
+                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #fff;">
+                <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">
+                    Details
+                </h3>
+                <button id="closeDetails"
+                    style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-        </div>
-        <!-- Password Gate Modal -->
-        <div id="passwordModal"
-            style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); align-items:center; justify-content:center; z-index:2000;">
-            <div
-                style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
-                <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
-                    Security Check</h2>
-                <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
-                <form id="passwordForm">
-                    <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+            <div id="detailsBody" style="padding: 24px; overflow-y: auto;">
+                <!-- Fallback content shown if no dynamic content is provided -->
+                <form id="genericModalForm" style="display:block">
+                    <div
+                        style="padding:12px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:10px;">
+                        <h4 style="margin:0 0 6px;">Quick Note</h4>
+                        <p style="margin:0 0 8px; color:#475569;">Enter an optional note then submit. This is a
+                            default
+                            content view that appears when no specific details are loaded.</p>
+                        <textarea name="note" rows="3" class="form-control" placeholder="Type your note here…"
+                            style="width:100%;"></textarea>
                     </div>
-                    <div id="pwdError"
-                        style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
-                        Incorrect PIN. Please try again.</div>
-                    <div style="display:flex; gap:12px; justify-content:center;">
-                        <button type="button" class="cancel-btn" id="pwdCancel"
-                            style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
-                        <button type="submit" class="save-btn"
-                            style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                    <div style="display:flex; gap:10px; justify-content:flex-end;">
+                        <button type="submit" class="save-btn">Submit</button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
+    <!-- Password Gate Modal -->
+    <div id="passwordModal"
+        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); align-items:center; justify-content:center; z-index:2000;">
+        <div
+            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
+            <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
+                Security Check</h2>
+            <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
+            <form id="passwordForm">
+                <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                </div>
+                <div id="pwdError"
+                    style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
+                    Incorrect PIN. Please try again.</div>
+                <div style="display:flex; gap:12px; justify-content:center;">
+                    <button type="button" class="cancel-btn" id="pwdCancel"
+                        style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
+                    <button type="submit" class="save-btn"
+                        style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <!-- Edit Employee Modal -->
-        <div id="editEmployeeModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
-            <div
-                style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-                <button type="button" id="closeEditEmployee"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <h3 style="margin-top:0;">Edit Employee</h3>
-                <form method="POST" id="editEmployeeForm">
-                    <input type="hidden" name="update_employee" value="1">
-                    <input type="hidden" name="employee_id" id="edit_emp_id">
+    <!-- Edit Employee Modal -->
+    <div id="editEmployeeModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+        <div
+            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <button type="button" id="closeEditEmployee"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <h3 style="margin-top:0;">Edit Employee</h3>
+            <form method="POST" id="editEmployeeForm">
+                <input type="hidden" name="update_employee" value="1">
+                <input type="hidden" name="employee_id" id="edit_emp_id">
+                <div class="form-group">
+                    <label for="edit_emp_name">Name</label>
+                    <input type="text" id="edit_emp_name" name="employee_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_emp_position">Position</label>
+                    <input type="text" id="edit_emp_position" name="employee_position" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_emp_email">Email</label>
+                    <input type="email" id="edit_emp_email" name="employee_email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_emp_phone">Phone</label>
+                    <input type="text" id="edit_emp_phone" name="employee_phone" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelEditEmployee">Cancel</button>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contract Form Modal wrapper -->
+    <div id="contractFormModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+        <div
+            style="background:rgba(255,255,255,0.95); backdrop-filter: blur(20px); width:94%; max-width:500px; border-radius:16px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.5); max-height: 90vh; overflow-y: auto;">
+            <button type="button" id="closeContractFormModal"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <div id="contractFormContainer">
+                <!-- The existing contract form will be moved here dynamically -->
+            </div>
+        </div>
+    </div>
+    <!-- Employee Form Modal wrapper -->
+    <div id="employeeFormModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        <div
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            <button type="button" id="closeEmployeeFormModal"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <div id="employeeFormContainer"></div>
+        </div>
+    </div>
+    <!-- Document Form Modal wrapper -->
+    <div id="documentFormModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        <div
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            <button type="button" id="closeDocumentFormModal"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <div id="documentFormContainer">
+                <h3>Upload Document</h3>
+                <form method="POST" enctype="multipart/form-data" id="documentFormData">
+                    <input type="hidden" name="add_document" value="1">
                     <div class="form-group">
-                        <label for="edit_emp_name">Name</label>
-                        <input type="text" id="edit_emp_name" name="employee_name" class="form-control" required>
+                        <label for="doc_name">Document Name</label>
+                        <input type="text" id="doc_name" name="doc_name" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="edit_emp_position">Position</label>
-                        <input type="text" id="edit_emp_position" name="employee_position" class="form-control"
+                        <label for="doc_case">Case ID</label>
+                        <input type="text" id="doc_case" name="doc_case" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="doc_file">File</label>
+                        <input type="file" id="doc_file" name="doc_file" class="form-control" accept=".pdf,.doc,.docx"
                             required>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_emp_email">Email</label>
-                        <input type="email" id="edit_emp_email" name="employee_email" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_emp_phone">Phone</label>
-                        <input type="text" id="edit_emp_phone" name="employee_phone" class="form-control" required>
-                    </div>
                     <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelEditEmployee">Cancel</button>
-                        <button type="submit" class="save-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn" id="cancelDocumentBtn">Cancel</button>
+                        <button type="submit" class="save-btn">Upload</button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
+    <!-- Edit Document Modal -->
+    <div id="editDocumentModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+        <div
+            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <button type="button" id="closeEditDocument"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <h3 style="margin-top:0;">Edit Document</h3>
+            <form method="POST" id="editDocumentForm">
+                <input type="hidden" name="update_document" value="1">
+                <input type="hidden" name="document_id" id="edit_doc_id">
+                <div class="form-group">
+                    <label for="edit_doc_name">Document Name</label>
+                    <input type="text" id="edit_doc_name" name="doc_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_doc_case">Case ID</label>
+                    <input type="text" id="edit_doc_case" name="doc_case" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelEditDocument">Cancel</button>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Invoice Form Modal wrapper -->
+    <div id="invoiceFormModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        <div
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            <button type="button" id="closeInvoiceFormModal"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <div id="invoiceFormContainer">
+                <h3>Create Invoice</h3>
+                <form method="POST" id="invoiceFormData">
+                    <input type="hidden" name="add_invoice" value="1">
+                    <div class="form-group">
+                        <label for="inv_number">Invoice #</label>
+                        <input type="text" id="inv_number" name="invoice_number" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inv_client">Client</label>
+                        <input type="text" id="inv_client" name="client" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inv_amount">Amount</label>
+                        <input type="number" step="0.01" id="inv_amount" name="amount" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inv_due">Due Date</label>
+                        <input type="date" id="inv_due" name="due_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inv_status">Status</label>
+                        <select id="inv_status" name="status" class="form-control" required>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelInvoiceBtn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Pay confirmation modal -->
+    <div id="payConfirmModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1600;">
+        <div
+            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <h3 style="margin:0 0 8px;">Confirm Payment</h3>
+            <p id="payConfirmText" style="margin:0 0 14px; color:#475569;">Do you want to pay this invoice?</p>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" class="cancel-btn" id="cancelPayBtn">No</button>
+                <form method="POST" id="payInvoiceForm" style="margin:0;">
+                    <input type="hidden" name="pay_invoice" value="1">
+                    <input type="hidden" name="invoice_id" id="pay_invoice_id" value="">
+                    <button type="submit" class="save-btn" style="background:#16a34a;">Yes, Pay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Contract: Upload Supporting Document Modal -->
+    <div id="contractDocsModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1500;">
+        <div
+            style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            <button type="button" id="closeContractDocsModal"
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+            <h3 style="margin-top:0;">Upload Contract Document</h3>
+            <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
+                <input type="hidden" name="add_contract_document" value="1">
+                <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
+                <div class="form-group">
+                    <label for="contract_doc_name">Document Name</label>
+                    <input type="text" id="contract_doc_name" name="doc_name" class="form-control"
+                        placeholder="e.g., Annex A, Addendum, Scanned Signature" required>
+                </div>
+                <div class="form-group">
+                    <label for="contract_doc_file">File</label>
+                    <input type="file" id="contract_doc_file" name="doc_file" class="form-control"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelContractDocsBtn">Cancel</button>
+                    <button type="submit" class="save-btn">Upload Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <!-- Contract Form Modal wrapper -->
-        <div id="contractFormModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-            <div
-                style="background:rgba(255,255,255,0.95); backdrop-filter: blur(20px); width:94%; max-width:500px; border-radius:16px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.5); max-height: 90vh; overflow-y: auto;">
-                <button type="button" id="closeContractFormModal"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <div id="contractFormContainer">
-                    <!-- The existing contract form will be moved here dynamically -->
-                </div>
-            </div>
-        </div>
-        <!-- Employee Form Modal wrapper -->
-        <div id="employeeFormModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-            <div
-                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-                <button type="button" id="closeEmployeeFormModal"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <div id="employeeFormContainer"></div>
-            </div>
-        </div>
-        <!-- Document Form Modal wrapper -->
-        <div id="documentFormModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-            <div
-                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-                <button type="button" id="closeDocumentFormModal"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <div id="documentFormContainer">
-                    <h3>Upload Document</h3>
-                    <form method="POST" enctype="multipart/form-data" id="documentFormData">
-                        <input type="hidden" name="add_document" value="1">
-                        <div class="form-group">
-                            <label for="doc_name">Document Name</label>
-                            <input type="text" id="doc_name" name="doc_name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="doc_case">Case ID</label>
-                            <input type="text" id="doc_case" name="doc_case" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="doc_file">File</label>
-                            <input type="file" id="doc_file" name="doc_file" class="form-control"
-                                accept=".pdf,.doc,.docx" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelDocumentBtn">Cancel</button>
-                            <button type="submit" class="save-btn">Upload</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Edit Document Modal -->
-        <div id="editDocumentModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
-            <div
-                style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-                <button type="button" id="closeEditDocument"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <h3 style="margin-top:0;">Edit Document</h3>
-                <form method="POST" id="editDocumentForm">
-                    <input type="hidden" name="update_document" value="1">
-                    <input type="hidden" name="document_id" id="edit_doc_id">
-                    <div class="form-group">
-                        <label for="edit_doc_name">Document Name</label>
-                        <input type="text" id="edit_doc_name" name="doc_name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_doc_case">Case ID</label>
-                        <input type="text" id="edit_doc_case" name="doc_case" class="form-control" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelEditDocument">Cancel</button>
-                        <button type="submit" class="save-btn">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Invoice Form Modal wrapper -->
-        <div id="invoiceFormModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-            <div
-                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-                <button type="button" id="closeInvoiceFormModal"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <div id="invoiceFormContainer">
-                    <h3>Create Invoice</h3>
-                    <form method="POST" id="invoiceFormData">
-                        <input type="hidden" name="add_invoice" value="1">
-                        <div class="form-group">
-                            <label for="inv_number">Invoice #</label>
-                            <input type="text" id="inv_number" name="invoice_number" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inv_client">Client</label>
-                            <input type="text" id="inv_client" name="client" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inv_amount">Amount</label>
-                            <input type="number" step="0.01" id="inv_amount" name="amount" class="form-control"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inv_due">Due Date</label>
-                            <input type="date" id="inv_due" name="due_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inv_status">Status</label>
-                            <select id="inv_status" name="status" class="form-control" required>
-                                <option value="pending">Pending</option>
-                                <option value="paid">Paid</option>
-                                <option value="overdue">Overdue</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelInvoiceBtn">Cancel</button>
-                            <button type="submit" class="save-btn">Save Invoice</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Pay confirmation modal -->
-        <div id="payConfirmModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1600;">
-            <div
-                style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-                <h3 style="margin:0 0 8px;">Confirm Payment</h3>
-                <p id="payConfirmText" style="margin:0 0 14px; color:#475569;">Do you want to pay this invoice?</p>
-                <div style="display:flex; gap:10px; justify-content:flex-end;">
-                    <button type="button" class="cancel-btn" id="cancelPayBtn">No</button>
-                    <form method="POST" id="payInvoiceForm" style="margin:0;">
-                        <input type="hidden" name="pay_invoice" value="1">
-                        <input type="hidden" name="invoice_id" id="pay_invoice_id" value="">
-                        <button type="submit" class="save-btn" style="background:#16a34a;">Yes, Pay</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Contract: Upload Supporting Document Modal -->
-        <div id="contractDocsModal"
-            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1500;">
-            <div
-                style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-                <button type="button" id="closeContractDocsModal"
-                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-                <h3 style="margin-top:0;">Upload Contract Document</h3>
-                <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
-                    <input type="hidden" name="add_contract_document" value="1">
-                    <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
-                    <div class="form-group">
-                        <label for="contract_doc_name">Document Name</label>
-                        <input type="text" id="contract_doc_name" name="doc_name" class="form-control"
-                            placeholder="e.g., Annex A, Addendum, Scanned Signature" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contract_doc_file">File</label>
-                        <input type="file" id="contract_doc_file" name="doc_file" class="form-control"
-                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelContractDocsBtn">Cancel</button>
-                        <button type="submit" class="save-btn">Upload Document</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <script>
-            (function () {
+    <script>
+            (        function () {
                 const detailsModal = document.getElementById('detailsModal');
                 const detailsTitle = document.getElementById('detailsTitle');
                 const detailsBody = document.getElementById('detailsBody');
