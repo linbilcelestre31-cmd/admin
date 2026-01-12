@@ -423,7 +423,7 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link" data-category="Inventory">Inventory</a></li>
                     <li><a href="#" class="category-link" data-category="Compliance">Compliance</a></li>
                     <li><a href="#" class="category-link" data-category="Marketing">Marketing</a></li>
-                    </ul>
+                </ul>
             </aside>
 
             <div class="content">
@@ -445,59 +445,59 @@ function formatFileSize($bytes)
                     </div>
                 </div>
 
-                    <!-- Financial Records View -->
-                    <div class="category-content" id="financial-records-content">
-                        <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
-                    </div>
-
-                    <!-- HR Documents View -->
-                    <div class="category-content" id="hr-documents-content">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search HR documents...">
-                            <button>Search</button>
-                        </div>
-                        <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
-                    </div>
-
-                    <!-- Guest Records View -->
-                    <div class="category-content" id="guest-records-content">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search guest records...">
-                            <button>Search</button>
-                        </div>
-                        <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
-                    </div>
-
-                    <!-- Inventory View -->
-                    <div class="category-content" id="inventory-content">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search inventory documents...">
-                            <button>Search</button>
-                        </div>
-                        <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
-                    </div>
-
-                    <!-- Compliance View -->
-                    <div class="category-content" id="compliance-content">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search compliance documents...">
-                            <button>Search</button>
-                        </div>
-                        <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here -->
-                        </div>
-                    </div>
-
-                    <!-- Marketing View -->
-                    <div class="category-content" id="marketing-content">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search marketing documents...">
-                            <button>Search</button>
-                        </div>
-                        <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
-                    </div>
-
+                <!-- Financial Records View -->
+                <div class="category-content" id="financial-records-content">
+                    <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
                 </div>
+
+                <!-- HR Documents View -->
+                <div class="category-content" id="hr-documents-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search HR documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
+                </div>
+
+                <!-- Guest Records View -->
+                <div class="category-content" id="guest-records-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search guest records...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
+                </div>
+
+                <!-- Inventory View -->
+                <div class="category-content" id="inventory-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search inventory documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
+                </div>
+
+                <!-- Compliance View -->
+                <div class="category-content" id="compliance-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search compliance documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Marketing View -->
+                <div class="category-content" id="marketing-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search marketing documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
+                </div>
+
             </div>
+        </div>
     </main>
 
     <!-- Upload Modal -->
@@ -560,18 +560,7 @@ function formatFileSize($bytes)
     <script>
         // Add dummy/sample data for testing if API fails
         function loadDummyData(category) {
-            const dummyFiles = {
-                'all': [
-                    { id: 101, name: 'Q4 Financial Report.pdf', category: 'Financial Records', file_size: '2.4 MB', upload_date: '2025-10-24' },
-                    { id: 102, name: 'Employee Handbook 2025.pdf', category: 'HR Documents', file_size: '1.2 MB', upload_date: '2025-10-20' },
-                    { id: 103, name: 'Supply Inventory Oct.xlsx', category: 'Inventory', file_size: '850 KB', upload_date: '2025-10-18' }
-                ],
-                'HR Documents': [
-                    { id: 102, name: 'Employee Handbook 2025.pdf', category: 'HR Documents', file_size: '1.2 MB', upload_date: '2025-10-20' }
-                ]
-            };
-
-            return dummyFiles[category] || dummyFiles['all'] || [];
+            return [];
         }
 
 
@@ -775,7 +764,7 @@ function formatFileSize($bytes)
                     const grid = document.getElementById(gridId);
                     grid.innerHTML = '';
                     if (!data || data.length === 0) {
-                        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #999; grid-column: 1/-1;"><p style="font-size: 1.1rem; margin-bottom: 1rem;">📭 No files found</p></div>';
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-layer-group" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Coming Soon</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">This category is reserved for future system integration.</p></div>';
                         return;
                     }
                     grid.innerHTML = `
