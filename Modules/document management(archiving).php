@@ -392,6 +392,63 @@ function formatFileSize($bytes)
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <style>
+        /* Updated Financial Table Styles to match image and prevent squashing */
+        .financial-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .financial-table th {
+            text-align: left;
+            padding: 15px 12px;
+            color: #334155;
+            font-weight: 700;
+            border-bottom: 2px solid #f1f5f9;
+            white-space: nowrap;
+        }
+
+        .financial-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .type-label {
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .btn-view-small {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .btn-view-small i {
+            font-size: 0.8rem;
+        }
+
+        .btn-view-small:hover {
+            background: #f0f0f0;
+        }
+    </style>
 </head>
 
 <body>
@@ -443,11 +500,18 @@ function formatFileSize($bytes)
                         </div>
                         <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
                     </div>
+                    <div class="tab-content" id="trash-tab">
+                        <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
+                    </div>
                 </div>
 
                 <!-- Financial Records View -->
                 <div class="category-content" id="financial-records-content">
-                    <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
+                    <div class="search-box">
+                        <input type="text" placeholder="Search financial records...">
+                        <button>Search</button>
+                    </div>
+                    <div id="financialFiles"><!-- Financial records table will be populated here --></div>
                 </div>
 
                 <!-- HR Documents View -->
@@ -641,8 +705,9 @@ function formatFileSize($bytes)
                 grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #666; grid-column: 1/-1;"><p>⏳ Loading financial records...</p></div>';
 
                 const renderFinancialTable = (data) => {
-                    grid.innerHTML = `
-                        <div class="financial-table-container" style="grid-column: 1/-1;">
+                    const tableContainer = document.getElementById(gridId);
+                    tableContainer.innerHTML = `
+                        <div class="financial-table-container">
                             <table class="financial-table">
                                 <thead>
                                     <tr>
@@ -660,13 +725,16 @@ function formatFileSize($bytes)
                         const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
                         const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
                         const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
+                        const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                        const amountValue = parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        
                         return `
                                         <tr>
-                                            <td>${new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
-                                            <td style="color: ${typeColor}; font-weight: 600;">${type}</td>
+                                            <td style="white-space: nowrap;">${formattedDate}</td>
+                                            <td><span style="color: ${typeColor};" class="type-label">${type}</span></td>
                                             <td>${record.category || 'Revenue'}</td>
-                                            <td>${record.description}</td>
-                                            <td style="font-weight: 600; color: #2c3e50;">$${parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                            <td style="min-width: 200px;">${record.description}</td>
+                                            <td style="font-weight: 700; white-space: nowrap;">$${amountValue}</td>
                                             <td>${record.venue || 'Hotel'}</td>
                                             <td>
                                                 <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})'>
