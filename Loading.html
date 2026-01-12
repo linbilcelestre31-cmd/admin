@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    /* Added gradient pulse animation for visual interest */
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<!-- Updated background to blue gradient theme -->
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800">
+  <div class="text-center">
+    <!-- Updated spinner with white border and blue gradient glow effect -->
+    <div class="relative inline-block mb-6">
+      <div class="absolute inset-0 w-16 h-16 bg-blue-300 rounded-full blur-xl opacity-50 pulse-glow"></div>
+      <div class="relative w-16 h-16 border-4 border-white/30 border-t-white rounded-full spinner"></div>
+    </div>
+    
+    <!-- Updated text colors to white for contrast on blue gradient -->
+    <h1 class="text-2xl font-semibold text-white mb-2">Loading</h1>
+    <p class="text-blue-100">Please wait while we redirect you...</p>
+  </div>
+
+  <script>
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+      window.location.href = 'auth/login.php'; // Change this to your login page URL
+    }, 2000);
+  </script>
+</body>
+</html>
+
+

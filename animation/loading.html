@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading - Atiéra</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            /* Transparent for overlay effect */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* No scrollbar */
+            font-family: 'Cinzel', serif;
+        }
+
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            /* Space between flame and text */
+        }
+
+        /* Generated Fire Animation */
+        .fire {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .fire .flame {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            border-radius: 50% 0 50% 50%;
+            background: linear-gradient(-45deg, #d4af37, #fcf6ba, #aa771c);
+            transform: translateX(-50%) rotate(-45deg);
+            box-shadow: 0 0 10px #d4af37, 0 0 20px #aa771c;
+            animation: burn 1s infinite alternate ease-in-out;
+            opacity: 0.9;
+        }
+
+        .fire .flame:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            bottom: 5px;
+            background: linear-gradient(-45deg, #fcf6ba, #fff);
+            animation: burn 1.5s infinite alternate-reverse ease-in-out;
+            box-shadow: none;
+            opacity: 0.8;
+            z-index: 2;
+        }
+
+        @keyframes burn {
+            0% {
+                transform: translateX(-50%) rotate(-45deg) scale(1);
+                border-radius: 50% 0 50% 50%;
+            }
+
+            50% {
+                transform: translateX(-50%) rotate(-45deg) scale(1.1);
+                border-radius: 40% 10% 40% 40%;
+            }
+
+            100% {
+                transform: translateX(-50%) rotate(-45deg) scale(1);
+                border-radius: 50% 0 50% 50%;
+            }
+        }
+
+        .brand-text {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            padding-bottom: 5px;
+            animation: shine 5s infinite linear;
+            background-size: 200%;
+            text-shadow: 0 0 30px rgba(191, 149, 63, 0.3);
+            line-height: 1;
+        }
+
+        .tagline {
+            font-family: 'Montserrat', sans-serif;
+            color: #E6C86E;
+            /* Soft Gold */
+            font-weight: 700;
+            /* Bold */
+            letter-spacing: 6px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            /* Reduced bottom margin to fit Administrative */
+            /* opacity: 0; removed to show immediately */
+            /* animation: textWave 3s ease-in-out infinite; REMOVED BLOCK ANIMATION */
+            /* Combined animations */
+            text-align: center;
+        }
+
+        .loading-line {
+            width: 300px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .loading-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #E6C86E, #fcf6ba, #E6C86E);
+            box-shadow: 0 0 10px #E6C86E;
+            animation: load 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+
+
+        /* Wave Animation for Tagline */
+        @keyframes textWave {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Administrative Text Styling */
+        .admin-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            /* Adjust spacing as needed */
+            /* opacity: 0; removed to show text immediately */
+            /* animation: textWave 3s ease-in-out infinite; REMOVED BLOCK ANIMATION */
+        }
+
+
+
+        .admin-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #E6C86E;
+            /* Soft Gold */
+            letter-spacing: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            /* Ensure spans behave correctly */
+        }
+
+        /* LETTER WAVE ANIMATION */
+        .wave-text span {
+            display: inline-block;
+            animation: letterWave 2s ease-in-out infinite;
+            animation-delay: calc(0.1s * var(--i));
+        }
+
+        @keyframes letterWave {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+                /* Adjust wave height */
+            }
+        }
+
+        /* Center Line Wave Effect */
+        .center-line {
+            height: 2px;
+            width: 50px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            position: relative;
+        }
+
+        .center-line::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            /* Slightly thicker for wave visibility */
+            background: rgba(212, 175, 55, 0.5);
+            filter: blur(2px);
+            transform: translateY(-50%) scaleX(0.8);
+            animation: linePulse 2s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        @keyframes linePulse {
+
+            0%,
+            100% {
+                transform: translateY(-50%) scaleX(0.8);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translateY(-50%) scaleX(1.1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes load {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 60%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Removed unused fadeIn/fadeInUp animations */
+    </style>
+</head>
+
+<body>
+
+    <div class="loader-container">
+
+        <div class="brand-wrapper">
+            <!-- CSS Animated Flame -->
+            <div class="fire">
+                <div class="flame"></div>
+                <div class="flame"></div>
+            </div>
+
+            <h1 class="brand-text">ATIÉRA</h1>
+        </div>
+
+        <div class="tagline wave-text">Hotel & Restaurant</div>
+
+        <div class="admin-wrapper">
+            <div class="center-line"></div>
+            <div class="admin-text wave-text">ADMINISTRATIVE</div>
+            <div class="center-line"></div>
+        </div>
+
+        <div class="loading-line">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <script>
+        // Select all elements with the 'wave-text' class
+        const waveTexts = document.querySelectorAll('.wave-text');
+
+        waveTexts.forEach(textContainer => {
+            const text = textContainer.textContent;
+            textContainer.innerHTML = ''; // Clear existing text
+
+            // Split text into letters and create spans
+            [...text].forEach((letter, index) => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
+                span.style.setProperty('--i', index); // Set custom property for delay
+                textContainer.appendChild(span);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

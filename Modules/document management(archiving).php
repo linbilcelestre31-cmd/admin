@@ -1,0 +1,868 @@
+<?php
+// Database Configuration
+class Database
+{
+    private $host = "localhost";
+    private $db_name = "legalmanagement";
+    private $username = "root";
+    private $password = "";
+    public $conn;
+
+    public function getConnection()
+    {
+        $this->conn = null;
+        try {
+            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
+            $this->conn->exec("set names utf8");
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $exception) {
+            echo "Connection error: " . $exception->getMessage();
+        }
+        return $this->conn;
+    }
+}
+
+// File upload configuration
+define('UPLOAD_DIR', 'uploads/');
+define('MAX_FILE_SIZE', 50 * 1024 * 1024); // 50MB
+define('ALLOWED_TYPES', ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif']);
+
+// Document Class
+class Document
+{
+    private $conn;
+    private $table_name = "documents";
+
+    public $id;
+    public $name;
+    public $category;
+    public $file_path;
+    public $file_size;
+    public $description;
+    public $upload_date;
+    public $is_deleted;
+    public $deleted_date;
+
+    public function __construct($db)
+    {
+        $this->conn = $db;
+    }
+
+    // Create new document
+    public function create()
+    {
+        $query = "INSERT INTO " . $this->table_name . "
+                SET name=:name, category=:category, file_path=:file_path, 
+                    file_size=:file_size, description=:description, upload_date=:upload_date";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize inputs
+        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->category = htmlspecialchars(strip_tags($this->category));
+        $this->file_path = htmlspecialchars(strip_tags($this->file_path));
+        $this->file_size = htmlspecialchars(strip_tags($this->file_size));
+        $this->description = htmlspecialchars(strip_tags($this->description));
+        $this->upload_date = htmlspecialchars(strip_tags($this->upload_date));
+
+        // Bind parameters
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":category", $this->category);
+        $stmt->bindParam(":file_path", $this->file_path);
+        $stmt->bindParam(":file_size", $this->file_size);
+        $stmt->bindParam(":description", $this->description);
+        $stmt->bindParam(":upload_date", $this->upload_date);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    // Get all active documents
+    public function readActive($category = null)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE is_deleted = 0";
+        if ($category && $category !== 'all') {
+            $query .= " AND category = '" . htmlspecialchars($category) . "'";
+        }
+        $query .= " ORDER BY upload_date DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Get all deleted documents
+    public function readDeleted()
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE is_deleted = 1 ORDER BY deleted_date DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Get single document
+    public function readOne()
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = ? LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->name = $row['name'];
+            $this->category = $row['category'];
+            $this->file_path = $row['file_path'];
+            $this->file_size = $row['file_size'];
+            $this->description = $row['description'];
+            $this->upload_date = $row['upload_date'];
+            $this->is_deleted = $row['is_deleted'];
+            $this->deleted_date = $row['deleted_date'];
+            return true;
+        }
+        return false;
+    }
+
+    // Move document to trash
+    public function moveToTrash()
+    {
+        $query = "UPDATE " . $this->table_name . " 
+                 SET is_deleted = 1, deleted_date = :deleted_date 
+                 WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":deleted_date", $this->deleted_date);
+        $stmt->bindParam(":id", $this->id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    // Restore document from trash
+    public function restore()
+    {
+        $query = "UPDATE " . $this->table_name . " 
+                 SET is_deleted = 0, deleted_date = NULL 
+                 WHERE id = ?";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    // Permanently delete document
+    public function deletePermanent()
+    {
+        // First get file path to delete physical file
+        $query = "SELECT file_path FROM " . $this->table_name . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $file_path = $row['file_path'];
+            // Delete physical file
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+        }
+
+        // Delete from database
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    // Search documents
+    public function search($keywords)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " 
+                 WHERE (name LIKE ? OR description LIKE ? OR category LIKE ?) 
+                 AND is_deleted = 0 
+                 ORDER BY upload_date DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $keywords = "%{$keywords}%";
+        $stmt->bindParam(1, $keywords);
+        $stmt->bindParam(2, $keywords);
+        $stmt->bindParam(3, $keywords);
+        $stmt->execute();
+        return $stmt;
+    }
+}
+
+// Handle API requests
+if (isset($_GET['api'])) {
+    header("Content-Type: application/json; charset=UTF-8");
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+    header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+    $database = new Database();
+    $db = $database->getConnection();
+    $document = new Document($db);
+
+    $method = $_SERVER['REQUEST_METHOD'];
+
+    switch ($method) {
+        case 'GET':
+            // Get all active documents
+            if (isset($_GET['action']) && $_GET['action'] == 'active') {
+                $category = isset($_GET['category']) ? $_GET['category'] : null;
+                $stmt = $document->readActive($category);
+                $documents = [];
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $documents[] = $row;
+                }
+                echo json_encode($documents);
+            }
+            // Get all deleted documents
+            elseif (isset($_GET['action']) && $_GET['action'] == 'deleted') {
+                $stmt = $document->readDeleted();
+                $documents = [];
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $documents[] = $row;
+                }
+                echo json_encode($documents);
+            }
+            // Get single document
+            elseif (isset($_GET['id'])) {
+                $document->id = $_GET['id'];
+                if ($document->readOne()) {
+                    echo json_encode([
+                        'id' => $document->id,
+                        'name' => $document->name,
+                        'category' => $document->category,
+                        'file_path' => $document->file_path,
+                        'file_size' => $document->file_size,
+                        'description' => $document->description,
+                        'upload_date' => $document->upload_date,
+                        'is_deleted' => $document->is_deleted,
+                        'deleted_date' => $document->deleted_date
+                    ]);
+                } else {
+                    echo json_encode(["message" => "Document not found."]);
+                }
+            }
+            // Search documents
+            elseif (isset($_GET['search'])) {
+                $stmt = $document->search($_GET['search']);
+                $documents = [];
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $documents[] = $row;
+                }
+                echo json_encode($documents);
+            }
+            break;
+
+        case 'POST':
+            // Handle file upload
+            if (isset($_FILES['file'])) {
+                $response = uploadFile();
+                if ($response['success']) {
+                    $document->name = $_POST['name'];
+                    $document->category = $_POST['category'];
+                    $document->file_path = $response['file_path'];
+                    $document->file_size = $response['file_size'];
+                    $document->description = $_POST['description'];
+                    $document->upload_date = date('Y-m-d');
+
+                    if ($document->create()) {
+                        echo json_encode(["message" => "Document uploaded successfully."]);
+                    } else {
+                        echo json_encode(["message" => "Unable to upload document."]);
+                    }
+                } else {
+                    echo json_encode(["message" => $response['message']]);
+                }
+            }
+            // Move to trash
+            elseif (isset($_POST['action']) && $_POST['action'] == 'trash') {
+                $document->id = $_POST['id'];
+                $document->deleted_date = date('Y-m-d');
+                if ($document->moveToTrash()) {
+                    echo json_encode(["message" => "Document moved to trash."]);
+                } else {
+                    echo json_encode(["message" => "Unable to move document to trash."]);
+                }
+            }
+            // Restore from trash
+            elseif (isset($_POST['action']) && $_POST['action'] == 'restore') {
+                $document->id = $_POST['id'];
+                if ($document->restore()) {
+                    echo json_encode(["message" => "Document restored successfully."]);
+                } else {
+                    echo json_encode(["message" => "Unable to restore document."]);
+                }
+            }
+            break;
+
+        case 'DELETE':
+            parse_str(file_get_contents("php://input"), $delete_vars);
+            $document->id = $delete_vars['id'];
+            if ($document->deletePermanent()) {
+                echo json_encode(["message" => "Document permanently deleted."]);
+            } else {
+                echo json_encode(["message" => "Unable to delete document."]);
+            }
+            break;
+    }
+    exit;
+}
+
+function uploadFile()
+{
+    $upload_dir = UPLOAD_DIR;
+
+    // Create upload directory if it doesn't exist
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $file = $_FILES['file'];
+    $file_name = basename($file['name']);
+    $file_tmp = $file['tmp_name'];
+    $file_size = $file['size'];
+    $file_error = $file['error'];
+
+    // Check for errors
+    if ($file_error !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'message' => 'File upload error.'];
+    }
+
+    // Check file size
+    if ($file_size > MAX_FILE_SIZE) {
+        return ['success' => false, 'message' => 'File is too large.'];
+    }
+
+    // Check file type
+    $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    if (!in_array($file_ext, ALLOWED_TYPES)) {
+        return ['success' => false, 'message' => 'File type not allowed.'];
+    }
+
+    // Generate unique filename
+    $new_filename = uniqid() . '_' . time() . '.' . $file_ext;
+    $file_path = $upload_dir . $new_filename;
+
+    // Move file to upload directory
+    if (move_uploaded_file($file_tmp, $file_path)) {
+        return [
+            'success' => true,
+            'file_path' => $file_path,
+            'file_size' => formatFileSize($file_size)
+        ];
+    } else {
+        return ['success' => false, 'message' => 'Failed to move uploaded file.'];
+    }
+}
+
+function formatFileSize($bytes)
+{
+    $units = ['B', 'KB', 'MB', 'GB'];
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+    $bytes /= pow(1024, $pow);
+    return round($bytes, 2) . ' ' . $units[$pow];
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel & Restaurant Document Management</title>
+    <link rel="stylesheet" href="../assets/css/document.css">
+    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Hotel<span>Archive</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="../Modules/facilities-reservation.php">Back</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard">
+            <aside class="sidebar">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="#" class="category-link active" data-category="all">All Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records">Financial Records</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents">HR Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records">Guest Records</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory">Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance">Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing">Marketing</a></li>
+                    <li><a href="#" class="category-link" data-category="trash">Trash Bin</a></li>
+                </ul>
+
+                <h3>Quick Stats</h3>
+                <ul id="quickStats">
+                    <li>Total Files: <span id="totalFiles">0</span></li>
+                    <li>Storage Used: <span id="storageUsed">0 GB</span></li>
+                    <li>Files in Trash: <span id="filesInTrash">0</span></li>
+                </ul>
+            </aside>
+
+            <div class="content">
+                <div class="content-header">
+                    <h2 id="contentTitle">Document Management</h2>
+                    <button class="btn btn-primary" id="uploadBtn">Upload Document</button>
+                </div>
+
+                <!-- All Documents View -->
+                <div class="category-content active" id="all-content">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="active">Active Files</div>
+                        <div class="tab" data-tab="trash">Trash Bin</div>
+                    </div>
+                    <div class="tab-content active" id="active-tab">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search documents...">
+                            <button>Search</button>
+                        </div>
+                        <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
+                    </div>
+                    <div class="tab-content" id="trash-tab">
+                        <div class="alert alert-danger">Files in trash will be permanently deleted after 30 days.</div>
+                        <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
+                    </div>
+                </div>
+
+                <!-- Financial Records View -->
+                <div class="category-content" id="financial-records-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search financial records...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="financialFiles"><!-- Financial files will be populated here --></div>
+                </div>
+
+                <!-- HR Documents View -->
+                <div class="category-content" id="hr-documents-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search HR documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
+                </div>
+
+                <!-- Guest Records View -->
+                <div class="category-content" id="guest-records-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search guest records...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
+                </div>
+
+                <!-- Inventory View -->
+                <div class="category-content" id="inventory-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search inventory documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
+                </div>
+
+                <!-- Compliance View -->
+                <div class="category-content" id="compliance-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search compliance documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here --></div>
+                </div>
+
+                <!-- Marketing View -->
+                <div class="category-content" id="marketing-content">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search marketing documents...">
+                        <button>Search</button>
+                    </div>
+                    <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
+                </div>
+
+                <!-- Trash View -->
+                <div class="category-content" id="trash-content">
+                    <div class="alert alert-danger">Files in trash will be permanently deleted after 30 days.</div>
+                    <div class="file-grid" id="allTrashFiles"><!-- All trash files will be populated here --></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Document</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="fileInput">Select File</label>
+                    <input type="file" id="fileInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="fileName">File Name</label>
+                    <input type="text" id="fileName" placeholder="Enter file name" required>
+                </div>
+                <div class="form-group">
+                    <label for="fileCategory">Category</label>
+                    <select id="fileCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Financial Records">Financial Records</option>
+                        <option value="HR Documents">HR Documents</option>
+                        <option value="Guest Records">Guest Records</option>
+                        <option value="Inventory">Inventory</option>
+                        <option value="Compliance">Compliance</option>
+                        <option value="Marketing">Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fileDescription">Description (Optional)</label>
+                    <input type="text" id="fileDescription" placeholder="Enter file description">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="cancelUpload">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- File Details Modal -->
+    <div class="modal" id="fileDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>File Details</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="fileDetailsContent">
+                <!-- File details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="container">
+        <p>Hotel & Restaurant Document Management System &copy; 2023</p>
+    </footer>
+    <script src="../assets/Javascript/document.js"></script>
+    <script>
+        // Add dummy/sample data for testing if API fails
+        function loadDummyData(category) {
+            const dummyFiles = {
+                'all': [
+                    { id: 101, name: 'Q4 Financial Report.pdf', category: 'Financial Records', file_size: '2.4 MB', upload_date: '2025-10-24' },
+                    { id: 102, name: 'Employee Handbook 2025.pdf', category: 'HR Documents', file_size: '1.2 MB', upload_date: '2025-10-20' },
+                    { id: 103, name: 'Supply Inventory Oct.xlsx', category: 'Inventory', file_size: '850 KB', upload_date: '2025-10-18' }
+                ],
+                'HR Documents': [
+                    { id: 102, name: 'Employee Handbook 2025.pdf', category: 'HR Documents', file_size: '1.2 MB', upload_date: '2025-10-20' }
+                ]
+            };
+
+            return dummyFiles[category] || dummyFiles['all'] || [];
+        }
+
+
+        // Category Navigation Handler
+        document.querySelectorAll('.category-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const category = this.getAttribute('data-category');
+                const categoryNames = {
+                    'all': 'Document Management',
+                    'Financial Records': 'Financial Records',
+                    'HR Documents': 'HR Documents',
+                    'Guest Records': 'Guest Records',
+                    'Inventory': 'Inventory',
+                    'Compliance': 'Compliance',
+                    'Marketing': 'Marketing',
+                    'trash': 'Trash Bin'
+                };
+
+                // Update active state in sidebar
+                document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update page title
+                document.getElementById('contentTitle').textContent = categoryNames[category] || 'Document Management';
+
+                // Hide all category contents and show selected
+                document.querySelectorAll('.category-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                let contentId;
+                switch (category) {
+                    case 'all': contentId = 'all-content'; break;
+                    case 'trash': contentId = 'trash-content'; break;
+                    case 'Financial Records': contentId = 'financial-records-content'; break;
+                    case 'HR Documents': contentId = 'hr-documents-content'; break;
+                    case 'Guest Records': contentId = 'guest-records-content'; break;
+                    case 'Inventory': contentId = 'inventory-content'; break;
+                    case 'Compliance': contentId = 'compliance-content'; break;
+                    case 'Marketing': contentId = 'marketing-content'; break;
+                    default: contentId = 'all-content';
+                }
+                const contentEl = document.getElementById(contentId);
+                if (contentEl) {
+                    contentEl.classList.add('active');
+                } else {
+                    console.error('Content element not found:', contentId);
+                }
+
+                // Load files for this category
+                loadCategoryFiles(category);
+            });
+        });
+
+        // Function to load files by category
+        function loadCategoryFiles(category) {
+            const endpoint = category === 'trash' ?
+                '?api=1&action=deleted' :
+                category === 'all' ?
+                    '?api=1&action=active' :
+                    '?api=1&action=active&category=' + encodeURIComponent(category);
+
+            const gridId = {
+                'all': 'activeFiles',
+                'Financial Records': 'financialFiles',
+                'HR Documents': 'hrFiles',
+                'Guest Records': 'guestFiles',
+                'Inventory': 'inventoryFiles',
+                'Compliance': 'complianceFiles',
+                'Marketing': 'marketingFiles',
+                'trash': 'allTrashFiles'
+            }[category];
+
+            // Special handling for Financial Records - fetch from external API
+            if (category === 'Financial Records') {
+                const grid = document.getElementById(gridId);
+                grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #666; grid-column: 1/-1;"><p>⏳ Loading financial records...</p></div>';
+
+                fetch('https://financial.atierahotelandrestaurant.com/journal_entries_api')
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success && result.data) {
+                            const financialRecords = result.data;
+                            grid.innerHTML = `
+                                <div class="financial-table-container" style="grid-column: 1/-1;">
+                                    <table class="financial-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Category</th>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Venue</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${financialRecords.map(record => `
+                                                <tr>
+                                                    <td>${new Date(record.entry_date).toLocaleDateString()}</td>
+                                                    <td><span class="type-badge" style="color: ${record.status === 'posted' ? '#2ecc71' : '#f39c12'}">${record.status.toUpperCase()}</span></td>
+                                                    <td style="font-weight: 600;">${record.entry_number}</td>
+                                                    <td>${record.description}</td>
+                                                    <td style="font-weight: 600; color: #2c3e50;">₱${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                    <td>Atiera</td>
+                                                    <td>
+                                                        <button class="btn-view-small" onclick="alert('Viewing Entry: ${record.entry_number}')">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #999; grid-column: 1/-1;"><p>📭 No financial records found</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #e74c3c; grid-column: 1/-1;"><p>❌ Error loading financial records</p></div>';
+                    });
+                return;
+            }
+
+
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const grid = document.getElementById(gridId);
+                    grid.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #999; grid-column: 1/-1;"><p style="font-size: 1.1rem; margin-bottom: 1rem;">📭 No files found</p></div>';
+                        return;
+                    }
+                    grid.innerHTML = `
+                        <div class="financial-table-container" style="grid-column: 1/-1;">
+                            <table class="financial-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Size</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    ${data.map(item => `
+                                        <tr>
+                                            <td style="font-weight: 600;">📄 ${item.name}</td>
+                                            <td>${item.category}</td>
+                                            <td>${item.file_size}</td>
+                                            <td>${new Date(item.upload_date).toLocaleDateString()}</td>
+                                            <td>
+                                                <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                })
+
+                .catch(error => {
+                    console.error('Fetch error:', error);
+
+
+                    // Fallback to dummy data on error
+                    const data = loadDummyData(category);
+                    const grid = document.getElementById(gridId);
+                    grid.innerHTML = `
+                        <div class="financial-table-container" style="grid-column: 1/-1;">
+                            <table class="financial-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Size</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    ${data.map(item => `
+                                        <tr>
+                                            <td style="font-weight: 600;">📄 ${item.name}</td>
+                                            <td>${item.category}</td>
+                                            <td>${item.file_size}</td>
+                                            <td>${new Date(item.upload_date).toLocaleDateString()}</td>
+                                            <td>
+                                                <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+
+
+                });
+        }
+
+        // Utility: show file details in modal
+        function showFileDetails(file) {
+            const modal = document.getElementById('fileDetailsModal');
+            const content = document.getElementById('fileDetailsContent');
+            content.innerHTML = `
+                 <h4 style="margin-top:0;">${file.name || 'Unnamed'}</h4>
+                 <p><strong>Category:</strong> ${file.category || 'N/A'}</p>
+                 <p><strong>Size:</strong> ${file.file_size || 'Unknown'}</p>
+                 <p><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleDateString()}</p>
+                 <div style="margin-top:1rem;display:flex;gap:0.5rem;">
+                     <a href="#" class="btn btn-primary" id="downloadLink">View / Download</a>
+                     <button class="btn" id="closeDetails">Close</button>
+                 </div>
+             `;
+
+            const downloadLink = document.getElementById('downloadLink');
+            if (file.id) {
+                downloadLink.setAttribute('href', '?api=1&action=download&id=' + encodeURIComponent(file.id));
+                downloadLink.setAttribute('target', '_blank');
+            } else {
+                downloadLink.setAttribute('href', '#');
+            }
+
+            modal.style.display = 'block';
+
+            // close button inside details
+            document.getElementById('closeDetails').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Generic modal close handlers (for existing close spans)
+        document.querySelectorAll('.modal .close').forEach(span => {
+            span.addEventListener('click', function () {
+                const m = this.closest('.modal');
+                if (m) m.style.display = 'none';
+            });
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function (event) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (event.target === modal) modal.style.display = 'none';
+            });
+        });
+
+        // Load initial content on page load
+        window.addEventListener('load', () => {
+            loadCategoryFiles('all');
+        });
+    </script>
+</body>
+
+</html>
