@@ -693,21 +693,24 @@ function formatFileSize($bytes)
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            ${financialRecords.map(record => `
+                                            ${financialRecords.map(record => {
+                                const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+                                const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+                                return `
                                                 <tr>
-                                                    <td>${new Date(record.entry_date).toLocaleDateString()}</td>
-                                                    <td><span class="type-badge" style="color: ${record.status === 'posted' ? '#2ecc71' : '#f39c12'}">${record.status.toUpperCase()}</span></td>
-                                                    <td style="font-weight: 600;">${record.entry_number}</td>
+                                                    <td>${new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
+                                                    <td style="color: ${typeColor}; font-weight: 600;">${type}</td>
+                                                    <td>${record.category || 'General'}</td>
                                                     <td>${record.description}</td>
-                                                    <td style="font-weight: 600; color: #2c3e50;">₱${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                    <td>Atiera</td>
+                                                    <td style="font-weight: 600; color: #2c3e50;">$${parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                    <td>${record.venue || 'Hotel'}</td>
                                                     <td>
                                                         <button class="btn-view-small" onclick="alert('Viewing Entry: ${record.entry_number}')">
                                                             <i class="fas fa-eye"></i> View
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            `).join('')}
+                                            `}).join('')}
                                         </tbody>
                                     </table>
                                 </div>

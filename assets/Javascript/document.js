@@ -112,7 +112,7 @@
                 renderFiles(files, trashFilesContainer, true);
             } catch (error) {
                 console.error('Error loading trash files:', error);
-                trashFilesContainer.innerHTML = '<p>Error loading trash files. Please try again.</p>';
+                trashFilesContainer.innerHTML = '';
             }
         }
 
