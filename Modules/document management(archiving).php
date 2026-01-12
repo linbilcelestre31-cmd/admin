@@ -688,16 +688,17 @@ function formatFileSize($bytes)
                                     ${data.map(record => {
                         const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
                         const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+                        const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
                         return `
                                         <tr>
                                             <td>${new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
                                             <td style="color: ${typeColor}; font-weight: 600;">${type}</td>
-                                            <td>${record.category || 'General'}</td>
+                                            <td>${record.category || 'Revenue'}</td>
                                             <td>${record.description}</td>
                                             <td style="font-weight: 600; color: #2c3e50;">$${parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                             <td>${record.venue || 'Hotel'}</td>
                                             <td>
-                                                <button class="btn-view-small" onclick="alert('Viewing Entry: ${record.entry_number || 'N/A'}')">
+                                                <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})'>
                                                     <i class="fas fa-eye"></i> View
                                                 </button>
                                             </td>
@@ -709,12 +710,63 @@ function formatFileSize($bytes)
                     `;
                 };
 
+                // Detailed view for financial records
+                window.showFinancialDetails = function (record) {
+                    const modal = document.getElementById('fileDetailsModal');
+                    const content = document.getElementById('fileDetailsContent');
+
+                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+
+                    content.innerHTML = `
+                        <div class="financial-details" style="padding: 10px;">
+                            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                                <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
+                                <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
+                                <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div class="detail-item">
+                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Transaction Date</label>
+                                    <div style="font-size: 1.1rem;">${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Status</label>
+                                    <div style="font-size: 1.1rem; text-transform: capitalize;">${record.status}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Debit</label>
+                                    <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Credit</label>
+                                    <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                </div>
+                            </div>
+
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Description</label>
+                                <div style="font-size: 1rem; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 4px solid #3498db;">${record.description}</div>
+                            </div>
+
+                            <div class="form-actions" style="margin-top: 30px;">
+                                <button class="btn btn-primary" onclick="window.print()" style="background: #34495e;">
+                                    <i class="fas fa-print"></i> Print Record
+                                </button>
+                                <button class="btn" onclick="document.getElementById('fileDetailsModal').style.display='none'">Close</button>
+                            </div>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
+                };
+
                 const fallbackData = [
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Room Revenue', description: 'Room 101 - Check-out payment', amount: 5500.00, venue: 'Hotel' },
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Food Sales', description: 'Restaurant Dinner Service', amount: 1250.75, venue: 'Restaurant' },
-                    { entry_date: '2025-10-24', type: 'Expense', category: 'Payroll', description: 'October Staff Payroll', amount: 45000.00, venue: 'General' },
-                    { entry_date: '2025-10-23', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 8500.00, venue: 'Hotel' },
-                    { entry_date: '2025-10-23', type: 'Income', category: 'Event Booking', description: 'Grand Ballroom Wedding Deposit', amount: 15000.00, venue: 'Hotel' }
+                    { entry_date: '2025-10-24', type: 'Income', category: 'Room Revenue', description: 'Room 101 - Check-out payment', amount: 5500.00, venue: 'Hotel', total_debit: 5500, total_credit: 0, status: 'posted', entry_number: 'JE-001' },
+                    { entry_date: '2025-10-24', type: 'Income', category: 'Food Sales', description: 'Restaurant Dinner Service', amount: 1250.75, venue: 'Restaurant', total_debit: 1250.75, total_credit: 0, status: 'posted', entry_number: 'JE-002' },
+                    { entry_date: '2025-10-24', type: 'Expense', category: 'Payroll', description: 'October Staff Payroll', amount: 45000.00, venue: 'General', total_debit: 0, total_credit: 45000, status: 'posted', entry_number: 'JE-003' },
+                    { entry_date: '2025-10-23', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 8500.00, venue: 'Hotel', total_debit: 0, total_credit: 8500, status: 'posted', entry_number: 'JE-004' },
+                    { entry_date: '2025-10-23', type: 'Income', category: 'Event Booking', description: 'Grand Ballroom Wedding Deposit', amount: 15000.00, venue: 'Hotel', total_debit: 15000, total_credit: 0, status: 'posted', entry_number: 'JE-005' }
                 ];
 
                 fetch('https://financial.atierahotelandrestaurant.com/journal_entries_api')
