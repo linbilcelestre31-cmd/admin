@@ -630,9 +630,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div id="employeeInfoModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1250;">
         <div
-            style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid rgba(255,255,255,0.2); overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
+
             <button type="button" id="closeEmployeeInfo"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
             <h3 id="employeeInfoTitle" style="margin-top:0;">Employee Information</h3>
             <form method="POST" id="employeeInfoForm">
                 <input type="hidden" name="save_employee" value="1">
@@ -1085,9 +1089,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div id="detailsModal"
         style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1000;">
         <div
-            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
+
             <div
-                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #fff;">
+                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); position: relative; z-index: 10;">
                 <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">
                     Details
                 </h3>
@@ -1117,78 +1125,54 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Password Gate Modal -->
     <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:2000;">
+        style="display:none; position:fixed; inset:0; background-color: #0d1b3e; background-image: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:2000;">
         <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
-            <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
-                Security Check</h2>
-            <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
-            <form id="passwordForm">
-                <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                </div>
-                <div id="pwdError"
-                    style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
-                    Incorrect PIN. Please try again.</div>
-                <div style="display:flex; gap:12px; justify-content:center;">
-                    <button type="button" class="cancel-btn" id="pwdCancel"
-                        style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
-                    <button type="submit" class="save-btn"
-                        style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
-                </div>
-            </form>
+            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0; overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0.05; pointer-events: none; z-index: 0;">
+
+            <div style="position: relative; z-index: 1;">
+                <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
+                    Security Check</h2>
+                <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
+                <form id="passwordForm">
+                    <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    </div>
+                    <div id="pwdError"
+                        style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
+                        Incorrect PIN. Please try again.</div>
+                    <div style="display:flex; gap:12px; justify-content:center;">
+                        <button type="button" class="cancel-btn" id="pwdCancel"
+                            style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
+                        <button type="submit" class="save-btn"
+                            style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     </div>
 
-    <!-- Edit Employee Modal -->
-    <div id="editEmployeeModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1200;">
-        <div
-            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEditEmployee"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 style="margin-top:0;">Edit Employee</h3>
-            <form method="POST" id="editEmployeeForm">
-                <input type="hidden" name="update_employee" value="1">
-                <input type="hidden" name="employee_id" id="edit_emp_id">
-                <div class="form-group">
-                    <label for="edit_emp_name">Name</label>
-                    <input type="text" id="edit_emp_name" name="employee_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_position">Position</label>
-                    <input type="text" id="edit_emp_position" name="employee_position" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_email">Email</label>
-                    <input type="email" id="edit_emp_email" name="employee_email" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_phone">Phone</label>
-                    <input type="text" id="edit_emp_phone" name="employee_phone" class="form-control" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelEditEmployee">Cancel</button>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Contract Form Modal wrapper -->
     <div id="contractFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:rgba(255,255,255,0.95); backdrop-filter: blur(20px); width:94%; max-width:500px; border-radius:16px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.5); max-height: 90vh; overflow-y: auto;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(15px); width:94%; max-width:500px; border-radius:24px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.3); max-height: 90vh; overflow-y: auto;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <button type="button" id="closeContractFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
             <div id="contractFormContainer">
                 <!-- The existing contract form will be moved here dynamically -->
             </div>
@@ -1198,20 +1182,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div id="employeeFormModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <button type="button" id="closeEmployeeFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="employeeFormContainer"></div>
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+            <div id="employeeFormContainer" style="position: relative; z-index: 1;"></div>
         </div>
     </div>
     <!-- Document Form Modal wrapper -->
     <div id="documentFormModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <button type="button" id="closeDocumentFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="documentFormContainer">
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+            <div id="documentFormContainer" style="position: relative; z-index: 1;">
                 <h3>Upload Document</h3>
                 <form method="POST" enctype="multipart/form-data" id="documentFormData">
                     <input type="hidden" name="add_document" value="1">
@@ -1237,39 +1227,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
     <!-- Edit Document Modal -->
-    <div id="editDocumentModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1200;">
-        <div
-            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEditDocument"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 style="margin-top:0;">Edit Document</h3>
-            <form method="POST" id="editDocumentForm">
-                <input type="hidden" name="update_document" value="1">
-                <input type="hidden" name="document_id" id="edit_doc_id">
-                <div class="form-group">
-                    <label for="edit_doc_name">Document Name</label>
-                    <input type="text" id="edit_doc_name" name="doc_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_doc_case">Case ID</label>
-                    <input type="text" id="edit_doc_case" name="doc_case" class="form-control" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelEditDocument">Cancel</button>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <!-- Invoice Form Modal wrapper -->
     <div id="invoiceFormModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); overflow: hidden;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <button type="button" id="closeInvoiceFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="invoiceFormContainer">
+                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+            <div id="invoiceFormContainer" style="position: relative; z-index: 1;">
                 <h3>Create Invoice</h3>
                 <form method="POST" id="invoiceFormData">
                     <input type="hidden" name="add_invoice" value="1">
@@ -1652,31 +1620,33 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 // 3. TABLE ACTION MODALS (Password Protected)
                 withPasswordGate(() => {
                     // Employee/Member View/Edit
-                    if (type === 'employee-view' || type === 'employee-edit') {
+                    // Employee View
+                    if (type === 'employee-view') {
                         const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                        employeeInfoTitle.textContent = type === 'employee-view' ? 'Employee Information' : 'Edit Employee';
+                        employeeInfoTitle.textContent = 'Employee Information';
                         infoId.value = emp.id || '';
                         infoName.value = emp.name || '';
                         infoPos.value = emp.position || '';
                         infoEmail.value = emp.email || '';
                         infoPhone.value = emp.phone || '';
-                        const isView = type === 'employee-view';
-                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = isView; i.disabled = false; } });
+                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = true; i.disabled = false; } });
                         const actions = empInfoForm.querySelector('.form-actions');
-                        if (actions) actions.style.display = isView ? 'none' : '';
+                        if (actions) actions.style.display = 'none';
                         openModal(empInfoModal);
-
-                        // Add PDF button if viewing
-                        if (isView) injectModalPdfButton(empInfoForm, 'employee', emp);
+                        injectModalPdfButton(empInfoForm, 'employee', emp);
                     }
-                    // Document Edit
-                    else if (type === 'doc-edit') {
+                    // Document View
+                    else if (type === 'doc-view') {
                         const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                        editDocId.value = d.id || '';
-                        editDocName.value = d.name || '';
-                        editDocCase.value = d.case_id || '';
-                        openModal(editDocModal);
-                        injectModalPdfButton(editDocForm, 'document', d);
+                        detailsTitle.textContent = 'Document Details';
+                        detailsBody.innerHTML = `
+                                <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8; position: relative; z-index: 1;">
+                                    <div><strong>Name</strong></div><div>${d.name || ''}</div>
+                                    <div><strong>Case ID</strong></div><div>${d.case_id || ''}</div>
+                                    <div><strong>Uploaded At</strong></div><div>${d.uploaded_at || ''}</div>
+                                </div>`;
+                        openModal(detailsModal);
+                        injectModalPdfButton(detailsBody, 'document', d);
                     }
                     // Document Delete
                     else if (type === 'doc-delete') {
@@ -1818,26 +1788,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 });
             }
             // ADDED: Universal Close/Cancel Handlers for all Modals
-                if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
-                if (closeEmployeeInfo) closeEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
-                if (cancelEmployeeInfo) cancelEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
-                if (closeEditEmployee) closeEditEmployee.addEventListener('click', () => closeModal(editModal));
-                if (cancelEditEmployee) cancelEditEmployee.addEventListener('click', () => closeModal(editModal));
-                if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
-                if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
-                if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
-                if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
-                if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
-                if (closeInvoiceFormModal) closeInvoiceFormModal.addEventListener('click', () => closeModal(invoiceFormModal));
-                if (cancelInvoiceBtn) cancelInvoiceBtn.addEventListener('click', () => closeModal(invoiceFormModal));
-                if (cancelPayBtn) cancelPayBtn.addEventListener('click', () => closeModal(payConfirmModal));
-                if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
-                if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
-                if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
-                if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
-                    closeModal(contractFormModal);
-                    if (contractForm) contractForm.reset();
-                });
+            if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
+            if (closeEmployeeInfo) closeEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
+            if (cancelEmployeeInfo) cancelEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
+            if (closeEditEmployee) closeEditEmployee.addEventListener('click', () => closeModal(editModal));
+            if (cancelEditEmployee) cancelEditEmployee.addEventListener('click', () => closeModal(editModal));
+            if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
+            if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
+            if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
+            if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
+            if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
+            if (closeInvoiceFormModal) closeInvoiceFormModal.addEventListener('click', () => closeModal(invoiceFormModal));
+            if (cancelInvoiceBtn) cancelInvoiceBtn.addEventListener('click', () => closeModal(invoiceFormModal));
+            if (cancelPayBtn) cancelPayBtn.addEventListener('click', () => closeModal(payConfirmModal));
+            if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
+            if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
+            if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
+            if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
+                closeModal(contractFormModal);
+                if (contractForm) contractForm.reset();
+            });
 
             // Risk chart init (avoid loop/double init)
             let riskChartRef = null;
