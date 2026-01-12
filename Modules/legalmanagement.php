@@ -628,7 +628,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Employee Information Modal (Create/Update) -->
     <div id="employeeInfoModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1250;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1250;">
         <div
             style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
             <button type="button" id="closeEmployeeInfo"
@@ -681,11 +681,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="container">
             <!-- Success/Error Messages -->
             <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success"><?php echo $success_message; ?></div>
+                <div class="alert alert-success"><?php echo $success_message; ?></div>
             <?php endif; ?>
 
             <?php if (isset($error_message)): ?>
-                    <div class="alert alert-error"><?php echo $error_message; ?></div>
+                <div class="alert alert-error"><?php echo $error_message; ?></div>
             <?php endif; ?>
 
             <div class="nav-tabs">
@@ -752,19 +752,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="employeesTableBody">
                         <?php foreach ($employees as $employee): ?>
-                                <tr>
-                                    <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="employee-view"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                        <button class="action-btn" data-type="employee-edit"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                <td>
+                                    <button class="action-btn view-btn" data-type="employee-view"
+                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -788,36 +786,34 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </tr>
                     <tbody id="documentsTableBody">
                         <?php if (!empty($documents)): ?>
-                                <?php foreach ($documents as $doc): ?>
-                                        <tr>
-                                            <td>
-                                                <?php if (!empty($doc['file_path'])): ?>
-                                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
-                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                <?php else: ?>
-                                                        <?php echo htmlspecialchars($doc['name']); ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                            <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                            </td>
-                                            <td>
-                                                <button class="action-btn view-btn" data-type="doc-edit"
-                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
-                                                <button class="action-btn download-btn" data-type="doc-download"
-                                                    data-pdf-type="document"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                                    style="background:#059669;color:#fff;">Download PDF</button>
-                                                <button class="action-btn" data-type="doc-delete"
-                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
-                                            </td>
-                                        </tr>
-                                <?php endforeach; ?>
-                        <?php else: ?>
+                            <?php foreach ($documents as $doc): ?>
                                 <tr>
-                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                    <td>
+                                        <?php if (!empty($doc['file_path'])): ?>
+                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                        <?php else: ?>
+                                            <?php echo htmlspecialchars($doc['name']); ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                    </td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="doc-view"
+                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
+                                        <button class="action-btn download-btn" data-type="doc-download"
+                                            data-pdf-type="document"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                            style="background:#059669;color:#fff;">Download PDF</button>
                                     </td>
                                 </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                </td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -843,35 +839,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="billingTableBody">
                         <?php if (!empty($billing)): ?>
-                                <?php foreach ($billing as $b): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                            <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                            <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                            <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                            <td>
-                                                <button class="action-btn view-btn" data-type="invoice-view"
-                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                                <button class="action-btn download-btn" data-type="invoice-download"
-                                                    data-pdf-type="billing"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                                    style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                                    PDF</button>
-                                                <button class="action-btn"
-                                                    style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                                    data-type="invoice-pay"
-                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
-                                            </td>
-                                        </tr>
-                                <?php endforeach; ?>
-                        <?php else: ?>
+                            <?php foreach ($billing as $b): ?>
                                 <tr>
-                                    <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
-                                        found.
+                                    <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
+                                    <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
+                                    <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="invoice-view"
+                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
+                                        <button class="action-btn download-btn" data-type="invoice-download"
+                                            data-pdf-type="billing"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
+                                            style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
+                                            PDF</button>
+                                        <button class="action-btn"
+                                            style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
+                                            data-type="invoice-pay"
+                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
                                     </td>
                                 </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
+                                    found.
+                                </td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -978,35 +974,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
                             $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
                             ?>
-                                <tr>
-                                    <td>
-                                        <?php if (!empty($contract['file_path'])): ?>
-                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                        <?php else: ?>
-                                                <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                    <td>
-                                        <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                            <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                    <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                    <td>
-                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
-                                            Risk Analysis</button>
-                                        <button class="action-btn download-btn" data-type="contract-download"
-                                            data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                            Download PDF
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <?php if (!empty($contract['file_path'])): ?>
+                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                    <?php else: ?>
+                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                <td>
+                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
+                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                <td>
+                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
+                                        Risk Analysis</button>
+                                    <button class="action-btn download-btn" data-type="contract-download"
+                                        data-pdf-type="contract"
+                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                        Download PDF
+                                    </button>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1034,14 +1030,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                     });
                     if (!empty($highContracts)): ?>
-                            <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
-                            <ul>
-                                <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                        <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
-                                            <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
-                                        </li>
-                                <?php endforeach; ?>
-                            </ul>
+                        <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
+                        <ul>
+                            <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
+                                    <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1065,18 +1061,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="membersTableBody">
                         <?php foreach ($employees as $employee): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="employee-view"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                        <button class="action-btn" data-type="employee-edit"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                <td>
+                                    <button class="action-btn view-btn" data-type="employee-view"
+                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1089,7 +1083,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Details Modal -->
     <div id="detailsModal"
-        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); align-items:center; justify-content:center; z-index:1000;">
+        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1000;">
         <div
             style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
             <div
@@ -1123,7 +1117,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Password Gate Modal -->
     <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); align-items:center; justify-content:center; z-index:2000;">
+        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:2000;">
         <div
             style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
             <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
@@ -1155,7 +1149,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Edit Employee Modal -->
     <div id="editEmployeeModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1200;">
         <div
             style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
             <button type="button" id="closeEditEmployee"
@@ -1202,7 +1196,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Employee Form Modal wrapper -->
     <div id="employeeFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
             style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
             <button type="button" id="closeEmployeeFormModal"
@@ -1212,7 +1206,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Document Form Modal wrapper -->
     <div id="documentFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
             style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
             <button type="button" id="closeDocumentFormModal"
@@ -1244,7 +1238,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Edit Document Modal -->
     <div id="editDocumentModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1200;">
         <div
             style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
             <button type="button" id="closeEditDocument"
@@ -1270,7 +1264,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Invoice Form Modal wrapper -->
     <div id="invoiceFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div
             style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
             <button type="button" id="closeInvoiceFormModal"
@@ -1313,7 +1307,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Pay confirmation modal -->
     <div id="payConfirmModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1600;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1600;">
         <div
             style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
             <h3 style="margin:0 0 8px;">Confirm Payment</h3>
@@ -1330,7 +1324,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
     <!-- Contract: Upload Supporting Document Modal -->
     <div id="contractDocsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1500;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1500;">
         <div
             style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
             <button type="button" id="closeContractDocsModal"
@@ -1358,157 +1352,157 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
 
     <script>
-            (        function () {
-                const detailsModal = document.getElementById('detailsModal');
-                const detailsTitle = document.getElementById('detailsTitle');
-                const detailsBody = document.getElementById('detailsBody');
-                const closeDetails = document.getElementById('closeDetails');
-                const pwdModal = document.getElementById('passwordModal');
-                const pwdForm = document.getElementById('passwordForm');
-                const pinInputs = pwdModal.querySelectorAll('.pin-digit');
-                const pwdError = document.getElementById('pwdError');
-                const pwdCancel = document.getElementById('pwdCancel');
-                const PASSWORD = '1234';
+        (function () {
+            const detailsModal = document.getElementById('detailsModal');
+            const detailsTitle = document.getElementById('detailsTitle');
+            const detailsBody = document.getElementById('detailsBody');
+            const closeDetails = document.getElementById('closeDetails');
+            const pwdModal = document.getElementById('passwordModal');
+            const pwdForm = document.getElementById('passwordForm');
+            const pinInputs = pwdModal.querySelectorAll('.pin-digit');
+            const pwdError = document.getElementById('pwdError');
+            const pwdCancel = document.getElementById('pwdCancel');
+            const PASSWORD = '1234';
 
-                // Password gate helper — shows password modal and calls callback on successful entry.
-                function withPasswordGate(cb) {
-                    if (typeof cb !== 'function') return;
-                    if (!pwdModal || !pwdForm || !pinInputs.length) { cb(); return; }
+            // Password gate helper — shows password modal and calls callback on successful entry.
+            function withPasswordGate(cb) {
+                if (typeof cb !== 'function') return;
+                if (!pwdModal || !pwdForm || !pinInputs.length) { cb(); return; }
 
-                    // Close/hide other modals and remember previous display states
-                    const modalsToHide = [detailsModal, empInfoModal, contractFormModal, employeeFormModal, documentFormModal, editModal, editDocModal, invoiceFormModal, payConfirmModal, contractDocsModal];
-                    const prevDisplay = new Map();
-                    modalsToHide.forEach(m => {
-                        try {
-                            if (!m) return;
-                            prevDisplay.set(m, m.style.display || '');
-                            // use closeModal helper to ensure consistent behavior
-                            closeModal(m);
-                        } catch (e) { }
-                    });
+                // Close/hide other modals and remember previous display states
+                const modalsToHide = [detailsModal, empInfoModal, contractFormModal, employeeFormModal, documentFormModal, editModal, editDocModal, invoiceFormModal, payConfirmModal, contractDocsModal];
+                const prevDisplay = new Map();
+                modalsToHide.forEach(m => {
+                    try {
+                        if (!m) return;
+                        prevDisplay.set(m, m.style.display || '');
+                        // use closeModal helper to ensure consistent behavior
+                        closeModal(m);
+                    } catch (e) { }
+                });
 
-                    // Add class to body to visually hide everything except the password modal
-                    document.body.classList.add('pwd-focus');
+                // Add class to body to visually hide everything except the password modal
+                document.body.classList.add('pwd-focus');
 
-                    // Reset UI and show password modal
-                    pwdError.style.display = 'none';
-                    pinInputs.forEach(i => i.value = '');
-                    openModal(pwdModal);
-                    setTimeout(() => pinInputs[0]?.focus(), 100);
+                // Reset UI and show password modal
+                pwdError.style.display = 'none';
+                pinInputs.forEach(i => i.value = '');
+                openModal(pwdModal);
+                setTimeout(() => pinInputs[0]?.focus(), 100);
 
-                    // Auto-focus logic for PIN
-                    const onPinInput = function (e) { e.target.value = e.target.value.replace(/[^0-9]/g, ''); if (e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus(); };
-                    const onPinKeydown = function (e) { if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) e.target.previousElementSibling.focus(); };
-                    pinInputs.forEach(input => {
-                        input.addEventListener('input', onPinInput);
-                        input.addEventListener('keydown', onPinKeydown);
-                    });
+                // Auto-focus logic for PIN
+                const onPinInput = function (e) { e.target.value = e.target.value.replace(/[^0-9]/g, ''); if (e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus(); };
+                const onPinKeydown = function (e) { if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) e.target.previousElementSibling.focus(); };
+                pinInputs.forEach(input => {
+                    input.addEventListener('input', onPinInput);
+                    input.addEventListener('keydown', onPinKeydown);
+                });
 
-                    // Submit handler (one-time)
-                    const onSubmit = function (e) {
-                        e.preventDefault();
-                        const val = Array.from(pinInputs).map(i => i.value).join('');
-                        if (val === PASSWORD) {
-                            try { closeModal(pwdModal); } catch (e) { }
-                            pwdForm.removeEventListener('submit', onSubmit);
-                            pinInputs.forEach(i => { i.removeEventListener('input', onPinInput); i.removeEventListener('keydown', onPinKeydown); });
-                            document.body.classList.remove('pwd-focus');
-                            cb();
-                        } else {
-                            pwdError.style.display = 'block';
-                            pinInputs.forEach(i => i.value = '');
-                            pinInputs[0]?.focus();
-                        }
-                    };
-
-                    // Cancel/cleanup - restore previous modal visibility states and remove body class
-                    const onCancelCleanup = function () {
-                        try { pwdForm.removeEventListener('submit', onSubmit); } catch (e) { }
+                // Submit handler (one-time)
+                const onSubmit = function (e) {
+                    e.preventDefault();
+                    const val = Array.from(pinInputs).map(i => i.value).join('');
+                    if (val === PASSWORD) {
                         try { closeModal(pwdModal); } catch (e) { }
-                        prevDisplay.forEach((disp, m) => {
-                            try { m.style.display = disp || 'none'; } catch (e) { }
-                        });
+                        pwdForm.removeEventListener('submit', onSubmit);
+                        pinInputs.forEach(i => { i.removeEventListener('input', onPinInput); i.removeEventListener('keydown', onPinKeydown); });
                         document.body.classList.remove('pwd-focus');
-                    };
+                        cb();
+                    } else {
+                        pwdError.style.display = 'block';
+                        pinInputs.forEach(i => i.value = '');
+                        pinInputs[0]?.focus();
+                    }
+                };
 
-                    pwdForm.addEventListener('submit', onSubmit);
-                    pwdCancel.addEventListener('click', onCancelCleanup, { once: true });
-                }
+                // Cancel/cleanup - restore previous modal visibility states and remove body class
+                const onCancelCleanup = function () {
+                    try { pwdForm.removeEventListener('submit', onSubmit); } catch (e) { }
+                    try { closeModal(pwdModal); } catch (e) { }
+                    prevDisplay.forEach((disp, m) => {
+                        try { m.style.display = disp || 'none'; } catch (e) { }
+                    });
+                    document.body.classList.remove('pwd-focus');
+                };
 
-                const editModal = document.getElementById('editEmployeeModal');
-                const closeEdit = document.getElementById('closeEditEmployee');
-                const cancelEdit = document.getElementById('cancelEditEmployee');
-                const editForm = document.getElementById('editEmployeeForm');
-                const fId = document.getElementById('edit_emp_id');
-                const fName = document.getElementById('edit_emp_name');
-                const fPos = document.getElementById('edit_emp_position');
-                const fEmail = document.getElementById('edit_emp_email');
-                const fPhone = document.getElementById('edit_emp_phone');
+                pwdForm.addEventListener('submit', onSubmit);
+                pwdCancel.addEventListener('click', onCancelCleanup, { once: true });
+            }
 
-                // Employee info modal (unified create/update)
-                const empInfoModal = document.getElementById('employeeInfoModal');
-                const closeEmpInfo = document.getElementById('closeEmployeeInfo');
-                const cancelEmpInfo = document.getElementById('cancelEmployeeInfo');
-                const empInfoForm = document.getElementById('employeeInfoForm');
-                const infoId = document.getElementById('info_emp_id');
-                const infoName = document.getElementById('info_emp_name');
-                const infoPos = document.getElementById('info_emp_position');
-                const infoEmail = document.getElementById('info_emp_email');
-                const infoPhone = document.getElementById('info_emp_phone');
-                const employeeInfoTitle = document.getElementById('employeeInfoTitle');
-                const contractForm = document.getElementById('contractForm');
-                const contractFormModal = document.getElementById('contractFormModal');
-                const contractFormContainer = document.getElementById('contractFormContainer');
-                const addContractBtn = document.getElementById('addContractBtn');
-                const cancelContractBtn = document.getElementById('cancelContractBtn');
-                const closeContractFormModal = document.getElementById('closeContractFormModal');
-                const exportPdfBtn = document.getElementById('exportPdfBtn');
-                const exportPdfForm = document.getElementById('exportPdfForm');
-                // Employee form modal
-                const employeeForm = document.getElementById('employeeForm');
-                const employeeFormModal = document.getElementById('employeeFormModal');
-                const employeeFormContainer = document.getElementById('employeeFormContainer');
-                const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-                const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
-                // Document form modal
-                const documentFormModal = document.getElementById('documentFormModal');
-                const documentFormContainer = document.getElementById('documentFormContainer');
-                const addDocumentBtn = document.getElementById('addDocumentBtn');
-                const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
-                const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
-                // Edit document modal
-                const editDocModal = document.getElementById('editDocumentModal');
-                const closeEditDoc = document.getElementById('closeEditDocument');
-                const cancelEditDoc = document.getElementById('cancelEditDocument');
-                const editDocForm = document.getElementById('editDocumentForm');
-                const editDocId = document.getElementById('edit_doc_id');
-                const editDocName = document.getElementById('edit_doc_name');
-                const editDocCase = document.getElementById('edit_doc_case');
-                // Invoice form modal
-                const invoiceFormModal = document.getElementById('invoiceFormModal');
-                const addInvoiceBtn = document.getElementById('addInvoiceBtn');
-                const closeInvoiceFormModal = document.getElementById('closeInvoiceFormModal');
-                const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
-                // Pay modal
-                const payConfirmModal = document.getElementById('payConfirmModal');
-                const cancelPayBtn = document.getElementById('cancelPayBtn');
-                const payInvoiceId = document.getElementById('pay_invoice_id');
-                const payConfirmText = document.getElementById('payConfirmText');
-                // Contract docs modal
-                const contractDocsModal = document.getElementById('contractDocsModal');
-                const closeContractDocsModal = document.getElementById('closeContractDocsModal');
-                const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
-                const contractDocsContractId = document.getElementById('contract_docs_contract_id');
+            const editModal = document.getElementById('editEmployeeModal');
+            const closeEdit = document.getElementById('closeEditEmployee');
+            const cancelEdit = document.getElementById('cancelEditEmployee');
+            const editForm = document.getElementById('editEmployeeForm');
+            const fId = document.getElementById('edit_emp_id');
+            const fName = document.getElementById('edit_emp_name');
+            const fPos = document.getElementById('edit_emp_position');
+            const fEmail = document.getElementById('edit_emp_email');
+            const fPhone = document.getElementById('edit_emp_phone');
 
-                function openModal(el) { el.style.display = 'flex'; }
-                function closeModal(el) { el.style.display = 'none'; }
+            // Employee info modal (unified create/update)
+            const empInfoModal = document.getElementById('employeeInfoModal');
+            const closeEmpInfo = document.getElementById('closeEmployeeInfo');
+            const cancelEmpInfo = document.getElementById('cancelEmployeeInfo');
+            const empInfoForm = document.getElementById('employeeInfoForm');
+            const infoId = document.getElementById('info_emp_id');
+            const infoName = document.getElementById('info_emp_name');
+            const infoPos = document.getElementById('info_emp_position');
+            const infoEmail = document.getElementById('info_emp_email');
+            const infoPhone = document.getElementById('info_emp_phone');
+            const employeeInfoTitle = document.getElementById('employeeInfoTitle');
+            const contractForm = document.getElementById('contractForm');
+            const contractFormModal = document.getElementById('contractFormModal');
+            const contractFormContainer = document.getElementById('contractFormContainer');
+            const addContractBtn = document.getElementById('addContractBtn');
+            const cancelContractBtn = document.getElementById('cancelContractBtn');
+            const closeContractFormModal = document.getElementById('closeContractFormModal');
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const exportPdfForm = document.getElementById('exportPdfForm');
+            // Employee form modal
+            const employeeForm = document.getElementById('employeeForm');
+            const employeeFormModal = document.getElementById('employeeFormModal');
+            const employeeFormContainer = document.getElementById('employeeFormContainer');
+            const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+            const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
+            // Document form modal
+            const documentFormModal = document.getElementById('documentFormModal');
+            const documentFormContainer = document.getElementById('documentFormContainer');
+            const addDocumentBtn = document.getElementById('addDocumentBtn');
+            const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
+            const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
+            // Edit document modal
+            const editDocModal = document.getElementById('editDocumentModal');
+            const closeEditDoc = document.getElementById('closeEditDocument');
+            const cancelEditDoc = document.getElementById('cancelEditDocument');
+            const editDocForm = document.getElementById('editDocumentForm');
+            const editDocId = document.getElementById('edit_doc_id');
+            const editDocName = document.getElementById('edit_doc_name');
+            const editDocCase = document.getElementById('edit_doc_case');
+            // Invoice form modal
+            const invoiceFormModal = document.getElementById('invoiceFormModal');
+            const addInvoiceBtn = document.getElementById('addInvoiceBtn');
+            const closeInvoiceFormModal = document.getElementById('closeInvoiceFormModal');
+            const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
+            // Pay modal
+            const payConfirmModal = document.getElementById('payConfirmModal');
+            const cancelPayBtn = document.getElementById('cancelPayBtn');
+            const payInvoiceId = document.getElementById('pay_invoice_id');
+            const payConfirmText = document.getElementById('payConfirmText');
+            // Contract docs modal
+            const contractDocsModal = document.getElementById('contractDocsModal');
+            const closeContractDocsModal = document.getElementById('closeContractDocsModal');
+            const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
+            const contractDocsContractId = document.getElementById('contract_docs_contract_id');
 
-                // PDF Generation Utility
-                function generatePDFFromData(title, contentHTML, filename) {
-                    const element = document.createElement('div');
-                    element.style.padding = '20px';
-                    element.style.fontFamily = 'Arial, sans-serif';
-                    element.innerHTML = `
+            function openModal(el) { el.style.display = 'flex'; }
+            function closeModal(el) { el.style.display = 'none'; }
+
+            // PDF Generation Utility
+            function generatePDFFromData(title, contentHTML, filename) {
+                const element = document.createElement('div');
+                element.style.padding = '20px';
+                element.style.fontFamily = 'Arial, sans-serif';
+                element.innerHTML = `
                     <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
                         <h1 style="color: #2c3e50; margin: 0;">Legal Management System</h1>
                         <h2 style="color: #3498db; margin: 5px 0 0;">${title}</h2>
@@ -1522,27 +1516,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </div>
                 `;
 
-                    const opt = {
-                        margin: 15,
-                        filename: filename || 'Legal_Document.pdf',
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2 },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
+                const opt = {
+                    margin: 15,
+                    filename: filename || 'Legal_Document.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
 
-                    html2pdf().set(opt).from(element).save();
-                }
+                html2pdf().set(opt).from(element).save();
+            }
 
-                // Universal PDF Download Handler for various data types
-                window.downloadRecordAsPDF = function (type, data) {
-                    let title = '';
-                    let contentHTML = '';
-                    let filename = '';
+            // Universal PDF Download Handler for various data types
+            window.downloadRecordAsPDF = function (type, data) {
+                let title = '';
+                let contentHTML = '';
+                let filename = '';
 
-                    switch (type) {
-                        case 'employee':
-                            title = 'Employee Profile';
-                            contentHTML = `
+                switch (type) {
+                    case 'employee':
+                        title = 'Employee Profile';
+                        contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
                                 <p><strong>Position:</strong> ${data.position || 'N/A'}</p>
@@ -1550,22 +1544,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
                             </div>
                         `;
-                            filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
-                            break;
-                        case 'document':
-                            title = 'Document Details';
-                            contentHTML = `
+                        filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
+                        break;
+                    case 'document':
+                        title = 'Document Details';
+                        contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Document Name:</strong> ${data.name || 'N/A'}</p>
                                 <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
                                 <p><strong>Date Uploaded:</strong> ${data.uploaded_at || 'N/A'}</p>
                             </div>
                         `;
-                            filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
-                            break;
-                        case 'billing':
-                            title = 'Invoice Summary';
-                            contentHTML = `
+                        filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
+                        break;
+                    case 'billing':
+                        title = 'Invoice Summary';
+                        contentHTML = `
                             <div style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
                                 <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">Invoice #${data.invoice_number || data.id}</h3>
                                 <p><strong>Client:</strong> ${data.client || 'N/A'}</p>
@@ -1574,14 +1568,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <p><strong>Status:</strong> <span style="color: ${data.status === 'paid' ? '#059669' : '#dc2626'}; font-weight: bold;">${data.status.toUpperCase()}</span></p>
                             </div>
                         `;
-                            filename = `Invoice_${data.invoice_number || data.id}.pdf`;
-                            break;
-                        case 'contract':
-                            title = 'Contract Risk Analysis';
-                            const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
-                            const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
-                            const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
-                            const imageHTML = isImage ? `
+                        filename = `Invoice_${data.invoice_number || data.id}.pdf`;
+                        break;
+                    case 'contract':
+                        title = 'Contract Risk Analysis';
+                        const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
+                        const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
+                        const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
+                        const imageHTML = isImage ? `
                             <div style="margin-top: 30px; border-top: 2px solid #f1f5f9; pt: 20px;">
                                 <h4 style="margin-bottom: 15px; color: #1e293b;">Contract Image Attachment</h4>
                                 <div style="text-align: center; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px dashed #cbd5e1;">
@@ -1590,7 +1584,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </div>
                         ` : '';
 
-                            contentHTML = `
+                        contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Contract Name:</strong> ${data.contract_name || data.name || 'N/A'}</p>
                                 <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
@@ -1612,93 +1606,93 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 ${imageHTML}
                             </div>
                         `;
-                            filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
-                            break;
-                    }
-
-                    generatePDFFromData(title, contentHTML, filename);
+                        filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
+                        break;
                 }
 
-                // Consolidated Unified Event Delegation for Table Actions & PDF handling
-                document.body.addEventListener('click', function (e) {
-                    const target = e.target.closest('button, a.view-pdf-link, .download-btn');
-                    if (!target) return;
+                generatePDFFromData(title, contentHTML, filename);
+            }
 
-                    const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
-                    if (!type) return;
+            // Consolidated Unified Event Delegation for Table Actions & PDF handling
+            document.body.addEventListener('click', function (e) {
+                const target = e.target.closest('button, a.view-pdf-link, .download-btn');
+                if (!target) return;
 
-                    // 1. PDF DOWNLOAD HANDLING
-                    if (target.classList.contains('download-btn') || type === 'download') {
-                        const pdfType = target.getAttribute('data-pdf-type');
-                        const pdfContent = target.getAttribute('data-pdf-content');
-                        if (pdfType && pdfContent) {
-                            try {
-                                const data = JSON.parse(pdfContent);
-                                downloadRecordAsPDF(pdfType, data);
-                                e.preventDefault();
-                                return;
-                            } catch (err) { console.error("PDF generation failed:", err); }
+                const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
+                if (!type) return;
+
+                // 1. PDF DOWNLOAD HANDLING
+                if (target.classList.contains('download-btn') || type === 'download') {
+                    const pdfType = target.getAttribute('data-pdf-type');
+                    const pdfContent = target.getAttribute('data-pdf-content');
+                    if (pdfType && pdfContent) {
+                        try {
+                            const data = JSON.parse(pdfContent);
+                            downloadRecordAsPDF(pdfType, data);
+                            e.preventDefault();
+                            return;
+                        } catch (err) { console.error("PDF generation failed:", err); }
+                    }
+                }
+
+                // 2. PDF VIEW HANDLING (Hijacked Name Links)
+                if (type === 'pdf-view') {
+                    const pdfType = target.getAttribute('data-pdf-type');
+                    const pdfContent = target.getAttribute('data-pdf-content');
+                    if (pdfType && pdfContent) {
+                        try {
+                            const data = JSON.parse(pdfContent);
+                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
+                            e.preventDefault();
+                            return;
+                        } catch (err) { console.error("PDF view failed:", err); }
+                    }
+                }
+
+                // 3. TABLE ACTION MODALS (Password Protected)
+                withPasswordGate(() => {
+                    // Employee/Member View/Edit
+                    if (type === 'employee-view' || type === 'employee-edit') {
+                        const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
+                        employeeInfoTitle.textContent = type === 'employee-view' ? 'Employee Information' : 'Edit Employee';
+                        infoId.value = emp.id || '';
+                        infoName.value = emp.name || '';
+                        infoPos.value = emp.position || '';
+                        infoEmail.value = emp.email || '';
+                        infoPhone.value = emp.phone || '';
+                        const isView = type === 'employee-view';
+                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = isView; i.disabled = false; } });
+                        const actions = empInfoForm.querySelector('.form-actions');
+                        if (actions) actions.style.display = isView ? 'none' : '';
+                        openModal(empInfoModal);
+
+                        // Add PDF button if viewing
+                        if (isView) injectModalPdfButton(empInfoForm, 'employee', emp);
+                    }
+                    // Document Edit
+                    else if (type === 'doc-edit') {
+                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
+                        editDocId.value = d.id || '';
+                        editDocName.value = d.name || '';
+                        editDocCase.value = d.case_id || '';
+                        openModal(editDocModal);
+                        injectModalPdfButton(editDocForm, 'document', d);
+                    }
+                    // Document Delete
+                    else if (type === 'doc-delete') {
+                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
+                        if (confirm('Delete document "' + (d.name || '') + '"?')) {
+                            const f = document.createElement('form');
+                            f.method = 'POST';
+                            f.innerHTML = `<input type="hidden" name="delete_document" value="1"><input type="hidden" name="document_id" value="${d.id || ''}">`;
+                            document.body.appendChild(f); f.submit();
                         }
                     }
-
-                    // 2. PDF VIEW HANDLING (Hijacked Name Links)
-                    if (type === 'pdf-view') {
-                        const pdfType = target.getAttribute('data-pdf-type');
-                        const pdfContent = target.getAttribute('data-pdf-content');
-                        if (pdfType && pdfContent) {
-                            try {
-                                const data = JSON.parse(pdfContent);
-                                downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
-                                e.preventDefault();
-                                return;
-                            } catch (err) { console.error("PDF view failed:", err); }
-                        }
-                    }
-
-                    // 3. TABLE ACTION MODALS (Password Protected)
-                    withPasswordGate(() => {
-                        // Employee/Member View/Edit
-                        if (type === 'employee-view' || type === 'employee-edit') {
-                            const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                            employeeInfoTitle.textContent = type === 'employee-view' ? 'Employee Information' : 'Edit Employee';
-                            infoId.value = emp.id || '';
-                            infoName.value = emp.name || '';
-                            infoPos.value = emp.position || '';
-                            infoEmail.value = emp.email || '';
-                            infoPhone.value = emp.phone || '';
-                            const isView = type === 'employee-view';
-                            [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = isView; i.disabled = false; } });
-                            const actions = empInfoForm.querySelector('.form-actions');
-                            if (actions) actions.style.display = isView ? 'none' : '';
-                            openModal(empInfoModal);
-
-                            // Add PDF button if viewing
-                            if (isView) injectModalPdfButton(empInfoForm, 'employee', emp);
-                        }
-                        // Document Edit
-                        else if (type === 'doc-edit') {
-                            const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                            editDocId.value = d.id || '';
-                            editDocName.value = d.name || '';
-                            editDocCase.value = d.case_id || '';
-                            openModal(editDocModal);
-                            injectModalPdfButton(editDocForm, 'document', d);
-                        }
-                        // Document Delete
-                        else if (type === 'doc-delete') {
-                            const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                            if (confirm('Delete document "' + (d.name || '') + '"?')) {
-                                const f = document.createElement('form');
-                                f.method = 'POST';
-                                f.innerHTML = `<input type="hidden" name="delete_document" value="1"><input type="hidden" name="document_id" value="${d.id || ''}">`;
-                                document.body.appendChild(f); f.submit();
-                            }
-                        }
-                        // Invoice View
-                        else if (type === 'invoice-view') {
-                            const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                            detailsTitle.textContent = 'Invoice Details';
-                            detailsBody.innerHTML = `
+                    // Invoice View
+                    else if (type === 'invoice-view') {
+                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
+                        detailsTitle.textContent = 'Invoice Details';
+                        detailsBody.innerHTML = `
                           <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
                             <div><strong>Invoice #</strong></div><div>${inv.invoice_number || inv.id || ''}</div>
                             <div><strong>Client</strong></div><div>${inv.client || ''}</div>
@@ -1706,25 +1700,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <div><strong>Due Date</strong></div><div>${inv.due_date || ''}</div>
                             <div><strong>Status</strong></div><div>${(inv.status || '').toString().toUpperCase()}</div>
                           </div>`;
-                            openModal(detailsModal);
-                            injectModalPdfButton(detailsBody, 'billing', inv);
-                        }
-                        // Invoice Pay
-                        else if (type === 'invoice-pay') {
-                            const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                            payInvoiceId.value = inv.id || '';
-                            payConfirmText.textContent = `Do you want to pay invoice ${inv.invoice_number || inv.id || ''} for ₱${Number(inv.amount || 0).toFixed(2)}?`;
-                            openModal(payConfirmModal);
-                        }
-                        // Contract View
-                        else if (type === 'contract-view') {
-                            const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                            detailsTitle.textContent = 'Contract Details';
-                            detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
-                            openModal(detailsModal);
-                            const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                            const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                            detailsBody.innerHTML = `
+                        openModal(detailsModal);
+                        injectModalPdfButton(detailsBody, 'billing', inv);
+                    }
+                    // Invoice Pay
+                    else if (type === 'invoice-pay') {
+                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
+                        payInvoiceId.value = inv.id || '';
+                        payConfirmText.textContent = `Do you want to pay invoice ${inv.invoice_number || inv.id || ''} for ₱${Number(inv.amount || 0).toFixed(2)}?`;
+                        openModal(payConfirmModal);
+                    }
+                    // Contract View
+                    else if (type === 'contract-view') {
+                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                        detailsTitle.textContent = 'Contract Details';
+                        detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
+                        openModal(detailsModal);
+                        const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                        const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                        detailsBody.innerHTML = `
                             <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
                                 <div><strong>Contract</strong></div><div>${c.contract_name || c.name || ''}</div>
                                 <div><strong>Case</strong></div><div>${c.case_id || ''}</div>
@@ -1733,23 +1727,23 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <div style="grid-column:1/-1"><strong>Risk Factors</strong><ul style="margin:.4rem 0 0 1rem;">${rf.map(r => `<li>${(r.factor || '')}</li>`).join('') || '<li>None</li>'}</ul></div>
                                 <div style="grid-column:1/-1"><strong>Recommendations</strong><ul style="margin:.4rem 0 0 1rem;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>None</li>'}</ul></div>
                             </div>`;
-                            injectModalPdfButton(detailsBody, 'contract', c);
-                        }
-                        // Contract Analyze
-                        else if (type === 'contract-analyze') {
-                            const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                            detailsTitle.textContent = 'AI Risk Analysis';
-                            detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
-                            openModal(detailsModal);
-                            setTimeout(() => {
-                                try {
-                                    const score = c.risk_score ?? 'N/A';
-                                    const level = c.risk_level ?? 'Unknown';
-                                    const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                                    const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                                    let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
+                        injectModalPdfButton(detailsBody, 'contract', c);
+                    }
+                    // Contract Analyze
+                    else if (type === 'contract-analyze') {
+                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                        detailsTitle.textContent = 'AI Risk Analysis';
+                        detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
+                        openModal(detailsModal);
+                        setTimeout(() => {
+                            try {
+                                const score = c.risk_score ?? 'N/A';
+                                const level = c.risk_level ?? 'Unknown';
+                                const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                                const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                                let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
 
-                                    detailsBody.innerHTML = `
+                                detailsBody.innerHTML = `
                                     <div style="text-align: center; margin-bottom: 20px;">
                                         <h2 style="margin: 0; color: ${color};">${level} Risk Contract</h2>
                                         <p>Risk Score: <strong>${score}/100</strong></p>
@@ -1767,123 +1761,127 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         </button>
                                     </div>
                                 `;
-                                } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
-                            }, 500);
-                        }
-                    });
+                            } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
+                        }, 500);
+                    }
+                });
+            });
+
+            function injectModalPdfButton(container, pdfType, pdfData) {
+                let downloadBtn = document.getElementById('modalDownloadPdf');
+                if (downloadBtn) downloadBtn.remove();
+
+                downloadBtn = document.createElement('button');
+                downloadBtn.id = 'modalDownloadPdf';
+                downloadBtn.type = 'button';
+                downloadBtn.className = 'save-btn';
+                downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
+                downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
+                downloadBtn.onclick = () => {
+                    const originalHTML = downloadBtn.innerHTML;
+                    downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+                    window.downloadRecordAsPDF(pdfType, pdfData);
+                    setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
+                };
+                container.appendChild(downloadBtn);
+            }
+
+
+            // Add Member Button Logic
+            const addMemberBtn = document.getElementById('addMemberBtn');
+            if (addMemberBtn) {
+                addMemberBtn.addEventListener('click', () => {
+                    employeeInfoTitle.textContent = 'Add Team Member';
+                    infoId.value = '';
+                    infoName.value = '';
+                    infoPos.value = '';
+                    infoEmail.value = '';
+                    infoPhone.value = '';
+                    try {
+                        const actions = empInfoForm.querySelector('.form-actions');
+                        if (actions) actions.style.display = '';
+                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = false; i.disabled = false; } });
+                    } catch (e) { }
+                    openModal(empInfoModal);
+                });
+            }
+
+            // ADDED: Contract Upload Modal Logic
+            if (addContractBtn) {
+                addContractBtn.addEventListener('click', () => {
+                    // Move the form into the modal container if not already there
+                    if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
+                        contractFormContainer.appendChild(contractForm);
+                        contractForm.style.display = 'block';
+                    }
+                    openModal(contractFormModal);
+                });
+            }
+            // ADDED: Universal Close/Cancel Handlers for all Modals
+                if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
+                if (closeEmployeeInfo) closeEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
+                if (cancelEmployeeInfo) cancelEmployeeInfo.addEventListener('click', () => closeModal(empInfoModal));
+                if (closeEditEmployee) closeEditEmployee.addEventListener('click', () => closeModal(editModal));
+                if (cancelEditEmployee) cancelEditEmployee.addEventListener('click', () => closeModal(editModal));
+                if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
+                if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
+                if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
+                if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
+                if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
+                if (closeInvoiceFormModal) closeInvoiceFormModal.addEventListener('click', () => closeModal(invoiceFormModal));
+                if (cancelInvoiceBtn) cancelInvoiceBtn.addEventListener('click', () => closeModal(invoiceFormModal));
+                if (cancelPayBtn) cancelPayBtn.addEventListener('click', () => closeModal(payConfirmModal));
+                if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
+                if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
+                if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
+                if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
+                    closeModal(contractFormModal);
+                    if (contractForm) contractForm.reset();
                 });
 
-                function injectModalPdfButton(container, pdfType, pdfData) {
-                    let downloadBtn = document.getElementById('modalDownloadPdf');
-                    if (downloadBtn) downloadBtn.remove();
-
-                    downloadBtn = document.createElement('button');
-                    downloadBtn.id = 'modalDownloadPdf';
-                    downloadBtn.type = 'button';
-                    downloadBtn.className = 'save-btn';
-                    downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
-                    downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
-                    downloadBtn.onclick = () => {
-                        const originalHTML = downloadBtn.innerHTML;
-                        downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                        window.downloadRecordAsPDF(pdfType, pdfData);
-                        setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
-                    };
-                    container.appendChild(downloadBtn);
-                }
-
-
-                // Add Member Button Logic
-                const addMemberBtn = document.getElementById('addMemberBtn');
-                if (addMemberBtn) {
-                    addMemberBtn.addEventListener('click', () => {
-                        employeeInfoTitle.textContent = 'Add Team Member';
-                        infoId.value = '';
-                        infoName.value = '';
-                        infoPos.value = '';
-                        infoEmail.value = '';
-                        infoPhone.value = '';
-                        try {
-                            const actions = empInfoForm.querySelector('.form-actions');
-                            if (actions) actions.style.display = '';
-                            [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = false; i.disabled = false; } });
-                        } catch (e) { }
-                        openModal(empInfoModal);
-                    });
-                }
-
-                // ADDED: Contract Upload Modal Logic
-                if (addContractBtn) {
-                    addContractBtn.addEventListener('click', () => {
-                        // Move the form into the modal container if not already there
-                        if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
-                            contractFormContainer.appendChild(contractForm);
-                            contractForm.style.display = 'block';
+            // Risk chart init (avoid loop/double init)
+            let riskChartRef = null;
+            function initRiskChart() {
+                const ctx = document.getElementById('riskChart');
+                if (!ctx) return;
+                const data = {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk'], // Updated labels to match picture
+                    datasets: [{
+                        label: 'Contracts',
+                        data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8
+                    }]
+                };
+                if (riskChartRef) { riskChartRef.destroy(); }
+                // Added scales config to match picture (0, 1, 2 integers)
+                riskChartRef = new Chart(ctx, {
+                    type: 'bar',
+                    data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                            x: { grid: { display: false } }
                         }
-                        openModal(contractFormModal);
-                    });
-                }
-                if (closeContractFormModal) {
-                    closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
-                }
-                if (cancelContractBtn) {
-                    cancelContractBtn.addEventListener('click', () => {
-                        closeModal(contractFormModal);
-                        // Optional: trim form inputs
-                        if (contractForm) contractForm.reset();
-                    });
-                }
+                    }
+                });
+            }
+            document.addEventListener('DOMContentLoaded', initRiskChart);
 
-                // ADDED: Fix for AI Risk Analysis / Details Modal Close Button
-                if (closeDetails) {
-                    closeDetails.addEventListener('click', () => {
-                        closeModal(detailsModal);
-                    });
-                }
+            // Generate Secured PDF (password-gated) - Real PDF Implementation
+            exportPdfBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                withPasswordGate(() => {
+                    // Data is injected from PHP
+                    const data = <?php echo json_encode($contracts); ?>;
 
-                // Risk chart init (avoid loop/double init)
-                let riskChartRef = null;
-                function initRiskChart() {
-                    const ctx = document.getElementById('riskChart');
-                    if (!ctx) return;
-                    const data = {
-                        labels: ['High Risk', 'Medium Risk', 'Low Risk'], // Updated labels to match picture
-                        datasets: [{
-                            label: 'Contracts',
-                            data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
-                            backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
-                            borderWidth: 0,
-                            borderRadius: 6,
-                            barPercentage: 0.6,
-                            categoryPercentage: 0.8
-                        }]
-                    };
-                    if (riskChartRef) { riskChartRef.destroy(); }
-                    // Added scales config to match picture (0, 1, 2 integers)
-                    riskChartRef = new Chart(ctx, {
-                        type: 'bar',
-                        data,
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                                x: { grid: { display: false } }
-                            }
-                        }
-                    });
-                }
-                document.addEventListener('DOMContentLoaded', initRiskChart);
-
-                // Generate Secured PDF (password-gated) - Real PDF Implementation
-                exportPdfBtn?.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    withPasswordGate(() => {
-                        // Data is injected from PHP
-                        const data = <?php echo json_encode($contracts); ?>;
-
-                        let contentHTML = `
+                    let contentHTML = `
                         <div style="margin-top: 20px;">
                             <p>This is a secured legal report containing sensitive contract risk information.</p>
                             <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt;">
@@ -1913,25 +1911,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     `;
 
-                        generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
-                    });
+                    generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
                 });
+            });
 
-                // Find the back button handler and update it:
-                const backBtn = document.getElementById('backDashboardBtn');
-                if (backBtn) {
-                    backBtn.addEventListener('click', function () {
-                        // Redirect to facilities reservation dashboard
-                        window.location.href = 'facilities-reservation.php';
-                    });
-                }
-            })();
-        </script>
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay"
-            style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
-            <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"></iframe>
-        </div>
+            // Find the back button handler and update it:
+            const backBtn = document.getElementById('backDashboardBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function () {
+                    // Redirect to facilities reservation dashboard
+                    window.location.href = 'facilities-reservation.php';
+                });
+            }
+        })();
+    </script>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
 </body>
 
 </html>
