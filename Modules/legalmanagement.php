@@ -610,900 +610,914 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
-        <!-- Background Logo Watermark -->
-        <div
-            style="position: absolute; left: 15%; top: 50%; transform: translateY(-50%); opacity: 0.15; pointer-events: none; z-index: 1;">
-            <img src="../assets/image/logo.png" alt="Logo Watermark" style="width: 500px; height: auto;">
-        </div>
-        <div class="login-form">
-            <h2>Legal Management System</h2>
-            <p>Enter your PIN to access the system</p>
-            <div class="pin-input">
-                <input type="password" maxlength="1" class="pin-digit" id="pin1">
-                <input type="password" maxlength="1" class="pin-digit" id="pin2">
-                <input type="password" maxlength="1" class="pin-digit" id="pin3">
-                <input type="password" maxlength="1" class="pin-digit" id="pin4">
-            </div>
-            <button class="login-btn" id="loginBtn">Login</button>
-            <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
-        </div>
-    </div>
-    <!-- Employee Information Modal (Create/Update) -->
-    <div id="employeeInfoModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1250;">
-        <div
-            style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEmployeeInfo"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 id="employeeInfoTitle" style="margin-top:0;">Employee Information</h3>
-            <form method="POST" id="employeeInfoForm">
-                <input type="hidden" name="save_employee" value="1">
-                <input type="hidden" name="employee_id" id="info_emp_id" value="">
-                <div class="form-group">
-                    <label for="info_emp_name">Name</label>
-                    <input type="text" id="info_emp_name" name="employee_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="info_emp_position">Position</label>
-                    <input type="text" id="info_emp_position" name="employee_position" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="info_emp_email">Email</label>
-                    <input type="email" id="info_emp_email" name="employee_email" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="info_emp_phone">Phone</label>
-                    <input type="text" id="info_emp_phone" name="employee_phone" class="form-control" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelEmployeeInfo">Cancel</button>
-                    <button type="submit" class="save-btn" id="saveEmployeeInfoBtn">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <div class="login-form" style="position: relative; overflow: hidden; z-index: 5;">
+            <!-- Internal Logo Watermark -->
+            <img src="../assets/image/logo.png" alt="Logo Watermark"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0.05; pointer-events: none; z-index: 0;">
 
-    <!-- Dashboard -->
-    <div class="dashboard" id="dashboard">
-        <div class="header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">Legal Management System</div>
-                    <div class="user-info">
-                        <span>Welcome, Admin</span>
-                        <button type="button" class="logout-btn" id="backDashboardBtn"
-                            onclick="window.location.href='../Modules/facilities-reservation.php'">
-                            <span class="icon-img-placeholder">⏻</span> logout
-                        </button>
-                    </div>
+            <div style="position: relative; z-index: 1;">
+                <h2>Legal Management System</h2>
+                <p>Enter your PIN to access the system</p>
+                <div class="pin-input">
+                    <input type="password" maxlength="1" class="pin-digit" id="pin1">
+                    <input type="password" maxlength="1" class="pin-digit" id="pin2">
+                    <input type="password" maxlength="1" class="pin-digit" id="pin3">
+                    <input type="password" maxlength="1" class="pin-digit" id="pin4">
                 </div>
+                <button class="login-btn" id="loginBtn">Login</button>
+                <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
             </div>
         </div>
-
-        <div class="container">
-            <!-- Success/Error Messages -->
-            <?php if (isset($success_message)): ?>
-                <div class="alert alert-success"><?php echo $success_message; ?></div>
-            <?php endif; ?>
-
-            <?php if (isset($error_message)): ?>
-                <div class="alert alert-error"><?php echo $error_message; ?></div>
-            <?php endif; ?>
-
-            <div class="nav-tabs">
-                <div class="nav-tab active" data-target="employees">Employees</div>
-                <div class="nav-tab" data-target="documents">Documents</div>
-                <div class="nav-tab" data-target="billing">Billing</div>
-                <div class="nav-tab" data-target="contracts">Contracts</div>
-                <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
-                <div class="nav-tab" data-target="members">Members</div>
-            </div>
-
-            <!-- Employees Section -->
-            <div class="content-section active" id="employees">
-                <div class="section-header">
-                    <h2 class="section-title">Employee Information</h2>
-                    <button class="add-btn" id="addEmployeeBtn">
-                        <i>+</i> Add Employee
-                    </button>
-                </div>
-
-                <!-- Add Employee Form -->
-                <div class="form-container" id="employeeForm">
-                    <h3>Add Employee</h3>
-                    <form method="POST" id="employeeFormData">
-                        <div class="form-group">
-                            <label for="employeeName">Name</label>
-                            <input type="text" id="employeeName" name="employee_name" class="form-control"
-                                placeholder="Enter employee name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeePosition">Position</label>
-                            <input type="text" id="employeePosition" name="employee_position" class="form-control"
-                                placeholder="Enter position" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeeEmail">Email</label>
-                            <input type="email" id="employeeEmail" name="employee_email" class="form-control"
-                                placeholder="Enter email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeePhone">Phone</label>
-                            <input type="text" id="employeePhone" name="employee_phone" class="form-control"
-                                placeholder="Enter phone number" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
-                                Employee</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Employees Table -->
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="employeesTableBody">
-                        <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                    <button class="action-btn" data-type="employee-edit"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Documents Section -->
-            <div class="content-section" id="documents">
-                <div class="section-header">
-                    <h2 class="section-title">Case Documents</h2>
-                    <button class="add-btn" id="addDocumentBtn">
-                        <i>+</i> Upload Document
-                    </button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Document Name</th>
-                            <th>Case</th>
-                            <th>Date Uploaded</th>
-                            <th>Actions</th>
-                        </tr>
-                    <tbody id="documentsTableBody">
-                        <?php if (!empty($documents)): ?>
-                            <?php foreach ($documents as $doc): ?>
-                                <tr>
-                                    <td>
-                                        <?php if (!empty($doc['file_path'])): ?>
-                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                        <?php else: ?>
-                                            <?php echo htmlspecialchars($doc['name']); ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                    </td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="doc-edit"
-                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="doc-download"
-                                            data-pdf-type="document"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                            style="background:#059669;color:#fff;">Download PDF</button>
-                                        <button class="action-btn" data-type="doc-delete"
-                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="content-section" id="billing">
-                <div class="section-header">
-                    <h2 class="section-title">Billing & Invoices</h2>
-                    <button class="add-btn" id="addInvoiceBtn">
-                        <i>+</i> Create Invoice
-                    </button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Invoice #</th>
-                            <th>Client</th>
-                            <th>Amount</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billingTableBody">
-                        <?php if (!empty($billing)): ?>
-                            <?php foreach ($billing as $b): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                    <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                    <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="invoice-view"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="invoice-download"
-                                            data-pdf-type="billing"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                            style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                            PDF</button>
-                                        <button class="action-btn"
-                                            style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                            data-type="invoice-pay"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records found.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Contracts Section -->
-            <div class="content-section" id="contracts" style="display:none;">
-                <div class="section-header">
-                    <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
-                    <div style="display: flex; gap: 10px;">
-                        <!-- Button para sa Secured PDF Report (Idinagdag) -->
-                        <button class="add-btn" id="exportPdfBtn" style="background: #e74c3c; /* Pula para sa ulat */">
-                            &#x1F4C4; Generate Secured PDF
-                        </button>
-                        <button class="add-btn" id="addContractBtn">
-                            <i>+</i> Upload Contract
-                        </button>
-                    </div>
-                </div>
-                <!-- Hidden form to trigger secured PDF generation via POST -->
-                <form id="exportPdfForm" method="POST" style="display:none">
-                    <input type="hidden" name="action" value="export_pdf">
-                </form>
-
-                <!-- Add Contract Form -->
-                <div class="form-container" id="contractForm">
-                    <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
-                    <form method="POST" enctype="multipart/form-data" id="contractFormData">
-                        <div class="form-group">
-                            <label for="contractName">Contract Name</label>
-                            <input type="text" id="contractName" name="contract_name" class="form-control"
-                                placeholder="Enter contract name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractCase">Case ID</label>
-                            <input type="text" id="contractCase" name="contract_case" class="form-control"
-                                placeholder="Enter case ID (e.g., C-001)" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractDescription">Contract Description</label>
-                            <textarea id="contractDescription" name="contract_description" class="form-control"
-                                placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
-                                rows="4"></textarea>
-                            <div class="file-info">AI will analyze this description to detect risk factors</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractFile">Contract File</label>
-                            <input type="file" id="contractFile" name="contract_file" class="form-control"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
-                            <input type="file" id="contractImage" name="contract_image" class="form-control"
-                                accept="image/*">
-                            <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
-                        </div>
-
-                        <div class="ai-analysis-section">
-                            <h4><i class="fa-solid fa-wand-magic-sparkles"
-                                    style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
-                            <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
-                                automatically analyze your contract for:</p>
-                            <ul class="ai-features-list">
-                                <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms, rent
-                                    structure)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours, suppliers,
-                                    staffing)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
-                                    guarantees)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
-                            </ul>
-                            <div class="ai-note">
-                                <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
-                                calculated
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
-                                <i>+</i> Upload & Analyze Contract
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Contracts Table -->
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Contract Name</th>
-                            <th>Case</th>
-                            <th>Risk Level</th>
-                            <th>Risk Score</th>
-                            <th>Upload Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="contractsTableBody">
-                        <?php foreach ($contracts as $contract):
-                            $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
-                            $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
-                            ?>
-                            <tr>
-                                <td>
-                                    <?php if (!empty($contract['file_path'])): ?>
-                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                <td>
-                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
-                                        Risk Analysis</button>
-                                    <button class="action-btn download-btn" data-type="contract-download"
-                                        data-pdf-type="contract"
-                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                        Download PDF
-                                    </button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="content-section" id="risk_analysis">
-                <div class="section-header">
-                    <h2 class="section-title">Contract Risk Analysis</h2>
-                </div>
-                <div id="riskChartContainer">
-                    <canvas id="riskChart" width="400" height="200"></canvas>
-                </div>
-                <div id="analysisResults">
-                    <!-- Analysis results will be displayed here -->
-                    <div class="risk-summary" style="padding:12px;">
-                        <p><strong>Total contracts:</strong> <?php echo $totalContracts; ?></p>
-                        <p><strong>High:</strong> <?php echo $riskCounts['High']; ?> (<?php echo $highPct; ?>%)</p>
-                        <p><strong>Medium:</strong> <?php echo $riskCounts['Medium']; ?> (<?php echo $mediumPct; ?>%)
-                        </p>
-                        <p><strong>Low:</strong> <?php echo $riskCounts['Low']; ?> (<?php echo $lowPct; ?>%)</p>
-                    </div>
-                    <?php
-                    $highContracts = array_filter($contracts, function ($c) {
-                        return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
-                    });
-                    if (!empty($highContracts)): ?>
-                        <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
-                        <ul>
-                            <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
-                                    <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <div class="content-section" id="members">
-                <div class="section-header">
-                    <h2 class="section-title">Team Members</h2>
-                    <button class="add-btn" id="addMemberBtn">
-                        <i>+</i> Add Member
-                    </button>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="membersTableBody">
-                        <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                    <button class="action-btn" data-type="employee-edit"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-
-    <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
-
-    <!-- Details Modal -->
-    <div id="detailsModal"
-        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); align-items:center; justify-content:center; z-index:1000;">
-        <div
-            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+        <!-- Employee Information Modal (Create/Update) -->
+        <div id="employeeInfoModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1250;">
             <div
-                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #fff;">
-                <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">Details
-                </h3>
-                <button id="closeDetails"
-                    style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div id="detailsBody" style="padding: 24px; overflow-y: auto;">
-                <!-- Fallback content shown if no dynamic content is provided -->
-                <form id="genericModalForm" style="display:block">
-                    <div
-                        style="padding:12px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:10px;">
-                        <h4 style="margin:0 0 6px;">Quick Note</h4>
-                        <p style="margin:0 0 8px; color:#475569;">Enter an optional note then submit. This is a default
-                            content view that appears when no specific details are loaded.</p>
-                        <textarea name="note" rows="3" class="form-control" placeholder="Type your note here…"
-                            style="width:100%;"></textarea>
-                    </div>
-                    <div style="display:flex; gap:10px; justify-content:flex-end;">
-                        <button type="submit" class="save-btn">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Password Gate Modal -->
-    <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); align-items:center; justify-content:center; z-index:2000;">
-        <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
-            <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
-                Security Check</h2>
-            <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
-            <form id="passwordForm">
-                <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    <input type="password" maxlength="1" class="pin-digit"
-                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                </div>
-                <div id="pwdError"
-                    style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
-                    Incorrect PIN. Please try again.</div>
-                <div style="display:flex; gap:12px; justify-content:center;">
-                    <button type="button" class="cancel-btn" id="pwdCancel"
-                        style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
-                    <button type="submit" class="save-btn"
-                        style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Employee Modal -->
-    <div id="editEmployeeModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
-        <div
-            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEditEmployee"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 style="margin-top:0;">Edit Employee</h3>
-            <form method="POST" id="editEmployeeForm">
-                <input type="hidden" name="update_employee" value="1">
-                <input type="hidden" name="employee_id" id="edit_emp_id">
-                <div class="form-group">
-                    <label for="edit_emp_name">Name</label>
-                    <input type="text" id="edit_emp_name" name="employee_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_position">Position</label>
-                    <input type="text" id="edit_emp_position" name="employee_position" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_email">Email</label>
-                    <input type="email" id="edit_emp_email" name="employee_email" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_emp_phone">Phone</label>
-                    <input type="text" id="edit_emp_phone" name="employee_phone" class="form-control" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelEditEmployee">Cancel</button>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Contract Form Modal wrapper -->
-    <div id="contractFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:rgba(255,255,255,0.95); backdrop-filter: blur(20px); width:94%; max-width:500px; border-radius:16px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.5); max-height: 90vh; overflow-y: auto;">
-            <button type="button" id="closeContractFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="contractFormContainer">
-                <!-- The existing contract form will be moved here dynamically -->
-            </div>
-        </div>
-    </div>
-    <!-- Employee Form Modal wrapper -->
-    <div id="employeeFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEmployeeFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="employeeFormContainer"></div>
-        </div>
-    </div>
-    <!-- Document Form Modal wrapper -->
-    <div id="documentFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-            <button type="button" id="closeDocumentFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="documentFormContainer">
-                <h3>Upload Document</h3>
-                <form method="POST" enctype="multipart/form-data" id="documentFormData">
-                    <input type="hidden" name="add_document" value="1">
+                style="background:#ffffff; width:92%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 20px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+                <button type="button" id="closeEmployeeInfo"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <h3 id="employeeInfoTitle" style="margin-top:0;">Employee Information</h3>
+                <form method="POST" id="employeeInfoForm">
+                    <input type="hidden" name="save_employee" value="1">
+                    <input type="hidden" name="employee_id" id="info_emp_id" value="">
                     <div class="form-group">
-                        <label for="doc_name">Document Name</label>
-                        <input type="text" id="doc_name" name="doc_name" class="form-control" required>
+                        <label for="info_emp_name">Name</label>
+                        <input type="text" id="info_emp_name" name="employee_name" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="doc_case">Case ID</label>
-                        <input type="text" id="doc_case" name="doc_case" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="doc_file">File</label>
-                        <input type="file" id="doc_file" name="doc_file" class="form-control" accept=".pdf,.doc,.docx"
+                        <label for="info_emp_position">Position</label>
+                        <input type="text" id="info_emp_position" name="employee_position" class="form-control"
                             required>
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelDocumentBtn">Cancel</button>
-                        <button type="submit" class="save-btn">Upload</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Document Modal -->
-    <div id="editDocumentModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
-        <div
-            style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeEditDocument"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 style="margin-top:0;">Edit Document</h3>
-            <form method="POST" id="editDocumentForm">
-                <input type="hidden" name="update_document" value="1">
-                <input type="hidden" name="document_id" id="edit_doc_id">
-                <div class="form-group">
-                    <label for="edit_doc_name">Document Name</label>
-                    <input type="text" id="edit_doc_name" name="doc_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_doc_case">Case ID</label>
-                    <input type="text" id="edit_doc_case" name="doc_case" class="form-control" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelEditDocument">Cancel</button>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Invoice Form Modal wrapper -->
-    <div id="invoiceFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
-            <button type="button" id="closeInvoiceFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <div id="invoiceFormContainer">
-                <h3>Create Invoice</h3>
-                <form method="POST" id="invoiceFormData">
-                    <input type="hidden" name="add_invoice" value="1">
                     <div class="form-group">
-                        <label for="inv_number">Invoice #</label>
-                        <input type="text" id="inv_number" name="invoice_number" class="form-control" required>
+                        <label for="info_emp_email">Email</label>
+                        <input type="email" id="info_emp_email" name="employee_email" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="inv_client">Client</label>
-                        <input type="text" id="inv_client" name="client" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inv_amount">Amount</label>
-                        <input type="number" step="0.01" id="inv_amount" name="amount" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inv_due">Due Date</label>
-                        <input type="date" id="inv_due" name="due_date" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inv_status">Status</label>
-                        <select id="inv_status" name="status" class="form-control" required>
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="overdue">Overdue</option>
-                        </select>
+                        <label for="info_emp_phone">Phone</label>
+                        <input type="text" id="info_emp_phone" name="employee_phone" class="form-control" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelInvoiceBtn">Cancel</button>
-                        <button type="submit" class="save-btn">Save Invoice</button>
+                        <button type="button" class="cancel-btn" id="cancelEmployeeInfo">Cancel</button>
+                        <button type="submit" class="save-btn" id="saveEmployeeInfoBtn">Save</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
-    <!-- Pay confirmation modal -->
-    <div id="payConfirmModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1600;">
-        <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <h3 style="margin:0 0 8px;">Confirm Payment</h3>
-            <p id="payConfirmText" style="margin:0 0 14px; color:#475569;">Do you want to pay this invoice?</p>
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" class="cancel-btn" id="cancelPayBtn">No</button>
-                <form method="POST" id="payInvoiceForm" style="margin:0;">
-                    <input type="hidden" name="pay_invoice" value="1">
-                    <input type="hidden" name="invoice_id" id="pay_invoice_id" value="">
-                    <button type="submit" class="save-btn" style="background:#16a34a;">Yes, Pay</button>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <div class="header">
+                <div class="container">
+                    <div class="header-content">
+                        <div class="logo">Legal Management System</div>
+                        <div class="user-info">
+                            <span>Welcome, Admin</span>
+                            <button type="button" class="logout-btn" id="backDashboardBtn"
+                                onclick="window.location.href='../Modules/facilities-reservation.php'">
+                                <span class="icon-img-placeholder">⏻</span> logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Success/Error Messages -->
+                <?php if (isset($success_message)): ?>
+                    <div class="alert alert-success"><?php echo $success_message; ?></div>
+                <?php endif; ?>
+
+                <?php if (isset($error_message)): ?>
+                    <div class="alert alert-error"><?php echo $error_message; ?></div>
+                <?php endif; ?>
+
+                <div class="nav-tabs">
+                    <div class="nav-tab active" data-target="employees">Employees</div>
+                    <div class="nav-tab" data-target="documents">Documents</div>
+                    <div class="nav-tab" data-target="billing">Billing</div>
+                    <div class="nav-tab" data-target="contracts">Contracts</div>
+                    <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
+                    <div class="nav-tab" data-target="members">Members</div>
+                </div>
+
+                <!-- Employees Section -->
+                <div class="content-section active" id="employees">
+                    <div class="section-header">
+                        <h2 class="section-title">Employee Information</h2>
+                        <button class="add-btn" id="addEmployeeBtn">
+                            <i>+</i> Add Employee
+                        </button>
+                    </div>
+
+                    <!-- Add Employee Form -->
+                    <div class="form-container" id="employeeForm">
+                        <h3>Add Employee</h3>
+                        <form method="POST" id="employeeFormData">
+                            <div class="form-group">
+                                <label for="employeeName">Name</label>
+                                <input type="text" id="employeeName" name="employee_name" class="form-control"
+                                    placeholder="Enter employee name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employeePosition">Position</label>
+                                <input type="text" id="employeePosition" name="employee_position" class="form-control"
+                                    placeholder="Enter position" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeEmail">Email</label>
+                                <input type="email" id="employeeEmail" name="employee_email" class="form-control"
+                                    placeholder="Enter email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employeePhone">Phone</label>
+                                <input type="text" id="employeePhone" name="employee_phone" class="form-control"
+                                    placeholder="Enter phone number" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
+                                <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
+                                    Employee</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Employees Table -->
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <?php foreach ($employees as $employee): ?>
+                                <tr>
+                                    <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                        <button class="action-btn" data-type="employee-edit"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Documents Section -->
+                <div class="content-section" id="documents">
+                    <div class="section-header">
+                        <h2 class="section-title">Case Documents</h2>
+                        <button class="add-btn" id="addDocumentBtn">
+                            <i>+</i> Upload Document
+                        </button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Case</th>
+                                <th>Date Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        <tbody id="documentsTableBody">
+                            <?php if (!empty($documents)): ?>
+                                <?php foreach ($documents as $doc): ?>
+                                    <tr>
+                                        <td>
+                                            <?php if (!empty($doc['file_path'])): ?>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                            <?php else: ?>
+                                                <?php echo htmlspecialchars($doc['name']); ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                        </td>
+                                        <td>
+                                            <button class="action-btn view-btn" data-type="doc-edit"
+                                                data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
+                                            <button class="action-btn download-btn" data-type="doc-download"
+                                                data-pdf-type="document"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                style="background:#059669;color:#fff;">Download PDF</button>
+                                            <button class="action-btn" data-type="doc-delete"
+                                                data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section" id="billing">
+                    <div class="section-header">
+                        <h2 class="section-title">Billing & Invoices</h2>
+                        <button class="add-btn" id="addInvoiceBtn">
+                            <i>+</i> Create Invoice
+                        </button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Client</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <?php if (!empty($billing)): ?>
+                                <?php foreach ($billing as $b): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
+                                        <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
+                                        <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
+                                        <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
+                                        <td>
+                                            <button class="action-btn view-btn" data-type="invoice-view"
+                                                data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
+                                            <button class="action-btn download-btn" data-type="invoice-download"
+                                                data-pdf-type="billing"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
+                                                style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
+                                                PDF</button>
+                                            <button class="action-btn"
+                                                style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
+                                                data-type="invoice-pay"
+                                                data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
+                                        found.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Contracts Section -->
+                <div class="content-section" id="contracts" style="display:none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
+                        <div style="display: flex; gap: 10px;">
+                            <!-- Button para sa Secured PDF Report (Idinagdag) -->
+                            <button class="add-btn" id="exportPdfBtn"
+                                style="background: #e74c3c; /* Pula para sa ulat */">
+                                &#x1F4C4; Generate Secured PDF
+                            </button>
+                            <button class="add-btn" id="addContractBtn">
+                                <i>+</i> Upload Contract
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Hidden form to trigger secured PDF generation via POST -->
+                    <form id="exportPdfForm" method="POST" style="display:none">
+                        <input type="hidden" name="action" value="export_pdf">
+                    </form>
+
+                    <!-- Add Contract Form -->
+                    <div class="form-container" id="contractForm">
+                        <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
+                        <form method="POST" enctype="multipart/form-data" id="contractFormData">
+                            <div class="form-group">
+                                <label for="contractName">Contract Name</label>
+                                <input type="text" id="contractName" name="contract_name" class="form-control"
+                                    placeholder="Enter contract name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contractCase">Case ID</label>
+                                <input type="text" id="contractCase" name="contract_case" class="form-control"
+                                    placeholder="Enter case ID (e.g., C-001)" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contractDescription">Contract Description</label>
+                                <textarea id="contractDescription" name="contract_description" class="form-control"
+                                    placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
+                                    rows="4"></textarea>
+                                <div class="file-info">AI will analyze this description to detect risk factors</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="contractFile">Contract File</label>
+                                <input type="file" id="contractFile" name="contract_file" class="form-control"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                                <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
+                                <input type="file" id="contractImage" name="contract_image" class="form-control"
+                                    accept="image/*">
+                                <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
+                            </div>
+
+                            <div class="ai-analysis-section">
+                                <h4><i class="fa-solid fa-wand-magic-sparkles"
+                                        style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
+                                <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
+                                    automatically analyze your contract for:</p>
+                                <ul class="ai-features-list">
+                                    <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
+                                        rent
+                                        structure)</li>
+                                    <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
+                                        suppliers,
+                                        staffing)</li>
+                                    <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
+                                        guarantees)</li>
+                                    <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
+                                </ul>
+                                <div class="ai-note">
+                                    <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
+                                    calculated
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
+                                <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
+                                    <i>+</i> Upload & Analyze Contract
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Contracts Table -->
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Contract Name</th>
+                                <th>Case</th>
+                                <th>Risk Level</th>
+                                <th>Risk Score</th>
+                                <th>Upload Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractsTableBody">
+                            <?php foreach ($contracts as $contract):
+                                $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
+                                $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php if (!empty($contract['file_path'])): ?>
+                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline"
+                                                data-pdf-type="contract"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                        <?php else: ?>
+                                            <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                    <td>
+                                        <span
+                                            class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                            <?php echo htmlspecialchars($contract['risk_level']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
+                                    <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                    <td>
+                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
+                                            Risk Analysis</button>
+                                        <button class="action-btn download-btn" data-type="contract-download"
+                                            data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                            Download PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section" id="risk_analysis">
+                    <div class="section-header">
+                        <h2 class="section-title">Contract Risk Analysis</h2>
+                    </div>
+                    <div id="riskChartContainer">
+                        <canvas id="riskChart" width="400" height="200"></canvas>
+                    </div>
+                    <div id="analysisResults">
+                        <!-- Analysis results will be displayed here -->
+                        <div class="risk-summary" style="padding:12px;">
+                            <p><strong>Total contracts:</strong> <?php echo $totalContracts; ?></p>
+                            <p><strong>High:</strong> <?php echo $riskCounts['High']; ?> (<?php echo $highPct; ?>%)</p>
+                            <p><strong>Medium:</strong> <?php echo $riskCounts['Medium']; ?>
+                                (<?php echo $mediumPct; ?>%)
+                            </p>
+                            <p><strong>Low:</strong> <?php echo $riskCounts['Low']; ?> (<?php echo $lowPct; ?>%)</p>
+                        </div>
+                        <?php
+                        $highContracts = array_filter($contracts, function ($c) {
+                            return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
+                        });
+                        if (!empty($highContracts)): ?>
+                            <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
+                            <ul>
+                                <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                    <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
+                                        <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="content-section" id="members">
+                    <div class="section-header">
+                        <h2 class="section-title">Team Members</h2>
+                        <button class="add-btn" id="addMemberBtn">
+                            <i>+</i> Add Member
+                        </button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody">
+                            <?php foreach ($employees as $employee): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                        <button class="action-btn" data-type="employee-edit"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
+
+        <!-- Details Modal -->
+        <div id="detailsModal"
+            style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); align-items:center; justify-content:center; z-index:1000;">
+            <div
+                style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+                <div
+                    style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #fff;">
+                    <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">
+                        Details
+                    </h3>
+                    <button id="closeDetails"
+                        style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="detailsBody" style="padding: 24px; overflow-y: auto;">
+                    <!-- Fallback content shown if no dynamic content is provided -->
+                    <form id="genericModalForm" style="display:block">
+                        <div
+                            style="padding:12px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:10px;">
+                            <h4 style="margin:0 0 6px;">Quick Note</h4>
+                            <p style="margin:0 0 8px; color:#475569;">Enter an optional note then submit. This is a
+                                default
+                                content view that appears when no specific details are loaded.</p>
+                            <textarea name="note" rows="3" class="form-control" placeholder="Type your note here…"
+                                style="width:100%;"></textarea>
+                        </div>
+                        <div style="display:flex; gap:10px; justify-content:flex-end;">
+                            <button type="submit" class="save-btn">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Password Gate Modal -->
+        <div id="passwordModal"
+            style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.45); align-items:center; justify-content:center; z-index:2000;">
+            <div
+                style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.2); border:1px solid #e2e8f0;">
+                <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
+                    Security Check</h2>
+                <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
+                <form id="passwordForm">
+                    <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                        <input type="password" maxlength="1" class="pin-digit"
+                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    </div>
+                    <div id="pwdError"
+                        style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
+                        Incorrect PIN. Please try again.</div>
+                    <div style="display:flex; gap:12px; justify-content:center;">
+                        <button type="button" class="cancel-btn" id="pwdCancel"
+                            style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
+                        <button type="submit" class="save-btn"
+                            style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                    </div>
                 </form>
             </div>
         </div>
-    </div>
-    <!-- Contract: Upload Supporting Document Modal -->
-    <div id="contractDocsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1500;">
-        <div
-            style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
-            <button type="button" id="closeContractDocsModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
-            <h3 style="margin-top:0;">Upload Contract Document</h3>
-            <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
-                <input type="hidden" name="add_contract_document" value="1">
-                <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
-                <div class="form-group">
-                    <label for="contract_doc_name">Document Name</label>
-                    <input type="text" id="contract_doc_name" name="doc_name" class="form-control"
-                        placeholder="e.g., Annex A, Addendum, Scanned Signature" required>
-                </div>
-                <div class="form-group">
-                    <label for="contract_doc_file">File</label>
-                    <input type="file" id="contract_doc_file" name="doc_file" class="form-control"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" id="cancelContractDocsBtn">Cancel</button>
-                    <button type="submit" class="save-btn">Upload Document</button>
-                </div>
-            </form>
+
+        <!-- Edit Employee Modal -->
+        <div id="editEmployeeModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+            <div
+                style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+                <button type="button" id="closeEditEmployee"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <h3 style="margin-top:0;">Edit Employee</h3>
+                <form method="POST" id="editEmployeeForm">
+                    <input type="hidden" name="update_employee" value="1">
+                    <input type="hidden" name="employee_id" id="edit_emp_id">
+                    <div class="form-group">
+                        <label for="edit_emp_name">Name</label>
+                        <input type="text" id="edit_emp_name" name="employee_name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_emp_position">Position</label>
+                        <input type="text" id="edit_emp_position" name="employee_position" class="form-control"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_emp_email">Email</label>
+                        <input type="email" id="edit_emp_email" name="employee_email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_emp_phone">Phone</label>
+                        <input type="text" id="edit_emp_phone" name="employee_phone" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelEditEmployee">Cancel</button>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <script>
-        (function () {
-            const detailsModal = document.getElementById('detailsModal');
-            const detailsTitle = document.getElementById('detailsTitle');
-            const detailsBody = document.getElementById('detailsBody');
-            const closeDetails = document.getElementById('closeDetails');
-            const pwdModal = document.getElementById('passwordModal');
-            const pwdForm = document.getElementById('passwordForm');
-            const pinInputs = pwdModal.querySelectorAll('.pin-digit');
-            const pwdError = document.getElementById('pwdError');
-            const pwdCancel = document.getElementById('pwdCancel');
-            const PASSWORD = '1234';
+        <!-- Contract Form Modal wrapper -->
+        <div id="contractFormModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+            <div
+                style="background:rgba(255,255,255,0.95); backdrop-filter: blur(20px); width:94%; max-width:500px; border-radius:16px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.5); max-height: 90vh; overflow-y: auto;">
+                <button type="button" id="closeContractFormModal"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <div id="contractFormContainer">
+                    <!-- The existing contract form will be moved here dynamically -->
+                </div>
+            </div>
+        </div>
+        <!-- Employee Form Modal wrapper -->
+        <div id="employeeFormModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+            <div
+                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+                <button type="button" id="closeEmployeeFormModal"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <div id="employeeFormContainer"></div>
+            </div>
+        </div>
+        <!-- Document Form Modal wrapper -->
+        <div id="documentFormModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+            <div
+                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+                <button type="button" id="closeDocumentFormModal"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <div id="documentFormContainer">
+                    <h3>Upload Document</h3>
+                    <form method="POST" enctype="multipart/form-data" id="documentFormData">
+                        <input type="hidden" name="add_document" value="1">
+                        <div class="form-group">
+                            <label for="doc_name">Document Name</label>
+                            <input type="text" id="doc_name" name="doc_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doc_case">Case ID</label>
+                            <input type="text" id="doc_case" name="doc_case" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doc_file">File</label>
+                            <input type="file" id="doc_file" name="doc_file" class="form-control"
+                                accept=".pdf,.doc,.docx" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelDocumentBtn">Cancel</button>
+                            <button type="submit" class="save-btn">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Edit Document Modal -->
+        <div id="editDocumentModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1200;">
+            <div
+                style="background:#ffffff; width:92%; max-width:560px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+                <button type="button" id="closeEditDocument"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <h3 style="margin-top:0;">Edit Document</h3>
+                <form method="POST" id="editDocumentForm">
+                    <input type="hidden" name="update_document" value="1">
+                    <input type="hidden" name="document_id" id="edit_doc_id">
+                    <div class="form-group">
+                        <label for="edit_doc_name">Document Name</label>
+                        <input type="text" id="edit_doc_name" name="doc_name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_doc_case">Case ID</label>
+                        <input type="text" id="edit_doc_case" name="doc_case" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelEditDocument">Cancel</button>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Invoice Form Modal wrapper -->
+        <div id="invoiceFormModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1150;">
+            <div
+                style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid #e2e8f0;">
+                <button type="button" id="closeInvoiceFormModal"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <div id="invoiceFormContainer">
+                    <h3>Create Invoice</h3>
+                    <form method="POST" id="invoiceFormData">
+                        <input type="hidden" name="add_invoice" value="1">
+                        <div class="form-group">
+                            <label for="inv_number">Invoice #</label>
+                            <input type="text" id="inv_number" name="invoice_number" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inv_client">Client</label>
+                            <input type="text" id="inv_client" name="client" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inv_amount">Amount</label>
+                            <input type="number" step="0.01" id="inv_amount" name="amount" class="form-control"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inv_due">Due Date</label>
+                            <input type="date" id="inv_due" name="due_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inv_status">Status</label>
+                            <select id="inv_status" name="status" class="form-control" required>
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelInvoiceBtn">Cancel</button>
+                            <button type="submit" class="save-btn">Save Invoice</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Pay confirmation modal -->
+        <div id="payConfirmModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1600;">
+            <div
+                style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+                <h3 style="margin:0 0 8px;">Confirm Payment</h3>
+                <p id="payConfirmText" style="margin:0 0 14px; color:#475569;">Do you want to pay this invoice?</p>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" class="cancel-btn" id="cancelPayBtn">No</button>
+                    <form method="POST" id="payInvoiceForm" style="margin:0;">
+                        <input type="hidden" name="pay_invoice" value="1">
+                        <input type="hidden" name="invoice_id" id="pay_invoice_id" value="">
+                        <button type="submit" class="save-btn" style="background:#16a34a;">Yes, Pay</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Contract: Upload Supporting Document Modal -->
+        <div id="contractDocsModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1500;">
+            <div
+                style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1); border:1px solid #e2e8f0;">
+                <button type="button" id="closeContractDocsModal"
+                    style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                <h3 style="margin-top:0;">Upload Contract Document</h3>
+                <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
+                    <input type="hidden" name="add_contract_document" value="1">
+                    <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
+                    <div class="form-group">
+                        <label for="contract_doc_name">Document Name</label>
+                        <input type="text" id="contract_doc_name" name="doc_name" class="form-control"
+                            placeholder="e.g., Annex A, Addendum, Scanned Signature" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contract_doc_file">File</label>
+                        <input type="file" id="contract_doc_file" name="doc_file" class="form-control"
+                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelContractDocsBtn">Cancel</button>
+                        <button type="submit" class="save-btn">Upload Document</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-            // Password gate helper — shows password modal and calls callback on successful entry.
-            function withPasswordGate(cb) {
-                if (typeof cb !== 'function') return;
-                if (!pwdModal || !pwdForm || !pinInputs.length) { cb(); return; }
+        <script>
+            (function () {
+                const detailsModal = document.getElementById('detailsModal');
+                const detailsTitle = document.getElementById('detailsTitle');
+                const detailsBody = document.getElementById('detailsBody');
+                const closeDetails = document.getElementById('closeDetails');
+                const pwdModal = document.getElementById('passwordModal');
+                const pwdForm = document.getElementById('passwordForm');
+                const pinInputs = pwdModal.querySelectorAll('.pin-digit');
+                const pwdError = document.getElementById('pwdError');
+                const pwdCancel = document.getElementById('pwdCancel');
+                const PASSWORD = '1234';
 
-                // Close/hide other modals and remember previous display states
-                const modalsToHide = [detailsModal, empInfoModal, contractFormModal, employeeFormModal, documentFormModal, editModal, editDocModal, invoiceFormModal, payConfirmModal, contractDocsModal];
-                const prevDisplay = new Map();
-                modalsToHide.forEach(m => {
-                    try {
-                        if (!m) return;
-                        prevDisplay.set(m, m.style.display || '');
-                        // use closeModal helper to ensure consistent behavior
-                        closeModal(m);
-                    } catch (e) { }
-                });
+                // Password gate helper — shows password modal and calls callback on successful entry.
+                function withPasswordGate(cb) {
+                    if (typeof cb !== 'function') return;
+                    if (!pwdModal || !pwdForm || !pinInputs.length) { cb(); return; }
 
-                // Add class to body to visually hide everything except the password modal
-                document.body.classList.add('pwd-focus');
-
-                // Reset UI and show password modal
-                pwdError.style.display = 'none';
-                pinInputs.forEach(i => i.value = '');
-                openModal(pwdModal);
-                setTimeout(() => pinInputs[0]?.focus(), 100);
-
-                // Auto-focus logic for PIN
-                const onPinInput = function (e) { e.target.value = e.target.value.replace(/[^0-9]/g, ''); if (e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus(); };
-                const onPinKeydown = function (e) { if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) e.target.previousElementSibling.focus(); };
-                pinInputs.forEach(input => {
-                    input.addEventListener('input', onPinInput);
-                    input.addEventListener('keydown', onPinKeydown);
-                });
-
-                // Submit handler (one-time)
-                const onSubmit = function (e) {
-                    e.preventDefault();
-                    const val = Array.from(pinInputs).map(i => i.value).join('');
-                    if (val === PASSWORD) {
-                        try { closeModal(pwdModal); } catch (e) { }
-                        pwdForm.removeEventListener('submit', onSubmit);
-                        pinInputs.forEach(i => { i.removeEventListener('input', onPinInput); i.removeEventListener('keydown', onPinKeydown); });
-                        document.body.classList.remove('pwd-focus');
-                        cb();
-                    } else {
-                        pwdError.style.display = 'block';
-                        pinInputs.forEach(i => i.value = '');
-                        pinInputs[0]?.focus();
-                    }
-                };
-
-                // Cancel/cleanup - restore previous modal visibility states and remove body class
-                const onCancelCleanup = function () {
-                    try { pwdForm.removeEventListener('submit', onSubmit); } catch (e) { }
-                    try { closeModal(pwdModal); } catch (e) { }
-                    prevDisplay.forEach((disp, m) => {
-                        try { m.style.display = disp || 'none'; } catch (e) { }
+                    // Close/hide other modals and remember previous display states
+                    const modalsToHide = [detailsModal, empInfoModal, contractFormModal, employeeFormModal, documentFormModal, editModal, editDocModal, invoiceFormModal, payConfirmModal, contractDocsModal];
+                    const prevDisplay = new Map();
+                    modalsToHide.forEach(m => {
+                        try {
+                            if (!m) return;
+                            prevDisplay.set(m, m.style.display || '');
+                            // use closeModal helper to ensure consistent behavior
+                            closeModal(m);
+                        } catch (e) { }
                     });
-                    document.body.classList.remove('pwd-focus');
-                };
 
-                pwdForm.addEventListener('submit', onSubmit);
-                pwdCancel.addEventListener('click', onCancelCleanup, { once: true });
-            }
+                    // Add class to body to visually hide everything except the password modal
+                    document.body.classList.add('pwd-focus');
 
-            const editModal = document.getElementById('editEmployeeModal');
-            const closeEdit = document.getElementById('closeEditEmployee');
-            const cancelEdit = document.getElementById('cancelEditEmployee');
-            const editForm = document.getElementById('editEmployeeForm');
-            const fId = document.getElementById('edit_emp_id');
-            const fName = document.getElementById('edit_emp_name');
-            const fPos = document.getElementById('edit_emp_position');
-            const fEmail = document.getElementById('edit_emp_email');
-            const fPhone = document.getElementById('edit_emp_phone');
+                    // Reset UI and show password modal
+                    pwdError.style.display = 'none';
+                    pinInputs.forEach(i => i.value = '');
+                    openModal(pwdModal);
+                    setTimeout(() => pinInputs[0]?.focus(), 100);
 
-            // Employee info modal (unified create/update)
-            const empInfoModal = document.getElementById('employeeInfoModal');
-            const closeEmpInfo = document.getElementById('closeEmployeeInfo');
-            const cancelEmpInfo = document.getElementById('cancelEmployeeInfo');
-            const empInfoForm = document.getElementById('employeeInfoForm');
-            const infoId = document.getElementById('info_emp_id');
-            const infoName = document.getElementById('info_emp_name');
-            const infoPos = document.getElementById('info_emp_position');
-            const infoEmail = document.getElementById('info_emp_email');
-            const infoPhone = document.getElementById('info_emp_phone');
-            const employeeInfoTitle = document.getElementById('employeeInfoTitle');
-            const contractForm = document.getElementById('contractForm');
-            const contractFormModal = document.getElementById('contractFormModal');
-            const contractFormContainer = document.getElementById('contractFormContainer');
-            const addContractBtn = document.getElementById('addContractBtn');
-            const cancelContractBtn = document.getElementById('cancelContractBtn');
-            const closeContractFormModal = document.getElementById('closeContractFormModal');
-            const exportPdfBtn = document.getElementById('exportPdfBtn');
-            const exportPdfForm = document.getElementById('exportPdfForm');
-            // Employee form modal
-            const employeeForm = document.getElementById('employeeForm');
-            const employeeFormModal = document.getElementById('employeeFormModal');
-            const employeeFormContainer = document.getElementById('employeeFormContainer');
-            const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-            const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
-            // Document form modal
-            const documentFormModal = document.getElementById('documentFormModal');
-            const documentFormContainer = document.getElementById('documentFormContainer');
-            const addDocumentBtn = document.getElementById('addDocumentBtn');
-            const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
-            const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
-            // Edit document modal
-            const editDocModal = document.getElementById('editDocumentModal');
-            const closeEditDoc = document.getElementById('closeEditDocument');
-            const cancelEditDoc = document.getElementById('cancelEditDocument');
-            const editDocForm = document.getElementById('editDocumentForm');
-            const editDocId = document.getElementById('edit_doc_id');
-            const editDocName = document.getElementById('edit_doc_name');
-            const editDocCase = document.getElementById('edit_doc_case');
-            // Invoice form modal
-            const invoiceFormModal = document.getElementById('invoiceFormModal');
-            const addInvoiceBtn = document.getElementById('addInvoiceBtn');
-            const closeInvoiceFormModal = document.getElementById('closeInvoiceFormModal');
-            const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
-            // Pay modal
-            const payConfirmModal = document.getElementById('payConfirmModal');
-            const cancelPayBtn = document.getElementById('cancelPayBtn');
-            const payInvoiceId = document.getElementById('pay_invoice_id');
-            const payConfirmText = document.getElementById('payConfirmText');
-            // Contract docs modal
-            const contractDocsModal = document.getElementById('contractDocsModal');
-            const closeContractDocsModal = document.getElementById('closeContractDocsModal');
-            const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
-            const contractDocsContractId = document.getElementById('contract_docs_contract_id');
+                    // Auto-focus logic for PIN
+                    const onPinInput = function (e) { e.target.value = e.target.value.replace(/[^0-9]/g, ''); if (e.target.value && e.target.nextElementSibling) e.target.nextElementSibling.focus(); };
+                    const onPinKeydown = function (e) { if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) e.target.previousElementSibling.focus(); };
+                    pinInputs.forEach(input => {
+                        input.addEventListener('input', onPinInput);
+                        input.addEventListener('keydown', onPinKeydown);
+                    });
 
-            function openModal(el) { el.style.display = 'flex'; }
-            function closeModal(el) { el.style.display = 'none'; }
+                    // Submit handler (one-time)
+                    const onSubmit = function (e) {
+                        e.preventDefault();
+                        const val = Array.from(pinInputs).map(i => i.value).join('');
+                        if (val === PASSWORD) {
+                            try { closeModal(pwdModal); } catch (e) { }
+                            pwdForm.removeEventListener('submit', onSubmit);
+                            pinInputs.forEach(i => { i.removeEventListener('input', onPinInput); i.removeEventListener('keydown', onPinKeydown); });
+                            document.body.classList.remove('pwd-focus');
+                            cb();
+                        } else {
+                            pwdError.style.display = 'block';
+                            pinInputs.forEach(i => i.value = '');
+                            pinInputs[0]?.focus();
+                        }
+                    };
 
-            // PDF Generation Utility
-            function generatePDFFromData(title, contentHTML, filename) {
-                const element = document.createElement('div');
-                element.style.padding = '20px';
-                element.style.fontFamily = 'Arial, sans-serif';
-                element.innerHTML = `
+                    // Cancel/cleanup - restore previous modal visibility states and remove body class
+                    const onCancelCleanup = function () {
+                        try { pwdForm.removeEventListener('submit', onSubmit); } catch (e) { }
+                        try { closeModal(pwdModal); } catch (e) { }
+                        prevDisplay.forEach((disp, m) => {
+                            try { m.style.display = disp || 'none'; } catch (e) { }
+                        });
+                        document.body.classList.remove('pwd-focus');
+                    };
+
+                    pwdForm.addEventListener('submit', onSubmit);
+                    pwdCancel.addEventListener('click', onCancelCleanup, { once: true });
+                }
+
+                const editModal = document.getElementById('editEmployeeModal');
+                const closeEdit = document.getElementById('closeEditEmployee');
+                const cancelEdit = document.getElementById('cancelEditEmployee');
+                const editForm = document.getElementById('editEmployeeForm');
+                const fId = document.getElementById('edit_emp_id');
+                const fName = document.getElementById('edit_emp_name');
+                const fPos = document.getElementById('edit_emp_position');
+                const fEmail = document.getElementById('edit_emp_email');
+                const fPhone = document.getElementById('edit_emp_phone');
+
+                // Employee info modal (unified create/update)
+                const empInfoModal = document.getElementById('employeeInfoModal');
+                const closeEmpInfo = document.getElementById('closeEmployeeInfo');
+                const cancelEmpInfo = document.getElementById('cancelEmployeeInfo');
+                const empInfoForm = document.getElementById('employeeInfoForm');
+                const infoId = document.getElementById('info_emp_id');
+                const infoName = document.getElementById('info_emp_name');
+                const infoPos = document.getElementById('info_emp_position');
+                const infoEmail = document.getElementById('info_emp_email');
+                const infoPhone = document.getElementById('info_emp_phone');
+                const employeeInfoTitle = document.getElementById('employeeInfoTitle');
+                const contractForm = document.getElementById('contractForm');
+                const contractFormModal = document.getElementById('contractFormModal');
+                const contractFormContainer = document.getElementById('contractFormContainer');
+                const addContractBtn = document.getElementById('addContractBtn');
+                const cancelContractBtn = document.getElementById('cancelContractBtn');
+                const closeContractFormModal = document.getElementById('closeContractFormModal');
+                const exportPdfBtn = document.getElementById('exportPdfBtn');
+                const exportPdfForm = document.getElementById('exportPdfForm');
+                // Employee form modal
+                const employeeForm = document.getElementById('employeeForm');
+                const employeeFormModal = document.getElementById('employeeFormModal');
+                const employeeFormContainer = document.getElementById('employeeFormContainer');
+                const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+                const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
+                // Document form modal
+                const documentFormModal = document.getElementById('documentFormModal');
+                const documentFormContainer = document.getElementById('documentFormContainer');
+                const addDocumentBtn = document.getElementById('addDocumentBtn');
+                const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
+                const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
+                // Edit document modal
+                const editDocModal = document.getElementById('editDocumentModal');
+                const closeEditDoc = document.getElementById('closeEditDocument');
+                const cancelEditDoc = document.getElementById('cancelEditDocument');
+                const editDocForm = document.getElementById('editDocumentForm');
+                const editDocId = document.getElementById('edit_doc_id');
+                const editDocName = document.getElementById('edit_doc_name');
+                const editDocCase = document.getElementById('edit_doc_case');
+                // Invoice form modal
+                const invoiceFormModal = document.getElementById('invoiceFormModal');
+                const addInvoiceBtn = document.getElementById('addInvoiceBtn');
+                const closeInvoiceFormModal = document.getElementById('closeInvoiceFormModal');
+                const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
+                // Pay modal
+                const payConfirmModal = document.getElementById('payConfirmModal');
+                const cancelPayBtn = document.getElementById('cancelPayBtn');
+                const payInvoiceId = document.getElementById('pay_invoice_id');
+                const payConfirmText = document.getElementById('payConfirmText');
+                // Contract docs modal
+                const contractDocsModal = document.getElementById('contractDocsModal');
+                const closeContractDocsModal = document.getElementById('closeContractDocsModal');
+                const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
+                const contractDocsContractId = document.getElementById('contract_docs_contract_id');
+
+                function openModal(el) { el.style.display = 'flex'; }
+                function closeModal(el) { el.style.display = 'none'; }
+
+                // PDF Generation Utility
+                function generatePDFFromData(title, contentHTML, filename) {
+                    const element = document.createElement('div');
+                    element.style.padding = '20px';
+                    element.style.fontFamily = 'Arial, sans-serif';
+                    element.innerHTML = `
                     <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
                         <h1 style="color: #2c3e50; margin: 0;">Legal Management System</h1>
                         <h2 style="color: #3498db; margin: 5px 0 0;">${title}</h2>
@@ -1517,27 +1531,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </div>
                 `;
 
-                const opt = {
-                    margin: 15,
-                    filename: filename || 'Legal_Document.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
+                    const opt = {
+                        margin: 15,
+                        filename: filename || 'Legal_Document.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
 
-                html2pdf().set(opt).from(element).save();
-            }
+                    html2pdf().set(opt).from(element).save();
+                }
 
-            // Universal PDF Download Handler for various data types
-            window.downloadRecordAsPDF = function (type, data) {
-                let title = '';
-                let contentHTML = '';
-                let filename = '';
+                // Universal PDF Download Handler for various data types
+                window.downloadRecordAsPDF = function (type, data) {
+                    let title = '';
+                    let contentHTML = '';
+                    let filename = '';
 
-                switch (type) {
-                    case 'employee':
-                        title = 'Employee Profile';
-                        contentHTML = `
+                    switch (type) {
+                        case 'employee':
+                            title = 'Employee Profile';
+                            contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
                                 <p><strong>Position:</strong> ${data.position || 'N/A'}</p>
@@ -1545,22 +1559,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
                             </div>
                         `;
-                        filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'document':
-                        title = 'Document Details';
-                        contentHTML = `
+                            filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
+                            break;
+                        case 'document':
+                            title = 'Document Details';
+                            contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Document Name:</strong> ${data.name || 'N/A'}</p>
                                 <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
                                 <p><strong>Date Uploaded:</strong> ${data.uploaded_at || 'N/A'}</p>
                             </div>
                         `;
-                        filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'billing':
-                        title = 'Invoice Summary';
-                        contentHTML = `
+                            filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
+                            break;
+                        case 'billing':
+                            title = 'Invoice Summary';
+                            contentHTML = `
                             <div style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
                                 <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">Invoice #${data.invoice_number || data.id}</h3>
                                 <p><strong>Client:</strong> ${data.client || 'N/A'}</p>
@@ -1569,14 +1583,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <p><strong>Status:</strong> <span style="color: ${data.status === 'paid' ? '#059669' : '#dc2626'}; font-weight: bold;">${data.status.toUpperCase()}</span></p>
                             </div>
                         `;
-                        filename = `Invoice_${data.invoice_number || data.id}.pdf`;
-                        break;
-                    case 'contract':
-                        title = 'Contract Risk Analysis';
-                        const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
-                        const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
-                        const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
-                        const imageHTML = isImage ? `
+                            filename = `Invoice_${data.invoice_number || data.id}.pdf`;
+                            break;
+                        case 'contract':
+                            title = 'Contract Risk Analysis';
+                            const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
+                            const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
+                            const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
+                            const imageHTML = isImage ? `
                             <div style="margin-top: 30px; border-top: 2px solid #f1f5f9; pt: 20px;">
                                 <h4 style="margin-bottom: 15px; color: #1e293b;">Contract Image Attachment</h4>
                                 <div style="text-align: center; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px dashed #cbd5e1;">
@@ -1585,7 +1599,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </div>
                         ` : '';
 
-                        contentHTML = `
+                            contentHTML = `
                             <div style="margin-bottom: 20px;">
                                 <p><strong>Contract Name:</strong> ${data.contract_name || data.name || 'N/A'}</p>
                                 <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
@@ -1607,93 +1621,93 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 ${imageHTML}
                             </div>
                         `;
-                        filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
-                        break;
+                            filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
+                            break;
+                    }
+
+                    generatePDFFromData(title, contentHTML, filename);
                 }
 
-                generatePDFFromData(title, contentHTML, filename);
-            }
+                // Consolidated Unified Event Delegation for Table Actions & PDF handling
+                document.body.addEventListener('click', function (e) {
+                    const target = e.target.closest('button, a.view-pdf-link, .download-btn');
+                    if (!target) return;
 
-            // Consolidated Unified Event Delegation for Table Actions & PDF handling
-            document.body.addEventListener('click', function (e) {
-                const target = e.target.closest('button, a.view-pdf-link, .download-btn');
-                if (!target) return;
+                    const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
+                    if (!type) return;
 
-                const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
-                if (!type) return;
-
-                // 1. PDF DOWNLOAD HANDLING
-                if (target.classList.contains('download-btn') || type === 'download') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data);
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF generation failed:", err); }
-                    }
-                }
-
-                // 2. PDF VIEW HANDLING (Hijacked Name Links)
-                if (type === 'pdf-view') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF view failed:", err); }
-                    }
-                }
-
-                // 3. TABLE ACTION MODALS (Password Protected)
-                withPasswordGate(() => {
-                    // Employee/Member View/Edit
-                    if (type === 'employee-view' || type === 'employee-edit') {
-                        const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                        employeeInfoTitle.textContent = type === 'employee-view' ? 'Employee Information' : 'Edit Employee';
-                        infoId.value = emp.id || '';
-                        infoName.value = emp.name || '';
-                        infoPos.value = emp.position || '';
-                        infoEmail.value = emp.email || '';
-                        infoPhone.value = emp.phone || '';
-                        const isView = type === 'employee-view';
-                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = isView; i.disabled = false; } });
-                        const actions = empInfoForm.querySelector('.form-actions');
-                        if (actions) actions.style.display = isView ? 'none' : '';
-                        openModal(empInfoModal);
-
-                        // Add PDF button if viewing
-                        if (isView) injectModalPdfButton(empInfoForm, 'employee', emp);
-                    }
-                    // Document Edit
-                    else if (type === 'doc-edit') {
-                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                        editDocId.value = d.id || '';
-                        editDocName.value = d.name || '';
-                        editDocCase.value = d.case_id || '';
-                        openModal(editDocModal);
-                        injectModalPdfButton(editDocForm, 'document', d);
-                    }
-                    // Document Delete
-                    else if (type === 'doc-delete') {
-                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                        if (confirm('Delete document "' + (d.name || '') + '"?')) {
-                            const f = document.createElement('form');
-                            f.method = 'POST';
-                            f.innerHTML = `<input type="hidden" name="delete_document" value="1"><input type="hidden" name="document_id" value="${d.id || ''}">`;
-                            document.body.appendChild(f); f.submit();
+                    // 1. PDF DOWNLOAD HANDLING
+                    if (target.classList.contains('download-btn') || type === 'download') {
+                        const pdfType = target.getAttribute('data-pdf-type');
+                        const pdfContent = target.getAttribute('data-pdf-content');
+                        if (pdfType && pdfContent) {
+                            try {
+                                const data = JSON.parse(pdfContent);
+                                downloadRecordAsPDF(pdfType, data);
+                                e.preventDefault();
+                                return;
+                            } catch (err) { console.error("PDF generation failed:", err); }
                         }
                     }
-                    // Invoice View
-                    else if (type === 'invoice-view') {
-                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                        detailsTitle.textContent = 'Invoice Details';
-                        detailsBody.innerHTML = `
+
+                    // 2. PDF VIEW HANDLING (Hijacked Name Links)
+                    if (type === 'pdf-view') {
+                        const pdfType = target.getAttribute('data-pdf-type');
+                        const pdfContent = target.getAttribute('data-pdf-content');
+                        if (pdfType && pdfContent) {
+                            try {
+                                const data = JSON.parse(pdfContent);
+                                downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
+                                e.preventDefault();
+                                return;
+                            } catch (err) { console.error("PDF view failed:", err); }
+                        }
+                    }
+
+                    // 3. TABLE ACTION MODALS (Password Protected)
+                    withPasswordGate(() => {
+                        // Employee/Member View/Edit
+                        if (type === 'employee-view' || type === 'employee-edit') {
+                            const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
+                            employeeInfoTitle.textContent = type === 'employee-view' ? 'Employee Information' : 'Edit Employee';
+                            infoId.value = emp.id || '';
+                            infoName.value = emp.name || '';
+                            infoPos.value = emp.position || '';
+                            infoEmail.value = emp.email || '';
+                            infoPhone.value = emp.phone || '';
+                            const isView = type === 'employee-view';
+                            [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = isView; i.disabled = false; } });
+                            const actions = empInfoForm.querySelector('.form-actions');
+                            if (actions) actions.style.display = isView ? 'none' : '';
+                            openModal(empInfoModal);
+
+                            // Add PDF button if viewing
+                            if (isView) injectModalPdfButton(empInfoForm, 'employee', emp);
+                        }
+                        // Document Edit
+                        else if (type === 'doc-edit') {
+                            const d = JSON.parse(target.getAttribute('data-doc') || '{}');
+                            editDocId.value = d.id || '';
+                            editDocName.value = d.name || '';
+                            editDocCase.value = d.case_id || '';
+                            openModal(editDocModal);
+                            injectModalPdfButton(editDocForm, 'document', d);
+                        }
+                        // Document Delete
+                        else if (type === 'doc-delete') {
+                            const d = JSON.parse(target.getAttribute('data-doc') || '{}');
+                            if (confirm('Delete document "' + (d.name || '') + '"?')) {
+                                const f = document.createElement('form');
+                                f.method = 'POST';
+                                f.innerHTML = `<input type="hidden" name="delete_document" value="1"><input type="hidden" name="document_id" value="${d.id || ''}">`;
+                                document.body.appendChild(f); f.submit();
+                            }
+                        }
+                        // Invoice View
+                        else if (type === 'invoice-view') {
+                            const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
+                            detailsTitle.textContent = 'Invoice Details';
+                            detailsBody.innerHTML = `
                           <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
                             <div><strong>Invoice #</strong></div><div>${inv.invoice_number || inv.id || ''}</div>
                             <div><strong>Client</strong></div><div>${inv.client || ''}</div>
@@ -1701,25 +1715,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <div><strong>Due Date</strong></div><div>${inv.due_date || ''}</div>
                             <div><strong>Status</strong></div><div>${(inv.status || '').toString().toUpperCase()}</div>
                           </div>`;
-                        openModal(detailsModal);
-                        injectModalPdfButton(detailsBody, 'billing', inv);
-                    }
-                    // Invoice Pay
-                    else if (type === 'invoice-pay') {
-                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                        payInvoiceId.value = inv.id || '';
-                        payConfirmText.textContent = `Do you want to pay invoice ${inv.invoice_number || inv.id || ''} for ₱${Number(inv.amount || 0).toFixed(2)}?`;
-                        openModal(payConfirmModal);
-                    }
-                    // Contract View
-                    else if (type === 'contract-view') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'Contract Details';
-                        detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
-                        openModal(detailsModal);
-                        const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                        const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                        detailsBody.innerHTML = `
+                            openModal(detailsModal);
+                            injectModalPdfButton(detailsBody, 'billing', inv);
+                        }
+                        // Invoice Pay
+                        else if (type === 'invoice-pay') {
+                            const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
+                            payInvoiceId.value = inv.id || '';
+                            payConfirmText.textContent = `Do you want to pay invoice ${inv.invoice_number || inv.id || ''} for ₱${Number(inv.amount || 0).toFixed(2)}?`;
+                            openModal(payConfirmModal);
+                        }
+                        // Contract View
+                        else if (type === 'contract-view') {
+                            const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                            detailsTitle.textContent = 'Contract Details';
+                            detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
+                            openModal(detailsModal);
+                            const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                            const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                            detailsBody.innerHTML = `
                             <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
                                 <div><strong>Contract</strong></div><div>${c.contract_name || c.name || ''}</div>
                                 <div><strong>Case</strong></div><div>${c.case_id || ''}</div>
@@ -1728,23 +1742,23 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <div style="grid-column:1/-1"><strong>Risk Factors</strong><ul style="margin:.4rem 0 0 1rem;">${rf.map(r => `<li>${(r.factor || '')}</li>`).join('') || '<li>None</li>'}</ul></div>
                                 <div style="grid-column:1/-1"><strong>Recommendations</strong><ul style="margin:.4rem 0 0 1rem;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>None</li>'}</ul></div>
                             </div>`;
-                        injectModalPdfButton(detailsBody, 'contract', c);
-                    }
-                    // Contract Analyze
-                    else if (type === 'contract-analyze') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'AI Risk Analysis';
-                        detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
-                        openModal(detailsModal);
-                        setTimeout(() => {
-                            try {
-                                const score = c.risk_score ?? 'N/A';
-                                const level = c.risk_level ?? 'Unknown';
-                                const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                                const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                                let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
+                            injectModalPdfButton(detailsBody, 'contract', c);
+                        }
+                        // Contract Analyze
+                        else if (type === 'contract-analyze') {
+                            const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                            detailsTitle.textContent = 'AI Risk Analysis';
+                            detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
+                            openModal(detailsModal);
+                            setTimeout(() => {
+                                try {
+                                    const score = c.risk_score ?? 'N/A';
+                                    const level = c.risk_level ?? 'Unknown';
+                                    const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                                    const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                                    let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
 
-                                detailsBody.innerHTML = `
+                                    detailsBody.innerHTML = `
                                     <div style="text-align: center; margin-bottom: 20px;">
                                         <h2 style="margin: 0; color: ${color};">${level} Risk Contract</h2>
                                         <p>Risk Score: <strong>${score}/100</strong></p>
@@ -1762,123 +1776,123 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         </button>
                                     </div>
                                 `;
-                            } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
-                        }, 500);
-                    }
-                });
-            });
-
-            function injectModalPdfButton(container, pdfType, pdfData) {
-                let downloadBtn = document.getElementById('modalDownloadPdf');
-                if (downloadBtn) downloadBtn.remove();
-
-                downloadBtn = document.createElement('button');
-                downloadBtn.id = 'modalDownloadPdf';
-                downloadBtn.type = 'button';
-                downloadBtn.className = 'save-btn';
-                downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
-                downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
-                downloadBtn.onclick = () => {
-                    const originalHTML = downloadBtn.innerHTML;
-                    downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                    window.downloadRecordAsPDF(pdfType, pdfData);
-                    setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
-                };
-                container.appendChild(downloadBtn);
-            }
-
-
-            // Add Member Button Logic
-            const addMemberBtn = document.getElementById('addMemberBtn');
-            if (addMemberBtn) {
-                addMemberBtn.addEventListener('click', () => {
-                    employeeInfoTitle.textContent = 'Add Team Member';
-                    infoId.value = '';
-                    infoName.value = '';
-                    infoPos.value = '';
-                    infoEmail.value = '';
-                    infoPhone.value = '';
-                    try {
-                        const actions = empInfoForm.querySelector('.form-actions');
-                        if (actions) actions.style.display = '';
-                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = false; i.disabled = false; } });
-                    } catch (e) { }
-                    openModal(empInfoModal);
-                });
-            }
-
-            // ADDED: Contract Upload Modal Logic
-            if (addContractBtn) {
-                addContractBtn.addEventListener('click', () => {
-                    // Move the form into the modal container if not already there
-                    if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
-                        contractFormContainer.appendChild(contractForm);
-                        contractForm.style.display = 'block';
-                    }
-                    openModal(contractFormModal);
-                });
-            }
-            if (closeContractFormModal) {
-                closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
-            }
-            if (cancelContractBtn) {
-                cancelContractBtn.addEventListener('click', () => {
-                    closeModal(contractFormModal);
-                    // Optional: trim form inputs
-                    if (contractForm) contractForm.reset();
-                });
-            }
-
-            // ADDED: Fix for AI Risk Analysis / Details Modal Close Button
-            if (closeDetails) {
-                closeDetails.addEventListener('click', () => {
-                    closeModal(detailsModal);
-                });
-            }
-
-            // Risk chart init (avoid loop/double init)
-            let riskChartRef = null;
-            function initRiskChart() {
-                const ctx = document.getElementById('riskChart');
-                if (!ctx) return;
-                const data = {
-                    labels: ['High Risk', 'Medium Risk', 'Low Risk'], // Updated labels to match picture
-                    datasets: [{
-                        label: 'Contracts',
-                        data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
-                        borderWidth: 0,
-                        borderRadius: 6,
-                        barPercentage: 0.6,
-                        categoryPercentage: 0.8
-                    }]
-                };
-                if (riskChartRef) { riskChartRef.destroy(); }
-                // Added scales config to match picture (0, 1, 2 integers)
-                riskChartRef = new Chart(ctx, {
-                    type: 'bar',
-                    data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                            x: { grid: { display: false } }
+                                } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
+                            }, 500);
                         }
-                    }
+                    });
                 });
-            }
-            document.addEventListener('DOMContentLoaded', initRiskChart);
 
-            // Generate Secured PDF (password-gated) - Real PDF Implementation
-            exportPdfBtn?.addEventListener('click', (e) => {
-                e.preventDefault();
-                withPasswordGate(() => {
-                    // Data is injected from PHP
-                    const data = <?php echo json_encode($contracts); ?>;
+                function injectModalPdfButton(container, pdfType, pdfData) {
+                    let downloadBtn = document.getElementById('modalDownloadPdf');
+                    if (downloadBtn) downloadBtn.remove();
 
-                    let contentHTML = `
+                    downloadBtn = document.createElement('button');
+                    downloadBtn.id = 'modalDownloadPdf';
+                    downloadBtn.type = 'button';
+                    downloadBtn.className = 'save-btn';
+                    downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
+                    downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
+                    downloadBtn.onclick = () => {
+                        const originalHTML = downloadBtn.innerHTML;
+                        downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+                        window.downloadRecordAsPDF(pdfType, pdfData);
+                        setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
+                    };
+                    container.appendChild(downloadBtn);
+                }
+
+
+                // Add Member Button Logic
+                const addMemberBtn = document.getElementById('addMemberBtn');
+                if (addMemberBtn) {
+                    addMemberBtn.addEventListener('click', () => {
+                        employeeInfoTitle.textContent = 'Add Team Member';
+                        infoId.value = '';
+                        infoName.value = '';
+                        infoPos.value = '';
+                        infoEmail.value = '';
+                        infoPhone.value = '';
+                        try {
+                            const actions = empInfoForm.querySelector('.form-actions');
+                            if (actions) actions.style.display = '';
+                            [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = false; i.disabled = false; } });
+                        } catch (e) { }
+                        openModal(empInfoModal);
+                    });
+                }
+
+                // ADDED: Contract Upload Modal Logic
+                if (addContractBtn) {
+                    addContractBtn.addEventListener('click', () => {
+                        // Move the form into the modal container if not already there
+                        if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
+                            contractFormContainer.appendChild(contractForm);
+                            contractForm.style.display = 'block';
+                        }
+                        openModal(contractFormModal);
+                    });
+                }
+                if (closeContractFormModal) {
+                    closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
+                }
+                if (cancelContractBtn) {
+                    cancelContractBtn.addEventListener('click', () => {
+                        closeModal(contractFormModal);
+                        // Optional: trim form inputs
+                        if (contractForm) contractForm.reset();
+                    });
+                }
+
+                // ADDED: Fix for AI Risk Analysis / Details Modal Close Button
+                if (closeDetails) {
+                    closeDetails.addEventListener('click', () => {
+                        closeModal(detailsModal);
+                    });
+                }
+
+                // Risk chart init (avoid loop/double init)
+                let riskChartRef = null;
+                function initRiskChart() {
+                    const ctx = document.getElementById('riskChart');
+                    if (!ctx) return;
+                    const data = {
+                        labels: ['High Risk', 'Medium Risk', 'Low Risk'], // Updated labels to match picture
+                        datasets: [{
+                            label: 'Contracts',
+                            data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
+                            backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+                            borderWidth: 0,
+                            borderRadius: 6,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }]
+                    };
+                    if (riskChartRef) { riskChartRef.destroy(); }
+                    // Added scales config to match picture (0, 1, 2 integers)
+                    riskChartRef = new Chart(ctx, {
+                        type: 'bar',
+                        data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+                document.addEventListener('DOMContentLoaded', initRiskChart);
+
+                // Generate Secured PDF (password-gated) - Real PDF Implementation
+                exportPdfBtn?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    withPasswordGate(() => {
+                        // Data is injected from PHP
+                        const data = <?php echo json_encode($contracts); ?>;
+
+                        let contentHTML = `
                         <div style="margin-top: 20px;">
                             <p>This is a secured legal report containing sensitive contract risk information.</p>
                             <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt;">
@@ -1908,25 +1922,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     `;
 
-                    generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
+                        generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
+                    });
                 });
-            });
 
-            // Find the back button handler and update it:
-            const backBtn = document.getElementById('backDashboardBtn');
-            if (backBtn) {
-                backBtn.addEventListener('click', function () {
-                    // Redirect to facilities reservation dashboard
-                    window.location.href = 'facilities-reservation.php';
-                });
-            }
-        })();
-    </script>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
-        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"></iframe>
-    </div>
+                // Find the back button handler and update it:
+                const backBtn = document.getElementById('backDashboardBtn');
+                if (backBtn) {
+                    backBtn.addEventListener('click', function () {
+                        // Redirect to facilities reservation dashboard
+                        window.location.href = 'facilities-reservation.php';
+                    });
+                }
+            })();
+        </script>
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay"
+            style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+            <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"></iframe>
+        </div>
 </body>
 
 </html>
