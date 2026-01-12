@@ -610,6 +610,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
+        <!-- Background Logo Watermark -->
+        <img src="../assets/image/logo2.png" alt="Watermark"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; opacity: 0.05; pointer-events: none; z-index: 1;">
         <div class="login-form">
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
@@ -1348,7 +1351,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
 
     <script>
-    (function () {
+        (function () {
             const detailsModal = document.getElementById('detailsModal');
             const detailsTitle = document.getElementById('detailsTitle');
             const detailsBody = document.getElementById('detailsBody');
