@@ -610,12 +610,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
+        <!-- Background Logo Watermark -->
+        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.1; pointer-events: none; z-index: 1;">
+            <img src="../assets/image/logo.png" alt="Logo Watermark" style="width: 800px; height: auto;">
+        </div>
         <div class="login-form">
-            <div
-                style="margin: -40px -40px 30px -40px; overflow: hidden; border-radius: 24px 24px 0 0; background: #f8fafc;">
-                <img src="../assets/image/logo.png" alt="Logo"
-                    style="width: 100%; height: 200px; object-fit: cover; display: block;">
-            </div>
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
             <div class="pin-input">
@@ -683,11 +682,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="container">
             <!-- Success/Error Messages -->
             <?php if (isset($success_message)): ?>
-                <div class="alert alert-success"><?php echo $success_message; ?></div>
+                    <div class="alert alert-success"><?php echo $success_message; ?></div>
             <?php endif; ?>
 
             <?php if (isset($error_message)): ?>
-                <div class="alert alert-error"><?php echo $error_message; ?></div>
+                    <div class="alert alert-error"><?php echo $error_message; ?></div>
             <?php endif; ?>
 
             <div class="nav-tabs">
@@ -754,19 +753,19 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="employeesTableBody">
                         <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                    <button class="action-btn" data-type="employee-edit"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                        <button class="action-btn" data-type="employee-edit"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -790,35 +789,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </tr>
                     <tbody id="documentsTableBody">
                         <?php if (!empty($documents)): ?>
-                            <?php foreach ($documents as $doc): ?>
-                                <tr>
-                                    <td>
-                                        <?php if (!empty($doc['file_path'])): ?>
-                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                        <?php else: ?>
-                                            <?php echo htmlspecialchars($doc['name']); ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                    </td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="doc-edit"
-                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="doc-download"
-                                            data-pdf-type="document"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                            style="background:#059669;color:#fff;">Download PDF</button>
-                                        <button class="action-btn" data-type="doc-delete"
-                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                <?php foreach ($documents as $doc): ?>
+                                        <tr>
+                                            <td>
+                                                <?php if (!empty($doc['file_path'])): ?>
+                                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
+                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                <?php else: ?>
+                                                        <?php echo htmlspecialchars($doc['name']); ?>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                            <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                            </td>
+                                            <td>
+                                                <button class="action-btn view-btn" data-type="doc-edit"
+                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
+                                                <button class="action-btn download-btn" data-type="doc-download"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                    style="background:#059669;color:#fff;">Download PDF</button>
+                                                <button class="action-btn" data-type="doc-delete"
+                                                    data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>Delete</button>
+                                            </td>
+                                        </tr>
+                                <?php endforeach; ?>
                         <?php else: ?>
-                            <tr>
-                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.</td>
+                                </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -844,34 +843,34 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="billingTableBody">
                         <?php if (!empty($billing)): ?>
-                            <?php foreach ($billing as $b): ?>
+                                <?php foreach ($billing as $b): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
+                                            <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
+                                            <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
+                                            <td>
+                                                <button class="action-btn view-btn" data-type="invoice-view"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
+                                                <button class="action-btn download-btn" data-type="invoice-download"
+                                                    data-pdf-type="billing"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
+                                                    style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
+                                                    PDF</button>
+                                                <button class="action-btn"
+                                                    style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
+                                                    data-type="invoice-pay"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                            </td>
+                                        </tr>
+                                <?php endforeach; ?>
+                        <?php else: ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                    <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                    <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="invoice-view"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="invoice-download"
-                                            data-pdf-type="billing"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                            style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                            PDF</button>
-                                        <button class="action-btn"
-                                            style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                            data-type="invoice-pay"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                    <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records found.
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records found.
-                                </td>
-                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -976,35 +975,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
                             $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
                             ?>
-                            <tr>
-                                <td>
-                                    <?php if (!empty($contract['file_path'])): ?>
-                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                <td>
-                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
-                                        Risk Analysis</button>
-                                    <button class="action-btn download-btn" data-type="contract-download"
-                                        data-pdf-type="contract"
-                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                        Download PDF
-                                    </button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>
+                                        <?php if (!empty($contract['file_path'])): ?>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                        <?php else: ?>
+                                                <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                    <td>
+                                        <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                            <?php echo htmlspecialchars($contract['risk_level']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
+                                    <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                    <td>
+                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
+                                            Risk Analysis</button>
+                                        <button class="action-btn download-btn" data-type="contract-download"
+                                            data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                            Download PDF
+                                        </button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1031,14 +1030,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                     });
                     if (!empty($highContracts)): ?>
-                        <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
-                        <ul>
-                            <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
-                                    <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                            <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
+                            <ul>
+                                <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                        <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
+                                            <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
+                                        </li>
+                                <?php endforeach; ?>
+                            </ul>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1062,18 +1061,18 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="membersTableBody">
                         <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                    <button class="action-btn" data-type="employee-edit"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                        <button class="action-btn" data-type="employee-edit"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>Edit</button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
