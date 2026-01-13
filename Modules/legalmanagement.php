@@ -1021,33 +1021,82 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="section-header">
                     <h2 class="section-title">Contract Risk Analysis</h2>
                 </div>
-                <div id="riskChartContainer">
-                    <canvas id="riskChart" width="400" height="200"></canvas>
-                </div>
-                <div id="analysisResults">
-                    <!-- Analysis results will be displayed here -->
-                    <div class="risk-summary" style="padding:12px;">
-                        <p><strong>Total contracts:</strong> <?php echo $totalContracts; ?></p>
-                        <p><strong>High:</strong> <?php echo $riskCounts['High']; ?> (<?php echo $highPct; ?>%)</p>
-                        <p><strong>Medium:</strong> <?php echo $riskCounts['Medium']; ?>
-                            (<?php echo $mediumPct; ?>%)
-                        </p>
-                        <p><strong>Low:</strong> <?php echo $riskCounts['Low']; ?> (<?php echo $lowPct; ?>%)</p>
+
+                <!-- Stats Cards Grid -->
+                <div class="risk-stats-grid">
+                    <div class="stat-card total">
+                        <div class="stat-icon"><i class="fa-solid fa-file-contract"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Contracts</span>
+                            <span class="stat-value"><?php echo $totalContracts; ?></span>
+                        </div>
                     </div>
-                    <?php
-                    $highContracts = array_filter($contracts, function ($c) {
-                        return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
-                    });
-                    if (!empty($highContracts)): ?>
-                        <h4 style="margin-top:12px;">Top High-Risk Contracts</h4>
-                        <ul>
-                            <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                <li><?php echo htmlspecialchars($hc['contract_name'] ?? 'Untitled'); ?> —
-                                    <?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
+                    <div class="stat-card high">
+                        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">High Risk</span>
+                            <span class="stat-value"><?php echo $riskCounts['High']; ?></span>
+                            <span class="stat-meta"><?php echo $highPct; ?>% of total</span>
+                        </div>
+                    </div>
+                    <div class="stat-card medium">
+                        <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Medium Risk</span>
+                            <span class="stat-value"><?php echo $riskCounts['Medium']; ?></span>
+                            <span class="stat-meta"><?php echo $mediumPct; ?>% of total</span>
+                        </div>
+                    </div>
+                    <div class="stat-card low">
+                        <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Low Risk</span>
+                            <span class="stat-value"><?php echo $riskCounts['Low']; ?></span>
+                            <span class="stat-meta"><?php echo $lowPct; ?>% of total</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="risk-analysis-layout">
+                    <div class="chart-container-wrapper">
+                        <h3 class="subsection-title">Risk Distribution</h3>
+                        <div id="riskChartContainer" style="height: 300px; position: relative;">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="high-risk-list-wrapper">
+                        <h3 class="subsection-title">Top High-Risk Contracts</h3>
+                        <div id="analysisResults">
+                            <?php
+                            $highContracts = array_filter($contracts, function ($c) {
+                                return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
+                            });
+                            if (!empty($highContracts)): ?>
+                                <div class="high-risk-items">
+                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                        <div class="risk-item">
+                                            <div class="risk-item-info">
+                                                <span
+                                                    class="risk-item-name"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                <span
+                                                    class="risk-item-case"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                            </div>
+                                            <div class="risk-item-score">
+                                                <span
+                                                    class="score-badge"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="no-risk-data">
+                                    <i class="fa-solid fa-shield-check"></i>
+                                    <p>No high-risk contracts detected.</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1830,10 +1879,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    layout: { padding: { top: 20 } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            cornerRadius: 8,
+                            displayColors: false
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: {
+                                color: '#f1f5f9',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 12, weight: '600' }
+                            }
+                        }
                     }
                 }
             });
