@@ -409,7 +409,7 @@ function formatFileSize($bytes)
         .financial-table th {
             text-align: left;
             padding: 15px 12px;
-            color: #334155;
+            color: #fff;
             font-weight: 700;
             border-bottom: 2px solid #f1f5f9;
             white-space: nowrap;
@@ -727,7 +727,7 @@ function formatFileSize($bytes)
                         const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
                         const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
                         const amountValue = parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        
+
                         return `
                                         <tr>
                                             <td style="white-space: nowrap;">${formattedDate}</td>
