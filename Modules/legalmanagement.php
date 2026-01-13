@@ -566,7 +566,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
-    <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1.1">
+    <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=<?php echo time(); ?>">
 
     <style>
         /* Center all table header and cell content within this module */
@@ -1858,29 +1858,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         let riskChartRef = null;
         function initRiskChart() {
             const ctx = document.getElementById('riskChart');
-            if (!ctx) return;
+            if (!ctx) {
+                console.error("Risk Chart Canvas not found!");
+                return;
+            }
+            console.log("Initializing Risk Chart...");
+            
             const data = {
-                labels: ['High Risk', 'Medium Risk', 'Low Risk'], // Updated labels to match picture
+                labels: ['High Risk', 'Medium Risk', 'Low Risk'], 
                 datasets: [{
-                    label: 'Contracts',
+                    label: 'Contracts Count',
                     data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
                     backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
                     borderWidth: 0,
-                    borderRadius: 6,
+                    borderRadius: 10,
                     barPercentage: 0.6,
                     categoryPercentage: 0.8
                 }]
             };
-            if (riskChartRef) { riskChartRef.destroy(); }
-            // Added scales config to match picture (0, 1, 2 integers)
+
+            if (riskChartRef) { 
+                riskChartRef.destroy(); 
+            }
+
             riskChartRef = new Chart(ctx, {
                 type: 'bar',
                 data,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: { padding: { top: 20 } },
-                    plugins: {
+                    layout: { padding: { top: 30, bottom: 10 } },
+                    plugins: { 
                         legend: { display: false },
                         tooltip: {
                             backgroundColor: '#1e293b',
@@ -1892,29 +1900,30 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
                                 stepSize: 1,
                                 color: '#94a3b8',
-                                font: { size: 11 }
+                                font: { size: 11, family: 'Inter, sans-serif' }
                             },
                             grid: {
                                 color: '#f1f5f9',
                                 drawBorder: false
                             }
                         },
-                        x: {
+                        x: { 
                             grid: { display: false },
                             ticks: {
                                 color: '#64748b',
-                                font: { size: 12, weight: '600' }
+                                font: { size: 12, weight: '700', family: 'Inter, sans-serif' }
                             }
                         }
                     }
                 }
             });
         }
+        window.initRiskChart = initRiskChart;
         document.addEventListener('DOMContentLoaded', initRiskChart);
 
         // Generate Secured PDF (password-gated) - Real PDF Implementation
