@@ -199,12 +199,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td class="px-6 py-4 whitespace-nowrap">${item.case || item.case_id || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap">${item.date || item.uploaded_at || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap space-x-2">
-                            <button class="action-btn view-btn bg-blue-100 hover:bg-blue-200 text-blue-700 py-1 px-3 rounded-lg text-xs" 
-                                data-type="doc-edit" data-doc="${docData}">View</button>
-                            <button class="action-btn download-btn bg-green-100 hover:bg-green-200 text-green-700 py-1 px-3 rounded-lg text-xs" 
-                                data-pdf-type="document" data-pdf-content="${docData}">Download PDF</button>
-                            <button class="action-btn bg-red-100 hover:bg-red-200 text-red-700 py-1 px-3 rounded-lg text-xs" 
-                                data-type="doc-delete" data-doc="${docData}">Delete</button>
+                            <button class="action-btn download-btn bg-green-500 hover:bg-green-600 text-white py-1.5 px-4 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2" 
+                                data-pdf-type="document" data-pdf-content="${docData}"> <i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                         </td>
                     `;
             } else if (type === 'billing') {

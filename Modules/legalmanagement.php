@@ -808,12 +808,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
                                     </td>
                                     <td>
-                                        <button class="action-btn view-btn" data-type="doc-view"
-                                            data-doc='<?php echo htmlspecialchars(json_encode($doc)); ?>'>View</button>
                                         <button class="action-btn download-btn" data-type="doc-download"
                                             data-pdf-type="document"
                                             data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                            style="background:#059669;color:#fff;">Download PDF</button>
+                                            style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+                                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
