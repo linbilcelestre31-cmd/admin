@@ -195,14 +195,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (type === 'document') {
                 const docData = JSON.stringify({ id: item.id || 0, name: item.name, case_id: item.case || item.case_id, file_path: item.file_path || '', uploaded_at: item.date || item.uploaded_at || '' }).replace(/"/g, '&quot;');
                 row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">${item.file_path ? `<a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document" data-pdf-content="${docData}">${item.name}</a>` : item.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${item.case || item.case_id || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${item.date || item.uploaded_at || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap space-x-2">
-                            <button class="action-btn download-btn bg-green-500 hover:bg-green-600 text-white py-1.5 px-4 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2" 
-                                data-pdf-type="document" data-pdf-content="${docData}"> <i class="fa-solid fa-file-pdf"></i> Download PDF</button>
-                        </td>
-                    `;
+                        <td>${item.file_path ? `<a href="#" class="view-pdf-link" style="color:#2563eb; text-decoration:underline;" data-pdf-type="document" data-pdf-content="${docData}">${item.name}</a>` : item.name}</td>
+                        <td>${item.case || item.case_id || 'N/A'}</td>
+                        <td>${item.date || item.uploaded_at || 'N/A'}</td>
+                        <td>
+                            <button class="action-btn download-btn" 
+                                data-pdf-type="document" 
+                                data-pdf-content="${docData}"
+                                style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2); cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF
+                            </button>
+                        </td>`;
             } else if (type === 'billing') {
                 const invData = JSON.stringify({ id: item.id || 0, invoice_number: item.invoice, client: item.client, amount: parseFloat((item.amount || '0').replace(/[^0-9.]/g, '')), due_date: item.dueDate, status: item.status }).replace(/"/g, '&quot;');
                 const statusClass = `status-${item.status}`;

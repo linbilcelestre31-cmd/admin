@@ -784,7 +784,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Upload Document
                     </button>
                 </div>
-                <table class="data-tablepremium-table">
+                <table class="data-table premium-table">
                     <thead>
                         <tr>
                             <th>Document Name</th>
@@ -792,6 +792,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <th>Date Uploaded</th>
                             <th>Actions</th>
                         </tr>
+                    </thead>
                     <tbody id="documentsTableBody">
                         <?php if (!empty($documents)): ?>
                             <?php foreach ($documents as $doc): ?>
