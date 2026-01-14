@@ -206,6 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt->execute([$newUserId, $code, $expiresAt]);
 
                             // 3. Send Invitation
+                            $emailSettings = getEmailSettings($pdo);
                             $mail = new PHPMailer(true);
                             $mail->isSMTP();
                             $mail->Host = SMTP_HOST;
@@ -221,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
                             $mail->addAddress($email, $full_name);
                             $mail->isHTML(true);
-                            $mail->Subject = 'Setup Your ATIERA Account Password';
+                            $mail->Subject = $emailSettings['setup_subject'];
 
                             $loginUrl = $baseUrl . "/auth/login.php?verify_new=1&email=" . urlencode($email);
 
@@ -229,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
                                 <h2 style=\"color: #0f172a;\">Setup Your Password</h2>
                                 <p>Hello " . htmlspecialchars($full_name) . ",</p>
-                                <p>You have been added as an administrator. To complete your account setup, please set your <strong>New Password</strong> using the code below:</p>
+                                <p>" . nl2br_custom(str_replace('{$full_name}', htmlspecialchars($full_name), $emailSettings['setup_message'])) . "</p>
                                 <div style=\"text-align: center; margin: 30px 0; background: #f8fafc; padding: 20px; border-radius: 8px; border: 2px dashed #e2e8f0;\">
                                     <span style=\"font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #1e40af;\">{$code}</span>
                                 </div>
