@@ -466,76 +466,9 @@ document.addEventListener('DOMContentLoaded', function () {
             clearContractErrors();
         }
 
-        // FIX: Replaced alert() with console.log() and simulated UI behavior
-        document.getElementById('addDocumentBtn')?.addEventListener('click', function () {
-            console.log('SIMULATION: Document upload form would appear here.');
-            // Show a simple confirmation message on the screen instead of alert()
-            const button = this;
-            button.textContent = 'Form Shown!';
-            setTimeout(() => button.textContent = 'Add New Document', 1500);
-        });
 
-        document.getElementById('addInvoiceBtn')?.addEventListener('click', function () {
-            console.log('SIMULATION: Invoice creation form would appear here.');
-            const button = this;
-            button.textContent = 'Form Shown!';
-            setTimeout(() => button.textContent = 'Create New Invoice', 1500);
-        });
 
-        document.getElementById('addMemberBtn')?.addEventListener('click', function () {
-            console.log('SIMULATION: Team member addition form would appear here.');
-            const button = this;
-            button.textContent = 'Form Shown!';
-            setTimeout(() => button.textContent = 'Add New Member', 1500);
-        });
 
-        // FIX: Replaced confirm() with console.log and simulated UI behavior
-        document.getElementById('exportPdfBtn')?.addEventListener('click', function () {
-            const password = 'legal2025';
-            console.log("SIMULATION: Download confirmation required. Password for Secured PDF: " + password);
-
-            // --- Custom Modal Simulation (Replacing confirm) ---
-            const modal = document.getElementById('detailsModal');
-            document.getElementById('detailsTitle').innerText = 'Secure Report Export';
-            document.getElementById('detailsBody').innerHTML = `
-                    <div class="text-lg text-gray-800">
-                        <p class="mb-2">Are you sure you want to download the Secured PDF Report?</p>
-                        <p class="font-mono text-sm bg-gray-100 p-3 rounded-lg border">Password for the PDF: <strong class="text-blue-600">${password}</strong></p>
-                        <p class="mt-4 text-sm text-gray-500">NOTE: This is a simulation. Downloading a .txt file containing the report data will be simulated upon confirmation.</p>
-                    </div>
-                `;
-            document.getElementById('detailsModal').style.display = 'flex';
-
-            // We'll simulate 'OK' by adding a temporary button to the modal footer
-            const footer = modal.querySelector('.mt-4.pt-3.border-t.flex.justify-end');
-            const originalCloseBtn = footer.querySelector('button');
-            originalCloseBtn.textContent = 'Cancel';
-
-            const confirmDownloadBtn = document.createElement('button');
-            confirmDownloadBtn.textContent = 'Confirm Download';
-            confirmDownloadBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200 ml-3';
-            confirmDownloadBtn.addEventListener('click', function () {
-                console.log("DOWNLOAD START: Simulating download of secured_legal_report.txt (Password: " + password + ")");
-
-                // Actual file download simulation (creating a blob and downloading)
-                const data = "Secured Legal Report (Password: legal2025)\n\n" + JSON.stringify(MOCK_CONTRACTS_DATA, null, 2);
-                const blob = new Blob([data], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'secured_legal_report.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                // Clean up modal
-                modal.style.display = 'none';
-                footer.removeChild(confirmDownloadBtn);
-                originalCloseBtn.textContent = 'Close';
-            });
-            footer.appendChild(confirmDownloadBtn);
-        });
     }
 });
 
