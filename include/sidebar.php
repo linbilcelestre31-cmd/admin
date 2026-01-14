@@ -84,10 +84,8 @@ function get_nav_link($tab, $is_dashboard)
 </nav>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const enableAnimation = <?php echo (in_array($current_page, ['legalmanagement.php', 'document management(archiving).php'])) ? 'true' : 'false'; ?>;
-
-        // 1. Inject Overlay if missing (Only if animation is enabled)
-        if (enableAnimation && !document.getElementById('loadingOverlay')) {
+        // 1. Inject Overlay if missing (Avoid duplicates)
+        if (!document.getElementById('loadingOverlay')) {
             const div = document.createElement('div');
             div.id = 'loadingOverlay';
             div.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;';
@@ -97,11 +95,6 @@ function get_nav_link($tab, $is_dashboard)
 
         // 2. Define Global Loader Function
         window.runLoadingAnimation = function (callback, isRedirect = false) {
-            if (!enableAnimation) {
-                if (callback) callback();
-                return;
-            }
-
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.display = 'block';
@@ -123,15 +116,18 @@ function get_nav_link($tab, $is_dashboard)
         };
 
         // 3. Intercept Normal URL Links in Sidebar
-        if (enableAnimation) {
-            const links = document.querySelectorAll('.sidebar a');
-            links.forEach(a => {
-                const href = a.getAttribute('href');
-                const onclick = a.getAttribute('onclick');
+        const links = document.querySelectorAll('.sidebar a');
+        links.forEach(a => {
+            const href = a.getAttribute('href');
+            const onclick = a.getAttribute('onclick');
 
-                // If it's a direct URL link (not hash, not handled by onclick)
-                if (href && href !== '#' && !href.startsWith('javascript') && !onclick) {
-                    a.addEventListener('click', function (e) {
+            // If it's a direct URL link (not hash, not handled by onclick)
+            if (href && href !== '#' && !href.startsWith('javascript') && !onclick) {
+                a.addEventListener('click', function (e) {
+                    // Check if target is one of the allowed modules for animation
+                    const isTargetModule = href.includes('legalmanagement.php') || href.includes('document management(archiving).php');
+
+                    if (isTargetModule) {
                         e.preventDefault();
                         if (typeof window.runLoadingAnimation === 'function') {
                             window.runLoadingAnimation(() => {
@@ -140,20 +136,16 @@ function get_nav_link($tab, $is_dashboard)
                         } else {
                             window.location.href = href;
                         }
-                    });
-                }
-            });
-        }
+                    }
+                    // Otherwise, do nothing (let default navigation happen without animation)
+                });
+            }
+        });
     });
 
     // 4. Handle Tab Switching (Called by onclick)
     window.handleSidebarNav = function (tab) {
-        if (typeof window.runLoadingAnimation === 'function') {
-            window.runLoadingAnimation(() => {
-                if (typeof switchTab === 'function') switchTab(tab);
-            }, false);
-        } else {
-            if (typeof switchTab === 'function') switchTab(tab);
-        }
+        // Allow animation for specific tabs if needed, or just default behavior
+        if (typeof switchTab === 'function') switchTab(tab);
     };
 </script>

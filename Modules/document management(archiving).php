@@ -514,9 +514,26 @@ function formatFileSize($bytes)
 
         /* Shake animation for wrong PIN */
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-10px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(10px);
+            }
         }
 
         /* Enhanced Sidebar Styles */
@@ -634,7 +651,7 @@ function formatFileSize($bytes)
                 z-index: 1000;
                 transition: left 0.3s ease;
                 background: white;
-                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
 
             .sidebar.open {
@@ -664,7 +681,9 @@ function formatFileSize($bytes)
                         <li><a href="#" class="active">Dashboard</a></li>
                         <li><a href="#">Settings</a></li>
                         <li><a href="#">Help</a></li>
-                        <li><a href="../Modules/facilities-reservation.php" onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/facilities-reservation.php'; }, true);">Back</a></li>
+                        <li><a href="../Modules/facilities-reservation.php"
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/facilities-reservation.php'; }, true);">Back</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -681,13 +700,20 @@ function formatFileSize($bytes)
                     </button>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i> All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records"><i class="fas fa-dollar-sign"></i> Financial Records</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i> Guest Records</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i> Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i> Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i> Marketing</a></li>
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
+                            All Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i
+                                class="fas fa-dollar-sign"></i> Financial Records</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
+                            Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i
+                                class="fas fa-user-check"></i> Guest Records</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
+                            Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
+                            Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
+                            Marketing</a></li>
                 </ul>
                 <div class="sidebar-footer">
                     <div class="security-status">
@@ -1368,17 +1394,17 @@ function formatFileSize($bytes)
         window.addEventListener('load', () => {
             loadCategoryFiles('all');
             updateSecurityStatus(false);
-            
+
             // Add sidebar toggle functionality
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.querySelector('.sidebar');
-            
+
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', () => {
                     sidebar.classList.toggle('open');
                 });
             }
-            
+
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
@@ -1394,7 +1420,7 @@ function formatFileSize($bytes)
             const securityStatus = document.getElementById('securityStatus');
             const securityIcon = document.getElementById('securityIcon');
             const statusContainer = document.querySelector('.security-status');
-            
+
             if (authenticated) {
                 securityStatus.textContent = 'Authenticated';
                 securityIcon.className = 'fas fa-unlock';
@@ -1411,7 +1437,7 @@ function formatFileSize($bytes)
         document.addEventListener('keypress', resetPinSession);
         document.addEventListener('scroll', resetPinSession);
     </script>
-    
+
     <!-- Loading Animation Script -->
     <script>
         // Select all elements with 'wave-text' class
@@ -1430,13 +1456,47 @@ function formatFileSize($bytes)
             });
         });
 
+        // Define Global Loader Function
+        window.runLoadingAnimation = function (callback, isRedirect = false) {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) {
+                loader.style.display = 'block';
+                loader.style.opacity = '1';
+                const iframe = loader.querySelector('iframe');
+                if (iframe) iframe.src = iframe.src;
+
+                setTimeout(() => {
+                    if (callback) callback();
+                    if (!isRedirect) {
+                        // Fade out if staying on page
+                        loader.style.opacity = '0';
+                        setTimeout(() => { loader.style.display = 'none'; }, 500);
+                    }
+                }, 5000); // 5s Duration
+            } else {
+                if (callback) callback();
+            }
+        };
+
         // Hide loading screen after page loads
-        window.addEventListener('load', function() {
-            setTimeout(function() {
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                const loader = document.getElementById('loadingOverlay');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                }
                 document.body.classList.add('loaded');
             }, 1000); // 1 second loading time
         });
     </script>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
+            allowtransparency="true"></iframe>
+    </div>
 </body>
 
 </html>

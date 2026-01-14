@@ -2053,7 +2053,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
         })();
     </script>
-    
+
     <!-- Loading Animation Script -->
     <script>
         // Select all elements with 'wave-text' class
@@ -2072,18 +2072,46 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             });
         });
 
+        // Define Global Loader Function
+        window.runLoadingAnimation = function (callback, isRedirect = false) {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) {
+                loader.style.display = 'block';
+                loader.style.opacity = '1';
+                const iframe = loader.querySelector('iframe');
+                if (iframe) iframe.src = iframe.src;
+
+                setTimeout(() => {
+                    if (callback) callback();
+                    if (!isRedirect) {
+                        // Fade out if staying on page
+                        loader.style.opacity = '0';
+                        setTimeout(() => { loader.style.display = 'none'; }, 500);
+                    }
+                }, 5000); // 5s Duration
+            } else {
+                if (callback) callback();
+            }
+        };
+
         // Hide loading screen after page loads
-        window.addEventListener('load', function() {
-            setTimeout(function() {
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                const loader = document.getElementById('loadingOverlay');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                }
                 document.body.classList.add('loaded');
-            }, 5000); // 5 seconds loading time
+            }, 2000); // 2 seconds loading time on entry
         });
     </script>
-    
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
-        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
-        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"></iframe>
+        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
+            allowtransparency="true"></iframe>
     </div>
 </body>
 

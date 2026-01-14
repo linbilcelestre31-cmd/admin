@@ -490,14 +490,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button class="mobile-menu-btn" onclick="toggleSidebar()">
                         <span class="icon-img-placeholder">☰</span>
                     </button>
-                    <h1 id="page-title">Facilities Reservation System</h1>
-                    <p id="page-subtitle">Manage hotel facilities and reservations efficiently</p>
+                    <h1 id="page-title">Dashboard</h1>
                 </div>
 
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openModal('reservation-modal')">
-                        <span class="icon-img-placeholder">➕</span> New Reservation
-                    </button>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
                     <button class="btn btn-outline" onclick="openLogoutModal()" style="margin-left: 10px;">
                         <span class="icon-img-placeholder">🚪</span> Logout
