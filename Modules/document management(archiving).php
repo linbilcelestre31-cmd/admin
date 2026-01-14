@@ -699,7 +699,7 @@ function formatFileSize($bytes)
 
             <div class="content">
                 <div class="content-header">
-                    <h2 id="contentTitle">Document Management</h2>
+                    <h2 id="contentTitle">Archive Management</h2>
                 </div>
 
                 <!-- All Documents View -->
@@ -878,7 +878,7 @@ function formatFileSize($bytes)
 
         function switchCategory(linkElement, category) {
             const categoryNames = {
-                'all': 'Document Management',
+                'all': 'Archive Management',
                 'Financial Records': 'Financial Records',
                 'HR Documents': 'HR Documents',
                 'Guest Records': 'Guest Records',
@@ -893,7 +893,7 @@ function formatFileSize($bytes)
             linkElement.classList.add('active');
 
             // Update page title
-            document.getElementById('contentTitle').textContent = categoryNames[category] || 'Document Management';
+            document.getElementById('contentTitle').textContent = categoryNames[category] || 'Archive Management';
 
             // Hide all category contents and show selected
             document.querySelectorAll('.category-content').forEach(content => {

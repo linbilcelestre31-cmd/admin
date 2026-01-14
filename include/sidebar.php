@@ -61,10 +61,10 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">External Links</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?> class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>" data-tab="reports">
+            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>" data-tab="reports" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">📈</span> Reports
                 </a></li>
-            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
+            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">⚙️</span> Settings
                 </a></li>
         </ul>
