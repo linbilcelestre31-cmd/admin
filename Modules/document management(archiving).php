@@ -794,19 +794,22 @@ function formatFileSize($bytes)
                     <div class="content-header">
                         <h2 id="contentTitle">Archive Management</h2>
                     </div>
-                    <div class="tab-content active" id="active-tab">
 
-                        <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
-                    </div>
-                    <div class="tab-content" id="trash-tab">
-                        <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
-                    </div>
-                </div>
+                    <!-- Success/Error Messages -->
+                    <?php if (isset($success_message)): ?>
+                        <div class="alert alert-success"><?php echo $success_message; ?></div>
+                    <?php endif; ?>
 
-                <!-- Financial Records View -->
-                <div class="category-content" id="financial-records-content">
+                    <?php if (isset($error_message)): ?>
+                        <div class="alert alert-error"><?php echo $error_message; ?></div>
+                    <?php endif; ?>
 
-                    <div id="financialFiles"><!-- Financial records table will be populated here --></div>
+                    <!-- All Documents View -->
+                    <div class="category-content active" id="all-content">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="active">Active Files</div>
+                        </div>
+                        <div class="tab-content active" id="active-tab">
                 </div>
 
                 <!-- HR Documents View -->
