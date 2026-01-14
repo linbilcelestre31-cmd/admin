@@ -449,6 +449,64 @@ function formatFileSize($bytes)
         .btn-view-small:hover {
             background: #f0f0f0;
         }
+
+        /* PIN Security Styles */
+        .pin-digit {
+            width: 55px;
+            height: 55px;
+            margin: 0 6px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 600;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.25s ease;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .pin-digit:focus {
+            border-color: #4a6cf7;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1);
+        }
+
+        #passwordModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .pin-container {
+            background: #ffffff;
+            width: 92%;
+            max-width: 440px;
+            border-radius: 32px;
+            padding: 40px 30px;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(2, 6, 23, 0.3);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .pin-container h2 {
+            margin: 0 0 10px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .pin-container p {
+            margin: 0 0 30px;
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -597,6 +655,35 @@ function formatFileSize($bytes)
         </div>
     </div>
 
+    <!-- PIN Security Modal (SARILING PIN SECURITY) -->
+    <div id="passwordModal">
+        <div class="pin-container">
+            <div style="margin-bottom: 25px;">
+                <img src="../assets/image/logo.png" alt="Logo" style="width: 150px; height: auto;">
+            </div>
+            <h2>Archive Security</h2>
+            <p>Enter your PIN to access this category</p>
+            <form id="pinForm">
+                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin1" required autofocus>
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin2" required>
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin3" required>
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin4" required>
+                </div>
+                <div id="pinErrorMessage"
+                    style="color: #ef4444; font-size: 0.9rem; margin-top: -20px; margin-bottom: 20px; display: none; font-weight: 600;">
+                    Incorrect PIN. Access Denied.
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button type="button" class="btn" id="pinCancelBtn"
+                        style="padding: 12px 24px; border-radius: 12px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary"
+                        style="padding: 12px 24px; border-radius: 12px; background: #4a6cf7;">Access Archive</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="container">
         <p>Hotel & Restaurant Document Management System &copy; 2023</p>
     </footer>
@@ -608,56 +695,114 @@ function formatFileSize($bytes)
         }
 
 
-        // Category Navigation Handler
+        // Category Navigation Handler with PIN Protection
+        let targetCategory = null;
+        let isAuthenticated = false;
+
         document.querySelectorAll('.category-link').forEach(link => {
             link.addEventListener('click', function (e) {
                 e.preventDefault();
-                const category = this.getAttribute('data-category');
-                const categoryNames = {
-                    'all': 'Document Management',
-                    'Financial Records': 'Financial Records',
-                    'HR Documents': 'HR Documents',
-                    'Guest Records': 'Guest Records',
-                    'Inventory': 'Inventory',
-                    'Compliance': 'Compliance',
-                    'Marketing': 'Marketing',
-                    'trash': 'Trash Bin'
-                };
+                targetCategory = this.getAttribute('data-category');
 
-                // Update active state in sidebar
-                document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-
-                // Update page title
-                document.getElementById('contentTitle').textContent = categoryNames[category] || 'Document Management';
-
-                // Hide all category contents and show selected
-                document.querySelectorAll('.category-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-
-                let contentId;
-                switch (category) {
-                    case 'all': contentId = 'all-content'; break;
-                    case 'trash': contentId = 'trash-content'; break;
-                    case 'Financial Records': contentId = 'financial-records-content'; break;
-                    case 'HR Documents': contentId = 'hr-documents-content'; break;
-                    case 'Guest Records': contentId = 'guest-records-content'; break;
-                    case 'Inventory': contentId = 'inventory-content'; break;
-                    case 'Compliance': contentId = 'compliance-content'; break;
-                    case 'Marketing': contentId = 'marketing-content'; break;
-                    default: contentId = 'all-content';
-                }
-                const contentEl = document.getElementById(contentId);
-                if (contentEl) {
-                    contentEl.classList.add('active');
+                if (!isAuthenticated && targetCategory !== 'all') {
+                    showPinGate();
                 } else {
-                    console.error('Content element not found:', contentId);
+                    switchCategory(this, targetCategory);
                 }
-
-                // Load files for this category
-                loadCategoryFiles(category);
             });
+        });
+
+        function showPinGate() {
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.querySelectorAll('.pin-digit').forEach(input => input.value = '');
+            document.getElementById('archivePin1').focus();
+            document.getElementById('pinErrorMessage').style.display = 'none';
+        }
+
+        function switchCategory(linkElement, category) {
+            const categoryNames = {
+                'all': 'Document Management',
+                'Financial Records': 'Financial Records',
+                'HR Documents': 'HR Documents',
+                'Guest Records': 'Guest Records',
+                'Inventory': 'Inventory',
+                'Compliance': 'Compliance',
+                'Marketing': 'Marketing',
+                'trash': 'Trash Bin'
+            };
+
+            // Update active state in sidebar
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+            linkElement.classList.add('active');
+
+            // Update page title
+            document.getElementById('contentTitle').textContent = categoryNames[category] || 'Document Management';
+
+            // Hide all category contents and show selected
+            document.querySelectorAll('.category-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            let contentId;
+            switch (category) {
+                case 'all': contentId = 'all-content'; break;
+                case 'trash': contentId = 'trash-content'; break;
+                case 'Financial Records': contentId = 'financial-records-content'; break;
+                case 'HR Documents': contentId = 'hr-documents-content'; break;
+                case 'Guest Records': contentId = 'guest-records-content'; break;
+                case 'Inventory': contentId = 'inventory-content'; break;
+                case 'Compliance': contentId = 'compliance-content'; break;
+                case 'Marketing': contentId = 'marketing-content'; break;
+                default: contentId = 'all-content';
+            }
+            const contentEl = document.getElementById(contentId);
+            if (contentEl) {
+                contentEl.classList.add('active');
+            }
+
+            // Load files for this category
+            loadCategoryFiles(category);
+        }
+
+        // PIN Gate Logic
+        const archivePinDigits = document.querySelectorAll('.pin-digit');
+        const correctArchivePin = '1234';
+
+        archivePinDigits.forEach((input, index) => {
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                if (this.value && index < archivePinDigits.length - 1) {
+                    archivePinDigits[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    archivePinDigits[index - 1].focus();
+                }
+            });
+        });
+
+        document.getElementById('pinForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const enteredPin = Array.from(archivePinDigits).map(input => input.value).join('');
+
+            if (enteredPin === correctArchivePin) {
+                isAuthenticated = true;
+                document.getElementById('passwordModal').style.display = 'none';
+                if (targetCategory) {
+                    const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
+                    if (activeLink) switchCategory(activeLink, targetCategory);
+                }
+            } else {
+                document.getElementById('pinErrorMessage').style.display = 'block';
+                archivePinDigits.forEach(input => input.value = '');
+                archivePinDigits[0].focus();
+            }
+        });
+
+        document.getElementById('pinCancelBtn').addEventListener('click', () => {
+            document.getElementById('passwordModal').style.display = 'none';
         });
 
         // Function to load files by category
