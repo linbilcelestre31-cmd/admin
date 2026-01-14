@@ -77,7 +77,6 @@ function get_nav_link($tab, $is_dashboard)
             const div = document.createElement('div');
             div.id = 'loadingOverlay';
             div.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;';
-            
             document.body.appendChild(div);
         }
 

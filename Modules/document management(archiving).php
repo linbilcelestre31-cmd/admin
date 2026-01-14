@@ -1434,7 +1434,7 @@ function formatFileSize($bytes)
         window.addEventListener('load', function() {
             setTimeout(function() {
                 document.body.classList.add('loaded');
-            }, 5000); // 5 seconds loading time
+            }, 1000); // 1 second loading time
         });
     </script>
 </body>
