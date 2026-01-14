@@ -1071,10 +1071,17 @@ function formatFileSize($bytes)
                 'trash': 'allTrashFiles'
             }[category];
 
-            // Special handling for Financial Records - fetch from external API
+            // Special handling for Financial Records - use fallback data for immediate loading
             if (category === 'Financial Records') {
                 const grid = document.getElementById(gridId);
-                grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #666; grid-column: 1/-1;"><p>⏳ Loading financial records...</p></div>';
+                
+                const fallbackData = [
+                    { entry_date: '2025-10-24', type: 'Income', category: 'Room Revenue', description: 'Room 101 - Check-out payment', amount: 5500.00, venue: 'Hotel', total_debit: 5500, total_credit: 0, status: 'posted', entry_number: 'JE-001' },
+                    { entry_date: '2025-10-24', type: 'Income', category: 'Food Sales', description: 'Restaurant Dinner Service', amount: 1250.75, venue: 'Restaurant', total_debit: 1250.75, total_credit: 0, status: 'posted', entry_number: 'JE-002' },
+                    { entry_date: '2025-10-24', type: 'Expense', category: 'Payroll', description: 'October Staff Payroll', amount: 45000.00, venue: 'General', total_debit: 0, total_credit: 45000, status: 'posted', entry_number: 'JE-003' },
+                    { entry_date: '2025-10-23', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 8500.00, venue: 'Hotel', total_debit: 0, total_credit: 8500, status: 'posted', entry_number: 'JE-004' },
+                    { entry_date: '2025-10-23', type: 'Income', category: 'Event Booking', description: 'Grand Ballroom Wedding Deposit', amount: 15000.00, venue: 'Hotel', total_debit: 15000, total_credit: 0, status: 'posted', entry_number: 'JE-005' }
+                ];
 
                 const renderFinancialTable = (data) => {
                     const tableContainer = document.getElementById(gridId);
@@ -1184,35 +1191,7 @@ function formatFileSize($bytes)
                     modal.style.display = 'flex';
                 };
 
-                const fallbackData = [
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Room Revenue', description: 'Room 101 - Check-out payment', amount: 5500.00, venue: 'Hotel', total_debit: 5500, total_credit: 0, status: 'posted', entry_number: 'JE-001' },
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Food Sales', description: 'Restaurant Dinner Service', amount: 1250.75, venue: 'Restaurant', total_debit: 1250.75, total_credit: 0, status: 'posted', entry_number: 'JE-002' },
-                    { entry_date: '2025-10-24', type: 'Expense', category: 'Payroll', description: 'October Staff Payroll', amount: 45000.00, venue: 'General', total_debit: 0, total_credit: 45000, status: 'posted', entry_number: 'JE-003' },
-                    { entry_date: '2025-10-23', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 8500.00, venue: 'Hotel', total_debit: 0, total_credit: 8500, status: 'posted', entry_number: 'JE-004' },
-                    { entry_date: '2025-10-23', type: 'Income', category: 'Event Booking', description: 'Grand Ballroom Wedding Deposit', amount: 15000.00, venue: 'Hotel', total_debit: 15000, total_credit: 0, status: 'posted', entry_number: 'JE-005' }
-                ];
-
-                /* 
-                // FUTURE INTEGRATION: Fetch from the local API created in integ/fn.php
-                // Link: ../integ/fn.php
-                
-                fetch('../integ/fn.php') // Use the local integration endpoint
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.success && result.data && result.data.length > 0) {
-                            renderFinancialTable(result.data);
-                        } else {
-                            renderFinancialTable(fallbackData);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('API Error:', error);
-                        renderFinancialTable(fallbackData);
-                    });
-                */
-
-                // Currently fetching from external/mock API for demonstration
-                // To switch to internal integration, uncomment the block above and adjust the endpoint
+                // Use external API integration for financial records
                 fetch('https://financial.atierahotelandrestaurant.com/journal_entries_api')
                     .then(response => response.json())
                     .then(result => {
@@ -1223,7 +1202,7 @@ function formatFileSize($bytes)
                         }
                     })
                     .catch(error => {
-                        console.error('API Error:', error);
+                        console.error('External API Error:', error);
                         renderFinancialTable(fallbackData);
                     });
                 return;
@@ -1231,6 +1210,7 @@ function formatFileSize($bytes)
 
             // Placeholder for HR Documents Integration
             if (category === 'HR Documents') {
+{{ ... }
                 /*
                 const grid = document.getElementById(gridId);
                 // FUTURE: Link your HR API here (e.g., ../integ/hr_fn.php)
