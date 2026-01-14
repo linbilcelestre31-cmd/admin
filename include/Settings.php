@@ -254,6 +254,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Database error: " . $e->getMessage();
             }
         }
+        /* Update Email Settings */ elseif ($_POST['action'] === 'update_email_settings') {
+            $passwordSubject = trim($_POST['password_subject']);
+            $passwordMessage = trim($_POST['password_message']);
+            $newAccountSubject = trim($_POST['new_account_subject']);
+            $newAccountMessage = trim($_POST['new_account_message']);
+            $setupSubject = trim($_POST['setup_subject']);
+            $setupMessage = trim($_POST['setup_message']);
+
+            try {
+                // Create email_settings table if it doesn't exist
+                $pdo->exec("CREATE TABLE IF NOT EXISTS email_settings (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    setting_key VARCHAR(100) UNIQUE,
+                    setting_value TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                )");
+
+                // Update or insert each email setting
+                $settings = [
+                    'password_subject' => $passwordSubject,
+                    'password_message' => $passwordMessage,
+                    'new_account_subject' => $newAccountSubject,
+                    'new_account_message' => $newAccountMessage,
+                    'setup_subject' => $setupSubject,
+                    'setup_message' => $setupMessage
+                ];
+
+                foreach ($settings as $key => $value) {
+                    $stmt = $pdo->prepare("INSERT INTO email_settings (setting_key, setting_value) VALUES (?, ?) 
+                                          ON DUPLICATE KEY UPDATE setting_value = ?");
+                    $stmt->execute([$key, $value, $value]);
+                }
+
+                $message = "Email settings updated successfully!";
+            } catch (PDOException $e) {
+                $error = "Error updating email settings: " . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -548,9 +586,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     events and access logs</span>
                             </button>
 
-                            <button class="security-btn" onclick="openSecurityModal('sessions')">
-                                <i class="fas fa-user-lock"></i>
-                                <span style="font-weight: 600;">Session Management</span>
+                            <button class="security-btn" onclick="openSecurityModal('email')">
+                                <i class="fas fa-envelope"></i>
+                                <span style="font-weight: 600;">Email Settings</span>
                                 <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active
                                     sessions and timeouts</span>
                             </button>
@@ -734,14 +772,78 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button class="btn btn-danger btn-block" style="margin-top: 10px;">Logout All Other Sessions</button>
             </div>
         </div>
+
+        <!-- Security: Email Modal -->
+        <div class="modal" id="securityEmailModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('securityEmailModal')">&times;</span>
+                <h3 style="margin-top: 0; color: #2d3748;">Email Settings</h3>
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">Update email content sent when accounts are changed.</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Password Change Email</h4>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                            <input type="text" id="passwordSubject" class="form-control" value="Security Notice: Your ATIERA Password was Updated" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                            <textarea id="passwordMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+
+This is a security notification to let you know that your password for the ATIERA Admin Panel has been updated by an administrator.
+
+If you did not authorized this change, please contact your system administrator immediately.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">New Account Email</h4>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                            <input type="text" id="newAccountSubject" class="form-control" value="New Account Created: ATIERA Admin Panel" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                            <textarea id="newAccountMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+
+An account has been created for you. Here are your credentials:
+
+Username: {$username}
+Password: {$password}
+
+To complete your registration and set your New Password, please use the activation code sent separately.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Account Setup Email</h4>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                            <input type="text" id="setupSubject" class="form-control" value="Setup Your ATIERA Account Password" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                            <textarea id="setupMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+
+You have been added as an administrator. To complete your account setup, please set your New Password using the verification code sent separately.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-block" onclick="saveEmailSettings()">Save Email Settings</button>
+            </div>
+        </div>
     </div>
 
     <!-- Invitation Loading Overlay -->
     <div id="inviteLoadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <h3 style="margin: 0; font-weight: 600; letter-spacing: 0.5px;">Sending Invitation...</h3>
-        <p style="opacity: 0.8; margin-top: 10px;">Please wait while we set up the account.</p>
-    </div>
 
     <script src="../assets/Javascript/facilities-reservation.js"></script>
     <script>
@@ -844,6 +946,42 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         setupPinInputs('newPinInputs', 'realNewPin');
         setupPinInputs('confirmPinInputs', 'realConfirmPin');
+
+        // Save Email Settings Function
+        function saveEmailSettings() {
+            const passwordSubject = document.getElementById('passwordSubject').value;
+            const passwordMessage = document.getElementById('passwordMessage').value;
+            const newAccountSubject = document.getElementById('newAccountSubject').value;
+            const newAccountMessage = document.getElementById('newAccountMessage').value;
+            const setupSubject = document.getElementById('setupSubject').value;
+            const setupMessage = document.getElementById('setupMessage').value;
+
+            // Create form data to send via AJAX
+            const formData = new FormData();
+            formData.append('action', 'update_email_settings');
+            formData.append('password_subject', passwordSubject);
+            formData.append('password_message', passwordMessage);
+            formData.append('new_account_subject', newAccountSubject);
+            formData.append('new_account_message', newAccountMessage);
+            formData.append('setup_subject', setupSubject);
+            formData.append('setup_message', setupMessage);
+
+            // Send AJAX request
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Close modal and show success message
+                closeModal('securityEmailModal');
+                location.reload(); // Reload to show updated message
+            })
+            .catch(error => {
+                console.error('Error saving email settings:', error);
+                alert('Error saving email settings. Please try again.');
+            });
+        }
     </script>
 </body>
 
