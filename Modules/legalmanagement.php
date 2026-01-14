@@ -1360,8 +1360,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </div>
 
                 <div id="employeeRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn" id="employeeRevealBtn"><i class="fas fa-eye"></i> Click to Reveal
-                        Sensitive Info</button>
+                    <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
+                        Reveal</button>
                 </div>
 
                 <!-- Footer Actions -->
@@ -1904,7 +1904,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     </div>
                                 </div>
                                 <div class="reveal-overlay" id="docReveal">
-                                    <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                                    <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
                                 </div>
                             </div>`;
                         openModal(detailsModal);
@@ -1935,7 +1935,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                               </div>
                           </div>
                           <div class="reveal-overlay" id="invReveal">
-                              <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                              <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
                           </div>
                       </div>`;
                         openModal(detailsModal);
@@ -1978,7 +1978,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 </div>
                             </div>
                             <div class="reveal-overlay" id="contractReveal">
-                                <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                                <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
                             </div>
                         </div>`;
 
