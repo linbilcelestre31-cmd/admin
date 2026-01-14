@@ -623,6 +623,50 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             display: block !important;
             width: 100% !important;
         }
+
+        /* Blur Effect Styles */
+        .blurred-content {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .reveal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            border-radius: 8px;
+        }
+
+        .reveal-btn {
+            padding: 12px 24px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .reveal-btn:hover {
+            transform: scale(1.05);
+            background: #34495e;
+        }
+    /* Enforce white text on primary actions to fix visibility issues */
+        button[type="submit"], .btn-primary {
+            color: #ffffff !important;
+        }
     </style>
 </head>
 
@@ -667,11 +711,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="container">
             <!-- Success/Error Messages -->
             <?php if (isset($success_message)): ?>
-                <div class="alert alert-success"><?php echo $success_message; ?></div>
+                    <div class="alert alert-success"><?php echo $success_message; ?></div>
             <?php endif; ?>
 
             <?php if (isset($error_message)): ?>
-                <div class="alert alert-error"><?php echo $error_message; ?></div>
+                    <div class="alert alert-error"><?php echo $error_message; ?></div>
             <?php endif; ?>
 
             <div class="nav-tabs">
@@ -738,17 +782,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="employeesTableBody">
                         <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -773,34 +817,34 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="documentsTableBody">
                         <?php if (!empty($documents)): ?>
-                            <?php foreach ($documents as $doc): ?>
+                                <?php foreach ($documents as $doc): ?>
+                                        <tr>
+                                            <td>
+                                                <?php if (!empty($doc['file_path'])): ?>
+                                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
+                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                <?php else: ?>
+                                                        <?php echo htmlspecialchars($doc['name']); ?>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                            <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                            </td>
+                                            <td>
+                                                <button class="action-btn download-btn" data-type="doc-download"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                    style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+                                                    <i class="fa-solid fa-file-pdf"></i> Download PDF
+                                                </button>
+                                            </td>
+                                        </tr>
+                                <?php endforeach; ?>
+                        <?php else: ?>
                                 <tr>
-                                    <td>
-                                        <?php if (!empty($doc['file_path'])): ?>
-                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                        <?php else: ?>
-                                            <?php echo htmlspecialchars($doc['name']); ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                    </td>
-                                    <td>
-                                        <button class="action-btn download-btn" data-type="doc-download"
-                                            data-pdf-type="document"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                            style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
-                                            <i class="fa-solid fa-file-pdf"></i> Download PDF
-                                        </button>
+                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
-                                </td>
-                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -826,35 +870,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="billingTableBody">
                         <?php if (!empty($billing)): ?>
-                            <?php foreach ($billing as $b): ?>
+                                <?php foreach ($billing as $b): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
+                                            <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
+                                            <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
+                                            <td>
+                                                <button class="action-btn view-btn" data-type="invoice-view"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
+                                                <button class="action-btn download-btn" data-type="invoice-download"
+                                                    data-pdf-type="billing"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
+                                                    style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
+                                                    PDF</button>
+                                                <button class="action-btn"
+                                                    style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
+                                                    data-type="invoice-pay"
+                                                    data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                            </td>
+                                        </tr>
+                                <?php endforeach; ?>
+                        <?php else: ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                    <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                    <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="invoice-view"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="invoice-download"
-                                            data-pdf-type="billing"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                            style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                            PDF</button>
-                                        <button class="action-btn"
-                                            style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                            data-type="invoice-pay"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
+                                    <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
+                                        found.
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
-                                    found.
-                                </td>
-                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -961,35 +1005,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
                             $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
                             ?>
-                            <tr>
-                                <td>
-                                    <?php if (!empty($contract['file_path'])): ?>
-                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                <td>
-                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
-                                        Risk Analysis</button>
-                                    <button class="action-btn download-btn" data-type="contract-download"
-                                        data-pdf-type="contract"
-                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                        Download PDF
-                                    </button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>
+                                        <?php if (!empty($contract['file_path'])): ?>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                        <?php else: ?>
+                                                <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                    <td>
+                                        <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                            <?php echo htmlspecialchars($contract['risk_level']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
+                                    <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                    <td>
+                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>AI
+                                            Risk Analysis</button>
+                                        <button class="action-btn download-btn" data-type="contract-download"
+                                            data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                            Download PDF
+                                        </button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1053,59 +1097,59 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                             });
                             if (!empty($highContracts)): ?>
-                                <div class="high-risk-items">
-                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                        <div class="risk-item"
-                                            style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
-                                            <div
-                                                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                                <div class="risk-item-info">
-                                                    <span class="risk-item-name"
-                                                        style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
-                                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                                                        <span
-                                                            style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                    <div class="high-risk-items">
+                                        <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                                <div class="risk-item"
+                                                    style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
+                                                    <div
+                                                        style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                                        <div class="risk-item-info">
+                                                            <span class="risk-item-name"
+                                                                style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                                                <span
+                                                                    style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="risk-item-score">
+                                                            <span class="score-badge"
+                                                                style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <?php if (!empty($hc['analysis_summary'])): ?>
+                                                            <div class="risk-ai-summary"
+                                                                style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
+                                                                <p
+                                                                    style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
+                                                                    <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
+                                                                    <strong>AI Result:</strong>
+                                                                    <?php echo htmlspecialchars($hc['analysis_summary']); ?>
+                                                                </p>
+                                                            </div>
+                                                    <?php endif; ?>
+
+                                                    <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
+                                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                                            data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                            style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                                            Full Report
+                                                        </button>
+                                                        <button class="action-btn download-btn" data-type="contract-download"
+                                                            data-pdf-type="contract"
+                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                            style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                                            Download PDF
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div class="risk-item-score">
-                                                    <span class="score-badge"
-                                                        style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
-                                                </div>
-                                            </div>
-
-                                            <?php if (!empty($hc['analysis_summary'])): ?>
-                                                <div class="risk-ai-summary"
-                                                    style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
-                                                    <p
-                                                        style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
-                                                        <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
-                                                        <strong>AI Result:</strong>
-                                                        <?php echo htmlspecialchars($hc['analysis_summary']); ?>
-                                                    </p>
-                                                </div>
-                                            <?php endif; ?>
-
-                                            <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
-                                                <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                    data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
-                                                    Full Report
-                                                </button>
-                                                <button class="action-btn download-btn" data-type="contract-download"
-                                                    data-pdf-type="contract"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
-                                                    Download PDF
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
+                                        <?php endforeach; ?>
+                                    </div>
                             <?php else: ?>
-                                <div class="no-risk-data">
-                                    <i class="fa-solid fa-shield-check"></i>
-                                    <p>No high-risk contracts detected.</p>
-                                </div>
+                                    <div class="no-risk-data">
+                                        <i class="fa-solid fa-shield-check"></i>
+                                        <p>No high-risk contracts detected.</p>
+                                    </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1128,16 +1172,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="membersTableBody">
                         <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1269,46 +1313,53 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             </div>
 
             <!-- Modal Body -->
-            <div id="employeeInfoBody" style="padding: 40px; background: white;">
-                <div style="display: flex; flex-direction: column; gap: 24px;">
-                    <!-- Data Row: Name -->
-                    <div class="info-row">
-                        <label
-                            style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
-                            Name</label>
-                        <div id="display_emp_name"
-                            style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                            -</div>
-                    </div>
-
-                    <!-- Data Row: Position -->
-                    <div class="info-row">
-                        <label
-                            style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
-                        <div id="display_emp_position"
-                            style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                            -</div>
-                    </div>
-
-                    <!-- Data Grid: Contact Info -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div id="employeeInfoBody" style="padding: 40px; background: white; position: relative;">
+                <div id="employeeSensitiveData" class="blurred-content">
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- Data Row: Name -->
                         <div class="info-row">
                             <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
-                                Address</label>
-                            <div id="display_emp_email"
-                                style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
+                                Name</label>
+                            <div id="display_emp_name"
+                                style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 -</div>
                         </div>
+
+                        <!-- Data Row: Position -->
                         <div class="info-row">
                             <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
-                                Number</label>
-                            <div id="display_emp_phone"
-                                style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
+                            <div id="display_emp_position"
+                                style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 -</div>
                         </div>
+
+                        <!-- Data Grid: Contact Info -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="info-row">
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
+                                    Address</label>
+                                <div id="display_emp_email"
+                                    style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    -</div>
+                            </div>
+                            <div class="info-row">
+                                <label
+                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
+                                    Number</label>
+                                <div id="display_emp_phone"
+                                    style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                    -</div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div id="employeeRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn" id="employeeRevealBtn"><i class="fas fa-eye"></i> Click to Reveal
+                        Sensitive Info</button>
                 </div>
 
                 <!-- Footer Actions -->
@@ -1805,6 +1856,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             }
                         }
 
+                        // Reset Blur
+                        document.getElementById('employeeSensitiveData').classList.add('blurred-content');
+                        document.getElementById('employeeRevealOverlay').style.display = 'flex';
+
+                        document.getElementById('employeeRevealBtn').onclick = function () {
+                            document.getElementById('employeeRevealOverlay').style.display = 'none';
+                            document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
+                        };
+
                         // Set up PDF download button
                         const dlBtn = document.getElementById('modalDownloadEmpPdf');
                         if (dlBtn) {
@@ -1831,12 +1891,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         const d = JSON.parse(target.getAttribute('data-doc') || '{}');
                         detailsTitle.textContent = 'Document Details';
                         detailsBody.innerHTML = `
-                            <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8; position: relative; z-index: 1;">
-                                <div><strong>Name</strong></div><div>${d.name || ''}</div>
-                                <div><strong>Case ID</strong></div><div>${d.case_id || ''}</div>
-                                <div><strong>Uploaded At</strong></div><div>${d.uploaded_at || ''}</div>
+                            <div style="position: relative;">
+                                <div id="docSensitive" class="blurred-content">
+                                    <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8; position: relative; z-index: 1;">
+                                        <div><strong>Name</strong></div><div>${d.name || ''}</div>
+                                        <div><strong>Case ID</strong></div><div>${d.case_id || ''}</div>
+                                        <div><strong>Uploaded At</strong></div><div>${d.uploaded_at || ''}</div>
+                                    </div>
+                                </div>
+                                <div class="reveal-overlay" id="docReveal">
+                                    <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                                </div>
                             </div>`;
                         openModal(detailsModal);
+
+                        document.getElementById('docReveal').addEventListener('click', function () {
+                            this.style.display = 'none';
+                            document.getElementById('docSensitive').classList.remove('blurred-content');
+                        });
+
                         injectModalPdfButton(detailsBody, 'document', d);
                     }
                     // Invoice View
@@ -1844,14 +1917,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
                         detailsTitle.textContent = 'Invoice Details';
                         detailsBody.innerHTML = `
-                      <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
-                        <div><strong>Invoice #</strong></div><div>${inv.invoice_number || inv.id || ''}</div>
-                        <div><strong>Client</strong></div><div>${inv.client || ''}</div>
-                        <div><strong>Amount</strong></div><div>₱${Number(inv.amount || 0).toFixed(2)}</div>
-                        <div><strong>Due Date</strong></div><div>${inv.due_date || ''}</div>
-                        <div><strong>Status</strong></div><div>${(inv.status || '').toString().toUpperCase()}</div>
+                      <div style="position: relative;">
+                          <div id="invSensitive" class="blurred-content">
+                              <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
+                                <div><strong>Invoice #</strong></div><div>${inv.invoice_number || inv.id || ''}</div>
+                                <div><strong>Client</strong></div><div>${inv.client || ''}</div>
+                                <div><strong>Amount</strong></div><div>₱${Number(inv.amount || 0).toFixed(2)}</div>
+                                <div><strong>Due Date</strong></div><div>${inv.due_date || ''}</div>
+                                <div><strong>Status</strong></div><div>${(inv.status || '').toString().toUpperCase()}</div>
+                              </div>
+                          </div>
+                          <div class="reveal-overlay" id="invReveal">
+                              <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                          </div>
                       </div>`;
                         openModal(detailsModal);
+
+                        document.getElementById('invReveal').addEventListener('click', function () {
+                            this.style.display = 'none';
+                            document.getElementById('invSensitive').classList.remove('blurred-content');
+                        });
+
                         injectModalPdfButton(detailsBody, 'billing', inv);
                     }
                     // Invoice Pay
@@ -1870,14 +1956,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
                         const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
                         detailsBody.innerHTML = `
-                        <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
-                            <div><strong>Contract</strong></div><div>${c.contract_name || c.name || ''}</div>
-                            <div><strong>Case</strong></div><div>${c.case_id || ''}</div>
-                            <div><strong>Risk</strong></div><div>${(c.risk_level || 'N/A')} — ${c.risk_score || 'N/A'}/100</div>
-                            <div><strong>Uploaded</strong></div><div>${c.created_at || c.upload_date || ''}</div>
-                            <div style="grid-column:1/-1"><strong>Risk Factors</strong><ul style="margin:.4rem 0 0 1rem;">${rf.map(r => `<li>${(r.factor || '')}</li>`).join('') || '<li>None</li>'}</ul></div>
-                            <div style="grid-column:1/-1"><strong>Recommendations</strong><ul style="margin:.4rem 0 0 1rem;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>None</li>'}</ul></div>
+                        <div style="position: relative;">
+                            <div id="contractSensitive" class="blurred-content">
+                                <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
+                                    <div><strong>Contract</strong></div><div>${c.contract_name || c.name || ''}</div>
+                                    <div><strong>Case</strong></div><div>${c.case_id || ''}</div>
+                                    <div><strong>Risk</strong></div><div>${(c.risk_level || 'N/A')} — ${c.risk_score || 'N/A'}/100</div>
+                                    <div><strong>Uploaded</strong></div><div>${c.created_at || c.upload_date || ''}</div>
+                                    <div style="grid-column:1/-1"><strong>Risk Factors</strong><ul style="margin:.4rem 0 0 1rem;">${rf.map(r => `<li>${(r.factor || '')}</li>`).join('') || '<li>None</li>'}</ul></div>
+                                    <div style="grid-column:1/-1"><strong>Recommendations</strong><ul style="margin:.4rem 0 0 1rem;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>None</li>'}</ul></div>
+                                </div>
+                            </div>
+                            <div class="reveal-overlay" id="contractReveal">
+                                <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                            </div>
                         </div>`;
+
+                        document.getElementById('contractReveal').addEventListener('click', function () {
+                            this.style.display = 'none';
+                            document.getElementById('contractSensitive').classList.remove('blurred-content');
+                        });
+
                         injectModalPdfButton(detailsBody, 'contract', c);
                     }
                     // Contract Analyze
