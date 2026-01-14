@@ -1,26 +1,14 @@
 <?php
-// config.php
-class Database
-{
-    private $host = "127.0.0.1";
-    private $db_name = "admin_new";
-    private $username = "admin_new";
-    private $password = "123";
-    public $conn;
-
-    public function getConnection()
-    {
-        $this->conn = null;
-        try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
-            $this->conn->exec("set names utf8mb4");
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
-        }
-        return $this->conn;
-    }
+session_start();
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/login.php');
+    exit;
 }
+
+require_once __DIR__ . '/../db/db.php';
+$db = get_pdo();
+
 
 // AI Risk Assessment Class
 class ContractRiskAnalyzer
@@ -181,8 +169,8 @@ class ContractRiskAnalyzer
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $database = new Database();
-    $db = $database->getConnection();
+    $db = get_pdo();
+
 
     if (isset($_POST['add_employee'])) {
         $name = $_POST['employee_name'];
@@ -489,8 +477,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch employees from database
-$database = new Database();
-$db = $database->getConnection();
+$db = get_pdo();
+
 $employees = [];
 $contracts = [];
 

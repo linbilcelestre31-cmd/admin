@@ -224,6 +224,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+
+        /* Update Admin Email (Security Tab) */ elseif ($_POST['action'] === 'update_security_email') {
+            $newEmail = trim($_POST['new_email']);
+            $currentPass = $_POST['current_password'];
+            $id = $_SESSION['user_id'];
+
+            try {
+                // Verify password
+                $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE id = ?");
+                $stmt->execute([$id]);
+                $user = $stmt->fetch();
+
+                if ($user && password_verify($currentPass, $user['password_hash'])) {
+                    // Check if email exists
+                    $check = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+                    $check->execute([$newEmail, $id]);
+                    if ($check->fetch()) {
+                        $error = "This email is already in use by another account.";
+                    } else {
+                        $pdo->prepare("UPDATE users SET email = ? WHERE id = ?")->execute([$newEmail, $id]);
+                        $_SESSION['email'] = $newEmail;
+                        $message = "Your admin email has been updated to: " . htmlspecialchars($newEmail);
+                    }
+                } else {
+                    $error = "Incorrect password. Email update failed.";
+                }
+            } catch (PDOException $e) {
+                $error = "Database error: " . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -758,7 +788,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (type === 'password') document.getElementById('securityPasswordModal').classList.add('active');
             if (type === 'pin') document.getElementById('securityPinModal').classList.add('active');
             if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
-            if (type === 'sessions') document.getElementById('securitySessionsModal').classList.add('active');
+            if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
         }
 
         // Tab Switching Logic

@@ -1,26 +1,14 @@
 <?php
-// Database Configuration
-class Database
-{
-    private $host = "localhost";
-    private $db_name = "legalmanagement";
-    private $username = "root";
-    private $password = "";
-    public $conn;
-
-    public function getConnection()
-    {
-        $this->conn = null;
-        try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
-            $this->conn->exec("set names utf8");
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
-        }
-        return $this->conn;
-    }
+session_start();
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/login.php');
+    exit;
 }
+
+require_once __DIR__ . '/../db/db.php';
+$db = get_pdo();
+
 
 // File upload configuration
 define('UPLOAD_DIR', 'uploads/');
@@ -212,8 +200,8 @@ if (isset($_GET['api'])) {
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-    $database = new Database();
-    $db = $database->getConnection();
+    $db = get_pdo();
+
     $document = new Document($db);
 
     $method = $_SERVER['REQUEST_METHOD'];
