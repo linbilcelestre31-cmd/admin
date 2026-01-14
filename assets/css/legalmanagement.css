@@ -363,19 +363,6 @@
       animation: modalFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
 
-  .blurred-info {
-      filter: blur(6px);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      user-select: none;
-      pointer-events: auto;
-  }
-
-  .blurred-info:hover,
-  .blurred-info.unblurred {
-      filter: blur(0);
-      user-select: auto;
-  }
 
   .premium-modal {
       background: rgba(255, 255, 255, 0.95);

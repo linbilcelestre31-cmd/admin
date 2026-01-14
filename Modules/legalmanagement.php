@@ -1294,7 +1294,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <label
                                 style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
                                 Address</label>
-                            <div id="display_emp_email" class="blurred-info" title="Hover to reveal"
+                            <div id="display_emp_email"
                                 style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 -</div>
                         </div>
@@ -1302,7 +1302,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <label
                                 style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
                                 Number</label>
-                            <div id="display_emp_phone" class="blurred-info" title="Hover to reveal"
+                            <div id="display_emp_phone"
                                 style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 -</div>
                         </div>
@@ -1319,11 +1319,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         style="flex: 2; border-radius: 16px; padding: 14px; font-weight: 700; background: #3b82f6; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <i class="fa-solid fa-file-pdf"></i> Download Official Profile
                     </button>
-                </div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <p style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-lock"
-                            style="margin-right: 4px;"></i> Sensitive information is blurred for security. Hover to
-                        reveal.</p>
                 </div>
             </div>
         </div>
