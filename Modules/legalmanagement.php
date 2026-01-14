@@ -1023,12 +1023,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution</h3>
                         <div class="chart-area" id="chartArea"
                             style="height: 320px; width: 100%; position: relative; background: #fafafa; border-radius: 16px; border: 1px solid #f1f5f9; padding: 15px; display: flex; align-items: center; justify-content: center;">
-                            <div id="chartStatus"
-                                style="position: absolute; color: #94a3b8; font-size: 0.9rem; font-weight: 500;">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Initializing chart...
-                            </div>
                             <canvas id="riskDistributionChart"
-                                style="display: block; box-sizing: border-box; height: 100% !important; width: 100% !important; opacity: 0; transition: opacity 0.5s ease;"></canvas>
+                                 style="display: block; box-sizing: border-box; height: 100% !important; width: 100% !important; opacity: 1; transition: opacity 0.5s ease;"></canvas>
                         </div>
                     </div>
 
@@ -1040,59 +1036,59 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                             });
                             if (!empty($highContracts)): ?>
-                                <div class="high-risk-items">
-                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                        <div class="risk-item"
-                                            style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
-                                            <div
-                                                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                                <div class="risk-item-info">
-                                                    <span class="risk-item-name"
-                                                        style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
-                                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                                                        <span
-                                                            style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                    <div class="high-risk-items">
+                                        <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                                <div class="risk-item"
+                                                    style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
+                                                    <div
+                                                        style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                                        <div class="risk-item-info">
+                                                            <span class="risk-item-name"
+                                                                style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                                                <span
+                                                                    style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="risk-item-score">
+                                                            <span class="score-badge"
+                                                                style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <?php if (!empty($hc['analysis_summary'])): ?>
+                                                            <div class="risk-ai-summary"
+                                                                style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
+                                                                <p
+                                                                    style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
+                                                                    <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
+                                                                    <strong>AI Result:</strong>
+                                                                    <?php echo htmlspecialchars($hc['analysis_summary']); ?>
+                                                                </p>
+                                                            </div>
+                                                    <?php endif; ?>
+
+                                                    <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
+                                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                                            data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                            style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                                            Full Report
+                                                        </button>
+                                                        <button class="action-btn download-btn" data-type="contract-download"
+                                                            data-pdf-type="contract"
+                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                            style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                                            Download PDF
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div class="risk-item-score">
-                                                    <span class="score-badge"
-                                                        style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
-                                                </div>
-                                            </div>
-
-                                            <?php if (!empty($hc['analysis_summary'])): ?>
-                                                <div class="risk-ai-summary"
-                                                    style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
-                                                    <p
-                                                        style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
-                                                        <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
-                                                        <strong>AI Result:</strong>
-                                                        <?php echo htmlspecialchars($hc['analysis_summary']); ?>
-                                                    </p>
-                                                </div>
-                                            <?php endif; ?>
-
-                                            <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
-                                                <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                    data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
-                                                    Full Report
-                                                </button>
-                                                <button class="action-btn download-btn" data-type="contract-download"
-                                                    data-pdf-type="contract"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
-                                                    Download PDF
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
+                                        <?php endforeach; ?>
+                                    </div>
                             <?php else: ?>
-                                <div class="no-risk-data">
-                                    <i class="fa-solid fa-shield-check"></i>
-                                    <p>No high-risk contracts detected.</p>
-                                </div>
+                                    <div class="no-risk-data">
+                                        <i class="fa-solid fa-shield-check"></i>
+                                        <p>No high-risk contracts detected.</p>
+                                    </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1118,16 +1114,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="membersTableBody">
                         <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -2122,9 +2118,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             };
 
             // Standard triggers
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(window.initRiskChart, 500);
-            });
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(window.initRiskChart, 100);
+            }
+            document.addEventListener('DOMContentLoaded', () => setTimeout(window.initRiskChart, 300));
             window.addEventListener('load', window.initRiskChart);
             window.addEventListener('resize', () => {
                 if (window.initRiskChart) window.initRiskChart();

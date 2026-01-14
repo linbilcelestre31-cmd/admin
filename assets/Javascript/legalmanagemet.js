@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Re-init chart if switching to risk analysis
                     if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
-                        setTimeout(() => window.initRiskChart(), 100);
+                        setTimeout(() => window.initRiskChart(), 5);
                     }
                 }
             });
