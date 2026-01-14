@@ -9,9 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
-
 // File upload configuration
-define('UPLOAD_DIR', 'uploads/');
+define('UPLOAD_DIR', $_SERVER['DOCUMENT_ROOT'] . '/admin/uploads/'); 
 define('MAX_FILE_SIZE', 50 * 1024 * 1024); // 50MB
 define('ALLOWED_TYPES', ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif']);
 
@@ -49,7 +48,7 @@ class Document
         $this->name = htmlspecialchars(strip_tags($this->name));
         $this->category = htmlspecialchars(strip_tags($this->category));
         $this->file_path = htmlspecialchars(strip_tags($this->file_path));
-        $this->file_size = htmlspecialchars(strip_tags($this->file_size));
+        $this->file_size = $this->file_size; // Don't sanitize numeric values
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->upload_date = htmlspecialchars(strip_tags($this->upload_date));
 
@@ -72,10 +71,14 @@ class Document
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE is_deleted = 0";
         if ($category && $category !== 'all') {
-            $query .= " AND category = '" . htmlspecialchars($category) . "'";
+            $query .= " AND category = :category";
         }
         $query .= " ORDER BY upload_date DESC";
+        
         $stmt = $this->conn->prepare($query);
+        if ($category && $category !== 'all') {
+            $stmt->bindParam(":category", $category);
+        }
         $stmt->execute();
         return $stmt;
     }
@@ -156,7 +159,7 @@ class Document
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($row) {
+        if ($row && isset($row['file_path'])) {
             $file_path = $row['file_path'];
             // Delete physical file
             if (file_exists($file_path)) {
@@ -200,8 +203,6 @@ if (isset($_GET['api'])) {
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-    $db = get_pdo();
-
     $document = new Document($db);
 
     $method = $_SERVER['REQUEST_METHOD'];
@@ -243,6 +244,7 @@ if (isset($_GET['api'])) {
                         'deleted_date' => $document->deleted_date
                     ]);
                 } else {
+                    http_response_code(404);
                     echo json_encode(["message" => "Document not found."]);
                 }
             }
@@ -262,38 +264,52 @@ if (isset($_GET['api'])) {
             if (isset($_FILES['file'])) {
                 $response = uploadFile();
                 if ($response['success']) {
-                    $document->name = $_POST['name'];
-                    $document->category = $_POST['category'];
+                    $document->name = $_POST['name'] ?? '';
+                    $document->category = $_POST['category'] ?? '';
                     $document->file_path = $response['file_path'];
                     $document->file_size = $response['file_size'];
-                    $document->description = $_POST['description'];
+                    $document->description = $_POST['description'] ?? '';
                     $document->upload_date = date('Y-m-d');
 
                     if ($document->create()) {
                         echo json_encode(["message" => "Document uploaded successfully."]);
                     } else {
+                        http_response_code(500);
                         echo json_encode(["message" => "Unable to upload document."]);
                     }
                 } else {
+                    http_response_code(400);
                     echo json_encode(["message" => $response['message']]);
                 }
             }
             // Move to trash
             elseif (isset($_POST['action']) && $_POST['action'] == 'trash') {
-                $document->id = $_POST['id'];
-                $document->deleted_date = date('Y-m-d');
+                $document->id = $_POST['id'] ?? null;
+                if (!$document->id) {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Document ID is required."]);
+                    break;
+                }
+                $document->deleted_date = date('Y-m-d H:i:s');
                 if ($document->moveToTrash()) {
                     echo json_encode(["message" => "Document moved to trash."]);
                 } else {
+                    http_response_code(500);
                     echo json_encode(["message" => "Unable to move document to trash."]);
                 }
             }
             // Restore from trash
             elseif (isset($_POST['action']) && $_POST['action'] == 'restore') {
-                $document->id = $_POST['id'];
+                $document->id = $_POST['id'] ?? null;
+                if (!$document->id) {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Document ID is required."]);
+                    break;
+                }
                 if ($document->restore()) {
                     echo json_encode(["message" => "Document restored successfully."]);
                 } else {
+                    http_response_code(500);
                     echo json_encode(["message" => "Unable to restore document."]);
                 }
             }
@@ -301,10 +317,16 @@ if (isset($_GET['api'])) {
 
         case 'DELETE':
             parse_str(file_get_contents("php://input"), $delete_vars);
-            $document->id = $delete_vars['id'];
+            $document->id = $delete_vars['id'] ?? null;
+            if (!$document->id) {
+                http_response_code(400);
+                echo json_encode(["message" => "Document ID is required."]);
+                break;
+            }
             if ($document->deletePermanent()) {
                 echo json_encode(["message" => "Document permanently deleted."]);
             } else {
+                http_response_code(500);
                 echo json_encode(["message" => "Unable to delete document."]);
             }
             break;
@@ -321,6 +343,10 @@ function uploadFile()
         mkdir($upload_dir, 0777, true);
     }
 
+    if (!isset($_FILES['file'])) {
+        return ['success' => false, 'message' => 'No file uploaded.'];
+    }
+
     $file = $_FILES['file'];
     $file_name = basename($file['name']);
     $file_tmp = $file['tmp_name'];
@@ -329,18 +355,27 @@ function uploadFile()
 
     // Check for errors
     if ($file_error !== UPLOAD_ERR_OK) {
-        return ['success' => false, 'message' => 'File upload error.'];
+        $error_messages = [
+            UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive.',
+            UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive.',
+            UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.'
+        ];
+        return ['success' => false, 'message' => $error_messages[$file_error] ?? 'File upload error.'];
     }
 
     // Check file size
     if ($file_size > MAX_FILE_SIZE) {
-        return ['success' => false, 'message' => 'File is too large.'];
+        return ['success' => false, 'message' => 'File is too large. Maximum size is 50MB.'];
     }
 
     // Check file type
     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
     if (!in_array($file_ext, ALLOWED_TYPES)) {
-        return ['success' => false, 'message' => 'File type not allowed.'];
+        return ['success' => false, 'message' => 'File type not allowed. Allowed types: ' . implode(', ', ALLOWED_TYPES)];
     }
 
     // Generate unique filename
@@ -352,7 +387,7 @@ function uploadFile()
         return [
             'success' => true,
             'file_path' => $file_path,
-            'file_size' => formatFileSize($file_size)
+            'file_size' => $file_size
         ];
     } else {
         return ['success' => false, 'message' => 'Failed to move uploaded file.'];
@@ -375,478 +410,117 @@ function formatFileSize($bytes)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document - Atiéra</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
+    <title>Document Management - Atiéra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/document.css?v=2">
+</head>
 
-    <style>
-        /* Updated Financial Table Styles to match image and prevent squashing */
-        .financial-table-container {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 10px;
-        }
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
+            allowtransparency="true"></iframe>
+    </div>
 
-        .financial-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
-        }
-
-        .financial-table th {
-            text-align: center;
-            padding: 15px 12px;
-            color: #fff;
-            font-weight: 700;
-            border-bottom: 2px solid #f1f5f9;
-            white-space: nowrap;
-            background-color: black;
-        }
-
-        .financial-table td {
-            padding: 16px 12px;
-            border-bottom: 1px solid #f8fafc;
-            vertical-align: middle;
-            color: #475569;
-            line-height: 1.5;
-            text-align: center;
-        }
-
-        .type-label {
-            font-weight: 600;
-            margin-left: 4px;
-        }
-
-        .btn-view-small {
-            background: #fff;
-            border: 1px solid #ccc;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.85rem;
-            color: #333;
-        }
-
-        .btn-view-small i {
-            font-size: 0.8rem;
-        }
-
-        .btn-view-small:hover {
-            background: #f0f0f0;
-        }
-
-        /* PIN Security Styles */
-        .pin-digit {
-            width: 55px;
-            height: 55px;
-            margin: 0 6px;
-            text-align: center;
-            font-size: 26px;
-            font-weight: 600;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            outline: none;
-            transition: all 0.25s ease;
-            background: #f8fafc;
-            color: #0f172a;
-        }
-
-        .pin-digit:focus {
-            border-color: #4a6cf7;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1);
-        }
-
-        #passwordModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(2, 6, 23, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-        }
-
-        .pin-container {
-            background: #ffffff;
-            width: 92%;
-            max-width: 440px;
-            border-radius: 32px;
-            padding: 40px 30px;
-            position: relative;
-            box-shadow: 0 30px 80px rgba(2, 6, 23, 0.3);
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .pin-container h2 {
-            margin: 0 0 10px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.5px;
-        }
-
-        .pin-container p {
-            margin: 0 0 30px;
-            color: #64748b;
-        }
-
-        /* Shake animation for wrong PIN */
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: translateX(-10px);
-            }
-
-            20%,
-            40%,
-            60%,
-            80% {
-                transform: translateX(10px);
-            }
-        }
-
-        /* Enhanced Sidebar Styles */
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 0 15px 0;
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h3 {
-            margin: 0;
-            color: #1e293b;
-            font-size: 1.1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sidebar-toggle {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-toggle:hover {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 4px;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: #475569;
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .sidebar-menu a:hover {
-            background: #4a6cf7;
-            color: white;
-            transform: translateX(4px);
-        }
-
-        .sidebar-menu a.active {
-            background: linear-gradient(135deg, #4a6cf7, #6366f1);
-            color: white;
-            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
-        }
-
-        .sidebar-menu i {
-            width: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .security-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: #166534;
-            font-weight: 500;
-        }
-
-        .security-status.locked {
-            background: #fef2f2;
-            border-color: #fecaca;
-            color: #991b1b;
-        }
-
-        .security-status i {
-            font-size: 0.8rem;
-        }
-
-        /* Mobile responsive sidebar */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -280px;
-                top: 0;
-                height: 100vh;
-                width: 280px;
-                z-index: 1000;
-                transition: left 0.3s ease;
-                background: white;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .sidebar.open {
-                left: 0;
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .sidebar-toggle {
-                display: none;
-            }
-        }
-
-        /* Button Text Color Fix */
-        .btn-primary,
-        .btn[type="submit"] {
-            color: #ffffff !important;
-        }
-
-        /* Blur Effect Styles */
-        .blurred-content {
-            filter: blur(8px);
-            user-select: none;
-            pointer-events: none;
-            transition: all 0.5s ease;
-        }
-
-        .reveal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
-            z-index: 10;
-            border-radius: 8px;
-        }
-
-        .reveal-btn {
-            padding: 12px 24px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
-        }
-
-        .reveal-btn:hover {
-            transform: scale(1.05);
-            background: #34495e;
-        }
-
-        /* Alert Messages */
-        .alert {
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            animation: slideIn 0.3s ease;
-        }
-
-        .alert-success {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-            border-left: 4px solid #22c55e;
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-            border-left: 4px solid #ef4444;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </head>
-
-    <body>
-        <header>
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">Hotel<span>Archive</span></div>
-                    <nav>
-                        <ul>
-                            <li><a href="#" class="active">Dashboard</a></li>
-                            <li><a href="#">Settings</a></li>
-                            <li><a href="#">Help</a></li>
-                            <li><a href="../Modules/dashboard.php"
-                                    onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </header>
-
-        <main class="container">
-            <div class="dashboard">
-                <aside class="sidebar">
-                    <div class="sidebar-header">
-                        <h3><i class="fas fa-folder-tree"></i> Categories</h3>
-                        <button class="sidebar-toggle" id="sidebarToggle">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                    <ul class="sidebar-menu">
-                        <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
-                                All Documents</a></li>
-                        <li><a href="#" class="category-link" data-category="Financial Records"><i
-                                    class="fas fa-dollar-sign"></i> Financial Records</a></li>
-                        <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
-                                Documents</a></li>
-                        <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                    class="fas fa-user-check"></i> Guest Records</a></li>
-                        <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
-                                Inventory</a></li>
-                        <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
-                                Compliance</a></li>
-                        <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                                Marketing</a></li>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Hotel<span>Archive</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="../Modules/dashboard.php"
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
+                        </li>
                     </ul>
-                    <div class="sidebar-footer">
-                        <div class="security-status">
-                            <i class="fas fa-lock" id="securityIcon"></i>
-                            <span id="securityStatus">Secured</span>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-folder-tree"></i> Categories</h3>
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
+                            All Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i
+                                class="fas fa-dollar-sign"></i> Financial Records</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
+                            Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i
+                                class="fas fa-user-check"></i> Guest Records</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
+                            Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
+                            Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
+                            Marketing</a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <div class="security-status">
+                        <i class="fas fa-lock" id="securityIcon"></i>
+                        <span id="securityStatus">Secured</span>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="content">
+                <div class="content-header">
+                    <h2 id="contentTitle">Archive Management</h2>
+                </div>
+
+                <!-- Success/Error Messages -->
+                <div id="messageContainer"></div>
+
+                <!-- All Documents View -->
+                <div class="category-content active" id="all-content">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="active">Active Files</button>
+                        <button class="tab" data-tab="trash">Trash Bin</button>
+                    </div>
+                    <div class="tab-content active" id="active-tab">
+                        <div class="file-grid" id="activeFiles">
+                            <!-- Active files will be populated here -->
                         </div>
                     </div>
-                </aside>
-
-                <div class="content">
-                    <div class="content-header">
-                        <h2 id="contentTitle">Archive Management</h2>
-                    </div>
-
-                    <!-- Success/Error Messages -->
-                    <?php if (isset($success_message)): ?>
-                        <div class="alert alert-success"><?php echo $success_message; ?></div>
-                    <?php endif; ?>
-
-                    <?php if (isset($error_message)): ?>
-                        <div class="alert alert-error"><?php echo $error_message; ?></div>
-                    <?php endif; ?>
-
-                    <!-- All Documents View -->
-                    <div class="category-content active" id="all-content">
-                        <div class="tabs">
-                            <div class="tab active" data-tab="active">Active Files</div>
-                        </div>
-                        <div class="tab-content active" id="active-tab">
-                            <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
-                        </div>
-                        <div class="tab-content" id="trash-tab">
-                            <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
+                    <div class="tab-content" id="trash-tab">
+                        <div class="file-grid" id="trashFiles">
+                            <!-- Trash files will be populated here -->
                         </div>
                     </div>
+                </div>
 
-                    <!-- Financial Records View -->
-                    <div class="category-content" id="financial-records-content">
-                        <div id="financialFiles"><!-- Financial records table will be populated here --></div>
-                    </div>
-
-                    <!-- HR Documents View -->
-                    <div class="category-content" id="hr-documents-content">
-                        <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
-                    </div>
-
-                    <!-- Guest Records View -->
-                    <div class="category-content" id="guest-records-content">
-                        <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
-                    </div>
-
-                    <!-- Inventory View -->
-                    <div class="category-content" id="inventory-content">
-                        <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
-                    </div>
-
-                    <!-- Compliance View -->
-                    <div class="category-content" id="compliance-content">
-                        <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here --></div>
-                    </div>
-
-                    <!-- Marketing View -->
-                    <div class="category-content" id="marketing-content">
-                        <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
-                    </div>
-
+                <!-- Category Views -->
+                <div class="category-content" id="financial-records-content">
+                    <div id="financialFiles"></div>
+                </div>
+                <div class="category-content" id="hr-documents-content">
+                    <div class="file-grid" id="hrFiles"></div>
+                </div>
+                <div class="category-content" id="guest-records-content">
+                    <div class="file-grid" id="guestFiles"></div>
+                </div>
+                <div class="category-content" id="inventory-content">
+                    <div class="file-grid" id="inventoryFiles"></div>
+                </div>
+                <div class="category-content" id="compliance-content">
+                    <div class="file-grid" id="complianceFiles"></div>
+                </div>
+                <div class="category-content" id="marketing-content">
+                    <div class="file-grid" id="marketingFiles"></div>
                 </div>
             </div>
         </div>
@@ -905,7 +579,7 @@ function formatFileSize($bytes)
         </div>
     </div>
 
-    <!-- PIN Security Modal (SARILING PIN SECURITY) -->
+    <!-- PIN Security Modal -->
     <div id="passwordModal">
         <div class="pin-container">
             <div style="margin-bottom: 25px;">
@@ -937,212 +611,322 @@ function formatFileSize($bytes)
     <footer class="container">
         <p>Hotel & Restaurant Document Management System &copy; 2023</p>
     </footer>
-    </div>
-    </div>
+
     <script src="../assets/Javascript/document.js"></script>
     <script>
-        // Add dummy/sample data for testing if API fails
-        function loadDummyData(category) {
-            return [];
-        }
-
-
-        // Category Navigation Handler with PIN Protection
+        // Main JavaScript functionality
         let targetCategory = null;
         let isAuthenticated = false;
+        let pinSessionTimeout = null;
+        const SESSION_DURATION = 15 * 60 * 1000; // 15 minutes
+        const correctArchivePin = '1234'; // In production, this should be stored securely
 
-        document.querySelectorAll('.category-link').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                targetCategory = this.getAttribute('data-category');
+        // DOM Elements
+        const messageContainer = document.getElementById('messageContainer');
+        const archivePinDigits = document.querySelectorAll('.pin-digit');
+        const pinForm = document.getElementById('pinForm');
+        const pinErrorMessage = document.getElementById('pinErrorMessage');
+        const passwordModal = document.getElementById('passwordModal');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
 
-                if (!isAuthenticated && targetCategory !== 'all') {
-                    showPinGate();
-                } else {
-                    switchCategory(this, targetCategory);
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryFiles('all');
+            updateSecurityStatus(false);
+            setupEventListeners();
+            
+            // Hide loading screen
+            setTimeout(function() {
+                const loader = document.getElementById('loadingOverlay');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
                 }
-            });
+                document.body.classList.add('loaded');
+            }, 1000);
         });
 
+        function setupEventListeners() {
+            // Category Navigation
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    
+                    if (!isAuthenticated && category !== 'all') {
+                        targetCategory = category;
+                        showPinGate();
+                    } else {
+                        switchCategory(this, category);
+                    }
+                });
+            });
+
+            // Tab Navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    if (tabId === 'trash') {
+                        loadTrashFiles();
+                    } else if (tabId === 'active') {
+                        loadCategoryFiles('all');
+                    }
+                });
+            });
+
+            // PIN Input handling
+            archivePinDigits.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                    if (this.value && index < archivePinDigits.length - 1) {
+                        archivePinDigits[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        archivePinDigits[index - 1].focus();
+                    }
+                });
+            });
+
+            // PIN Form submission
+            pinForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const enteredPin = Array.from(archivePinDigits).map(input => input.value).join('');
+
+                if (enteredPin === correctArchivePin) {
+                    isAuthenticated = true;
+                    startPinSession();
+                    updateSecurityStatus(true);
+                    passwordModal.style.display = 'none';
+                    
+                    if (targetCategory) {
+                        const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
+                        if (activeLink) switchCategory(activeLink, targetCategory);
+                    }
+                } else {
+                    pinErrorMessage.style.display = 'block';
+                    archivePinDigits.forEach(input => input.value = '');
+                    archivePinDigits[0].focus();
+                    
+                    // Shake animation
+                    document.querySelector('.pin-container').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        document.querySelector('.pin-container').style.animation = '';
+                    }, 500);
+                }
+            });
+
+            // Cancel PIN
+            document.getElementById('pinCancelBtn').addEventListener('click', () => {
+                passwordModal.style.display = 'none';
+            });
+
+            // Sidebar toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+
+            // Modal close handlers
+            document.querySelectorAll('.modal .close').forEach(span => {
+                span.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+
+            window.addEventListener('click', function(event) {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (event.target === modal) modal.style.display = 'none';
+                });
+            });
+
+            // Session reset on user activity
+            document.addEventListener('click', resetPinSession);
+            document.addEventListener('keypress', resetPinSession);
+            document.addEventListener('scroll', resetPinSession);
+        }
+
         function showPinGate() {
-            document.getElementById('passwordModal').style.display = 'flex';
-            document.querySelectorAll('.pin-digit').forEach(input => input.value = '');
+            passwordModal.style.display = 'flex';
+            archivePinDigits.forEach(input => input.value = '');
             document.getElementById('archivePin1').focus();
-            document.getElementById('pinErrorMessage').style.display = 'none';
+            pinErrorMessage.style.display = 'none';
         }
 
         function switchCategory(linkElement, category) {
-            const categoryNames = {
+            // Update active state
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+            linkElement.classList.add('active');
+
+            // Update title
+            const titles = {
                 'all': 'Archive Management',
                 'Financial Records': 'Financial Records',
                 'HR Documents': 'HR Documents',
                 'Guest Records': 'Guest Records',
                 'Inventory': 'Inventory',
                 'Compliance': 'Compliance',
-                'Marketing': 'Marketing',
-                'trash': 'Trash Bin'
+                'Marketing': 'Marketing'
             };
+            document.getElementById('contentTitle').textContent = titles[category] || 'Archive Management';
 
-            // Update active state in sidebar
-            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
-            linkElement.classList.add('active');
-
-            // Update page title
-            document.getElementById('contentTitle').textContent = categoryNames[category] || 'Archive Management';
-
-            // Hide all category contents and show selected
+            // Show appropriate content
             document.querySelectorAll('.category-content').forEach(content => {
                 content.classList.remove('active');
             });
+            
+            const contentId = `${category.toLowerCase().replace(/\s+/g, '-')}-content`;
+            const contentEl = document.getElementById(contentId) || document.getElementById('all-content');
+            if (contentEl) contentEl.classList.add('active');
 
-            let contentId;
-            switch (category) {
-                case 'all': contentId = 'all-content'; break;
-                case 'trash': contentId = 'trash-content'; break;
-                case 'Financial Records': contentId = 'financial-records-content'; break;
-                case 'HR Documents': contentId = 'hr-documents-content'; break;
-                case 'Guest Records': contentId = 'guest-records-content'; break;
-                case 'Inventory': contentId = 'inventory-content'; break;
-                case 'Compliance': contentId = 'compliance-content'; break;
-                case 'Marketing': contentId = 'marketing-content'; break;
-                default: contentId = 'all-content';
-            }
-            const contentEl = document.getElementById(contentId);
-            if (contentEl) {
-                contentEl.classList.add('active');
-            }
-
-            // Load files for this category
+            // Load files
             loadCategoryFiles(category);
         }
 
-        // PIN Gate Logic with Session Management
-        const archivePinDigits = document.querySelectorAll('.pin-digit');
-        const correctArchivePin = '1234';
-        let pinSessionTimeout = null;
-        const SESSION_DURATION = 15 * 60 * 1000; // 15 minutes
-
-        function startPinSession() {
-            clearPinSession();
-            pinSessionTimeout = setTimeout(() => {
-                isAuthenticated = false;
-                console.log('PIN session expired');
-            }, SESSION_DURATION);
-        }
-
-        function clearPinSession() {
-            if (pinSessionTimeout) {
-                clearTimeout(pinSessionTimeout);
-                pinSessionTimeout = null;
-            }
-        }
-
-        function resetPinSession() {
-            if (isAuthenticated) {
-                startPinSession();
-            }
-        }
-
-        archivePinDigits.forEach((input, index) => {
-            input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
-                if (this.value && index < archivePinDigits.length - 1) {
-                    archivePinDigits[index + 1].focus();
-                }
-            });
-
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !input.value && index > 0) {
-                    archivePinDigits[index - 1].focus();
-                }
-            });
-        });
-
-        document.getElementById('pinForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const enteredPin = Array.from(archivePinDigits).map(input => input.value).join('');
-
-            if (enteredPin === correctArchivePin) {
-                isAuthenticated = true;
-                startPinSession();
-                updateSecurityStatus(true);
-                document.getElementById('passwordModal').style.display = 'none';
-                if (targetCategory) {
-                    const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
-                    if (activeLink) switchCategory(activeLink, targetCategory);
-                }
-            } else {
-                document.getElementById('pinErrorMessage').style.display = 'block';
-                archivePinDigits.forEach(input => input.value = '');
-                archivePinDigits[0].focus();
-                // Add shake animation for wrong PIN
-                document.querySelector('.pin-container').style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    document.querySelector('.pin-container').style.animation = '';
-                }, 500);
-            }
-        });
-
-        document.getElementById('pinCancelBtn').addEventListener('click', () => {
-            document.getElementById('passwordModal').style.display = 'none';
-        });
-
-        // Function to load files by category
         function loadCategoryFiles(category) {
-            const endpoint = category === 'trash' ?
-                '?api=1&action=deleted' :
-                category === 'all' ?
-                    '?api=1&action=active' :
-                    '?api=1&action=active&category=' + encodeURIComponent(category);
+            let endpoint;
+            let gridId;
+            
+            if (category === 'all') {
+                endpoint = '?api=1&action=active';
+                gridId = 'activeFiles';
+            } else {
+                endpoint = `?api=1&action=active&category=${encodeURIComponent(category)}`;
+                gridId = `${category.toLowerCase().replace(/\s+/g, '')}Files`;
+            }
 
-            const gridId = {
-                'all': 'activeFiles',
-                'Financial Records': 'financialFiles',
-                'HR Documents': 'hrFiles',
-                'Guest Records': 'guestFiles',
-                'Inventory': 'inventoryFiles',
-                'Compliance': 'complianceFiles',
-                'Marketing': 'marketingFiles',
-                'trash': 'allTrashFiles'
-            }[category];
-
-            // Special handling for Financial Records - use fallback data for immediate loading
+            // Special handling for Financial Records
             if (category === 'Financial Records') {
-                const grid = document.getElementById(gridId);
-                
-                const fallbackData = [
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Room Revenue', description: 'Room 101 - Check-out payment', amount: 5500.00, venue: 'Hotel', total_debit: 5500, total_credit: 0, status: 'posted', entry_number: 'JE-001' },
-                    { entry_date: '2025-10-24', type: 'Income', category: 'Food Sales', description: 'Restaurant Dinner Service', amount: 1250.75, venue: 'Restaurant', total_debit: 1250.75, total_credit: 0, status: 'posted', entry_number: 'JE-002' },
-                    { entry_date: '2025-10-24', type: 'Expense', category: 'Payroll', description: 'October Staff Payroll', amount: 45000.00, venue: 'General', total_debit: 0, total_credit: 45000, status: 'posted', entry_number: 'JE-003' },
-                    { entry_date: '2025-10-23', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 8500.00, venue: 'Hotel', total_debit: 0, total_credit: 8500, status: 'posted', entry_number: 'JE-004' },
-                    { entry_date: '2025-10-23', type: 'Income', category: 'Event Booking', description: 'Grand Ballroom Wedding Deposit', amount: 15000.00, venue: 'Hotel', total_debit: 15000, total_credit: 0, status: 'posted', entry_number: 'JE-005' }
-                ];
+                loadFinancialRecords();
+                return;
+            }
 
-                const renderFinancialTable = (data) => {
-                    const tableContainer = document.getElementById(gridId);
-                    tableContainer.innerHTML = `
-                        <div class="financial-table-container">
-                            <table class="financial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>Category</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Venue</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${data.map(record => {
-                        const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-                        const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
-                        const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
-                        const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                        const amountValue = parseFloat(record.total_debit || record.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // API integrations for other categories
+            const apiMap = {
+                'HR Documents': '../integ/hr_fn.php',
+                'Guest Records': '../integ/guest_fn.php',
+                'Inventory': '../integ/inventory_fn.php',
+                'Compliance': '../integ/compliance_fn.php',
+                'Marketing': '../integ/marketing_fn.php'
+            };
 
-                        return `
+            if (apiMap[category]) {
+                loadFromExternalAPI(apiMap[category], gridId, category);
+                return;
+            }
+
+            // Default document loading
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const grid = document.getElementById(gridId);
+                    if (!grid) return;
+                    
+                    if (!data || data.length === 0) {
+                        showNoDataMessage(grid, category);
+                        return;
+                    }
+                    
+                    renderDocumentTable(data, grid);
+                })
+                .catch(error => {
+                    console.error('Error loading documents:', error);
+                    const grid = document.getElementById(gridId);
+                    if (grid) {
+                        grid.innerHTML = `
+                            <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
+                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading documents</p>
+                                <p style="font-size: 0.9rem;">Please try again later.</p>
+                            </div>
+                        `;
+                    }
+                });
+        }
+
+        function loadFinancialRecords() {
+            const grid = document.getElementById('financialFiles');
+            const fallbackData = [
+                { 
+                    entry_date: '2025-10-24', 
+                    type: 'Income', 
+                    category: 'Room Revenue', 
+                    description: 'Room 101 - Check-out payment', 
+                    amount: 5500.00, 
+                    venue: 'Hotel', 
+                    total_debit: 5500, 
+                    total_credit: 0, 
+                    status: 'posted', 
+                    entry_number: 'JE-001' 
+                },
+                // Add more fallback data as needed
+            ];
+
+            // Try local API first
+            fetch('../integ/fn.php')
+                .then(response => response.json())
+                .then(result => {
+                    const data = (result.success && result.data && result.data.length > 0) ? result.data : fallbackData;
+                    renderFinancialTable(data);
+                })
+                .catch(error => {
+                    console.error('Financial API error:', error);
+                    renderFinancialTable(fallbackData);
+                });
+
+            function renderFinancialTable(data) {
+                const tableContainer = document.getElementById('financialFiles');
+                if (!tableContainer) return;
+
+                tableContainer.innerHTML = `
+                    <div class="financial-table-container">
+                        <table class="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Venue</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.map(record => {
+                                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+                                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+                                    const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
+                                    const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', { 
+                                        year: 'numeric', 
+                                        month: '2-digit', 
+                                        day: '2-digit' 
+                                    });
+                                    const amountValue = parseFloat(record.total_debit || record.amount || 0)
+                                        .toLocaleString(undefined, { 
+                                            minimumFractionDigits: 2, 
+                                            maximumFractionDigits: 2 
+                                        });
+
+                                    return `
                                         <tr>
                                             <td style="white-space: nowrap;">${formattedDate}</td>
                                             <td><span style="color: ${typeColor};" class="type-label">${type}</span></td>
@@ -1156,241 +940,43 @@ function formatFileSize($bytes)
                                                 </button>
                                             </td>
                                         </tr>
-                                    `}).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                };
-
-                // Detailed view for financial records
-                window.showFinancialDetails = function (record) {
-                    const modal = document.getElementById('fileDetailsModal');
-                    const content = document.getElementById('fileDetailsContent');
-
-                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
-
-                    content.innerHTML = `
-                        <div style="position: relative;">
-                            <div id="financialSensitive" class="financial-details blurred-content" style="padding: 10px;">
-                                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
-                                    <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
-                                    <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
-                                    <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
-                                </div>
-                                
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                                    <div class="detail-item">
-                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Transaction Date</label>
-                                        <div style="font-size: 1.1rem;">${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Status</label>
-                                        <div style="font-size: 1.1rem; text-transform: capitalize;">${record.status}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Debit</label>
-                                        <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Credit</label>
-                                        <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                                    </div>
-                                </div>
-
-                                <div class="detail-item" style="margin-bottom: 20px;">
-                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Description</label>
-                                    <div style="font-size: 1rem; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 4px solid #3498db;">${record.description}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="reveal-overlay" id="financialReveal">
-                                <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
-                            </div>
-                        </div>
-
-                        <div class="form-actions" style="margin-top: 30px;">
-                            <button class="btn btn-primary" onclick="window.print()" style="background: #34495e;">
-                                <i class="fas fa-print"></i> Print Record
-                            </button>
-                            <button class="btn" onclick="document.getElementById('fileDetailsModal').style.display='none'">Close</button>
-                        </div>
-                    `;
-
-                    document.getElementById('financialReveal').addEventListener('click', function () {
-                        this.style.display = 'none';
-                        document.getElementById('financialSensitive').classList.remove('blurred-content');
-                    });
-
-                    modal.style.display = 'flex';
-                };
-
-                // Use local API integration for financial records
-                fetch('../integ/fn.php')
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.success && result.data && result.data.length > 0) {
-                            renderFinancialTable(result.data);
-                        } else {
-                            renderFinancialTable(fallbackData);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Local API Error:', error);
-                        renderFinancialTable(fallbackData);
-                    });
-                return;
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
             }
+        }
 
-            // HR Documents Integration
-            if (category === 'HR Documents') {
-                const grid = document.getElementById(gridId);
-                // Link your HR API here
-                fetch('../integ/hr_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderDocumentTable(data.data, grid);
-                        } else {
-                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No HR documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload HR documents to see them here.</p></div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('HR API Error:', error);
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading HR documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
-                    });
-                return;
-            }
-
-            // Guest Records Integration
-            if (category === 'Guest Records') {
-                const grid = document.getElementById(gridId);
-                // Link your Guest Records API here
-                fetch('../integ/guest_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderDocumentTable(data.data, grid);
-                        } else {
-                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-user-check" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No guest records found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Guest records will appear here.</p></div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Guest API Error:', error);
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading guest records</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
-                    });
-                return;
-            }
-
-            // Compliance Integration
-            if (category === 'Compliance') {
-                const grid = document.getElementById(gridId);
-                // Link your Compliance API here
-                fetch('../integ/compliance_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderDocumentTable(data.data, grid);
-                        } else {
-                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-shield-alt" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No compliance documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Compliance documents will appear here.</p></div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Compliance API Error:', error);
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading compliance documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
-                    });
-                return;
-            }
-
-            // Marketing Integration
-            if (category === 'Marketing') {
-                const grid = document.getElementById(gridId);
-                // Link your Marketing API here
-                fetch('../integ/marketing_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderDocumentTable(data.data, grid);
-                        } else {
-                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-bullhorn" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No marketing documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Marketing materials will appear here.</p></div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Marketing API Error:', error);
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading marketing documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
-                    });
-                return;
-            }
-
-            // Inventory Integration
-            if (category === 'Inventory') {
-                const grid = document.getElementById(gridId);
-                // Link your Inventory API here
-                fetch('../integ/inventory_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderDocumentTable(data.data, grid);
-                        } else {
-                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-boxes" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No inventory records found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Inventory items will appear here.</p></div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Inventory API Error:', error);
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading inventory records</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
-                    });
-                return;
-            }
-
-            // Default fetch for regular document categories
-            fetch(endpoint)
+        function loadFromExternalAPI(apiUrl, gridId, category) {
+            fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
                     const grid = document.getElementById(gridId);
-                    grid.innerHTML = '';
-                    if (!data || data.length === 0) {
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-layer-group" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload documents to see them here.</p></div>';
-                        return;
+                    if (!grid) return;
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        renderDocumentTable(data.data, grid);
+                    } else {
+                        showNoDataMessage(grid, category);
                     }
-                    grid.innerHTML = `
-                        <div class="financial-table-container" style="grid-column: 1/-1;">
-                            <table class="financial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Size</th>
-                                        <th>Upload Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${data.map(item => `
-                                        <tr>
-                                            <td style="font-weight: 600;">📄 ${item.name}</td>
-                                            <td>${item.category}</td>
-                                            <td>${item.file_size}</td>
-                                            <td>${new Date(item.upload_date).toLocaleDateString()}</td>
-                                            <td>
-                                                <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
                 })
                 .catch(error => {
-                    console.error('Fetch error:', error);
+                    console.error(`Error loading ${category}:`, error);
                     const grid = document.getElementById(gridId);
-                    grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
+                    if (grid) {
+                        grid.innerHTML = `
+                            <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
+                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading ${category}</p>
+                                <p style="font-size: 0.9rem;">Please try again later.</p>
+                            </div>
+                        `;
+                    }
                 });
+        }
 
-        // Utility function to render document table for all categories
         function renderDocumentTable(data, grid) {
             grid.innerHTML = `
                 <div class="financial-table-container" style="grid-column: 1/-1;">
@@ -1424,10 +1010,103 @@ function formatFileSize($bytes)
             `;
         }
 
-        // Utility: show file details in modal
-        function showFileDetails(file) {
+        function showNoDataMessage(grid, category) {
+            const icons = {
+                'all': 'fas fa-layer-group',
+                'HR Documents': 'fas fa-users',
+                'Guest Records': 'fas fa-user-check',
+                'Inventory': 'fas fa-boxes',
+                'Compliance': 'fas fa-shield-alt',
+                'Marketing': 'fas fa-bullhorn'
+            };
+            
+            grid.innerHTML = `
+                <div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;">
+                    <i class="${icons[category] || 'fas fa-layer-group'}" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
+                    <p style="font-size: 1.2rem; font-weight: 500;">No ${category.toLowerCase()} found</p>
+                    <p style="font-size: 0.9rem;">Upload documents to see them here.</p>
+                </div>
+            `;
+        }
+
+        // Global functions for modals
+        window.showFinancialDetails = function(record) {
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
+            
+            const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+            const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+
+            content.innerHTML = `
+                <div style="position: relative;">
+                    <div id="financialSensitive" class="financial-details blurred-content" style="padding: 10px;">
+                        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                            <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
+                            <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
+                            <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="detail-item">
+                                <label>Transaction Date</label>
+                                <div>${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status</label>
+                                <div>${record.status}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Total Debit</label>
+                                <div>$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Total Credit</label>
+                                <div>$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-item" style="margin-bottom: 20px;">
+                            <label>Description</label>
+                            <div>${record.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="reveal-overlay" id="financialReveal">
+                        <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Record
+                    </button>
+                    <button class="btn close-modal">Close</button>
+                </div>
+            `;
+
+            // Add reveal functionality
+            const revealBtn = content.querySelector('#financialReveal');
+            const sensitiveContent = content.querySelector('#financialSensitive');
+            
+            if (revealBtn && sensitiveContent) {
+                revealBtn.addEventListener('click', function() {
+                    this.style.display = 'none';
+                    sensitiveContent.classList.remove('blurred-content');
+                });
+            }
+
+            // Add close functionality
+            content.querySelector('.close-modal').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            modal.style.display = 'block';
+        };
+
+        window.showFileDetails = function(file) {
+            const modal = document.getElementById('fileDetailsModal');
+            const content = document.getElementById('fileDetailsContent');
+            
             content.innerHTML = `
                 <div style="position: relative;">
                     <div id="fileSensitive" class="blurred-content">
@@ -1435,79 +1114,61 @@ function formatFileSize($bytes)
                         <p><strong>Category:</strong> ${file.category || 'N/A'}</p>
                         <p><strong>Size:</strong> ${file.file_size || 'Unknown'}</p>
                         <p><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleDateString()}</p>
+                        ${file.description ? `<p><strong>Description:</strong> ${file.description}</p>` : ''}
                     </div>
                     <div class="reveal-overlay" id="fileReveal">
-                        <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                        <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Details</button>
                     </div>
                 </div>
-                 <div style="margin-top:1rem;display:flex;gap:0.5rem;">
-                     <a href="#" class="btn btn-primary" id="downloadLink">View / Download</a>
-                     <button class="btn" id="closeDetails">Close</button>
-                 </div>
-             `;
+                <div style="margin-top:1rem;display:flex;gap:0.5rem;">
+                    ${file.id ? `<a href="?api=1&action=download&id=${encodeURIComponent(file.id)}" class="btn btn-primary" target="_blank">Download</a>` : ''}
+                    <button class="btn close-modal">Close</button>
+                </div>
+            `;
 
-            const downloadLink = document.getElementById('downloadLink');
-            if (file.id) {
-                downloadLink.setAttribute('href', '?api=1&action=download&id=' + encodeURIComponent(file.id));
-                downloadLink.setAttribute('target', '_blank');
-            } else {
-                downloadLink.setAttribute('href', '#');
-            }
-
-            modal.style.display = 'block';
-
-            document.getElementById('fileReveal').addEventListener('click', function () {
-                this.style.display = 'none';
-                document.getElementById('fileSensitive').classList.remove('blurred-content');
-            });
-
-            // close button inside details
-            document.getElementById('closeDetails').addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-        }
-
-        // Generic modal close handlers (for existing close spans)
-        document.querySelectorAll('.modal .close').forEach(span => {
-            span.addEventListener('click', function () {
-                const m = this.closest('.modal');
-                if (m) m.style.display = 'none';
-            });
-        });
-
-        // Close modal when clicking outside
-        window.addEventListener('click', function (event) {
-            document.querySelectorAll('.modal').forEach(modal => {
-                if (event.target === modal) modal.style.display = 'none';
-            });
-        });
-
-        // Load initial content on page load
-        window.addEventListener('load', () => {
-            loadCategoryFiles('all');
-            updateSecurityStatus(false);
-
-            // Add sidebar toggle functionality
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('open');
+            // Add reveal functionality
+            const revealBtn = content.querySelector('#fileReveal');
+            const sensitiveContent = content.querySelector('#fileSensitive');
+            
+            if (revealBtn && sensitiveContent) {
+                revealBtn.addEventListener('click', function() {
+                    this.style.display = 'none';
+                    sensitiveContent.classList.remove('blurred-content');
                 });
             }
 
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768) {
-                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                        sidebar.classList.remove('open');
-                    }
-                }
+            // Add close functionality
+            content.querySelector('.close-modal').addEventListener('click', () => {
+                modal.style.display = 'none';
             });
-        });
 
-        // Security status update function
+            modal.style.display = 'block';
+        };
+
+        // Session management
+        function startPinSession() {
+            clearPinSession();
+            pinSessionTimeout = setTimeout(() => {
+                isAuthenticated = false;
+                updateSecurityStatus(false);
+                console.log('PIN session expired');
+            }, SESSION_DURATION);
+        }
+
+        function clearPinSession() {
+            if (pinSessionTimeout) {
+                clearTimeout(pinSessionTimeout);
+                pinSessionTimeout = null;
+            }
+        }
+
+        function resetPinSession() {
+            if (isAuthenticated) {
+                clearPinSession();
+                startPinSession();
+            }
+        }
+
         function updateSecurityStatus(authenticated) {
             const securityStatus = document.getElementById('securityStatus');
             const securityIcon = document.getElementById('securityIcon');
@@ -1524,71 +1185,24 @@ function formatFileSize($bytes)
             }
         }
 
-        // Reset session on user activity
-        document.addEventListener('click', resetPinSession);
-        document.addEventListener('keypress', resetPinSession);
-        document.addEventListener('scroll', resetPinSession);
-    </script>
-
-    <!-- Loading Animation Script -->
-    <script>
-        // Select all elements with 'wave-text' class
-        const waveTexts = document.querySelectorAll('.wave-text');
-
-        waveTexts.forEach(textContainer => {
-            const text = textContainer.textContent;
-            textContainer.innerHTML = ''; // Clear existing text
-
-            // Split text into letters and create spans
-            [...text].forEach((letter, index) => {
-                const span = document.createElement('span');
-                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
-                span.style.setProperty('--i', index); // Set custom property for delay
-                textContainer.appendChild(span);
-            });
-        });
-
-        // Define Global Loader Function
-        window.runLoadingAnimation = function (callback, isRedirect = false) {
+        // Loading animation function
+        window.runLoadingAnimation = function(callback, isRedirect = false) {
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.display = 'block';
                 loader.style.opacity = '1';
-                const iframe = loader.querySelector('iframe');
-                if (iframe) iframe.src = iframe.src;
-
+                
                 setTimeout(() => {
                     if (callback) callback();
                     if (!isRedirect) {
-                        // Fade out if staying on page
                         loader.style.opacity = '0';
                         setTimeout(() => { loader.style.display = 'none'; }, 500);
                     }
-                }, 5000); // 5s Duration
+                }, 2000); // 2 seconds
             } else {
                 if (callback) callback();
             }
         };
-
-        // Hide loading screen after page loads
-        window.addEventListener('load', function () {
-            setTimeout(function () {
-                const loader = document.getElementById('loadingOverlay');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => { loader.style.display = 'none'; }, 500);
-                }
-                document.body.classList.add('loaded');
-            }, 1000); // 1 second loading time
-        });
     </script>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
-        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
-            allowtransparency="true"></iframe>
-    </div>
 </body>
-
 </html>
