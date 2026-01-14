@@ -781,74 +781,18 @@ function formatFileSize($bytes)
                                 Compliance</a></li>
                         <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                                 Marketing</a></li>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Hotel<span>Archive</span></div>
-                <nav>
-                    <ul>
-                        <li><a href="#" class="active">Dashboard</a></li>
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="../Modules/dashboard.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
-                        </li>
                     </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <div class="dashboard">
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h3><i class="fas fa-folder-tree"></i> Categories</h3>
-                    <button class="sidebar-toggle" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
-                            All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records"><i
-                                class="fas fa-dollar-sign"></i> Financial Records</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
-                            Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i> Guest Records</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
-                            Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
-                            Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                            Marketing</a></li>
-                </ul>
-                <div class="sidebar-footer">
-                    <div class="security-status">
-                        <i class="fas fa-lock" id="securityIcon"></i>
-                        <span id="securityStatus">Secured</span>
+                    <div class="sidebar-footer">
+                        <div class="security-status">
+                            <i class="fas fa-lock" id="securityIcon"></i>
+                            <span id="securityStatus">Secured</span>
+                        </div>
                     </div>
-                </div>
-            </aside>
+                </aside>
 
-            <div class="content">
-                <div class="content-header">
-                    <h2 id="contentTitle">Archive Management</h2>
-                </div>
-
-                <!-- Success/Error Messages -->
-                <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success"><?php echo $success_message; ?></div>
-                <?php endif; ?>
-
-                <?php if (isset($error_message)): ?>
-                    <div class="alert alert-error"><?php echo $error_message; ?></div>
-                <?php endif; ?>
-
-                <!-- All Documents View -->
-                <div class="category-content active" id="all-content">
-                    <div class="tabs">
-                        <div class="tab active" data-tab="active">Active Files</div>
+                <div class="content">
+                    <div class="content-header">
+                        <h2 id="contentTitle">Archive Management</h2>
                     </div>
                     <div class="tab-content active" id="active-tab">
 
