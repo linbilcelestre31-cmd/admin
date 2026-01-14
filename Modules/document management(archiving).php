@@ -1210,15 +1210,14 @@ function formatFileSize($bytes)
 
             // Placeholder for HR Documents Integration
             if (category === 'HR Documents') {
-                const grid = document.getElementById(gridId);
+                // const grid = document.getElementById(gridId);
                 // FUTURE: Link your HR API here (e.g., ../integ/hr_fn.php)
-                fetch('../integ/hr_fn.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        // RENDER LOGIC HERE
-                    });
-                return;
-                */
+                // fetch('../integ/hr_fn.php')
+                //     .then(response => response.json())
+                //     .then(data => {
+                //         // RENDER LOGIC HERE
+                //     });
+                // return;
             }
 
             // Placeholder for Guest Records Integration
