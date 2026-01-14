@@ -361,10 +361,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             z-index: 1000;
+            transition: all 0.1s ease;
         }
 
         .modal.active {
             display: flex;
+            animation: fadeIn 0.1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* Loading Overlay Style */

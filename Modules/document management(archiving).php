@@ -381,7 +381,7 @@ function formatFileSize($bytes)
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/document.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../assets/css/document.css?v=1">
 
     <style>
         /* Updated Financial Table Styles to match image and prevent squashing */

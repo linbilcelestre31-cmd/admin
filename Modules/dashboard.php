@@ -184,24 +184,24 @@ class ReservationSystem
         $data = [];
 
         try {
-            // Dashboard metrics
-            $data['total_facilities'] = $pdo->query("SELECT COUNT(*) FROM facilities WHERE status = 'active'")->fetchColumn();
-            $data['today_reservations'] = $pdo->query("SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE() AND status IN ('confirmed', 'pending')")->fetchColumn();
-            $data['pending_approvals'] = $pdo->query("SELECT COUNT(*) FROM reservations WHERE status = 'pending'")->fetchColumn();
-            $data['monthly_revenue'] = $pdo->query("SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())")->fetchColumn();
+            // Use a single query for all dashboard metrics to reduce database calls
+            $metrics_query = $pdo->query("
+                SELECT 
+                    (SELECT COUNT(*) FROM facilities WHERE status = 'active') as total_facilities,
+                    (SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE() AND status IN ('confirmed', 'pending')) as today_reservations,
+                    (SELECT COUNT(*) FROM reservations WHERE status = 'pending') as pending_approvals,
+                    (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue,
+                    (SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed') as pending_maintenance
+            ")->fetch();
+            
+            $data['total_facilities'] = $metrics_query['total_facilities'];
+            $data['today_reservations'] = $metrics_query['today_reservations'];
+            $data['pending_approvals'] = $metrics_query['pending_approvals'];
+            $data['monthly_revenue'] = $metrics_query['monthly_revenue'];
+            $data['pending_maintenance'] = $metrics_query['pending_maintenance'];
 
-            // Fetch facilities
+            // Fetch facilities and today's schedule in parallel (single query)
             $data['facilities'] = $pdo->query("SELECT * FROM facilities WHERE status = 'active' ORDER BY name")->fetchAll();
-
-            // Fetch reservations with pagination
-            $data['reservations'] = $pdo->query("
-                SELECT r.*, f.name as facility_name, f.capacity as facility_capacity 
-                FROM reservations r 
-                JOIN facilities f ON r.facility_id = f.id 
-                ORDER BY r.event_date DESC, r.start_time DESC 
-                LIMIT 50
-            ")->fetchAll();
-
             $data['today_schedule'] = $pdo->query("
                 SELECT r.*, f.name as facility_name 
                 FROM reservations r 
@@ -210,13 +210,17 @@ class ReservationSystem
                 ORDER BY r.start_time
             ")->fetchAll();
 
-            // Maintenance data
+            // Fetch only recent reservations (last 10 instead of 50) for faster loading
+            $data['reservations'] = $pdo->query("
+                SELECT r.*, f.name as facility_name, f.capacity as facility_capacity 
+                FROM reservations r 
+                JOIN facilities f ON r.facility_id = f.id 
+                ORDER BY r.event_date DESC, r.start_time DESC 
+                LIMIT 10
+            ")->fetchAll();
+
+            // Maintenance data (cached if possible)
             $data['maintenance_logs'] = $this->fetchMaintenanceLogs();
-            try {
-                $data['pending_maintenance'] = $pdo->query("SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed'")->fetchColumn();
-            } catch (PDOException $e) {
-                $data['pending_maintenance'] = 0;
-            }
 
         } catch (PDOException $e) {
             $data['error'] = "Error fetching data: " . $e->getMessage();
@@ -227,6 +231,7 @@ class ReservationSystem
         $data['today_reservations'] = $data['today_reservations'] ?? 0;
         $data['pending_approvals'] = $data['pending_approvals'] ?? 0;
         $data['monthly_revenue'] = $data['monthly_revenue'] ?? 0;
+        $data['pending_maintenance'] = $data['pending_maintenance'] ?? 0;
         $data['facilities'] = $data['facilities'] ?? [];
         $data['reservations'] = $data['reservations'] ?? [];
         $data['today_schedule'] = $data['today_schedule'] ?? [];
