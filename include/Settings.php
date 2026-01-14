@@ -15,7 +15,34 @@ require_once __DIR__ . '/Config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Function to convert newlines to <br> tags for HTML emails
+function nl2br_custom($string) {
+    return str_replace(["\r\n", "\n", "\r"], '<br>', $string);
+}
+
 $pdo = get_pdo();
+
+// Function to get email settings from database
+function getEmailSettings($pdo) {
+    try {
+        $stmt = $pdo->query("SELECT setting_key, setting_value FROM email_settings");
+        $settings = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+        return $settings;
+    } catch (PDOException $e) {
+        // Return default settings if table doesn't exist
+        return [
+            'password_subject' => 'Security Notice: Your ATIERA Password was Updated',
+            'password_message' => "Hello {\$full_name},\n\nThis is a security notification to let you know that your password for ATIERA Admin Panel has been updated by an administrator.\n\nIf you did not authorized this change, please contact your system administrator immediately.",
+            'new_account_subject' => 'New Account Created: ATIERA Admin Panel',
+            'new_account_message' => "Hello {\$full_name},\n\nAn account has been created for you. Here are your credentials:\n\nUsername: {\$username}\nPassword: {\$password}\n\nTo complete your registration and set your New Password, please use the activation code sent separately.",
+            'setup_subject' => 'Setup Your ATIERA Account Password',
+            'setup_message' => "Hello {\$full_name},\n\nYou have been added as an administrator. To complete your account setup, please set your New Password using the verification code sent separately."
+        ];
+    }
+}
 
 $message = '';
 $error = '';
@@ -40,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Send notification email
                     try {
+                        $emailSettings = getEmailSettings($pdo);
                         $mail = new PHPMailer(true);
                         $mail->isSMTP();
                         $mail->Host = SMTP_HOST;
@@ -53,13 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
                         $mail->addAddress($email, $full_name);
                         $mail->isHTML(true);
-                        $mail->Subject = 'Security Notice: Your ATIERA Password was Updated';
+                        $mail->Subject = $emailSettings['password_subject'];
                         $mail->Body = "
                             <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
                                 <h2 style=\"color: #0f172a;\">Password Changed</h2>
                                 <p>Hello {$full_name},</p>
-                                <p>This is a security notification to let you know that your password for the ATIERA Admin Panel has been updated by an administrator.</p>
-                                <p>If you did not authorized this change, please contact your system administrator immediately.</p>
+                                <p>" . nl2br_custom($emailSettings['password_message']) . "</p>
                                 <div style=\"margin: 20px 0; text-align: center;\">
                                     <a href=\"" . getBaseUrl() . "/auth/login.php\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Go to Login</a>
                                 </div>
