@@ -1065,11 +1065,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                                     title="View Details">
                                                                     <i class="fa-solid fa-eye"></i>
                                                                 </button>
-                                                                <button class="btn btn-danger btn-sm btn-icon"
-                                                                    onclick="event.preventDefault(); window.deleteMaintenanceLog(<?= $log['id'] ?>)"
-                                                                    title="Delete">
-                                                                    <i class="fa-solid fa-trash"></i>
-                                                                </button>
+
                                                             </div>
                                                         </td>
                                                     </tr>
