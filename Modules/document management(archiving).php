@@ -1191,8 +1191,8 @@ function formatFileSize($bytes)
                     modal.style.display = 'flex';
                 };
 
-                // Use external API integration for financial records
-                fetch('https://financial.atierahotelandrestaurant.com/journal_entries_api')
+                // Use local API integration for financial records
+                fetch('../integ/fn.php')
                     .then(response => response.json())
                     .then(result => {
                         if (result.success && result.data && result.data.length > 0) {
@@ -1202,7 +1202,7 @@ function formatFileSize($bytes)
                         }
                     })
                     .catch(error => {
-                        console.error('External API Error:', error);
+                        console.error('Local API Error:', error);
                         renderFinancialTable(fallbackData);
                     });
                 return;
