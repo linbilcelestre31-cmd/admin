@@ -1060,8 +1060,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="risk-analysis-layout">
                     <div class="chart-container-wrapper">
                         <h3 class="subsection-title">Risk Distribution</h3>
-                        <div id="riskChartContainer" style="height: 300px; position: relative;">
-                            <canvas id="riskChart"></canvas>
+                        <div class="chart-area" style="height: 300px; width: 100%; position: relative;">
+                            <canvas id="riskChart" style="height: 300px !important; width: 100% !important;"></canvas>
                         </div>
                     </div>
 
@@ -1854,77 +1854,100 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             if (contractForm) contractForm.reset();
         });
 
-        // Risk chart init (avoid loop/double init)
         let riskChartRef = null;
         function initRiskChart() {
-            const ctx = document.getElementById('riskChart');
-            if (!ctx) {
-                console.error("Risk Chart Canvas not found!");
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js library is not loaded!");
                 return;
             }
-            console.log("Initializing Risk Chart...");
-            
+
+            const canvas = document.getElementById('riskChart');
+            if (!canvas) {
+                console.error("Risk Chart Canvas not found in DOM.");
+                return;
+            }
+
+            console.log("Risk Chart Init -> High: <?php echo $riskCounts['High']; ?>, Medium: <?php echo $riskCounts['Medium']; ?>, Low: <?php echo $riskCounts['Low']; ?>");
+
+            if (riskChartRef) {
+                console.log("Destroying existing chart...");
+                riskChartRef.destroy();
+            }
+
             const data = {
-                labels: ['High Risk', 'Medium Risk', 'Low Risk'], 
+                labels: ['High Risk', 'Medium Risk', 'Low Risk'],
                 datasets: [{
-                    label: 'Contracts Count',
-                    data: [<?php echo $riskCounts['High']; ?>, <?php echo $riskCounts['Medium']; ?>, <?php echo $riskCounts['Low']; ?>],
-                    backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+                    label: 'Contracts',
+                    data: [<?php echo (int) $riskCounts['High']; ?>, <?php echo (int) $riskCounts['Medium']; ?>, <?php echo (int) $riskCounts['Low']; ?>],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.85)',
+                        'rgba(245, 158, 11, 0.85)',
+                        'rgba(34, 197, 94, 0.85)'
+                    ],
+                    borderColor: ['#ef4444', '#f59e0b', '#22c55e'],
                     borderWidth: 0,
-                    borderRadius: 10,
+                    borderRadius: 12,
+                    borderSkipped: false,
                     barPercentage: 0.6,
                     categoryPercentage: 0.8
                 }]
             };
 
-            if (riskChartRef) { 
-                riskChartRef.destroy(); 
-            }
-
-            riskChartRef = new Chart(ctx, {
-                type: 'bar',
-                data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    layout: { padding: { top: 30, bottom: 10 } },
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            padding: 12,
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            cornerRadius: 8,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            ticks: { 
-                                stepSize: 1,
-                                color: '#94a3b8',
-                                font: { size: 11, family: 'Inter, sans-serif' }
-                            },
-                            grid: {
-                                color: '#f1f5f9',
-                                drawBorder: false
+            try {
+                riskChartRef = new Chart(canvas, {
+                    type: 'bar',
+                    data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'x',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                padding: 12,
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 13 },
+                                cornerRadius: 10,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function (context) {
+                                        return ` ${context.raw} Contracts`;
+                                    }
+                                }
                             }
                         },
-                        x: { 
-                            grid: { display: false },
-                            ticks: {
-                                color: '#64748b',
-                                font: { size: 12, weight: '700', family: 'Inter, sans-serif' }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    color: '#94a3b8',
+                                    font: { size: 11, weight: '500' }
+                                },
+                                grid: {
+                                    color: '#f1f5f9',
+                                    drawBorder: false
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: { size: 12, weight: '700' }
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+                console.log("Chart created successfully.");
+            } catch (err) {
+                console.error("Chart creation failed:", err);
+            }
         }
         window.initRiskChart = initRiskChart;
         document.addEventListener('DOMContentLoaded', initRiskChart);
+        window.addEventListener('load', initRiskChart);
 
         // Generate Secured PDF (password-gated) - Real PDF Implementation
         exportPdfBtn?.addEventListener('click', (e) => {
