@@ -1654,6 +1654,84 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <script>
         (function () {
+            // GLOBALIZE CHART INIT FIRST (Ensures it's available for other scripts)
+            window.riskChartRef = null;
+            window.initRiskChart = function () {
+                const canvas = document.getElementById('riskDistributionChart');
+                if (!canvas) return;
+
+                if (typeof Chart === 'undefined') {
+                    console.warn("Chart library missing. Retrying...");
+                    setTimeout(window.initRiskChart, 800);
+                    return;
+                }
+
+                const chartData = [
+                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
+                ];
+
+                try {
+                    const ctx = canvas.getContext('2d');
+                    if (window.riskChartRef) window.riskChartRef.destroy();
+
+                    window.riskChartRef = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                            datasets: [{
+                                label: 'Contracts',
+                                data: chartData,
+                                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+                                borderWidth: 2,
+                                borderRadius: 10,
+                                barPercentage: 0.55
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#0f172a',
+                                    padding: 12,
+                                    titleFont: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { color: '#94a3b8', font: { size: 11 } },
+                                    grid: { color: '#f1f5f9' }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#475569', font: { weight: 'bold', size: 12 } }
+                                }
+                            }
+                        }
+                    });
+                    console.log("Chart Rendered:", chartData);
+                } catch (e) {
+                    console.error("Chart Error:", e);
+                }
+            };
+
+            // Force Re-check every few seconds
+            setInterval(() => {
+                if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
+                    window.initRiskChart();
+                }
+            }, 2000);
+
+            // Immediate Triggers
+            window.initRiskChart();
+            document.addEventListener('DOMContentLoaded', window.initRiskChart);
+            window.addEventListener('load', window.initRiskChart);
+
             const cancelEmpInfo = document.getElementById('cancelEmployeeInfo');
             const empInfoForm = document.getElementById('employeeInfoForm');
             const infoId = document.getElementById('info_emp_id');
@@ -2043,77 +2121,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 if (contractForm) contractForm.reset();
             });
 
-            // Globalization of Chart instance control
-            window.riskChartRef = null;
-            window.initRiskChart = function () {
-                const canvas = document.getElementById('riskDistributionChart');
-                if (!canvas) return;
 
-                if (typeof Chart === 'undefined') {
-                    console.warn("Chart.js not loaded yet, retrying in 1s...");
-                    setTimeout(window.initRiskChart, 1000);
-                    return;
-                }
-
-                const chartData = [
-                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
-                ];
-
-                try {
-                    const ctx = canvas.getContext('2d');
-                    if (window.riskChartRef) window.riskChartRef.destroy();
-
-                    window.riskChartRef = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
-                            datasets: [{
-                                label: 'Contracts',
-                                data: chartData,
-                                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                                borderColor: ['#dc2626', '#d97706', '#059669'],
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                barPercentage: 0.6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: { enabled: true }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { stepSize: 1, color: '#94a3b8' },
-                                    grid: { color: '#f1f5f9' }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#64748b', font: { weight: 'bold' } }
-                                }
-                            }
-                        }
-                    });
-                    console.log("initRiskChart: Rendered successfully with data:", chartData);
-                } catch (err) {
-                    console.error("initRiskChart Error:", err);
-                }
-            };
-
-            // Standard triggers
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                setTimeout(window.initRiskChart, 100);
-            }
-            document.addEventListener('DOMContentLoaded', () => setTimeout(window.initRiskChart, 300));
-            window.addEventListener('load', window.initRiskChart);
-            window.addEventListener('resize', () => {
-                if (window.initRiskChart) window.initRiskChart();
-            });
 
             // Generate Secured PDF (password-gated) - Real PDF Implementation
             exportPdfBtn?.addEventListener('click', (e) => {
