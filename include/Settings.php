@@ -1003,7 +1003,7 @@ You have been added as an administrator. To complete your account setup, please 
             .then(data => {
                 // Close modal and show success message
                 closeModal('securityEmailModal');
-                location.reload(); // Reload to show updated message
+                window.location.href = window.location.href; // Reload to show updated message
             })
             .catch(error => {
                 console.error('Error saving email settings:', error);
