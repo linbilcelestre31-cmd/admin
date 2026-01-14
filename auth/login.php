@@ -1007,7 +1007,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             if (data.redirect) {
               window.location.href = data.redirect;
             } else {
-              window.location.href = '../Modules/facilities-reservation.php';
+              window.location.href = '../Modules/dashboard.php';
             }
           }, 1000);
         } else {
