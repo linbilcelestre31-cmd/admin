@@ -1524,29 +1524,92 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- Employee Info Modal -->
+    <!-- Employee Info Modal (Revamped Premium View) -->
     <div id="employeeInfoModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2);">
-            <button type="button" id="closeEmployeeInfo"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
-            <h3 id="employeeInfoTitle">Employee Profile</h3>
-            <form id="employeeInfoForm">
-                <input type="hidden" id="info_emp_id">
-                <div class="form-group"><label>Name</label><input type="text" id="info_emp_name" class="form-control">
+        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        <div class="premium-modal modal-animate-in"
+            style="width:94%; max-width:550px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
+
+            <!-- Modal Header with Gradient -->
+            <div
+                style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
+                <button type="button" id="closeEmployeeInfo"
+                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.1); color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 10;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div
+                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h2 id="employeeInfoTitle"
+                            style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
+                            Profile</h2>
+                        <span id="employeeRoleBadge"
+                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(147, 197, 253, 0.2);">Legal
+                            Team</span>
+                    </div>
                 </div>
-                <div class="form-group"><label>Position</label><input type="text" id="info_emp_position"
-                        class="form-control"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="info_emp_email"
-                        class="form-control"></div>
-                <div class="form-group"><label>Phone</label><input type="text" id="info_emp_phone" class="form-control">
+            </div>
+
+            <!-- Modal Body -->
+            <div id="employeeInfoBody" style="padding: 40px; background: white;">
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Data Row: Name -->
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
+                            Name</label>
+                        <div id="display_emp_name"
+                            style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            -</div>
+                    </div>
+
+                    <!-- Data Row: Position -->
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
+                        <div id="display_emp_position"
+                            style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            -</div>
+                    </div>
+
+                    <!-- Data Grid: Contact Info -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="info-row">
+                            <label
+                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
+                                Address</label>
+                            <div id="display_emp_email" class="blurred-info" title="Hover to reveal"
+                                style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                -</div>
+                        </div>
+                        <div class="info-row">
+                            <label
+                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
+                                Number</label>
+                            <div id="display_emp_phone" class="blurred-info" title="Hover to reveal"
+                                style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                -</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-actions" style="display:none;">
-                    <button type="button" class="cancel-btn" id="cancelEmployeeInfo">Cancel</button>
-                    <button type="submit" class="save-btn">Save Member</button>
+
+                <!-- Footer Actions -->
+                <div style="margin-top: 40px; display: flex; justify-content: center;">
+                    <button type="button" class="save-btn" id="modalDownloadEmpPdf"
+                        style="width: 100%; border-radius: 16px; padding: 16px; font-weight: 700; background: #3b82f6; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fa-solid fa-file-pdf"></i> Download Official Profile
+                    </button>
                 </div>
-            </form>
+                <div style="text-align: center; margin-top: 15px;">
+                    <p style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-lock"
+                            style="margin-right: 4px;"></i> Sensitive information is blurred for security. Hover to
+                        reveal.</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1723,6 +1786,54 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     window.initRiskChart();
                 }
             }, 2000);
+
+            // Security Gate Implementation
+            window.withPasswordGate = function (callback) {
+                const modal = document.getElementById('passwordModal');
+                const form = document.getElementById('passwordForm');
+                const error = document.getElementById('pwdError');
+                const cancel = document.getElementById('pwdCancel');
+                const digits = modal.querySelectorAll('.pin-digit');
+
+                if (!modal) {
+                    callback(); // Fallback if modal missing
+                    return;
+                }
+
+                // Reset modal
+                digits.forEach(d => d.value = '');
+                if (error) error.style.display = 'none';
+                modal.style.display = 'flex';
+                digits[0].focus();
+
+                // Focus management
+                digits.forEach((digit, idx) => {
+                    digit.oninput = (e) => {
+                        if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
+                    };
+                    digit.onkeydown = (e) => {
+                        if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
+                    };
+                });
+
+                // Handle submission
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    const pin = Array.from(digits).map(d => d.value).join('');
+                    if (pin === '1234') { // Default PIN for demo
+                        modal.style.display = 'none';
+                        callback();
+                    } else {
+                        if (error) error.style.display = 'block';
+                        digits.forEach(d => d.value = '');
+                        digits[0].focus();
+                    }
+                };
+
+                cancel.onclick = () => {
+                    modal.style.display = 'none';
+                };
+            };
 
             // Immediate Triggers
             window.initRiskChart();
@@ -1942,17 +2053,50 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     // Employee View
                     if (type === 'employee-view') {
                         const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                        employeeInfoTitle.textContent = 'Employee Information';
-                        infoId.value = emp.id || '';
-                        infoName.value = emp.name || '';
-                        infoPos.value = emp.position || '';
-                        infoEmail.value = emp.email || '';
-                        infoPhone.value = emp.phone || '';
-                        [infoName, infoPos, infoEmail, infoPhone].forEach(i => { if (i) { i.readOnly = true; i.disabled = false; i.classList.add('glass-input'); } });
-                        const actions = empInfoForm.querySelector('.form-actions');
-                        if (actions) actions.style.display = 'none';
-                        openModal(empInfoModal);
-                        injectModalPdfButton(empInfoForm, 'employee', emp);
+                        const modal = document.getElementById('employeeInfoModal');
+
+                        // Update Display Fields
+                        document.getElementById('employeeInfoTitle').textContent = emp.name || 'Employee Profile';
+                        document.getElementById('display_emp_name').textContent = emp.name || 'N/A';
+                        document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
+                        document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
+                        document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
+
+                        // Handle Role Badge Colors
+                        const badge = document.getElementById('employeeRoleBadge');
+                        if (badge) {
+                            badge.textContent = emp.position || 'Legal Team';
+                            if (emp.position && emp.position.toLowerCase().includes('senior')) {
+                                badge.style.background = 'rgba(16, 185, 129, 0.2)';
+                                badge.style.color = '#10b981';
+                                badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                            } else {
+                                badge.style.background = 'rgba(59, 130, 246, 0.2)';
+                                badge.style.color = '#3b82f6';
+                                badge.style.borderColor = 'rgba(59, 130, 246, 0.2)';
+                            }
+                        }
+
+                        // Set up PDF download button
+                        const dlBtn = document.getElementById('modalDownloadEmpPdf');
+                        if (dlBtn) {
+                            dlBtn.onclick = () => {
+                                const originalText = dlBtn.innerHTML;
+                                dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+                                window.downloadRecordAsPDF('employee', emp);
+                                setTimeout(() => { dlBtn.innerHTML = originalText; }, 2000);
+                            };
+                        }
+
+                        openModal(modal);
+
+                        // Add animation class to modal content
+                        const content = modal.querySelector('.premium-modal');
+                        if (content) {
+                            content.classList.remove('modal-animate-in');
+                            void content.offsetWidth; // Trigger reflow
+                            content.classList.add('modal-animate-in');
+                        }
                     }
                     // Document View
                     else if (type === 'doc-view') {
