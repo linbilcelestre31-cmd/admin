@@ -48,11 +48,11 @@ function get_nav_link($tab, $is_dashboard)
             <li><a href="document management(archiving).php"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">🗄️</span> Document archiving
+                    <span class="icon-img-placeholder">🗄️</span> Document Archiving
                 </a></li>
             <li><a href="../Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">🚶</span> visitors Log
+                    <span class="icon-img-placeholder">🚶</span> Visitors Log
                 </a></li>
         </ul>
     </div>

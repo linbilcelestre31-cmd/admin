@@ -393,6 +393,7 @@ function formatFileSize($bytes)
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/document.css?v=<?php echo time(); ?>">
 
     <style>
         /* Updated Financial Table Styles to match image and prevent squashing */
@@ -841,6 +842,8 @@ function formatFileSize($bytes)
     <footer class="container">
         <p>Hotel & Restaurant Document Management System &copy; 2023</p>
     </footer>
+    </div>
+    </div>
     <script src="../assets/Javascript/document.js"></script>
     <script>
         // Add dummy/sample data for testing if API fails
