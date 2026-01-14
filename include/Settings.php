@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->Body = "
                             <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
                                 <h2 style=\"color: #0f172a;\">Password Changed</h2>
-                                <p>Hello {$full_name},</p>
-                                <p>" . nl2br_custom($emailSettings['password_message']) . "</p>
+                                <p>Hello " . htmlspecialchars($full_name) . ",</p>
+                                <p>" . nl2br_custom(str_replace('{$full_name}', htmlspecialchars($full_name), $emailSettings['password_message'])) . "</p>
                                 <div style=\"margin: 20px 0; text-align: center;\">
                                     <a href=\"" . getBaseUrl() . "/auth/login.php\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Go to Login</a>
                                 </div>
