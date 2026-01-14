@@ -695,7 +695,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <div class="user-info">
                         <span>Welcome, Admin</span>
                         <button type="button" class="logout-btn" id="backDashboardBtn"
-                            onclick="window.location.href='../Modules/dashboard.php'">
+                            onclick="window.location.replace('../Modules/dashboard.php')">
                             <span class="icon-img-placeholder">⏻</span> logout
                         </button>
                     </div>
