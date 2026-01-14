@@ -237,8 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td class="px-6 py-4 whitespace-nowrap space-x-2 text-center">
                             <button class="action-btn view-btn bg-blue-100 hover:bg-blue-200 text-blue-700 py-1 px-3 rounded-lg text-xs" 
                                 data-type="employee-view" data-emp="${empData}">View</button>
-                            <button class="action-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 py-1 px-3 rounded-lg text-xs" 
-                                data-type="employee-edit" data-emp="${empData}">Edit</button>
                         </td>
                     `;
             } else if (type === 'contract') {
