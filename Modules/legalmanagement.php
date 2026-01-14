@@ -2076,7 +2076,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         window.addEventListener('load', function() {
             setTimeout(function() {
                 document.body.classList.add('loaded');
-            }, 3000); // 3 seconds loading time
+            }, 5000); // 5 seconds loading time
         });
     </script>
     

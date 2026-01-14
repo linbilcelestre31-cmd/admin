@@ -42,7 +42,8 @@ function get_nav_link($tab, $is_dashboard)
                     <span class="icon-img-placeholder">⚙️</span> Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
-                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
+                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
                     <span class="icon-img-placeholder">⚖️</span> Legal Management
                 </a></li>
             <li><a href="document management(archiving).php"
@@ -96,7 +97,7 @@ function get_nav_link($tab, $is_dashboard)
                         loader.style.opacity = '0';
                         setTimeout(() => { loader.style.display = 'none'; }, 500);
                     }
-                }, 3000); // 3s Duration
+                }, 5000); // 5s Duration
             } else {
                 if (callback) callback();
             }
