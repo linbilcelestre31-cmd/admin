@@ -1022,9 +1022,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <div class="chart-container-wrapper">
                         <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution</h3>
                         <div class="chart-area" id="chartArea"
-                            style="height: 320px; width: 100%; position: relative; background: #fafafa; border-radius: 16px; border: 1px solid #f1f5f9; padding: 15px; display: flex; align-items: center; justify-content: center;">
-                            <canvas id="riskDistributionChart"
-                                 style="display: block; box-sizing: border-box; height: 100% !important; width: 100% !important; opacity: 1; transition: opacity 0.5s ease;"></canvas>
+                            style="height: 320px; width: 100%; position: relative; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; padding: 20px; display: block; overflow: hidden;">
+                            <canvas id="riskDistributionChart" style="width: 100%; height: 100%; opacity: 1; transition: opacity 0.5s ease;"></canvas>
                         </div>
                     </div>
 
@@ -2065,11 +2064,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 const chartData = [<?php echo (int) $riskCounts['High']; ?>, <?php echo (int) $riskCounts['Medium']; ?>, <?php echo (int) $riskCounts['Low']; ?>];
 
                 try {
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        console.error("initRiskChart: Could not get 2D context.");
+                        return;
+                    }
+
                     if (window.riskChartRef) {
                         window.riskChartRef.destroy();
                     }
 
-                    window.riskChartRef = new Chart(canvas, {
+                    window.riskChartRef = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: ['High Risk', 'Medium Risk', 'Low Risk'],
@@ -2097,7 +2102,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: { stepSize: 1, color: '#94a3b8', font: { size: 11 } },
+                                    ticks: {
+                                        stepSize: 1,
+                                        color: '#94a3b8',
+                                        font: { size: 11 }
+                                    },
                                     grid: { color: '#f1f5f9', drawBorder: false }
                                 },
                                 x: {
@@ -2108,11 +2117,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         }
                     });
 
-                    if (status) status.style.display = 'none';
                     canvas.style.opacity = '1';
                     console.log("initRiskChart: Success.");
                 } catch (err) {
-                    if (status) status.innerHTML = 'Error initializing chart.';
                     console.error("initRiskChart: Exception:", err);
                 }
             };
