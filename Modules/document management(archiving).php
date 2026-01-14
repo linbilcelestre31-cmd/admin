@@ -507,6 +507,146 @@ function formatFileSize($bytes)
             margin: 0 0 30px;
             color: #64748b;
         }
+
+        /* Shake animation for wrong PIN */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        /* Enhanced Sidebar Styles */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 15px 0;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #4a6cf7, #6366f1);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #166534;
+            font-weight: 500;
+        }
+
+        .security-status.locked {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .security-status i {
+            font-size: 0.8rem;
+        }
+
+        /* Mobile responsive sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s ease;
+                background: white;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -530,16 +670,27 @@ function formatFileSize($bytes)
     <main class="container">
         <div class="dashboard">
             <aside class="sidebar">
-                <h3>Categories</h3>
-                <ul>
-                    <li><a href="#" class="category-link active" data-category="all">All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records">Financial Records</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents">HR Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records">Guest Records</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory">Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance">Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing">Marketing</a></li>
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-folder-tree"></i> Categories</h3>
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i> All Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i class="fas fa-dollar-sign"></i> Financial Records</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR Documents</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i> Guest Records</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i> Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i> Marketing</a></li>
                 </ul>
+                <div class="sidebar-footer">
+                    <div class="security-status">
+                        <i class="fas fa-lock" id="securityIcon"></i>
+                        <span id="securityStatus">Secured</span>
+                    </div>
+                </div>
             </aside>
 
             <div class="content">
@@ -764,9 +915,32 @@ function formatFileSize($bytes)
             loadCategoryFiles(category);
         }
 
-        // PIN Gate Logic
+        // PIN Gate Logic with Session Management
         const archivePinDigits = document.querySelectorAll('.pin-digit');
         const correctArchivePin = '1234';
+        let pinSessionTimeout = null;
+        const SESSION_DURATION = 15 * 60 * 1000; // 15 minutes
+
+        function startPinSession() {
+            clearPinSession();
+            pinSessionTimeout = setTimeout(() => {
+                isAuthenticated = false;
+                console.log('PIN session expired');
+            }, SESSION_DURATION);
+        }
+
+        function clearPinSession() {
+            if (pinSessionTimeout) {
+                clearTimeout(pinSessionTimeout);
+                pinSessionTimeout = null;
+            }
+        }
+
+        function resetPinSession() {
+            if (isAuthenticated) {
+                startPinSession();
+            }
+        }
 
         archivePinDigits.forEach((input, index) => {
             input.addEventListener('input', function () {
@@ -789,6 +963,8 @@ function formatFileSize($bytes)
 
             if (enteredPin === correctArchivePin) {
                 isAuthenticated = true;
+                startPinSession();
+                updateSecurityStatus(true);
                 document.getElementById('passwordModal').style.display = 'none';
                 if (targetCategory) {
                     const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
@@ -798,6 +974,11 @@ function formatFileSize($bytes)
                 document.getElementById('pinErrorMessage').style.display = 'block';
                 archivePinDigits.forEach(input => input.value = '');
                 archivePinDigits[0].focus();
+                // Add shake animation for wrong PIN
+                document.querySelector('.pin-container').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.querySelector('.pin-container').style.animation = '';
+                }, 500);
             }
         });
 
@@ -1180,7 +1361,49 @@ function formatFileSize($bytes)
         // Load initial content on page load
         window.addEventListener('load', () => {
             loadCategoryFiles('all');
+            updateSecurityStatus(false);
+            
+            // Add sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
         });
+
+        // Security status update function
+        function updateSecurityStatus(authenticated) {
+            const securityStatus = document.getElementById('securityStatus');
+            const securityIcon = document.getElementById('securityIcon');
+            const statusContainer = document.querySelector('.security-status');
+            
+            if (authenticated) {
+                securityStatus.textContent = 'Authenticated';
+                securityIcon.className = 'fas fa-unlock';
+                statusContainer.classList.remove('locked');
+            } else {
+                securityStatus.textContent = 'Secured';
+                securityIcon.className = 'fas fa-lock';
+                statusContainer.classList.add('locked');
+            }
+        }
+
+        // Reset session on user activity
+        document.addEventListener('click', resetPinSession);
+        document.addEventListener('keypress', resetPinSession);
+        document.addEventListener('scroll', resetPinSession);
     </script>
 </body>
 
