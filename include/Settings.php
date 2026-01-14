@@ -383,6 +383,29 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
+
+        /* Pin Input Styles */
+        .pin-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .pin-box {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .pin-box:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
     </style>
 </head>
 
@@ -471,30 +494,35 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     <!-- Security Tab Content -->
                     <div id="content-security" style="display: none;">
-                        <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Update Security</h3>
+                        <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Update
+                            Security</h3>
                         <div class="security-grid">
                             <button class="security-btn" onclick="openSecurityModal('password')">
                                 <i class="fas fa-lock"></i>
                                 <span style="font-weight: 600;">Change Admin Password</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Update the master password for this account</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Update the master
+                                    password for this account</span>
                             </button>
 
                             <button class="security-btn" onclick="openSecurityModal('pin')">
                                 <i class="fas fa-key"></i>
                                 <span style="font-weight: 600;">Security PIN (4-Digit)</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Manage 4-digit PIN for sensitive actions</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Manage 4-digit PIN
+                                    for sensitive actions</span>
                             </button>
 
                             <button class="security-btn" onclick="openSecurityModal('logs')">
                                 <i class="fas fa-file-shield"></i>
                                 <span style="font-weight: 600;">Audit Logs</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">View security events and access logs</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">View security
+                                    events and access logs</span>
                             </button>
 
                             <button class="security-btn" onclick="openSecurityModal('sessions')">
                                 <i class="fas fa-user-lock"></i>
                                 <span style="font-weight: 600;">Session Management</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active sessions and timeouts</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active
+                                    sessions and timeouts</span>
                             </button>
                         </div>
                     </div>
@@ -592,17 +620,33 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="modal-content">
                 <span class="close-modal" onclick="closeModal('securityPinModal')">&times;</span>
                 <h3 style="margin-top: 0; color: #2d3748;">Manage Security PIN</h3>
-                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">This 4-digit PIN is used to access sensitive records (e.g. Employee Info).</p>
-                <form method="POST">
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">This 4-digit PIN is used to access
+                    sensitive records (e.g. Employee Info).</p>
+                <form method="POST" id="pinForm">
                     <input type="hidden" name="action" value="update_security_pin">
+
                     <div class="form-group">
                         <label>New 4-Digit PIN</label>
-                        <input type="text" name="security_pin" class="form-control" pattern="\d{4}" maxlength="4" placeholder="e.g. 1234" required style="letter-spacing: 5px; font-size: 1.2rem; text-align: center;">
+                        <div class="pin-inputs" id="newPinInputs">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="0">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="1">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="2">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="3">
+                        </div>
+                        <input type="hidden" name="security_pin" id="realNewPin">
                     </div>
+
                     <div class="form-group">
                         <label>Confirm PIN</label>
-                        <input type="text" name="confirm_pin" class="form-control" pattern="\d{4}" maxlength="4" placeholder="e.g. 1234" required style="letter-spacing: 5px; font-size: 1.2rem; text-align: center;">
+                        <div class="pin-inputs" id="confirmPinInputs">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="0">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="1">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="2">
+                            <input type="text" maxlength="1" class="pin-box" data-idx="3">
+                        </div>
+                        <input type="hidden" name="confirm_pin" id="realConfirmPin">
                     </div>
+
                     <button type="submit" class="btn btn-primary btn-block">Set Security PIN</button>
                 </form>
             </div>
@@ -625,7 +669,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
                             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">Just now</td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Viewed Employee</td>
                             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
                             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">2 mins ago</td>
@@ -637,7 +681,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tr>
                     </table>
                 </div>
-                <button class="btn btn-outline btn-block" style="margin-top: 15px;" onclick="closeModal('securityLogsModal')">Close</button>
+                <button class="btn btn-outline btn-block" style="margin-top: 15px;"
+                    onclick="closeModal('securityLogsModal')">Close</button>
             </div>
         </div>
 
@@ -647,7 +692,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span class="close-modal" onclick="closeModal('securitySessionsModal')">&times;</span>
                 <h3 style="margin-top: 0; color: #2d3748;">Active Sessions</h3>
                 <div style="margin-top: 15px;">
-                    <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
+                    <div
+                        style="display: flex; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
                         <div style="font-size: 1.5rem; margin-right: 15px;">💻</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600;">Windows 10 • Chrome</div>
@@ -736,6 +782,38 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 event.target.classList.remove('active');
             }
         }
+
+        // PIN Logic
+        function setupPinInputs(containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!container || !hidden) return;
+            const boxes = container.querySelectorAll('.pin-box');
+
+            boxes.forEach((box, idx) => {
+                box.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    if (!/^\d$/.test(val)) { e.target.value = ''; return; } // Numbers only
+
+                    if (idx < 3) boxes[idx + 1].focus();
+                    updateHidden();
+                });
+
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value) {
+                        if (idx > 0) boxes[idx - 1].focus();
+                    }
+                });
+                box.addEventListener('keyup', updateHidden); // Update on backspace/delete too
+            });
+
+            function updateHidden() {
+                hidden.value = Array.from(boxes).map(b => b.value).join('');
+            }
+        }
+
+        setupPinInputs('newPinInputs', 'realNewPin');
+        setupPinInputs('confirmPinInputs', 'realConfirmPin');
     </script>
 </body>
 
