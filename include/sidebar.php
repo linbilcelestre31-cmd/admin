@@ -26,19 +26,19 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?> class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>" data-tab="dashboard">
+            <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?>" class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>" data-tab="dashboard">
                     <span class="icon-img-placeholder">📊</span> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>" data-tab="facilities" onclick="window.runLoadingAnimation();">
+            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>" data-tab="facilities">
                     <span class="icon-img-placeholder">🏢</span> Facilities
                 </a></li>
-            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>" data-tab="reservations" onclick="window.runLoadingAnimation();">
+            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>" data-tab="reservations">
                     <span class="icon-img-placeholder">📅</span> Reservations
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>" data-tab="calendar" onclick="window.runLoadingAnimation();">
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>" data-tab="calendar">
                     <span class="icon-img-placeholder">📅</span> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>" data-tab="management" onclick="window.runLoadingAnimation();">
+            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>" data-tab="management">
                     <span class="icon-img-placeholder">⚙️</span> Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
@@ -61,10 +61,10 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">External Links</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>" data-tab="reports" onclick="window.runLoadingAnimation();">
+            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>" data-tab="reports">
                     <span class="icon-img-placeholder">📈</span> Reports
                 </a></li>
-            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>" onclick="window.runLoadingAnimation();">
+            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
                     <span class="icon-img-placeholder">⚙️</span> Settings
                 </a></li>
         </ul>
