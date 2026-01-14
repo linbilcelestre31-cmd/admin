@@ -387,7 +387,7 @@ function formatFileSize($bytes)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading - Atiéra</title>
+    <title>Document - Atiéra</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
         rel="stylesheet">
@@ -594,8 +594,8 @@ function formatFileSize($bytes)
         }
 
         .sidebar-menu a:hover {
-            background: #f8fafc;
-            color: #1e293b;
+            background: #4a6cf7;
+            color: white;
             transform: translateX(4px);
         }
 
