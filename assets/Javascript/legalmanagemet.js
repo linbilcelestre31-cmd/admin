@@ -122,12 +122,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 section.style.display = 'none'; // Force hide
                 if (section.id === targetId) {
                     section.classList.add('active');
-                    // Use grid for risk_analysis to support the new dashboard design
-                    section.style.display = (targetId === 'risk_analysis') ? 'grid' : 'block';
+                    section.style.display = 'block';
 
                     // Re-init chart if switching to risk analysis
                     if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
-                        setTimeout(() => window.initRiskChart(), 150);
+                        setTimeout(() => window.initRiskChart(), 100);
                     }
                 }
             });
