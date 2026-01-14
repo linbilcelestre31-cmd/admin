@@ -161,7 +161,7 @@ class ReservationSystem
     public function fetchMaintenanceLogs()
     {
         try {
-            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC")->fetchAll();
+            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC LIMIT 5")->fetchAll();
         } catch (PDOException $e) {
             return [];
         }
