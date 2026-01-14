@@ -79,6 +79,10 @@ function getLastInsertId()
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visitor Management System</title>
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/Visitors.css">
     <!-- Added styles for Reports read-panel (beautify only) -->
     <style>
@@ -154,7 +158,10 @@ function getLastInsertId()
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">Visitor Management System</div>
+                <div class="logo">
+                    <i class="fas fa-user-check" style="margin-right: 10px; color: #3b82f6;"></i>
+                    Atiera <span>Logs</span>
+                </div>
                 <nav>
                     <ul>
                         <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
@@ -172,14 +179,14 @@ function getLastInsertId()
         <div class="main-content">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="sidebar-link active" data-page="dashboard">Dashboard</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="hotel-checkin">Hotel Time-in</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="hotel-visitors">Hotel Visitors</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant-checkin">Restaurant time-in</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors">Restaurant Visitors</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="reports">Reports</a></li>
+                    <li><a href="#" class="sidebar-link active" data-page="dashboard"><i class="fas fa-chart-line" style="margin-right: 12px;"></i>Dashboard</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="hotel-checkin"><i class="fas fa-hotel" style="margin-right: 12px;"></i>Hotel Time-in</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="hotel-visitors"><i class="fas fa-users" style="margin-right: 12px;"></i>Hotel Visitors</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-checkin"><i class="fas fa-utensils" style="margin-right: 12px;"></i>Restaurant Time-in</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors"><i class="fas fa-clipboard-list" style="margin-right: 12px;"></i>Restaurant Visitors</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice" style="margin-right: 12px;"></i>Reports</a></li>
 
-                    <li><a href="#" class="sidebar-link" data-page="settings">Settings</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="settings"><i class="fas fa-cog" style="margin-right: 12px;"></i>Settings</a></li>
                 </ul>
             </aside>
 
@@ -189,20 +196,24 @@ function getLastInsertId()
                     <h1>Dashboard</h1>
                     <div class="stats-container">
                         <div class="stat-card">
+                            <i class="fas fa-hotel" style="float: right; font-size: 1.5rem; color: #3b82f6;"></i>
                             <div class="stat-number" id="hotel-today">0</div>
-                            <div class="stat-label">Hotel Visitors Today</div>
+                            <div class="stat-label">Hotel Today</div>
                         </div>
                         <div class="stat-card">
+                            <i class="fas fa-utensils" style="float: right; font-size: 1.5rem; color: #10b981;"></i>
                             <div class="stat-number" id="restaurant-today">0</div>
-                            <div class="stat-label">Restaurant Visitors Today</div>
+                            <div class="stat-label">Restaurant Today</div>
                         </div>
                         <div class="stat-card">
+                            <i class="fas fa-door-open" style="float: right; font-size: 1.5rem; color: #6366f1;"></i>
                             <div class="stat-number" id="hotel-current">0</div>
-                            <div class="stat-label">Currently in Hotel</div>
+                            <div class="stat-label">Inside Hotel</div>
                         </div>
                         <div class="stat-card">
+                            <i class="fas fa-chair" style="float: right; font-size: 1.5rem; color: #f59e0b;"></i>
                             <div class="stat-number" id="restaurant-current">0</div>
-                            <div class="stat-label">Currently in Restaurant</div>
+                            <div class="stat-label">Inside Restaurant</div>
                         </div>
                     </div>
 

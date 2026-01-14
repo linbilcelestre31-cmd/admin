@@ -421,6 +421,7 @@ function formatFileSize($bytes)
             vertical-align: middle;
             color: #475569;
             line-height: 1.5;
+            text-align: center;
         }
 
         .type-label {
@@ -494,10 +495,7 @@ function formatFileSize($bytes)
                         <div class="tab active" data-tab="active">Active Files</div>
                     </div>
                     <div class="tab-content active" id="active-tab">
-                        <div class="search-box">
-                            <input type="text" placeholder="Search documents...">
-                            <button>Search</button>
-                        </div>
+
                         <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
                     </div>
                     <div class="tab-content" id="trash-tab">
@@ -507,56 +505,38 @@ function formatFileSize($bytes)
 
                 <!-- Financial Records View -->
                 <div class="category-content" id="financial-records-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search financial records...">
-                        <button>Search</button>
-                    </div>
+
                     <div id="financialFiles"><!-- Financial records table will be populated here --></div>
                 </div>
 
                 <!-- HR Documents View -->
                 <div class="category-content" id="hr-documents-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search HR documents...">
-                        <button>Search</button>
-                    </div>
+
                     <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
                 </div>
 
                 <!-- Guest Records View -->
                 <div class="category-content" id="guest-records-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search guest records...">
-                        <button>Search</button>
-                    </div>
+
                     <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
                 </div>
 
                 <!-- Inventory View -->
                 <div class="category-content" id="inventory-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search inventory documents...">
-                        <button>Search</button>
-                    </div>
+
                     <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
                 </div>
 
                 <!-- Compliance View -->
                 <div class="category-content" id="compliance-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search compliance documents...">
-                        <button>Search</button>
-                    </div>
+
                     <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here -->
                     </div>
                 </div>
 
                 <!-- Marketing View -->
                 <div class="category-content" id="marketing-content">
-                    <div class="search-box">
-                        <input type="text" placeholder="Search marketing documents...">
-                        <button>Search</button>
-                    </div>
+
                     <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
                 </div>
 
@@ -843,6 +823,76 @@ function formatFileSize($bytes)
                         renderFinancialTable(fallbackData);
                     });
                 return;
+            }
+
+            // Placeholder for HR Documents Integration
+            if (category === 'HR Documents') {
+                /*
+                const grid = document.getElementById(gridId);
+                // FUTURE: Link your HR API here (e.g., ../integ/hr_fn.php)
+                fetch('../integ/hr_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // RENDER LOGIC HERE
+                    });
+                return;
+                */
+            }
+
+            // Placeholder for Guest Records Integration
+            if (category === 'Guest Records') {
+                /*
+                const grid = document.getElementById(gridId);
+                // FUTURE: Link your Guest Records API here
+                fetch('../integ/guest_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // RENDER LOGIC HERE
+                    });
+                return;
+                */
+            }
+
+            // Placeholder for Compliance Integration
+            if (category === 'Compliance') {
+                /*
+                const grid = document.getElementById(gridId);
+                // FUTURE: Link your Compliance API here
+                fetch('../integ/compliance_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // RENDER LOGIC HERE
+                    });
+                return;
+                */
+            }
+
+            // Placeholder for Marketing Integration
+            if (category === 'Marketing') {
+                /*
+                const grid = document.getElementById(gridId);
+                // FUTURE: Link your Marketing API here
+                fetch('../integ/marketing_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // RENDER LOGIC HERE
+                    });
+                return;
+                */
+            }
+
+            // Placeholder for Inventory Integration
+            if (category === 'Inventory') {
+                /*
+                const grid = document.getElementById(gridId);
+                // FUTURE: Link your Inventory API here (e.g., ../integ/inventory_fn.php)
+                fetch('../integ/inventory_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // RENDER LOGIC HERE
+                    });
+                return;
+                */
             }
 
 
