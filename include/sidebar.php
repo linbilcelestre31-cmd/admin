@@ -26,19 +26,29 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?>" class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>" data-tab="dashboard">
+            <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?>"
+                    class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
+                    data-tab="dashboard">
                     <span class="icon-img-placeholder">📊</span> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>" data-tab="facilities">
+            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
+                    data-tab="facilities">
                     <span class="icon-img-placeholder">🏢</span> Facilities
                 </a></li>
-            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>" data-tab="reservations">
+            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
+                    data-tab="reservations">
                     <span class="icon-img-placeholder">📅</span> Reservations
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>" data-tab="calendar">
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
+                    data-tab="calendar">
                     <span class="icon-img-placeholder">📅</span> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>" data-tab="management">
+            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
+                    data-tab="management">
                     <span class="icon-img-placeholder">⚙️</span> Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
@@ -61,7 +71,9 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">External Links</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>" data-tab="reports">
+            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>"
+                    data-tab="reports">
                     <span class="icon-img-placeholder">📈</span> Reports
                 </a></li>
             <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
@@ -72,16 +84,24 @@ function get_nav_link($tab, $is_dashboard)
 </nav>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // 1. Inject Overlay if missing (Avoid duplicates)
-        if (!document.getElementById('loadingOverlay')) {
+        const enableAnimation = <?php echo (in_array($current_page, ['legalmanagement.php', 'document management(archiving).php'])) ? 'true' : 'false'; ?>;
+
+        // 1. Inject Overlay if missing (Only if animation is enabled)
+        if (enableAnimation && !document.getElementById('loadingOverlay')) {
             const div = document.createElement('div');
             div.id = 'loadingOverlay';
             div.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;';
+            div.innerHTML = '<iframe src="../animation/loading.html" style="width:100%; height:100%; border:none; background:transparent;" allowtransparency="true"></iframe>';
             document.body.appendChild(div);
         }
 
         // 2. Define Global Loader Function
         window.runLoadingAnimation = function (callback, isRedirect = false) {
+            if (!enableAnimation) {
+                if (callback) callback();
+                return;
+            }
+
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.display = 'block';
@@ -103,25 +123,27 @@ function get_nav_link($tab, $is_dashboard)
         };
 
         // 3. Intercept Normal URL Links in Sidebar
-        const links = document.querySelectorAll('.sidebar a');
-        links.forEach(a => {
-            const href = a.getAttribute('href');
-            const onclick = a.getAttribute('onclick');
+        if (enableAnimation) {
+            const links = document.querySelectorAll('.sidebar a');
+            links.forEach(a => {
+                const href = a.getAttribute('href');
+                const onclick = a.getAttribute('onclick');
 
-            // If it's a direct URL link (not hash, not handled by onclick)
-            if (href && href !== '#' && !href.startsWith('javascript') && !onclick) {
-                a.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (typeof window.runLoadingAnimation === 'function') {
-                        window.runLoadingAnimation(() => {
+                // If it's a direct URL link (not hash, not handled by onclick)
+                if (href && href !== '#' && !href.startsWith('javascript') && !onclick) {
+                    a.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        if (typeof window.runLoadingAnimation === 'function') {
+                            window.runLoadingAnimation(() => {
+                                window.location.href = href;
+                            }, true);
+                        } else {
                             window.location.href = href;
-                        }, true);
-                    } else {
-                        window.location.href = href;
-                    }
-                });
-            }
-        });
+                        }
+                    });
+                }
+            });
+        }
     });
 
     // 4. Handle Tab Switching (Called by onclick)
