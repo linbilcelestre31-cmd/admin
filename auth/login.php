@@ -684,16 +684,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             placeholder="123456" autocomplete="one-time-code">
         </div>
         <div id="regPassFields" class="hidden space-y-3">
+          <!-- New Password with Eye -->
           <div>
             <label for="regPass" class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">New
               Password</label>
-            <input id="regPass" name="new_password" type="password" class="input" placeholder="At least 6 characters">
+            <div class="relative">
+              <input id="regPass" name="new_password" type="password" class="input pr-10"
+                placeholder="At least 6 characters">
+              <button type="button"
+                class="absolute right-2 h-full flex items-center justify-center text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                onclick="toggleVerifyPass('regPass', this)" style="top:0; bottom:0;">
+                <svg class="eye-on w-5 h-5" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Z"
+                    fill="currentColor" />
+                </svg>
+                <svg class="eye-off w-5 h-5 hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 4.27 4.28 3 21 19.72 19.73 21l-2.2-2.2A11.73 11.73 0 0 1 12 19c-5 0-9.27-3.11-11-7a12.71 12.71 0 0 1 4.1-4.73L3 4.27ZM12 7a5 5 0 0 1 5 5 5 5 0 0 1-.46 2.11L14.6 12.17A2.5 2.5 0 0 0 11.83 9.4L9.9 7.46A4.84 4.84 0 0 1 12 7Z"
+                    fill="currentColor" />
+                </svg>
+              </button>
+            </div>
           </div>
+          <!-- Confirm Password with Eye -->
           <div>
             <label for="regPassConfirm"
               class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Confirm Password</label>
-            <input id="regPassConfirm" name="confirm_password" type="password" class="input"
-              placeholder="Repeat password">
+            <div class="relative">
+              <input id="regPassConfirm" name="confirm_password" type="password" class="input pr-10"
+                placeholder="Repeat password">
+              <button type="button"
+                class="absolute right-2 h-full flex items-center justify-center text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                onclick="toggleVerifyPass('regPassConfirm', this)" style="top:0; bottom:0;">
+                <svg class="eye-on w-5 h-5" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Z"
+                    fill="currentColor" />
+                </svg>
+                <svg class="eye-off w-5 h-5 hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 4.27 4.28 3 21 19.72 19.73 21l-2.2-2.2A11.73 11.73 0 0 1 12 19c-5 0-9.27-3.11-11-7a12.71 12.71 0 0 1 4.1-4.73L3 4.27ZM12 7a5 5 0 0 1 5 5 5 5 0 0 1-.46 2.11L14.6 12.17A2.5 2.5 0 0 0 11.83 9.4L9.9 7.46A4.84 4.84 0 0 1 12 7Z"
+                    fill="currentColor" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <div id="verifyMsg" class="text-xs min-h-[20px]"></div>
@@ -709,6 +744,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
   <script>
     const $ = (s, r = document) => r.querySelector(s);
+
+    // Toggler for dynamic password fields in verify modal
+    window.toggleVerifyPass = (id, btn) => {
+      const inp = document.getElementById(id);
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.querySelector('.eye-on').classList.toggle('hidden', show);
+      btn.querySelector('.eye-off').classList.toggle('hidden', !show);
+    };
 
     // Elements
     const form = $('#loginForm');

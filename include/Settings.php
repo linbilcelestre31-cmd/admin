@@ -332,6 +332,57 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
+
+        /* Tab Styles */
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #3182ce;
+            border-bottom-color: #3182ce;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .security-btn {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+
+        .security-btn:hover {
+            border-color: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.1);
+            color: #3182ce;
+        }
+
+        .security-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -372,40 +423,87 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="card"
                     style="background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 1.5rem;">
+
+                    <!-- Tab Navigation -->
                     <div
-                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom: 1px solid #edf2f7; padding-bottom: 1rem;">
-                        <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600;">Users List</h3>
-                        <button class="btn btn-primary" onclick="openCreateModal()">
-                            <span class="icon-img-placeholder">➕</span> Add User
-                        </button>
+                        style="display:flex; justify-content: flex-start; gap: 20px; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0;">
+                        <button class="tab-btn active" onclick="switchTab('users')" id="tab-users">Users List</button>
+                        <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
 
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: center;">ID</th>
-                                    <th style="text-align: center;">FULL NAME</th>
-                                    <th style="text-align: center;">USERNAME</th>
-                                    <th style="text-align: center;">EMAIL</th>
+                    <!-- Users Tab Content -->
+                    <div id="content-users">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom: 1rem;">
+                            <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin: 0;">Users List</h3>
+                            <button class="btn btn-primary" onclick="openCreateModal()">
+                                <span class="icon-img-placeholder">➕</span> Add User
+                            </button>
+                        </div>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($users as $user): ?>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td style="text-align: center; font-weight: 600; color: #718096;">
-                                            #<?= $user['id'] ?></td>
-                                        <td style="text-align: center; font-weight: 500;">
-                                            <?= htmlspecialchars($user['full_name']) ?>
-                                        </td>
-                                        <td style="text-align: center;"><?= htmlspecialchars($user['username']) ?></td>
-                                        <td style="text-align: center;"><?= htmlspecialchars($user['email']) ?></td>
+                                        <th style="text-align: center;">ID</th>
+                                        <th style="text-align: center;">FULL NAME</th>
+                                        <th style="text-align: center;">USERNAME</th>
+                                        <th style="text-align: center;">EMAIL</th>
+
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($users as $user): ?>
+                                        <tr>
+                                            <td style="text-align: center; font-weight: 600; color: #718096;">
+                                                #<?= $user['id'] ?></td>
+                                            <td style="text-align: center; font-weight: 500;">
+                                                <?= htmlspecialchars($user['full_name']) ?>
+                                            </td>
+                                            <td style="text-align: center;"><?= htmlspecialchars($user['username']) ?></td>
+                                            <td style="text-align: center;"><?= htmlspecialchars($user['email']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
+                    <!-- Security Tab Content -->
+                    <div id="content-security" style="display: none;">
+                        <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Update
+                            Security</h3>
+                        <div class="security-grid">
+                            <button class="security-btn">
+                                <i class="fas fa-lock"></i>
+                                <span style="font-weight: 600;">Change Admin Password</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Update the master
+                                    password for this account</span>
+                            </button>
+
+                            <button class="security-btn">
+                                <i class="fas fa-shield-halved"></i>
+                                <span style="font-weight: 600;">Two-Factor Auth</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Manage 2FA
+                                    settings for enhanced security</span>
+                            </button>
+
+                            <button class="security-btn">
+                                <i class="fas fa-file-shield"></i>
+                                <span style="font-weight: 600;">Audit Logs</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">View security
+                                    events and access logs</span>
+                            </button>
+
+                            <button class="security-btn">
+                                <i class="fas fa-user-lock"></i>
+                                <span style="font-weight: 600;">Session Management</span>
+                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active
+                                    sessions and timeouts</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
@@ -518,6 +616,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            // Hide all contents
+            document.getElementById('content-users').style.display = 'none';
+            document.getElementById('content-security').style.display = 'none';
+
+            // Remove active class from buttons
+            document.getElementById('tab-users').classList.remove('active');
+            document.getElementById('tab-security').classList.remove('active');
+
+            // Show selected content and activate button
+            document.getElementById('content-' + tabName).style.display = 'block';
+            document.getElementById('tab-' + tabName).classList.add('active');
         }
 
         // Close modal on outside click
