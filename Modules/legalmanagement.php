@@ -564,7 +564,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Management System - Hotel & Restaurant</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
@@ -1023,7 +1023,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution</h3>
                         <div class="chart-area" id="chartArea"
                             style="height: 320px; width: 100%; position: relative; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; padding: 20px; display: block; overflow: hidden;">
-                            <canvas id="riskDistributionChart" style="width: 100%; height: 100%; opacity: 1; transition: opacity 0.5s ease;"></canvas>
+                            <canvas id="riskDistributionChart" width="600" height="320"
+                                style="width: 100%; height: 100%; opacity: 1;"></canvas>
                         </div>
                     </div>
 
@@ -1035,59 +1036,59 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                             });
                             if (!empty($highContracts)): ?>
-                                    <div class="high-risk-items">
-                                        <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                                <div class="risk-item"
-                                                    style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
-                                                    <div
-                                                        style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                                        <div class="risk-item-info">
-                                                            <span class="risk-item-name"
-                                                                style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
-                                                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                                                                <span
-                                                                    style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="risk-item-score">
-                                                            <span class="score-badge"
-                                                                style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <?php if (!empty($hc['analysis_summary'])): ?>
-                                                            <div class="risk-ai-summary"
-                                                                style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
-                                                                <p
-                                                                    style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
-                                                                    <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
-                                                                    <strong>AI Result:</strong>
-                                                                    <?php echo htmlspecialchars($hc['analysis_summary']); ?>
-                                                                </p>
-                                                            </div>
-                                                    <?php endif; ?>
-
-                                                    <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
-                                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                            data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                            style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
-                                                            Full Report
-                                                        </button>
-                                                        <button class="action-btn download-btn" data-type="contract-download"
-                                                            data-pdf-type="contract"
-                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                            style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
-                                                            Download PDF
-                                                        </button>
+                                <div class="high-risk-items">
+                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                        <div class="risk-item"
+                                            style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
+                                            <div
+                                                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                                <div class="risk-item-info">
+                                                    <span class="risk-item-name"
+                                                        style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                                        <span
+                                                            style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
                                                     </div>
                                                 </div>
-                                        <?php endforeach; ?>
-                                    </div>
+                                                <div class="risk-item-score">
+                                                    <span class="score-badge"
+                                                        style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                                </div>
+                                            </div>
+
+                                            <?php if (!empty($hc['analysis_summary'])): ?>
+                                                <div class="risk-ai-summary"
+                                                    style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
+                                                    <p
+                                                        style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
+                                                        <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
+                                                        <strong>AI Result:</strong>
+                                                        <?php echo htmlspecialchars($hc['analysis_summary']); ?>
+                                                    </p>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
+                                                <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                                    data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                    style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                                    Full Report
+                                                </button>
+                                                <button class="action-btn download-btn" data-type="contract-download"
+                                                    data-pdf-type="contract"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                    style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                                    Download PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
                             <?php else: ?>
-                                    <div class="no-risk-data">
-                                        <i class="fa-solid fa-shield-check"></i>
-                                        <p>No high-risk contracts detected.</p>
-                                    </div>
+                                <div class="no-risk-data">
+                                    <i class="fa-solid fa-shield-check"></i>
+                                    <p>No high-risk contracts detected.</p>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1113,16 +1114,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </thead>
                     <tbody id="membersTableBody">
                         <?php foreach ($employees as $employee): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="employee-view"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                <td>
+                                    <button class="action-btn view-btn" data-type="employee-view"
+                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -2045,82 +2046,62 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             // Globalization of Chart instance control
             window.riskChartRef = null;
             window.initRiskChart = function () {
-                console.log("initRiskChart: Starting...");
-                const status = document.getElementById('chartStatus');
                 const canvas = document.getElementById('riskDistributionChart');
-
-                if (!canvas) {
-                    console.error("initRiskChart: Canvas element missing.");
-                    return;
-                }
+                if (!canvas) return;
 
                 if (typeof Chart === 'undefined') {
-                    if (status) status.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> Chart library failed to load.';
-                    console.error("initRiskChart: Chart.js is undefined.");
+                    console.warn("Chart.js not loaded yet, retrying in 1s...");
+                    setTimeout(window.initRiskChart, 1000);
                     return;
                 }
 
-                // High: <?php echo (int) $riskCounts['High']; ?>, Med: <?php echo (int) $riskCounts['Medium']; ?>, Low: <?php echo (int) $riskCounts['Low']; ?>
-                const chartData = [<?php echo (int) $riskCounts['High']; ?>, <?php echo (int) $riskCounts['Medium']; ?>, <?php echo (int) $riskCounts['Low']; ?>];
+                const chartData = [
+                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
+                ];
 
                 try {
                     const ctx = canvas.getContext('2d');
-                    if (!ctx) {
-                        console.error("initRiskChart: Could not get 2D context.");
-                        return;
-                    }
-
-                    if (window.riskChartRef) {
-                        window.riskChartRef.destroy();
-                    }
+                    if (window.riskChartRef) window.riskChartRef.destroy();
 
                     window.riskChartRef = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: ['High Risk', 'Medium Risk', 'Low Risk'],
                             datasets: [{
+                                label: 'Contracts',
                                 data: chartData,
                                 backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                                borderRadius: 12,
-                                barPercentage: 0.6,
-                                categoryPercentage: 0.8
+                                borderColor: ['#dc2626', '#d97706', '#059669'],
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                barPercentage: 0.6
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            animation: { duration: 800 },
                             plugins: {
                                 legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: '#0f172a',
-                                    padding: 12,
-                                    cornerRadius: 10,
-                                    displayColors: false
-                                }
+                                tooltip: { enabled: true }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1,
-                                        color: '#94a3b8',
-                                        font: { size: 11 }
-                                    },
-                                    grid: { color: '#f1f5f9', drawBorder: false }
+                                    ticks: { stepSize: 1, color: '#94a3b8' },
+                                    grid: { color: '#f1f5f9' }
                                 },
                                 x: {
                                     grid: { display: false },
-                                    ticks: { color: '#64748b', font: { weight: '600', size: 12 } }
+                                    ticks: { color: '#64748b', font: { weight: 'bold' } }
                                 }
                             }
                         }
                     });
-
-                    canvas.style.opacity = '1';
-                    console.log("initRiskChart: Success.");
+                    console.log("initRiskChart: Rendered successfully with data:", chartData);
                 } catch (err) {
-                    console.error("initRiskChart: Exception:", err);
+                    console.error("initRiskChart Error:", err);
                 }
             };
 
