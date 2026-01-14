@@ -1207,7 +1207,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div
             style="background:#ffffff; width:94%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
             <button type="button" id="closeContractFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div id="contractFormContainer"></div>
         </div>
     </div>
@@ -1221,7 +1225,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <img src="../assets/image/logo.png" alt="Logo Watermark"
                 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <button type="button" id="closeEmployeeFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div id="employeeFormContainer" style="position: relative; z-index: 1;"></div>
         </div>
     </div>
@@ -1327,7 +1335,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div
             style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
             <button type="button" id="closeDocumentFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div id="documentFormContainer">
                 <h3>Upload Document</h3>
                 <form method="POST" enctype="multipart/form-data" id="documentFormData">
@@ -1352,7 +1364,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div
             style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
             <button type="button" id="closeInvoiceFormModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
+                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div id="invoiceFormContainer">
                 <h3>Create Invoice</h3>
                 <form method="POST" id="invoiceFormData">
@@ -1402,7 +1418,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div
             style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1);">
             <button type="button" id="closeContractDocsModal"
-                style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Close</button>
+                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <h3 style="margin-top:0;">Upload Contract Document</h3>
             <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
                 <input type="hidden" name="add_contract_document" value="1">
@@ -1581,8 +1601,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
             // Edit document modal
             const editDocModal = document.getElementById('editDocumentModal');
-            const closeEditDoc = document.getElementById('closeEditDocument');
-            const cancelEditDoc = document.getElementById('cancelEditDocument');
+            const closeEditDocument = document.getElementById('closeEditDocument');
+            const cancelEditDocument = document.getElementById('cancelEditDocument');
             const editDocForm = document.getElementById('editDocumentForm');
             const editDocId = document.getElementById('edit_doc_id');
             const editDocName = document.getElementById('edit_doc_name');
