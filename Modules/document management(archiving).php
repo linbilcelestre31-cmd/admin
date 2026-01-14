@@ -668,6 +668,52 @@ function formatFileSize($bytes)
                 display: none;
             }
         }
+
+        /* Button Text Color Fix */
+        .btn-primary,
+        .btn[type="submit"] {
+            color: #ffffff !important;
+        }
+
+        /* Blur Effect Styles */
+        .blurred-content {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .reveal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            border-radius: 8px;
+        }
+
+        .reveal-btn {
+            padding: 12px 24px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .reveal-btn:hover {
+            transform: scale(1.05);
+            background: #34495e;
+        }
     </style>
 </head>
 
@@ -1096,45 +1142,57 @@ function formatFileSize($bytes)
                     const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
 
                     content.innerHTML = `
-                        <div class="financial-details" style="padding: 10px;">
-                            <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
-                                <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
-                                <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
-                                <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
+                        <div style="position: relative;">
+                            <div id="financialSensitive" class="financial-details blurred-content" style="padding: 10px;">
+                                <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                                    <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
+                                    <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
+                                    <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                    <div class="detail-item">
+                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Transaction Date</label>
+                                        <div style="font-size: 1.1rem;">${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Status</label>
+                                        <div style="font-size: 1.1rem; text-transform: capitalize;">${record.status}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Debit</label>
+                                        <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Credit</label>
+                                        <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-item" style="margin-bottom: 20px;">
+                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Description</label>
+                                    <div style="font-size: 1rem; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 4px solid #3498db;">${record.description}</div>
+                                </div>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                                <div class="detail-item">
-                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Transaction Date</label>
-                                    <div style="font-size: 1.1rem;">${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Status</label>
-                                    <div style="font-size: 1.1rem; text-transform: capitalize;">${record.status}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Debit</label>
-                                    <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Total Credit</label>
-                                    <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                                </div>
-                            </div>
-
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <label style="display: block; font-weight: 600; color: #7f8c8d; font-size: 0.8rem; text-transform: uppercase;">Description</label>
-                                <div style="font-size: 1rem; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 4px solid #3498db;">${record.description}</div>
-                            </div>
-
-                            <div class="form-actions" style="margin-top: 30px;">
-                                <button class="btn btn-primary" onclick="window.print()" style="background: #34495e;">
-                                    <i class="fas fa-print"></i> Print Record
-                                </button>
-                                <button class="btn" onclick="document.getElementById('fileDetailsModal').style.display='none'">Close</button>
+                            <div class="reveal-overlay" id="financialReveal">
+                                <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
                             </div>
                         </div>
+
+                        <div class="form-actions" style="margin-top: 30px;">
+                            <button class="btn btn-primary" onclick="window.print()" style="background: #34495e;">
+                                <i class="fas fa-print"></i> Print Record
+                            </button>
+                            <button class="btn" onclick="document.getElementById('fileDetailsModal').style.display='none'">Close</button>
+                        </div>
                     `;
+
+                    document.getElementById('financialReveal').addEventListener('click', function () {
+                        this.style.display = 'none';
+                        document.getElementById('financialSensitive').classList.remove('blurred-content');
+                    });
+
                     modal.style.display = 'flex';
                 };
 
@@ -1349,10 +1407,17 @@ function formatFileSize($bytes)
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
             content.innerHTML = `
-                 <h4 style="margin-top:0;">${file.name || 'Unnamed'}</h4>
-                 <p><strong>Category:</strong> ${file.category || 'N/A'}</p>
-                 <p><strong>Size:</strong> ${file.file_size || 'Unknown'}</p>
-                 <p><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleDateString()}</p>
+                <div style="position: relative;">
+                    <div id="fileSensitive" class="blurred-content">
+                        <h4 style="margin-top:0;">${file.name || 'Unnamed'}</h4>
+                        <p><strong>Category:</strong> ${file.category || 'N/A'}</p>
+                        <p><strong>Size:</strong> ${file.file_size || 'Unknown'}</p>
+                        <p><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="reveal-overlay" id="fileReveal">
+                        <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
+                    </div>
+                </div>
                  <div style="margin-top:1rem;display:flex;gap:0.5rem;">
                      <a href="#" class="btn btn-primary" id="downloadLink">View / Download</a>
                      <button class="btn" id="closeDetails">Close</button>
@@ -1368,6 +1433,11 @@ function formatFileSize($bytes)
             }
 
             modal.style.display = 'block';
+
+            document.getElementById('fileReveal').addEventListener('click', function () {
+                this.style.display = 'none';
+                document.getElementById('fileSensitive').classList.remove('blurred-content');
+            });
 
             // close button inside details
             document.getElementById('closeDetails').addEventListener('click', () => {
