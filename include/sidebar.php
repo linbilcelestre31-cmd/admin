@@ -29,16 +29,16 @@ function get_nav_link($tab, $is_dashboard)
             <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?> class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>" data-tab="dashboard">
                     <span class="icon-img-placeholder">📊</span> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?> class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>" data-tab="facilities">
+            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>" data-tab="facilities" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">🏢</span> Facilities
                 </a></li>
-            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?> class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>" data-tab="reservations">
+            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>" data-tab="reservations" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">📅</span> Reservations
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?> class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>" data-tab="calendar">
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>" data-tab="calendar" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">📅</span> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard) ?> class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>" data-tab="management">
+            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>" class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>" data-tab="management" onclick="window.runLoadingAnimation();">
                     <span class="icon-img-placeholder">⚙️</span> Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
