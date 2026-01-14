@@ -681,8 +681,8 @@ function formatFileSize($bytes)
                         <li><a href="#" class="active">Dashboard</a></li>
                         <li><a href="#">Settings</a></li>
                         <li><a href="#">Help</a></li>
-                        <li><a href="../Modules/facilities-reservation.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/facilities-reservation.php'; }, true);">Back</a>
+                        <li><a href="../Modules/dashboard.php"
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
                         </li>
                     </ul>
                 </nav>

@@ -139,7 +139,7 @@ try {
                 $pdo->prepare('DELETE FROM email_verifications WHERE user_id = ?')->execute([$row['id']]);
 
                 $pdo->commit();
-                json_out(['ok' => true, 'message' => 'Registration complete!', 'redirect' => '../Modules/facilities-reservation.php']);
+                json_out(['ok' => true, 'message' => 'Registration complete!', 'redirect' => '../Modules/dashboard.php']);
             } else {
                 json_out(['ok' => false, 'message' => 'Code expired.'], 400);
             }
@@ -190,7 +190,7 @@ try {
 
             $pdo->prepare('DELETE FROM email_verifications WHERE user_id = ?')->execute([$userId]);
 
-            json_out(['ok' => true, 'redirect' => '../Modules/facilities-reservation.php']);
+            json_out(['ok' => true, 'redirect' => '../Modules/dashboard.php']);
         } else {
             json_out(['ok' => false, 'message' => 'Invalid or expired code.'], 400);
         }

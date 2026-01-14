@@ -172,10 +172,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (iframe) iframe.src = iframe.src;
 
                     setTimeout(() => {
-                        window.location.href = 'facilities-reservation.php';
+                        window.location.href = 'dashboard.php';
                     }, 3000);
                 } else {
-                    window.location.href = 'facilities-reservation.php';
+                    window.location.href = 'dashboard.php';
                 }
             });
         }
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location.href = '../Modules/facilities-reservation.php';
+            window.location.href = '../Modules/dashboard.php';
         });
     }
 });

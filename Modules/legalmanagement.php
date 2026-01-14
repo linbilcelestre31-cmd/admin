@@ -2048,7 +2048,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             if (backBtn) {
                 backBtn.addEventListener('click', function () {
                     // Redirect to facilities reservation dashboard
-                    window.location.href = 'facilities-reservation.php';
+                    window.location.href = 'dashboard.php';
                 });
             }
         })();

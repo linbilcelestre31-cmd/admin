@@ -168,7 +168,7 @@ function getLastInsertId()
                         <li><a href="#" class="nav-link" data-page="hotel">Hotel</a></li>
                         <li><a href="#" class="nav-link" data-page="restaurant">Restaurant</a></li>
                         <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
-                        <li><a href="facilities-reservation.php" class="nav-item-back">Back</a></li>
+                        <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
                     </ul>
                 </nav>
             </div>
@@ -179,14 +179,22 @@ function getLastInsertId()
         <div class="main-content">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="sidebar-link active" data-page="dashboard"><i class="fas fa-chart-line" style="margin-right: 12px;"></i>Dashboard</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="hotel-checkin"><i class="fas fa-hotel" style="margin-right: 12px;"></i>Hotel Time-in</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="hotel-visitors"><i class="fas fa-users" style="margin-right: 12px;"></i>Hotel Visitors</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant-checkin"><i class="fas fa-utensils" style="margin-right: 12px;"></i>Restaurant Time-in</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors"><i class="fas fa-clipboard-list" style="margin-right: 12px;"></i>Restaurant Visitors</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice" style="margin-right: 12px;"></i>Reports</a></li>
+                    <li><a href="#" class="sidebar-link active" data-page="dashboard"><i class="fas fa-chart-line"
+                                style="margin-right: 12px;"></i>Dashboard</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="hotel-checkin"><i class="fas fa-hotel"
+                                style="margin-right: 12px;"></i>Hotel Time-in</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="hotel-visitors"><i class="fas fa-users"
+                                style="margin-right: 12px;"></i>Hotel Visitors</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-checkin"><i class="fas fa-utensils"
+                                style="margin-right: 12px;"></i>Restaurant Time-in</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors"><i
+                                class="fas fa-clipboard-list" style="margin-right: 12px;"></i>Restaurant Visitors</a>
+                    </li>
+                    <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice"
+                                style="margin-right: 12px;"></i>Reports</a></li>
 
-                    <li><a href="#" class="sidebar-link" data-page="settings"><i class="fas fa-cog" style="margin-right: 12px;"></i>Settings</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="settings"><i class="fas fa-cog"
+                                style="margin-right: 12px;"></i>Settings</a></li>
                 </ul>
             </aside>
 

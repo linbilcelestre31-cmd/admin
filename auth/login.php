@@ -22,7 +22,7 @@ if (isset($_GET['logout'])) {
 
 // Check if already logged in
 if (isset($_SESSION['user_id'])) {
-  header('Location: ../Modules/facilities-reservation.php');
+  header('Location: ../Modules/dashboard.php');
   exit;
 }
 

@@ -1,19 +1,19 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
-$is_dashboard = ($current_page == 'facilities-reservation.php');
+$is_dashboard = ($current_page == 'dashboard.php');
 
 function get_nav_link($tab, $is_dashboard)
 {
     if ($is_dashboard) {
         return "#\" onclick=\"event.preventDefault(); handleSidebarNav('$tab'); return false;\"";
     } else {
-        return "../Modules/facilities-reservation.php?tab=$tab\"";
+        return "../Modules/dashboard.php?tab=$tab\"";
     }
 }
 ?>
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="../Modules/facilities-reservation.php" class="logo-link" title="Go to Dashboard">
+        <a href="../Modules/dashboard.php" class="logo-link" title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
