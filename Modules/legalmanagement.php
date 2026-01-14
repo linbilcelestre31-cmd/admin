@@ -606,6 +606,21 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             width: 80px;
 
         }
+
+        /* Fixed: Remove double container effect in modals */
+        #employeeFormContainer .form-container,
+        #documentFormContainer .form-container,
+        #invoiceFormContainer .form-container,
+        #contractFormContainer .form-container,
+        .form-container.modal-inner {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: block !important;
+            width: 100% !important;
+        }
     </style>
 </head>
 
@@ -1133,9 +1148,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <!-- Modals Section -->
     <!-- Details Modal -->
     <div id="detailsModal"
-        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1000;">
+        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items:center; justify-content:center; z-index:1000;">
         <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
             <img src="../assets/image/logo.png" alt="Logo Watermark"
                 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
             <div
@@ -1188,9 +1203,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Contract Form Modal -->
     <div id="contractFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(15px); width:94%; max-width:500px; border-radius:24px; padding:20px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.3); max-height: 90vh; overflow-y: auto;">
+            style="background:#ffffff; width:94%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
             <button type="button" id="closeContractFormModal"
                 style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
             <div id="contractFormContainer"></div>
@@ -1199,9 +1214,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Employee Form Modal wrapper -->
     <div id="employeeFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2); overflow: hidden;">
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); overflow: hidden;">
             <!-- Internal Logo Watermark -->
             <img src="../assets/image/logo.png" alt="Logo Watermark"
                 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
@@ -1308,9 +1323,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Document Form Modal -->
     <div id="documentFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2);">
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
             <button type="button" id="closeDocumentFormModal"
                 style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
             <div id="documentFormContainer">
@@ -1333,9 +1348,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Invoice Form Modal -->
     <div id="invoiceFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
         <div
-            style="background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); width:94%; max-width:720px; border-radius:32px; padding:35px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.2);">
+            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
             <button type="button" id="closeInvoiceFormModal"
                 style="position:absolute; right:12px; top:12px; background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; z-index: 10;">Close</button>
             <div id="invoiceFormContainer">
