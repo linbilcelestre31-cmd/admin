@@ -810,39 +810,44 @@ function formatFileSize($bytes)
                             <div class="tab active" data-tab="active">Active Files</div>
                         </div>
                         <div class="tab-content active" id="active-tab">
-                </div>
-
-                <!-- HR Documents View -->
-                <div class="category-content" id="hr-documents-content">
-
-                    <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
-                </div>
-
-                <!-- Guest Records View -->
-                <div class="category-content" id="guest-records-content">
-
-                    <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
-                </div>
-
-                <!-- Inventory View -->
-                <div class="category-content" id="inventory-content">
-
-                    <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
-                </div>
-
-                <!-- Compliance View -->
-                <div class="category-content" id="compliance-content">
-
-                    <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here -->
+                            <div class="file-grid" id="activeFiles"><!-- Active files will be populated here --></div>
+                        </div>
+                        <div class="tab-content" id="trash-tab">
+                            <div class="file-grid" id="trashFiles"><!-- Trash files will be populated here --></div>
+                        </div>
                     </div>
+
+                    <!-- Financial Records View -->
+                    <div class="category-content" id="financial-records-content">
+                        <div id="financialFiles"><!-- Financial records table will be populated here --></div>
+                    </div>
+
+                    <!-- HR Documents View -->
+                    <div class="category-content" id="hr-documents-content">
+                        <div class="file-grid" id="hrFiles"><!-- HR files will be populated here --></div>
+                    </div>
+
+                    <!-- Guest Records View -->
+                    <div class="category-content" id="guest-records-content">
+                        <div class="file-grid" id="guestFiles"><!-- Guest files will be populated here --></div>
+                    </div>
+
+                    <!-- Inventory View -->
+                    <div class="category-content" id="inventory-content">
+                        <div class="file-grid" id="inventoryFiles"><!-- Inventory files will be populated here --></div>
+                    </div>
+
+                    <!-- Compliance View -->
+                    <div class="category-content" id="compliance-content">
+                        <div class="file-grid" id="complianceFiles"><!-- Compliance files will be populated here --></div>
+                    </div>
+
+                    <!-- Marketing View -->
+                    <div class="category-content" id="marketing-content">
+                        <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
+                    </div>
+
                 </div>
-
-                <!-- Marketing View -->
-                <div class="category-content" id="marketing-content">
-
-                    <div class="file-grid" id="marketingFiles"><!-- Marketing files will be populated here --></div>
-                </div>
-
             </div>
         </div>
     </main>
@@ -1238,85 +1243,114 @@ function formatFileSize($bytes)
                 return;
             }
 
-            // Placeholder for HR Documents Integration
+            // HR Documents Integration
             if (category === 'HR Documents') {
-                // const grid = document.getElementById(gridId);
-                // FUTURE: Link your HR API here (e.g., ../integ/hr_fn.php)
-                // fetch('../integ/hr_fn.php')
-                //     .then(response => response.json())
-                //     .then(data => {
-                //         // RENDER LOGIC HERE
-                //     });
-                // return;
+                const grid = document.getElementById(gridId);
+                // Link your HR API here
+                fetch('../integ/hr_fn.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data && data.data.length > 0) {
+                            renderDocumentTable(data.data, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No HR documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload HR documents to see them here.</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('HR API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading HR documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
+                    });
+                return;
             }
 
-            // Placeholder for Guest Records Integration
+            // Guest Records Integration
             if (category === 'Guest Records') {
-                /*
                 const grid = document.getElementById(gridId);
-                // FUTURE: Link your Guest Records API here
+                // Link your Guest Records API here
                 fetch('../integ/guest_fn.php')
                     .then(response => response.json())
                     .then(data => {
-                        // RENDER LOGIC HERE
+                        if (data.success && data.data && data.data.length > 0) {
+                            renderDocumentTable(data.data, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-user-check" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No guest records found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Guest records will appear here.</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Guest API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading guest records</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
                     });
                 return;
-                */
             }
 
-            // Placeholder for Compliance Integration
+            // Compliance Integration
             if (category === 'Compliance') {
-                /*
                 const grid = document.getElementById(gridId);
-                // FUTURE: Link your Compliance API here
+                // Link your Compliance API here
                 fetch('../integ/compliance_fn.php')
                     .then(response => response.json())
                     .then(data => {
-                        // RENDER LOGIC HERE
+                        if (data.success && data.data && data.data.length > 0) {
+                            renderDocumentTable(data.data, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-shield-alt" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No compliance documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Compliance documents will appear here.</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Compliance API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading compliance documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
                     });
                 return;
-                */
             }
 
-            // Placeholder for Marketing Integration
+            // Marketing Integration
             if (category === 'Marketing') {
-                /*
                 const grid = document.getElementById(gridId);
-                // FUTURE: Link your Marketing API here
+                // Link your Marketing API here
                 fetch('../integ/marketing_fn.php')
                     .then(response => response.json())
                     .then(data => {
-                        // RENDER LOGIC HERE
+                        if (data.success && data.data && data.data.length > 0) {
+                            renderDocumentTable(data.data, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-bullhorn" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No marketing documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Marketing materials will appear here.</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Marketing API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading marketing documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
                     });
                 return;
-                */
             }
 
-            // Placeholder for Inventory Integration
+            // Inventory Integration
             if (category === 'Inventory') {
-                /*
                 const grid = document.getElementById(gridId);
-                // FUTURE: Link your Inventory API here (e.g., ../integ/inventory_fn.php)
+                // Link your Inventory API here
                 fetch('../integ/inventory_fn.php')
                     .then(response => response.json())
                     .then(data => {
-                        // RENDER LOGIC HERE
+                        if (data.success && data.data && data.data.length > 0) {
+                            renderDocumentTable(data.data, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-boxes" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No inventory records found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Inventory items will appear here.</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Inventory API Error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading inventory records</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
                     });
                 return;
-                */
             }
 
-
-
-
-
+            // Default fetch for regular document categories
             fetch(endpoint)
                 .then(response => response.json())
                 .then(data => {
                     const grid = document.getElementById(gridId);
                     grid.innerHTML = '';
                     if (!data || data.length === 0) {
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-layer-group" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Coming Soon</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">This category is reserved for future system integration.</p></div>';
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;"><i class="fas fa-layer-group" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">No documents found</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload documents to see them here.</p></div>';
                         return;
                     }
                     grid.innerHTML = `
@@ -1331,7 +1365,6 @@ function formatFileSize($bytes)
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     ${data.map(item => `
                                         <tr>
@@ -1346,55 +1379,49 @@ function formatFileSize($bytes)
                                             </td>
                                         </tr>
                                     `).join('')}
-
                                 </tbody>
                             </table>
                         </div>
                     `;
                 })
-
                 .catch(error => {
                     console.error('Fetch error:', error);
-
-
-                    // Fallback to dummy data on error
-                    const data = loadDummyData(category);
                     const grid = document.getElementById(gridId);
-                    grid.innerHTML = `
-                        <div class="financial-table-container" style="grid-column: 1/-1;">
-                            <table class="financial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Size</th>
-                                        <th>Upload Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    ${data.map(item => `
-                                        <tr>
-                                            <td style="font-weight: 600;">📄 ${item.name}</td>
-                                            <td>${item.category}</td>
-                                            <td>${item.file_size}</td>
-                                            <td>${new Date(item.upload_date).toLocaleDateString()}</td>
-                                            <td>
-                                                <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-
-
+                    grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem; display: block;"></i><p style="font-size: 1.2rem; font-weight: 500;">Error loading documents</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Please try again later.</p></div>';
                 });
+
+        // Utility function to render document table for all categories
+        function renderDocumentTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container" style="grid-column: 1/-1;">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Size</th>
+                                <th>Upload Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => `
+                                <tr>
+                                    <td style="font-weight: 600;">📄 ${item.name}</td>
+                                    <td>${item.category}</td>
+                                    <td>${item.file_size}</td>
+                                    <td>${new Date(item.upload_date).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         // Utility: show file details in modal
