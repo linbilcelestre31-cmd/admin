@@ -563,8 +563,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Management System - Hotel & Restaurant</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <title>Legal Management - Atiéra</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
@@ -2051,6 +2053,33 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
         })();
     </script>
+    
+    <!-- Loading Animation Script -->
+    <script>
+        // Select all elements with 'wave-text' class
+        const waveTexts = document.querySelectorAll('.wave-text');
+
+        waveTexts.forEach(textContainer => {
+            const text = textContainer.textContent;
+            textContainer.innerHTML = ''; // Clear existing text
+
+            // Split text into letters and create spans
+            [...text].forEach((letter, index) => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
+                span.style.setProperty('--i', index); // Set custom property for delay
+                textContainer.appendChild(span);
+            });
+        });
+
+        // Hide loading screen after page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.body.classList.add('loaded');
+            }, 3000); // 3 seconds loading time
+        });
+    </script>
+    
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
         style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">

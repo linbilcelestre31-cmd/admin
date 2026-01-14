@@ -387,8 +387,10 @@ function formatFileSize($bytes)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel & Restaurant Document Management</title>
-    <link rel="stylesheet" href="../assets/css/document.css">
+    <title>Loading - Atiéra</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -413,6 +415,7 @@ function formatFileSize($bytes)
             font-weight: 700;
             border-bottom: 2px solid #f1f5f9;
             white-space: nowrap;
+            background-color: black;
         }
 
         .financial-table td {
@@ -1404,6 +1407,32 @@ function formatFileSize($bytes)
         document.addEventListener('click', resetPinSession);
         document.addEventListener('keypress', resetPinSession);
         document.addEventListener('scroll', resetPinSession);
+    </script>
+    
+    <!-- Loading Animation Script -->
+    <script>
+        // Select all elements with 'wave-text' class
+        const waveTexts = document.querySelectorAll('.wave-text');
+
+        waveTexts.forEach(textContainer => {
+            const text = textContainer.textContent;
+            textContainer.innerHTML = ''; // Clear existing text
+
+            // Split text into letters and create spans
+            [...text].forEach((letter, index) => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
+                span.style.setProperty('--i', index); // Set custom property for delay
+                textContainer.appendChild(span);
+            });
+        });
+
+        // Hide loading screen after page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.body.classList.add('loaded');
+            }, 3000); // 3 seconds loading time
+        });
     </script>
 </body>
 

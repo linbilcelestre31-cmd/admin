@@ -43,7 +43,7 @@ function get_nav_link($tab, $is_dashboard)
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
                     class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">⚖️</span> legal management
+                    <span class="icon-img-placeholder">⚖️</span> Legal Management
                 </a></li>
             <li><a href="document management(archiving).php"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
