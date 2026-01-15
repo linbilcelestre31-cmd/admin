@@ -206,7 +206,7 @@ class ReservationSystem
                     (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue,
                     (SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed') as pending_maintenance
             ")->fetch();
-            
+
             $data['total_facilities'] = $metrics_query['total_facilities'];
             $data['today_reservations'] = $metrics_query['today_reservations'];
             $data['pending_approvals'] = $metrics_query['pending_approvals'];
@@ -957,6 +957,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
                                 <i class="fa-solid fa-chart-line"></i> Reports Card
                             </button>
+                            <button id="show-employees-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('employees')">
+                                <i class="fa-solid fa-users"></i> Employees Card
+                            </button>
                         </div>
                     </div>
 
@@ -1087,6 +1091,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </tr>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employee Management Card -->
+                        <div class="card management-card management-employees" data-open-tab="employees">
+                            <div class="card-header d-flex justify-between align-center">
+                                <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
+                                        <i class="fas fa-file-export"></i> Export Report
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
+                                        <i class="fas fa-user-plus"></i> Add Employee
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Email</th>
+                                                <th>Position</th>
+                                                <th>Department</th>
+                                                <th>Salary</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="employeesTableBody">
+                                            <!-- Loaded via JS -->
+                                            <tr>
+                                                <td colspan="8" style="text-align: center; padding: 2rem;">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading employee data...
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -1488,9 +1534,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function displayEmployees(employees) {
             const tbody = document.getElementById('employeesTableBody');
             if (!tbody) return;
-            
+
             tbody.innerHTML = '';
-            
+
             if (employees.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1502,17 +1548,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </td>
                     </tr>
                 `;
-            } else {
-                employees.forEach(employee => {
-                    tbody.innerHTML += `
+            else {
+                    employees.forEach(employee => {
+                        const position = employee.employment_details ? (employee.employment_details.job_title || 'N/A') : (employee.position || 'N/A');
+                        const department = employee.department_name || (employee.employment_details ? employee.employment_details.department_name : null) || employee.department || 'N/A';
+                        const salary = employee.employment_details ? (employee.employment_details.basic_salary || 0) : (employee.salary || 0);
+
+                        tbody.innerHTML += `
                         <tr>
                             <td style="text-align: center;">#${employee.id}</td>
                             <td>${employee.first_name}</td>
                             <td>${employee.last_name}</td>
                             <td>${employee.email}</td>
-                            <td>${employee.position}</td>
-                            <td>${employee.department}</td>
-                            <td>₱${parseFloat(employee.salary).toFixed(2)}</td>
+                            <td>${position}</td>
+                            <td>${department}</td>
+                            <td>₱${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                             <td>
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">
@@ -1525,73 +1575,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </td>
                         </tr>
                     `;
-                });
+                    });
+                }
             }
-        }
 
-        function openEmployeeModal() {
-            // Implementation for Add/Edit Employee modal
-            alert('Employee modal functionality would be implemented here');
-        }
-
-        function editEmployee(id) {
-            // Implementation for edit employee
-            alert('Edit employee functionality for ID: ' + id);
-        }
-
-        function deleteEmployee(id) {
-            if (confirm('Are you sure you want to delete this employee?')) {
-                fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: id })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        loadEmployees(); // Reload employees after deletion
-                        alert('Employee deleted successfully!');
-                    } else {
-                        alert('Error deleting employee: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('API Error:', error));
+            function openEmployeeModal() {
+                // Implementation for Add/Edit Employee modal
+                alert('Employee modal functionality would be implemented here');
             }
-        }
 
-        function exportEmployeeReport() {
-            fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Create CSV content
-                        let csvContent = 'ID,First Name,Last Name,Email,Position,Department,Salary,Hire Date,Created At\n';
-                        
-                        data.data.forEach(employee => {
-                            csvContent += `${employee.id},"${employee.first_name}","${employee.last_name}","${employee.email}","${employee.position}","${employee.department}","${employee.salary}","${employee.hire_date}","${employee.created_at}"\n`;
-                        });
-                        
-                        // Download CSV
-                        const blob = new Blob([csvContent], { type: 'text/csv' });
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'employees_report.csv';
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    } else {
-                        alert('Error generating report: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('API Error:', error));
-        }
+            function editEmployee(id) {
+                // Implementation for edit employee
+                alert('Edit employee functionality for ID: ' + id);
+            }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadEmployees();
-        });
+            function deleteEmployee(id) {
+                if (confirm('Are you sure you want to delete this employee?')) {
+                    fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: id })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                loadEmployees(); // Reload employees after deletion
+                                alert('Employee deleted successfully!');
+                            } else {
+                                alert('Error deleting employee: ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('API Error:', error));
+                }
+            }
+
+            function exportEmployeeReport() {
+                fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Create CSV content
+                            let csvContent = 'ID,First Name,Last Name,Email,Position,Department,Salary,Hire Date,Created At\n';
+
+                            data.data.forEach(employee => {
+                                csvContent += `${employee.id},"${employee.first_name}","${employee.last_name}","${employee.email}","${employee.position}","${employee.department}","${employee.salary}","${employee.hire_date}","${employee.created_at}"\n`;
+                            });
+
+                            // Download CSV
+                            const blob = new Blob([csvContent], { type: 'text/csv' });
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'employees_report.csv';
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        } else {
+                            alert('Error generating report: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('API Error:', error));
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                loadEmployees();
+            });
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"

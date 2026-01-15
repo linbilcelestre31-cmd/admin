@@ -501,19 +501,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch employees from database
-$db = get_pdo();
-
 $employees = [];
 $contracts = [];
-
 try {
-    $query = "SELECT id, name, role as position, email, phone FROM contacts";
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $exception) {
-    $error_message = "Error fetching employees: " . $exception->getMessage();
+    $api_employees = fetchAllEmployees();
+    if (!empty($api_employees)) {
+        foreach ($api_employees as $emp) {
+            $employees[] = [
+                'id' => $emp['id'],
+                'employee_id' => $emp['employee_id'] ?? ('EMN' . $emp['id']),
+                'name' => ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? ''),
+                'position' => $emp['employment_details']['job_title'] ?? $emp['position'] ?? 'N/A',
+                'email' => $emp['email'] ?? 'N/A',
+                'phone' => $emp['contact_number'] ?? $emp['phone'] ?? 'N/A'
+            ];
+        }
+    }
+} catch (Exception $e) {
+    $error_message = "Error fetching employees from API: " . $e->getMessage();
 }
 
 // Fetch contracts from database
@@ -805,7 +810,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <tbody id="employeesTableBody">
                         <?php foreach ($employees as $employee): ?>
                             <tr>
-                                <td>E-<?php echo str_pad($employee['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
+                                </td>
                                 <td><?php echo htmlspecialchars($employee['name']); ?></td>
                                 <td><?php echo htmlspecialchars($employee['position']); ?></td>
                                 <td><?php echo htmlspecialchars($employee['email']); ?></td>
