@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load current visitors
     loadCurrentVisitors();
 
+    // Load employees for host selection
+    loadEmployeesForHosts();
+
     // Apply settings
     applySettings();
 });
@@ -227,6 +230,7 @@ function timeInHotelGuest() {
         email: formData.get('email'),
         phone: formData.get('phone'),
         room_number: formData.get('room_number'),
+        host_id: formData.get('host_id'),
         time_in: formData.get('time_in'),
         notes: formData.get('notes')
     };
@@ -266,6 +270,7 @@ function timeInRestaurantVisitor() {
         phone: formData.get('visitor-phone'),
         partySize: parseInt(formData.get('party-size')),
         table: formData.get('table-number'),
+        host: formData.get('restaurant-host'),
         notes: formData.get('restaurant-notes'),
         status: 'timed-in',
         checkinTime: new Date().toISOString(),
@@ -720,6 +725,41 @@ function applySettings() {
     if (businessNameInput) businessNameInput.value = settings.businessName;
     if (timezoneSelect) timezoneSelect.value = settings.timezone;
     if (dataRetentionInput) dataRetentionInput.value = settings.dataRetention;
+}
+
+// Load employees for host selection from HR4 API
+function loadEmployeesForHosts() {
+    const hr4ApiUrl = '../integ/hr4_api.php';
+    const hostSelects = [
+        document.getElementById('host_id'),
+        document.getElementById('restaurant-host')
+    ];
+
+    fetch(hr4ApiUrl)
+        .then(response => response.json())
+        .then(res => {
+            if (res.success && res.data) {
+                hostSelects.forEach(select => {
+                    if (!select) return;
+
+                    // Clear existing options except first
+                    const firstOption = select.options[0];
+                    select.innerHTML = '';
+                    select.appendChild(firstOption);
+
+                    res.data.forEach(employee => {
+                        const option = document.createElement('option');
+                        option.value = employee.employee_id || employee.id;
+                        const pos = employee.employment_details ? (employee.employment_details.job_title || 'Employee') : (employee.position || 'Employee');
+                        option.textContent = `${employee.first_name} ${employee.last_name} (${pos})`;
+                        select.appendChild(option);
+                    });
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading employees for hosts:', error);
+        });
 }
 
 // Utility functions

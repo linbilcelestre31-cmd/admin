@@ -282,6 +282,14 @@ function getLastInsertId()
                                     placeholder="Room number">
                             </div>
 
+                            <div class="form-group">
+                                <label for="host_id">Person to Visit (Host)</label>
+                                <select id="host_id" name="host_id" class="form-control">
+                                    <option value="">Select Employee...</option>
+                                    <!-- Populated by JS from HR4 API -->
+                                </select>
+                            </div>
+
                             <div class="form-grid">
                                 <div class="form-group" style="flex:1; margin-right:12px;">
                                     <label for="time_in">Time-in Date</label>
@@ -375,6 +383,13 @@ function getLastInsertId()
                             <div class="form-group">
                                 <label for="table-number">Table Number</label>
                                 <input type="text" id="table-number" name="table-number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="restaurant-host">Host / Waiter</label>
+                                <select id="restaurant-host" name="restaurant-host" class="form-control">
+                                    <option value="">Select Employee...</option>
+                                    <!-- Populated by JS from HR4 API -->
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="restaurant-notes">Notes</label>

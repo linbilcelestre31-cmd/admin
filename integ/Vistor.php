@@ -27,6 +27,17 @@ if (function_exists('get_pdo')) {
 }
 
 try {
+    // ✅ Auto-update database schema if columns are missing
+    if ($db instanceof PDO) {
+        $cols = $db->query("SHOW COLUMNS FROM direct_checkins")->fetchAll(PDO::FETCH_COLUMN);
+        if (!in_array('host_id', $cols)) {
+            $db->exec("ALTER TABLE direct_checkins ADD COLUMN host_id VARCHAR(50) DEFAULT NULL");
+        }
+        if (!in_array('notes', $cols)) {
+            $db->exec("ALTER TABLE direct_checkins ADD COLUMN notes TEXT DEFAULT NULL");
+        }
+    }
+
     // ✅ Handle POST request for inserting new records (LOCAL DB)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Read JSON input if sent as raw body, otherwise use $_POST
@@ -74,6 +85,7 @@ try {
         $email = $input['email'] ?? null;
         $phone = $input['phone'] ?? null;
         $roomNumber = $input['room_number'] ?? null;
+        $hostId = $input['host_id'] ?? null;
         $checkinDate = $input['time_in'] ?? date('Y-m-d H:i:s');
         $notes = $input['notes'] ?? null;
 
@@ -82,11 +94,11 @@ try {
             exit;
         }
 
-        $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, checkin_date, status) VALUES (?, ?, ?, ?, ?, 'active')";
+        $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')";
 
         if ($db instanceof mysqli) {
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("sssss", $fullName, $email, $phone, $roomNumber, $checkinDate);
+            $stmt->bind_param("sssssss", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes);
             if ($stmt->execute()) {
                 echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
             } else {
@@ -94,7 +106,7 @@ try {
             }
         } elseif ($db instanceof PDO) {
             $stmt = $db->prepare($sql);
-            $stmt->execute([$fullName, $email, $phone, $roomNumber, $checkinDate]);
+            $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes]);
             echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
         }
 
