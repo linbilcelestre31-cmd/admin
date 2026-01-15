@@ -752,6 +752,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .security-unlocked .viewing-badge {
             display: none;
         }
+
+        /* Modal Visibility Fix */
+        .modal.active {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -1238,204 +1245,189 @@ You have been added as an administrator. To complete your account setup, please 
             </div>
         </div>
     </div>
-    </div>
+
 
     <!-- Invitation Loading Overlay -->
     <div id="inviteLoadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <h3 style="margin: 0; font-weight: 600; letter-spacing: 0.5px;">Sending Invitation...</h3>
+    </div>
 
-        <script src="../assets/Javascript/facilities-reservation.js"></script>
-        <script>
-            // Form submission loading state
+    <script src="../assets/Javascript/facilities-reservation.js"></script>
+    <script>
+        // Form submission loading state
+        if (document.getElementById('userForm')) {
             document.getElementById('userForm').addEventListener('submit', function (e) {
                 const action = document.getElementById('formAction').value;
                 if (action === 'create_user') {
                     document.getElementById('inviteLoadingOverlay').style.display = 'flex';
                 }
             });
+        }
 
-            function triggerSecurityUnlock() {
-                document.getElementById('securityUnlockModal').classList.add('active');
-                // Focus first pin box after a short delay for transition
+        function triggerSecurityUnlock() {
+            const modal = document.getElementById('securityUnlockModal');
+            if (modal) {
+                modal.classList.add('active');
                 setTimeout(() => {
-                    const firstBox = document.querySelector('#unlockPinInputs .pin-box');
+                    const firstBox = modal.querySelector('.pin-box');
                     if (firstBox) firstBox.focus();
                 }, 300);
             }
+        }
 
-            function verifyManagementUnlock() {
-                const pin = Array.from(document.querySelectorAll('#unlockPinInputs .pin-box')).map(b => b.value).join('');
+        function verifyManagementUnlock() {
+            const pin = Array.from(document.querySelectorAll('#unlockPinInputs .pin-box')).map(b => b.value).join('');
 
-                // For demonstration, using '1234'. In production, this should be verified via AJAX
-                if (pin === '1234') {
-                    document.getElementById('content-general').classList.add('security-unlocked');
-                    closeModal('securityUnlockModal');
-                    // Reset pin boxes
-                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
-                } else {
-                    const error = document.getElementById('unlockErrorMessage');
-                    error.style.display = 'block';
-                    setTimeout(() => error.style.display = 'none', 3000);
-                    // Clear inputs
-                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
-                    document.querySelector('#unlockPinInputs .pin-box').focus();
-                }
+            // For demonstration, using '1234'. In production, this should be verified via AJAX
+            if (pin === '1234') {
+                document.getElementById('content-general').classList.add('security-unlocked');
+                closeModal('securityUnlockModal');
+                // Reset pin boxes
+                document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+            } else {
+                const error = document.getElementById('unlockErrorMessage');
+                if (error) error.style.display = 'block';
+                setTimeout(() => { if (error) error.style.display = 'none'; }, 3000);
+                // Clear inputs
+                document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+                const first = document.querySelector('#unlockPinInputs .pin-box');
+                if (first) first.focus();
             }
+        }
 
-            function openEditModal(user) {
-                document.getElementById('modalTitle').innerText = 'Edit User';
-                document.getElementById('formAction').value = 'update_user';
-                document.getElementById('userId').value = user.id;
-                document.getElementById('fullName').value = user.full_name;
-                document.getElementById('userName').value = user.username;
-                document.getElementById('userEmail').value = user.email;
-                document.getElementById('passwordGroup').style.display = 'block';
+        function openEditModal(user) {
+            document.getElementById('modalTitle').innerText = 'Edit User';
+            document.getElementById('formAction').value = 'update_user';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('fullName').value = user.full_name;
+            document.getElementById('userName').value = user.username;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('passwordGroup').style.display = 'block';
+            document.getElementById('userModal').classList.add('active');
+        }
 
-                document.getElementById('userModal').classList.add('active');
+        function openCreateModal() {
+            document.getElementById('modalTitle').innerText = 'Add New User';
+            document.getElementById('formAction').value = 'create_user';
+            document.getElementById('userId').value = '';
+            document.getElementById('userForm').reset();
+            document.getElementById('userEmail').value = '';
+            document.getElementById('passwordGroup').style.display = 'block';
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById('deleteUserId').value = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
+
+        function openSecurityModal(type) {
+            if (type === 'password') document.getElementById('securityPasswordModal').classList.add('active');
+            if (type === 'pin') document.getElementById('securityPinModal').classList.add('active');
+            if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
+            if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
+        }
+
+        function switchTab(tabName) {
+            if (document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
+            if (document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
+            if (document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
+            if (document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
+
+            const targetContent = document.getElementById('content-' + tabName);
+            const targetTab = document.getElementById('tab-' + tabName);
+
+            if (targetContent) targetContent.style.display = 'block';
+            if (targetTab) targetTab.classList.add('active');
+        }
+
+        let isSecurityView = false;
+        function toggleLayout() {
+            if (isSecurityView) {
+                switchTab('general');
+                isSecurityView = false;
+            } else {
+                switchTab('security');
+                isSecurityView = true;
             }
+        }
 
-            function openCreateModal() {
-                document.getElementById('modalTitle').innerText = 'Add New User';
-                document.getElementById('formAction').value = 'create_user';
-                document.getElementById('userId').value = '';
-                document.getElementById('userForm').reset();
-                document.getElementById('userEmail').value = ''; // Ensure email is empty
-                document.getElementById('passwordGroup').style.display = 'block';
-
-                document.getElementById('userModal').classList.add('active');
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
             }
+        }
 
-            function openDeleteModal(id) {
-                document.getElementById('deleteUserId').value = id;
-                document.getElementById('deleteModal').classList.add('active');
-            }
+        function setupPinInputs(containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const hidden = hiddenInputId ? document.getElementById(hiddenInputId) : null;
+            const boxes = container.querySelectorAll('.pin-box');
 
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.remove('active');
-            }
-
-            function openSecurityModal(type) {
-                if (type === 'password') document.getElementById('securityPasswordModal').classList.add('active');
-                if (type === 'pin') document.getElementById('securityPinModal').classList.add('active');
-                if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
-                if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
-            }
-
-            // Tab Switching Logic
-            function switchTab(tabName) {
-                // Hide all contents
-                if (document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
-                if (document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
-
-                // Remove active class from buttons
-                if (document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
-                if (document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
-
-                // Show selected content and activate button
-                const targetContent = document.getElementById('content-' + tabName);
-                const targetTab = document.getElementById('tab-' + tabName);
-
-                if (targetContent) targetContent.style.display = 'block';
-                if (targetTab) targetTab.classList.add('active');
-            }
-
-            // Layout Toggle (Swap View) - Now toggles between Users and Security
-            let isSecurityView = false;
-            function toggleLayout() {
-                if (isSecurityView) {
-                    switchTab('general');
-                    isSecurityView = false;
-                } else {
-                    switchTab('security');
-                    isSecurityView = true;
-                }
-            }
-
-            // Close modal on outside click
-            window.onclick = function (event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.classList.remove('active');
-                }
-            }
-
-            // PIN Logic
-            function setupPinInputs(containerId, hiddenInputId) {
-                const container = document.getElementById(containerId);
-                const hidden = document.getElementById(hiddenInputId);
-                if (!container || !hidden) return;
-                const boxes = container.querySelectorAll('.pin-box');
-
-                boxes.forEach((box, idx) => {
-                    box.addEventListener('input', (e) => {
-                        const val = e.target.value;
-                        if (!/^\d$/.test(val)) { e.target.value = ''; return; } // Numbers only
-
-                        if (idx < 3) boxes[idx + 1].focus();
-                        updateHidden();
-                    });
-
-                    box.addEventListener('keydown', (e) => {
-                        if (e.key === 'Backspace' && !e.target.value) {
-                            if (idx > 0) boxes[idx - 1].focus();
-                        }
-                    });
-                    box.addEventListener('keyup', updateHidden); // Update on backspace/delete too
+            boxes.forEach((box, idx) => {
+                box.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    if (!/^\d$/.test(val)) { e.target.value = ''; return; }
+                    if (idx < 3) boxes[idx + 1].focus();
+                    if (hidden) updateHidden();
                 });
 
-                function updateHidden() {
-                    hidden.value = Array.from(boxes).map(b => b.value).join('');
-                }
-            }
-
-            setupPinInputs('newPinInputs', 'realNewPin');
-            setupPinInputs('confirmPinInputs', 'realConfirmPin');
-            setupPinInputs('unlockPinInputs', null); // Use for verification
-
-            // Add click listener to viewing badge
-            document.addEventListener('DOMContentLoaded', function () {
-                const badge = document.querySelector('.viewing-badge');
-                if (badge) {
-                    badge.addEventListener('click', triggerSecurityUnlock);
-                }
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value) {
+                        if (idx > 0) boxes[idx - 1].focus();
+                    }
+                });
+                if (hidden) box.addEventListener('keyup', updateHidden);
             });
 
-            // Save Email Settings Function
-            function saveEmailSettings() {
-                const passwordSubject = document.getElementById('passwordSubject').value;
-                const passwordMessage = document.getElementById('passwordMessage').value;
-                const newAccountSubject = document.getElementById('newAccountSubject').value;
-                const newAccountMessage = document.getElementById('newAccountMessage').value;
-                const setupSubject = document.getElementById('setupSubject').value;
-                const setupMessage = document.getElementById('setupMessage').value;
-
-                // Create form data to send via AJAX
-                const formData = new FormData();
-                formData.append('action', 'update_email_settings');
-                formData.append('password_subject', passwordSubject);
-                formData.append('password_message', passwordMessage);
-                formData.append('new_account_subject', newAccountSubject);
-                formData.append('new_account_message', newAccountMessage);
-                formData.append('setup_subject', setupSubject);
-                formData.append('setup_message', setupMessage);
-
-                // Send AJAX request
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.text())
-                    .then(data => {
-                        // Close modal and show success message
-                        closeModal('securityEmailModal');
-                        window.location.href = window.location.href; // Reload to show updated message
-                    })
-                    .catch(error => {
-                        console.error('Error saving email settings:', error);
-                        alert('Error saving email settings. Please try again.');
-                    });
+            function updateHidden() {
+                if (hidden) hidden.value = Array.from(boxes).map(b => b.value).join('');
             }
-        </script>
+        }
+
+        setupPinInputs('newPinInputs', 'realNewPin');
+        setupPinInputs('confirmPinInputs', 'realConfirmPin');
+        setupPinInputs('unlockPinInputs', null);
+
+        // Save Email Settings Function
+        function saveEmailSettings() {
+            const passwordSubject = document.getElementById('passwordSubject').value;
+            const passwordMessage = document.getElementById('passwordMessage').value;
+            const newAccountSubject = document.getElementById('newAccountSubject').value;
+            const newAccountMessage = document.getElementById('newAccountMessage').value;
+            const setupSubject = document.getElementById('setupSubject').value;
+            const setupMessage = document.getElementById('setupMessage').value;
+
+            const formData = new FormData();
+            formData.append('action', 'update_email_settings');
+            formData.append('password_subject', passwordSubject);
+            formData.append('password_message', passwordMessage);
+            formData.append('new_account_subject', newAccountSubject);
+            formData.append('new_account_message', newAccountMessage);
+            formData.append('setup_subject', setupSubject);
+            formData.append('setup_message', setupMessage);
+
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    closeModal('securityEmailModal');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error saving settings.');
+                });
+        }
+    </script>
 </body>
 
 </html>
