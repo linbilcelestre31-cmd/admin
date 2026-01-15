@@ -1,4 +1,14 @@
 <?php
+/**
+ * VISITOR LOGS MODULE
+ * Purpose: Tracks and manages visitor entries/exits for security monitoring
+ * Features: Log visitors, search/filter logs, export reports, security tracking
+ * HR4 API Integration: Can fetch employee data for visitor host validation
+ */
+
+// Include HR4 API for employee data integration
+require_once __DIR__ . '/../integ/hr4_api.php';
+
 // config.php - Database configuration
 
 class Database

@@ -1,8 +1,49 @@
 <?php
+/**
+ * HR4 EMPLOYEE MANAGEMENT API
+ * Purpose: Central API for employee CRUD operations across all modules
+ * Live URL: https://hr1.atierahotelandrestaurant.com/api/hr4_api.php
+ * Features: Add, Update, Delete, Fetch employees with proper error handling
+ * Integration: Connected to all Modules (Visitor-logs, Dashboard, Document Management, Legal Management)
+ */
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Live API URL for external calls
+define('LIVE_API_URL', 'https://hr1.atierahotelandrestaurant.com/api/hr4_api.php');
+
+// Function to make API calls to live server
+function callLiveAPI($method, $data = null) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, LIVE_API_URL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ]);
+    
+    if ($method === 'POST' || $method === 'PUT') {
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    } elseif ($method === 'DELETE') {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    }
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return [
+        'success' => $httpCode === 200,
+        'data' => json_decode($response, true),
+        'http_code' => $httpCode,
+        'response' => $response
+    ];
+}
 
 // Database connection
 require_once __DIR__ . '/../db/db.php';
