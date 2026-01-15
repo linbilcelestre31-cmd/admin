@@ -510,7 +510,88 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             justify-content: center;
         }
 
-        /* Tab Styles */
+        /* Enhanced Card Styles */
+        .card {
+            background: white;
+            border-radius: 20px; /* More rounded */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        /* Enhanced Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            padding: 15px 12px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+        
+        .table td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+        
+        .table tr:hover td {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        
+        .table-container {
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Enhanced Alert Styles */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #bbf7d0 100%);
+            color: #065f46;
+            border-left-color: #22c55e;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1);
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-left-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+        }
         .tab-btn {
             background: none;
             border: none;
