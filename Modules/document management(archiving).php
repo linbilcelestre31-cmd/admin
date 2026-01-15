@@ -10,7 +10,7 @@ require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
 // File upload configuration
-define('UPLOAD_DIR', $_SERVER['DOCUMENT_ROOT'] . '/admin/uploads/'); 
+define('UPLOAD_DIR', $_SERVER['DOCUMENT_ROOT'] . '/admin/uploads/');
 define('MAX_FILE_SIZE', 50 * 1024 * 1024); // 50MB
 define('ALLOWED_TYPES', ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif']);
 
@@ -48,7 +48,7 @@ class Document
         $this->name = htmlspecialchars(strip_tags($this->name));
         $this->category = htmlspecialchars(strip_tags($this->category));
         $this->file_path = htmlspecialchars(strip_tags($this->file_path));
-        $this->file_size = $this->file_size; // Don't sanitize numeric values
+        // $this->file_size = $this->file_size; // Redundant assignment removed
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->upload_date = htmlspecialchars(strip_tags($this->upload_date));
 
@@ -74,7 +74,7 @@ class Document
             $query .= " AND category = :category";
         }
         $query .= " ORDER BY upload_date DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         if ($category && $category !== 'all') {
             $stmt->bindParam(":category", $category);
@@ -411,7 +411,8 @@ function formatFileSize($bytes)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Management - Atiéra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -429,16 +430,20 @@ function formatFileSize($bytes)
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">Hotel<span>Archive</span></div>
+                <div class="logo">
+                    <img src="../assets/image/logo.png" alt="Logo"
+                        style="height: 40px; vertical-align: middle; margin-right: 10px;">
+                    Atiéra <span>Archive</span>
+                </div>
                 <nav>
                     <ul>
-                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
                         <li><a href="../include/Settings.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../include/Settings.php'; }, true);">Settings</a></li>
-                        <li><a href="#">Help</a></li>
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../include/Settings.php'; }, true);"><i
+                                    class="fas fa-cog"></i> Settings</a></li>
                         <li><a href="../Modules/dashboard.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
-                        </li>
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);"><i
+                                    class="fas fa-arrow-left"></i> Back</a></li>
                     </ul>
                 </nav>
             </div>
@@ -584,87 +589,88 @@ function formatFileSize($bytes)
     <div id="passwordModal">
         <div class="pin-container">
             <div style="margin-bottom: 25px;">
-                <img src="../assets/image/logo.png" alt="Logo" style="width: 150px; height: auto;">
+                <img src="../assets/image/logo.png" alt="Logo" style="width: 140px; height: auto;">
             </div>
             <h2>Archive Security</h2>
-            <p>Enter your PIN to access this category</p>
+            <p style="color: #64748b; margin-bottom: 30px;">Enter your 4-digit PIN to access this category</p>
             <form id="pinForm">
-                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-                    <input type="password" maxlength="1" class="pin-digit" id="archivePin1" required autofocus>
-                    <input type="password" maxlength="1" class="pin-digit" id="archivePin2" required>
-                    <input type="password" maxlength="1" class="pin-digit" id="archivePin3" required>
-                    <input type="password" maxlength="1" class="pin-digit" id="archivePin4" required>
+                <div class="archive-pin-inputs"
+                    style="display: flex; justify-content: center; gap: 15px; margin-bottom: 35px;">
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin1" required autofocus
+                        style="width: 55px; height: 55px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin2" required
+                        style="width: 55px; height: 55px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin3" required
+                        style="width: 55px; height: 55px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit" id="archivePin4" required
+                        style="width: 55px; height: 55px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc;">
                 </div>
                 <div id="pinErrorMessage"
-                    style="color: #ef4444; font-size: 0.9rem; margin-top: -20px; margin-bottom: 20px; display: none; font-weight: 600;">
-                    Incorrect PIN. Access Denied.
+                    style="color: #ef4444; font-size: 0.9rem; margin-top: -25px; margin-bottom: 25px; display: none; font-weight: 600;">
+                    <i class="fas fa-exclamation-circle"></i> Invalid PIN. Access denied.
                 </div>
-                <div style="display: flex; gap: 12px; justify-content: center;">
+                <div style="display: flex; gap: 15px; justify-content: center;">
                     <button type="button" class="btn" id="pinCancelBtn"
-                        style="padding: 12px 24px; border-radius: 12px;">Cancel</button>
+                        style="padding: 12px 30px; border-radius: 12px; min-width: 120px; border: 1px solid #e2e8f0; background: white; color: #64748b;">Cancel</button>
                     <button type="submit" class="btn btn-primary"
-                        style="padding: 12px 24px; border-radius: 12px; background: #4a6cf7;">Access Archive</button>
+                        style="padding: 12px 30px; border-radius: 12px; min-width: 140px; background: #1e3a8a; color: white;">Unlock</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Dashboard Section -->
-    <section class="dashboard-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; margin-top: 40px;">
+    <section class="dashboard-section">
         <div class="container">
-            <div class="dashboard-header" style="text-align: center; margin-bottom: 50px;">
-                <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px;">
-                    <i class="fas fa-chart-line"></i> Document Dashboard
-                </h2>
-                <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">
-                    Real-time insights and analytics for your document management system
-                </p>
+            <div class="dashboard-header">
+                <h2><i class="fas fa-chart-line"></i> Document Dashboard</h2>
+                <p>Real-time insights and analytics for your document management system</p>
             </div>
-            
-            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
+
+            <div class="dashboard-grid">
                 <!-- Total Documents Card -->
-                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-blue">
                         <i class="fas fa-file-alt" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">1,234</h3>
-                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Total Documents</p>
+                    <h3>1,234</h3>
+                    <p>Total Documents</p>
                     <button class="btn btn-primary" style="width: 100%;">
                         <i class="fas fa-eye"></i> View All
                     </button>
                 </div>
 
                 <!-- Active Users Card -->
-                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-green">
                         <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">89</h3>
-                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Active Users</p>
+                    <h3>89</h3>
+                    <p>Active Users</p>
                     <button class="btn btn-success" style="width: 100%;">
                         <i class="fas fa-user-plus"></i> Manage
                     </button>
                 </div>
 
                 <!-- Storage Used Card -->
-                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-red">
                         <i class="fas fa-database" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">45.2 GB</h3>
-                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Storage Used</p>
+                    <h3>45.2 GB</h3>
+                    <p>Storage Used</p>
                     <button class="btn btn-danger" style="width: 100%;">
                         <i class="fas fa-chart-pie"></i> Analytics
                     </button>
                 </div>
 
                 <!-- Recent Activity Card -->
-                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <div class="dashboard-card">
+                    <div class="card-icon icon-gray">
                         <i class="fas fa-clock" style="color: #333; font-size: 1.5rem;"></i>
                     </div>
-                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">23</h3>
-                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Recent Activities</p>
+                    <h3>23</h3>
+                    <p>Recent Activities</p>
                     <button class="btn btn-secondary" style="width: 100%;">
                         <i class="fas fa-history"></i> View Log
                     </button>
@@ -672,21 +678,13 @@ function formatFileSize($bytes)
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions" style="text-align: center;">
-                <h3 style="color: white; font-size: 1.8rem; font-weight: 600; margin-bottom: 30px;">Quick Actions</h3>
-                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                    <button class="btn" style="background: white; color: #667eea;">
-                        <i class="fas fa-upload"></i> Upload Document
-                    </button>
-                    <button class="btn" style="background: white; color: #667eea;">
-                        <i class="fas fa-search"></i> Search Files
-                    </button>
-                    <button class="btn" style="background: white; color: #667eea;">
-                        <i class="fas fa-download"></i> Export Report
-                    </button>
-                    <button class="btn" style="background: white; color: #667eea;">
-                        <i class="fas fa-cog"></i> Settings
-                    </button>
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions-grid">
+                    <button class="btn btn-white"><i class="fas fa-upload"></i> Upload Document</button>
+                    <button class="btn btn-white"><i class="fas fa-search"></i> Search Files</button>
+                    <button class="btn btn-white"><i class="fas fa-download"></i> Export Report</button>
+                    <button class="btn btn-white"><i class="fas fa-cog"></i> Settings</button>
                 </div>
             </div>
         </div>
@@ -715,13 +713,13 @@ function formatFileSize($bytes)
         const sidebarToggle = document.getElementById('sidebarToggle');
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadCategoryFiles('all');
             updateSecurityStatus(false);
             setupEventListeners();
-            
+
             // Hide loading screen
-            setTimeout(function() {
+            setTimeout(function () {
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
                     loader.style.opacity = '0';
@@ -734,10 +732,10 @@ function formatFileSize($bytes)
         function setupEventListeners() {
             // Category Navigation
             document.querySelectorAll('.category-link').forEach(link => {
-                link.addEventListener('click', function(e) {
+                link.addEventListener('click', function (e) {
                     e.preventDefault();
                     const category = this.getAttribute('data-category');
-                    
+
                     if (!isAuthenticated && category !== 'all') {
                         targetCategory = category;
                         showPinGate();
@@ -749,13 +747,13 @@ function formatFileSize($bytes)
 
             // Tab Navigation
             document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     const tabId = this.getAttribute('data-tab');
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     this.classList.add('active');
                     document.getElementById(`${tabId}-tab`).classList.add('active');
-                    
+
                     if (tabId === 'trash') {
                         loadTrashFiles();
                     } else if (tabId === 'active') {
@@ -766,7 +764,7 @@ function formatFileSize($bytes)
 
             // PIN Input handling
             archivePinDigits.forEach((input, index) => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
                     if (this.value && index < archivePinDigits.length - 1) {
                         archivePinDigits[index + 1].focus();
@@ -781,7 +779,7 @@ function formatFileSize($bytes)
             });
 
             // PIN Form submission
-            pinForm.addEventListener('submit', function(e) {
+            pinForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const enteredPin = Array.from(archivePinDigits).map(input => input.value).join('');
 
@@ -790,21 +788,27 @@ function formatFileSize($bytes)
                     startPinSession();
                     updateSecurityStatus(true);
                     passwordModal.style.display = 'none';
-                    
+                    pinErrorMessage.style.display = 'none';
+
                     if (targetCategory) {
                         const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
                         if (activeLink) switchCategory(activeLink, targetCategory);
                     }
+                    // Reset inputs
+                    archivePinDigits.forEach(input => input.value = '');
                 } else {
                     pinErrorMessage.style.display = 'block';
-                    archivePinDigits.forEach(input => input.value = '');
+                    archivePinDigits.forEach(input => {
+                        input.value = '';
+                        input.style.borderColor = '#ef4444';
+                        setTimeout(() => input.style.borderColor = '#e2e8f0', 2000);
+                    });
                     archivePinDigits[0].focus();
-                    
+
                     // Shake animation
-                    document.querySelector('.pin-container').style.animation = 'shake 0.5s';
-                    setTimeout(() => {
-                        document.querySelector('.pin-container').style.animation = '';
-                    }, 500);
+                    const container = document.querySelector('.pin-container');
+                    container.style.animation = 'shake 0.5s';
+                    setTimeout(() => { container.style.animation = ''; }, 500);
                 }
             });
 
@@ -831,12 +835,12 @@ function formatFileSize($bytes)
 
             // Modal close handlers
             document.querySelectorAll('.modal .close').forEach(span => {
-                span.addEventListener('click', function() {
+                span.addEventListener('click', function () {
                     this.closest('.modal').style.display = 'none';
                 });
             });
 
-            window.addEventListener('click', function(event) {
+            window.addEventListener('click', function (event) {
                 document.querySelectorAll('.modal').forEach(modal => {
                     if (event.target === modal) modal.style.display = 'none';
                 });
@@ -876,7 +880,7 @@ function formatFileSize($bytes)
             document.querySelectorAll('.category-content').forEach(content => {
                 content.classList.remove('active');
             });
-            
+
             const contentId = `${category.toLowerCase().replace(/\s+/g, '-')}-content`;
             const contentEl = document.getElementById(contentId) || document.getElementById('all-content');
             if (contentEl) contentEl.classList.add('active');
@@ -888,7 +892,7 @@ function formatFileSize($bytes)
         function loadCategoryFiles(category) {
             let endpoint;
             let gridId;
-            
+
             if (category === 'all') {
                 endpoint = '?api=1&action=active';
                 gridId = 'activeFiles';
@@ -923,12 +927,12 @@ function formatFileSize($bytes)
                 .then(data => {
                     const grid = document.getElementById(gridId);
                     if (!grid) return;
-                    
+
                     if (!data || data.length === 0) {
                         showNoDataMessage(grid, category);
                         return;
                     }
-                    
+
                     renderDocumentTable(data, grid);
                 })
                 .catch(error => {
@@ -949,17 +953,17 @@ function formatFileSize($bytes)
         function loadFinancialRecords() {
             const grid = document.getElementById('financialFiles');
             const fallbackData = [
-                { 
-                    entry_date: '2025-10-24', 
-                    type: 'Income', 
-                    category: 'Room Revenue', 
-                    description: 'Room 101 - Check-out payment', 
-                    amount: 5500.00, 
-                    venue: 'Hotel', 
-                    total_debit: 5500, 
-                    total_credit: 0, 
-                    status: 'posted', 
-                    entry_number: 'JE-001' 
+                {
+                    entry_date: '2025-10-24',
+                    type: 'Income',
+                    category: 'Room Revenue',
+                    description: 'Room 101 - Check-out payment',
+                    amount: 5500.00,
+                    venue: 'Hotel',
+                    total_debit: 5500,
+                    total_credit: 0,
+                    status: 'posted',
+                    entry_number: 'JE-001'
                 },
                 // Add more fallback data as needed
             ];
@@ -996,21 +1000,21 @@ function formatFileSize($bytes)
                             </thead>
                             <tbody>
                                 ${data.map(record => {
-                                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-                                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
-                                    const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
-                                    const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', { 
-                                        year: 'numeric', 
-                                        month: '2-digit', 
-                                        day: '2-digit' 
-                                    });
-                                    const amountValue = parseFloat(record.total_debit || record.amount || 0)
-                                        .toLocaleString(undefined, { 
-                                            minimumFractionDigits: 2, 
-                                            maximumFractionDigits: 2 
-                                        });
+                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+                    const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
+                    const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                    const amountValue = parseFloat(record.total_debit || record.amount || 0)
+                        .toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
 
-                                    return `
+                    return `
                                         <tr>
                                             <td style="white-space: nowrap;">${formattedDate}</td>
                                             <td><span style="color: ${typeColor};" class="type-label">${type}</span></td>
@@ -1025,7 +1029,7 @@ function formatFileSize($bytes)
                                             </td>
                                         </tr>
                                     `;
-                                }).join('')}
+                }).join('')}
                             </tbody>
                         </table>
                     </div>
@@ -1039,7 +1043,7 @@ function formatFileSize($bytes)
                 .then(data => {
                     const grid = document.getElementById(gridId);
                     if (!grid) return;
-                    
+
                     if (data.success && data.data && data.data.length > 0) {
                         renderDocumentTable(data.data, grid);
                     } else {
@@ -1103,7 +1107,7 @@ function formatFileSize($bytes)
                 'Compliance': 'fas fa-shield-alt',
                 'Marketing': 'fas fa-bullhorn'
             };
-            
+
             grid.innerHTML = `
                 <div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;">
                     <i class="${icons[category] || 'fas fa-layer-group'}" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
@@ -1114,10 +1118,10 @@ function formatFileSize($bytes)
         }
 
         // Global functions for modals
-        window.showFinancialDetails = function(record) {
+        window.showFinancialDetails = function (record) {
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
-            
+
             const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
             const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
 
@@ -1171,9 +1175,9 @@ function formatFileSize($bytes)
             // Add reveal functionality
             const revealBtn = content.querySelector('#financialReveal');
             const sensitiveContent = content.querySelector('#financialSensitive');
-            
+
             if (revealBtn && sensitiveContent) {
-                revealBtn.addEventListener('click', function() {
+                revealBtn.addEventListener('click', function () {
                     this.style.display = 'none';
                     sensitiveContent.classList.remove('blurred-content');
                 });
@@ -1187,10 +1191,10 @@ function formatFileSize($bytes)
             modal.style.display = 'block';
         };
 
-        window.showFileDetails = function(file) {
+        window.showFileDetails = function (file) {
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
-            
+
             content.innerHTML = `
                 <div style="position: relative;">
                     <div id="fileSensitive" class="blurred-content">
@@ -1213,9 +1217,9 @@ function formatFileSize($bytes)
             // Add reveal functionality
             const revealBtn = content.querySelector('#fileReveal');
             const sensitiveContent = content.querySelector('#fileSensitive');
-            
+
             if (revealBtn && sensitiveContent) {
-                revealBtn.addEventListener('click', function() {
+                revealBtn.addEventListener('click', function () {
                     this.style.display = 'none';
                     sensitiveContent.classList.remove('blurred-content');
                 });
@@ -1270,12 +1274,12 @@ function formatFileSize($bytes)
         }
 
         // Loading animation function
-        window.runLoadingAnimation = function(callback, isRedirect = false) {
+        window.runLoadingAnimation = function (callback, isRedirect = false) {
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.display = 'block';
                 loader.style.opacity = '1';
-                
+
                 setTimeout(() => {
                     if (callback) callback();
                     if (!isRedirect) {
@@ -1289,4 +1293,5 @@ function formatFileSize($bytes)
         };
     </script>
 </body>
+
 </html>
