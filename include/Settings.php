@@ -759,6 +759,35 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             align-items: center;
             justify-content: center;
         }
+
+        /* PIN Input Boxes Styles */
+        .pin-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .pin-box {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #1e293b;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .pin-box:focus {
+            border-color: var(--accent-blue);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -1220,7 +1249,7 @@ You have been added as an administrator. To complete your account setup, please 
     <div class="modal" id="securityUnlockModal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <div style="margin-bottom: 20px;">
-                <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary-blue);"></i>
+                <img src="../assets/image/logo.png" alt="Atiera Logo" style="width: 140px; height: auto;">
             </div>
             <h3 style="margin-top: 0; color: #1e293b;">Security Mode</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 24px;">Please enter the system PIN to unlock
