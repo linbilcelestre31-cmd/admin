@@ -342,6 +342,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Error updating email settings: " . $e->getMessage();
             }
         }
+        /* Update Own Password (Security Tab) */ elseif ($_POST['action'] === 'update_own_password') {
+            $currentPass = $_POST['current_password'];
+            $newPass = $_POST['new_password'];
+            $confirmPass = $_POST['confirm_password'];
+            $id = $_SESSION['user_id'];
+
+            if ($newPass !== $confirmPass) {
+                $error = "New passwords do not match.";
+            } else {
+                try {
+                    $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $user = $stmt->fetch();
+
+                    if ($user && password_verify($currentPass, $user['password_hash'])) {
+                        $newHash = password_hash($newPass, PASSWORD_DEFAULT);
+                        $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$newHash, $id]);
+                        $message = "Your password has been updated successfully!";
+                    } else {
+                        $error = "Incorrect current password.";
+                    }
+                } catch (PDOException $e) {
+                    $error = "Database error: " . $e->getMessage();
+                }
+            }
+        }
+        /* Update Security PIN */ elseif ($_POST['action'] === 'update_security_pin') {
+            $newPin = $_POST['security_pin'] ?? '';
+            $confirmPin = $_POST['confirm_pin'] ?? '';
+
+            if (empty($newPin) || !preg_match('/^\d{4}$/', $newPin)) {
+                $error = "PIN must be exactly 4 digits.";
+            } elseif ($newPin !== $confirmPin) {
+                $error = "PINs do not match.";
+            } else {
+                try {
+                    // Create email_settings table if it doesn't exist
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS email_settings (
+                        id INT PRIMARY KEY AUTO_INCREMENT,
+                        setting_key VARCHAR(100) UNIQUE,
+                        setting_value TEXT,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                    )");
+
+                    $stmt = $pdo->prepare("INSERT INTO email_settings (setting_key, setting_value) VALUES (?, ?) 
+                                          ON DUPLICATE KEY UPDATE setting_value = ?");
+                    $stmt->execute(['archive_pin', $newPin, $newPin]);
+                    $message = "Security PIN updated successfully!";
+                } catch (PDOException $e) {
+                    $error = "Error updating security PIN: " . $e->getMessage();
+                }
+            }
+        }
     }
 }
 

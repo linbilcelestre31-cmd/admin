@@ -9,6 +9,19 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
+// Fetch security PIN from settings
+$archivePin = '1234'; // Default
+try {
+    $stmt = $db->prepare("SELECT setting_value FROM email_settings WHERE setting_key = 'archive_pin'");
+    $stmt->execute();
+    $savedPin = $stmt->fetchColumn();
+    if ($savedPin) {
+        $archivePin = $savedPin;
+    }
+} catch (PDOException $e) {
+    // If table doesn't exist or other error, fallback to default
+}
+
 // File upload configuration
 define('UPLOAD_DIR', $_SERVER['DOCUMENT_ROOT'] . '/admin/uploads/');
 define('MAX_FILE_SIZE', 50 * 1024 * 1024); // 50MB
@@ -701,7 +714,7 @@ function formatFileSize($bytes)
         let isAuthenticated = false;
         let pinSessionTimeout = null;
         const SESSION_DURATION = 15 * 60 * 1000; // 15 minutes
-        const correctArchivePin = '1234'; // In production, this should be stored securely
+        const correctArchivePin = '<?php echo $archivePin; ?>'; // In production, this should be stored securely
 
         // DOM Elements
         const messageContainer = document.getElementById('messageContainer');

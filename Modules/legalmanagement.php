@@ -9,6 +9,19 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
+// Fetch security PIN from settings
+$archivePin = '1234'; // Default
+try {
+    $stmt = $db->prepare("SELECT setting_value FROM email_settings WHERE setting_key = 'archive_pin'");
+    $stmt->execute();
+    $savedPin = $stmt->fetchColumn();
+    if ($savedPin) {
+        $archivePin = $savedPin;
+    }
+} catch (PDOException $e) {
+    // If table doesn't exist or other error, fallback to default
+}
+
 
 // AI Risk Assessment Class
 class ContractRiskAnalyzer
@@ -547,6 +560,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -563,7 +577,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
-    <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1" media="none"
+        onload="if(media!='all')media='all'">
 
     <style>
         /* Center all table header and cell content within this module */
@@ -1481,6 +1496,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
+    <script>
+        const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
+    </script>
     <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
 
     <script>
@@ -1591,7 +1609,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 form.onsubmit = (e) => {
                     e.preventDefault();
                     const pin = Array.from(digits).map(d => d.value).join('');
-                    if (pin === '1234') { // Default PIN for demo
+                    if (pin === '<?php echo $archivePin; ?>') { // Default PIN for demo
                         modal.style.display = 'none';
                         callback();
                     } else {

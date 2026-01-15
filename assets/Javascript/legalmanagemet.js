@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.getElementById('backDashboardBtn');
 
     // Correct PIN (in a real application, this would be stored securely)
-    const correctPIN = '1234';
+    const correctPIN = typeof APP_CORRECT_PIN !== 'undefined' ? APP_CORRECT_PIN : '1234';
 
     // Focus on first PIN input
     pinInputs[0]?.focus();

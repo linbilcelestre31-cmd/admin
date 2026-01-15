@@ -56,7 +56,7 @@ function get_nav_link($tab, $is_dashboard)
                     style="white-space: nowrap;">
                     <span class="icon-img-placeholder">⚖️</span> Legal Management
                 </a></li>
-            <li><a href="document management(archiving).php"
+            <li><a href="../Modules/document management(archiving).php"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <span class="icon-img-placeholder">🗄️</span> Document Archiving
