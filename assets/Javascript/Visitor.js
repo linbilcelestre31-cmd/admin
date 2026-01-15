@@ -78,29 +78,6 @@ function setupNavigation() {
         });
     });
 }
-// Tab navigation
-const tabs = document.querySelectorAll('.tab');
-tabs.forEach(tab => {
-    tab.addEventListener('click', function () {
-        const tabId = this.getAttribute('data-tab');
-        const parent = this.closest('.page');
-
-        // Update active tab
-        const siblingTabs = parent.querySelectorAll('.tab');
-        siblingTabs.forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-
-        // Show corresponding content
-        const tabContents = parent.querySelectorAll('.tab-content');
-        tabContents.forEach(content => {
-            if (content.id === `${tabId}-tab`) {
-                content.classList.add('active');
-            } else {
-                content.classList.remove('active');
-            }
-        });
-    });
-});
 
 // Show report date range based on selection
 const reportType = document.getElementById('report-type');
