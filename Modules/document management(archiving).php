@@ -19,7 +19,30 @@ try {
         $archivePin = $savedPin;
     }
 } catch (PDOException $e) {
-    // If table doesn't exist or other error, fallback to default
+}
+
+// Fetch dashboard stats
+$stats = [
+    'total' => 0,
+    'trash' => 0,
+    'storage' => '0 B'
+];
+try {
+    $stats['total'] = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn();
+    $stats['trash'] = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn();
+    $total_bytes = $db->query("SELECT SUM(file_size) FROM documents")->fetchColumn() ?: 0;
+
+    function formatBytes($bytes, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+    $stats['storage'] = formatBytes($total_bytes);
+} catch (PDOException $e) {
 }
 
 // File upload configuration
@@ -270,6 +293,26 @@ if (isset($_GET['api'])) {
                 }
                 echo json_encode($documents);
             }
+            // Download document
+            elseif (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['id'])) {
+                $document->id = $_GET['id'];
+                if ($document->readOne()) {
+                    $file = $document->file_path;
+                    if (file_exists($file)) {
+                        header('Content-Description: File Transfer');
+                        header('Content-Type: application/octet-stream');
+                        header('Content-Disposition: attachment; filename="' . basename($document->name . '.' . pathinfo($file, PATHINFO_EXTENSION)) . '"');
+                        header('Expires: 0');
+                        header('Cache-Control: must-revalidate');
+                        header('Pragma: public');
+                        header('Content-Length: ' . filesize($file));
+                        readfile($file);
+                        exit;
+                    }
+                }
+                http_response_code(404);
+                echo json_encode(["message" => "File not found."]);
+            }
             break;
 
         case 'POST':
@@ -445,8 +488,7 @@ function formatFileSize($bytes)
             <div class="header-content">
                 <div class="logo">
                     <img src="../assets/image/logo.png" alt="Logo"
-                        style="height: 40px; vertical-align: middle; margin-right: 10px;">
-                    Atiéra <span>Archive</span>
+                        style="height: 40px; vertical-align: middle;">
                 </div>
                 <nav>
                     <ul>
@@ -499,6 +541,13 @@ function formatFileSize($bytes)
             <div class="content">
                 <div class="content-header">
                     <h2 id="contentTitle">Archive Management</h2>
+                    <div class="search-container" style="display: flex; gap: 10px;">
+                        <input type="text" id="documentSearch" placeholder="Search in this view..."
+                            style="padding: 8px 15px; border-radius: 20px; border: 1px solid #e2e8f0; width: 250px;">
+                        <button class="btn btn-primary" id="uploadBtn" style="padding: 8px 20px; border-radius: 20px;">
+                            <i class="fas fa-plus"></i> Upload
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Success/Error Messages -->
@@ -646,46 +695,49 @@ function formatFileSize($bytes)
                     <div class="card-icon icon-blue">
                         <i class="fas fa-file-alt" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3>1,234</h3>
-                    <p>Total Documents</p>
-                    <button class="btn btn-primary" style="width: 100%;">
+                    <h3><?php echo number_format($stats['total']); ?></h3>
+                    <p>Active Documents</p>
+                    <button class="btn btn-primary" style="width: 100%;"
+                        onclick="document.querySelector('[data-category=\'all\']').click()">
                         <i class="fas fa-eye"></i> View All
                     </button>
                 </div>
 
-                <!-- Active Users Card -->
+                <!-- Trash Card -->
                 <div class="dashboard-card">
-                    <div class="card-icon icon-green">
-                        <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
+                    <div class="card-icon icon-red">
+                        <i class="fas fa-trash-alt" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3>89</h3>
-                    <p>Active Users</p>
-                    <button class="btn btn-success" style="width: 100%;">
-                        <i class="fas fa-user-plus"></i> Manage
+                    <h3><?php echo number_format($stats['trash']); ?></h3>
+                    <p>Files in Trash</p>
+                    <button class="btn btn-danger" style="width: 100%;"
+                        onclick="document.querySelector('[data-category=\'all\']').click(); setTimeout(() => document.querySelector('[data-tab=\'trash\']').click(), 100);">
+                        <i class="fas fa-recycle"></i> Manage Trash
                     </button>
                 </div>
 
                 <!-- Storage Used Card -->
                 <div class="dashboard-card">
-                    <div class="card-icon icon-red">
+                    <div class="card-icon icon-green">
                         <i class="fas fa-database" style="color: white; font-size: 1.5rem;"></i>
                     </div>
-                    <h3>45.2 GB</h3>
+                    <h3><?php echo $stats['storage']; ?></h3>
                     <p>Storage Used</p>
-                    <button class="btn btn-danger" style="width: 100%;">
+                    <button class="btn btn-success" style="width: 100%;">
                         <i class="fas fa-chart-pie"></i> Analytics
                     </button>
                 </div>
 
-                <!-- Recent Activity Card -->
+                <!-- Categories Card -->
                 <div class="dashboard-card">
                     <div class="card-icon icon-gray">
-                        <i class="fas fa-clock" style="color: #333; font-size: 1.5rem;"></i>
+                        <i class="fas fa-folder-open" style="color: #333; font-size: 1.5rem;"></i>
                     </div>
-                    <h3>23</h3>
-                    <p>Recent Activities</p>
-                    <button class="btn btn-secondary" style="width: 100%;">
-                        <i class="fas fa-history"></i> View Log
+                    <h3>6</h3>
+                    <p>Protected Categories</p>
+                    <button class="btn btn-secondary" style="width: 100%;"
+                        onclick="document.querySelector('.sidebar').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-list"></i> View Categories
                     </button>
                 </div>
             </div>
@@ -694,10 +746,13 @@ function formatFileSize($bytes)
             <div class="quick-actions">
                 <h3>Quick Actions</h3>
                 <div class="quick-actions-grid">
-                    <button class="btn btn-white"><i class="fas fa-upload"></i> Upload Document</button>
-                    <button class="btn btn-white"><i class="fas fa-search"></i> Search Files</button>
-                    <button class="btn btn-white"><i class="fas fa-download"></i> Export Report</button>
-                    <button class="btn btn-white"><i class="fas fa-cog"></i> Settings</button>
+                    <button class="btn btn-white" id="quickUpload"><i class="fas fa-upload"></i> Upload
+                        Document</button>
+                    <button class="btn btn-white" id="quickSearch"><i class="fas fa-search"></i> Search Files</button>
+                    <button class="btn btn-white" id="quickExport"><i class="fas fa-download"></i> Export
+                        Report</button>
+                    <button class="btn btn-white" id="quickSettings"><i class="fas fa-cog"></i> Security
+                        Settings</button>
                 </div>
             </div>
         </div>
@@ -863,6 +918,43 @@ function formatFileSize($bytes)
             document.addEventListener('click', resetPinSession);
             document.addEventListener('keypress', resetPinSession);
             document.addEventListener('scroll', resetPinSession);
+
+            // Quick Actions Event Listeners
+            document.getElementById('quickUpload')?.addEventListener('click', () => {
+                document.getElementById('uploadModal').style.display = 'block';
+            });
+
+            document.getElementById('quickSearch')?.addEventListener('click', () => {
+                const search = prompt('Enter keywords to search documents:');
+                if (search) {
+                    isAuthenticated = true; // Temporary permit for search
+                    updateSecurityStatus(true);
+
+                    document.getElementById('contentTitle').textContent = `Search Results: "${search}"`;
+                    document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById('all-content').classList.add('active');
+
+                    fetch(`?api=1&search=${encodeURIComponent(search)}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const grid = document.getElementById('activeFiles');
+                            if (data && data.length > 0) {
+                                renderDocumentTable(data, grid);
+                            } else {
+                                grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">No results found for "${search}"</div>`;
+                            }
+                        });
+                }
+            });
+
+            document.getElementById('quickSettings')?.addEventListener('click', () => {
+                window.location.href = '../include/Settings.php';
+            });
+
+            document.getElementById('quickExport')?.addEventListener('click', () => {
+                alert('Generating document report...');
+                window.location.href = '?api=1&action=active'; // Simple export as JSON for now
+            });
         }
 
         function showPinGate() {
@@ -1036,8 +1128,11 @@ function formatFileSize($bytes)
                                             <td style="font-weight: 700; white-space: nowrap;">$${amountValue}</td>
                                             <td>${record.venue || 'Hotel'}</td>
                                             <td>
-                                                <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})'>
-                                                    <i class="fas fa-eye"></i> View
+                                                <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})' title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-view-small" onclick='window.print()' title="Print">
+                                                    <i class="fas fa-print"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -1099,8 +1194,14 @@ function formatFileSize($bytes)
                                     <td>${item.file_size}</td>
                                     <td>${new Date(item.upload_date).toLocaleDateString()}</td>
                                     <td>
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
-                                            <i class="fas fa-eye"></i> View
+                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <button class="btn-view-small" style="color: #ef4444;" onclick="moveToTrash(${item.id})" title="Delete">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1285,6 +1386,136 @@ function formatFileSize($bytes)
                 statusContainer.classList.add('locked');
             }
         }
+
+        // Trash Management Functions
+        function loadTrashFiles() {
+            fetch('?api=1&action=deleted')
+                .then(r => r.json())
+                .then(data => {
+                    const grid = document.getElementById('trashFiles');
+                    if (!data || data.length === 0) {
+                        grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">Trash bin is empty</div>`;
+                        return;
+                    }
+                    renderTrashTable(data, grid);
+                });
+        }
+
+        function renderTrashTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container" style="grid-column: 1/-1;">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Deleted Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => `
+                                <tr>
+                                    <td>📄 ${item.name}</td>
+                                    <td>${new Date(item.deleted_date).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn-view-small" onclick="restoreFile(${item.id})" style="color: #22c55e;" title="Restore">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                        <button class="btn-view-small" onclick="deletePermanent(${item.id})" style="color: #ef4444;" title="Delete Permanently">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        window.moveToTrash = function (id) {
+            if (!confirm('Move this document to trash?')) return;
+            const formData = new FormData();
+            formData.append('action', 'trash');
+            formData.append('id', id);
+            fetch('?api=1', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                    loadCategoryFiles('all');
+                });
+        };
+
+        window.restoreFile = function (id) {
+            const formData = new FormData();
+            formData.append('action', 'restore');
+            formData.append('id', id);
+            fetch('?api=1', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                    loadTrashFiles();
+                });
+        };
+
+        window.deletePermanent = function (id) {
+            if (!confirm('Are you sure you want to permanently delete this file? This action cannot be undone.')) return;
+            fetch('?api=1', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${id}`
+            })
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                    loadTrashFiles();
+                });
+        };
+
+        // Document Search Functionality
+        document.getElementById('documentSearch')?.addEventListener('input', function (e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.financial-table tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('uploadBtn')?.addEventListener('click', () => {
+            document.getElementById('uploadModal').style.display = 'block';
+        });
+
+        document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('fileInput').files[0]);
+            formData.append('name', document.getElementById('fileName').value);
+            formData.append('category', document.getElementById('fileCategory').value);
+            formData.append('description', document.getElementById('fileDescription').value || '');
+
+            fetch('?api=1', {
+                method: 'POST',
+                body: formData
+            })
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                    if (res.message.includes('successfully')) {
+                        document.getElementById('uploadModal').style.display = 'none';
+                        this.reset();
+                        loadCategoryFiles('all');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error);
+                    alert('An error occurred during upload.');
+                });
+        });
+
+        document.getElementById('cancelUpload')?.addEventListener('click', () => {
+            document.getElementById('uploadModal').style.display = 'none';
+        });
 
         // Loading animation function
         window.runLoadingAnimation = function (callback, isRedirect = false) {
