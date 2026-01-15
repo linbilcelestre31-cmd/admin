@@ -571,6 +571,20 @@
             }
         }
         
+        /* Dashboard Card Hover Effects */
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dashboard-card .card-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .dashboard {
@@ -607,31 +621,61 @@
             background-color: #c0392b;
         }
         
+        /* Enhanced Button Styles */
         .btn {
-            padding: 8px 16px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 25px; /* Fully rounded buttons */
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .btn-primary {
-            background-color: var(--secondary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
         .btn-primary:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
         
         .btn-success {
-            background-color: var(--success);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
         }
         
         .btn-success:hover {
-            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(235, 51, 73, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(142, 158, 171, 0.4);
         }
         
         .search-box {

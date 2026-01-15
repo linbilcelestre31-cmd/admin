@@ -436,6 +436,80 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-weight: 600;
         }
 
+        /* Enhanced Button Styles */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px; /* Fully rounded buttons */
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(235, 51, 73, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(142, 158, 171, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-outline:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
         /* Tab Styles */
         .tab-btn {
             background: none;
@@ -626,13 +700,111 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <span style="font-weight: 600;">Email Settings</span>
                                 <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active
                                     sessions and timeouts</span>
-                            </button>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </main>
+
+        <!-- Dashboard Section -->
+        <section class="settings-dashboard" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; margin-top: 40px;">
+            <div class="container">
+                <div class="dashboard-header" style="text-align: center; margin-bottom: 50px;">
+                    <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px;">
+                        <i class="fas fa-cogs"></i> Settings Dashboard
+                    </h2>
+                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">
+                        System overview and quick access to administrative functions
+                    </p>
+                </div>
+                
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
+                    <!-- System Status Card -->
+                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <i class="fas fa-server" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">Online</h3>
+                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">System Status</p>
+                        <button class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-chart-line"></i> View Details
+                        </button>
+                    </div>
+
+                    <!-- Active Users Card -->
+                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <i class="fas fa-users-cog" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">12</h3>
+                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Active Administrators</p>
+                        <button class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-user-plus"></i> Manage Users
+                        </button>
+                    </div>
+
+                    <!-- Security Score Card -->
+                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <i class="fas fa-shield-alt" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">95%</h3>
+                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Security Score</p>
+                        <button class="btn btn-danger" style="width: 100%;">
+                            <i class="fas fa-lock"></i> Security Settings
+                        </button>
+                    </div>
+
+                    <!-- System Logs Card -->
+                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <i class="fas fa-clipboard-list" style="color: #333; font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">247</h3>
+                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">System Logs Today</p>
+                        <button class="btn btn-secondary" style="width: 100%;">
+                            <i class="fas fa-file-alt"></i> View Logs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions" style="text-align: center;">
+                    <h3 style="color: white; font-size: 1.8rem; font-weight: 600; margin-bottom: 30px;">Quick Actions</h3>
+                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <button class="btn" style="background: white; color: #667eea;">
+                            <i class="fas fa-download"></i> Backup System
+                        </button>
+                        <button class="btn" style="background: white; color: #667eea;">
+                            <i class="fas fa-sync"></i> Clear Cache
+                        </button>
+                        <button class="btn" style="background: white; color: #667eea;">
+                            <i class="fas fa-bell"></i> Notifications
+                        </button>
+                        <button class="btn" style="background: white; color: #667eea;">
+                            <i class="fas fa-database"></i> Database
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Card Hover Effects -->
+        <style>
+        .settings-dashboard .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .settings-dashboard .dashboard-card .card-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .settings-dashboard .dashboard-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        </style>
 
         <!-- Edit/Create User Modal -->
         <div class="modal" id="userModal">

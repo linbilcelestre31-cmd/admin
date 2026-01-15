@@ -415,7 +415,7 @@ function formatFileSize($bytes)
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/document.css?v=5">
+    <link rel="stylesheet" href="../assets/css/document.css?v=6">
 </head>
 
 <body>
@@ -608,6 +608,89 @@ function formatFileSize($bytes)
             </form>
         </div>
     </div>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; margin-top: 40px;">
+        <div class="container">
+            <div class="dashboard-header" style="text-align: center; margin-bottom: 50px;">
+                <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px;">
+                    <i class="fas fa-chart-line"></i> Document Dashboard
+                </h2>
+                <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">
+                    Real-time insights and analytics for your document management system
+                </p>
+            </div>
+            
+            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
+                <!-- Total Documents Card -->
+                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-file-alt" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">1,234</h3>
+                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Total Documents</p>
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-eye"></i> View All
+                    </button>
+                </div>
+
+                <!-- Active Users Card -->
+                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">89</h3>
+                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Active Users</p>
+                    <button class="btn btn-success" style="width: 100%;">
+                        <i class="fas fa-user-plus"></i> Manage
+                    </button>
+                </div>
+
+                <!-- Storage Used Card -->
+                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-database" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">45.2 GB</h3>
+                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Storage Used</p>
+                    <button class="btn btn-danger" style="width: 100%;">
+                        <i class="fas fa-chart-pie"></i> Analytics
+                    </button>
+                </div>
+
+                <!-- Recent Activity Card -->
+                <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
+                    <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-clock" style="color: #333; font-size: 1.5rem;"></i>
+                    </div>
+                    <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">23</h3>
+                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Recent Activities</p>
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-history"></i> View Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions" style="text-align: center;">
+                <h3 style="color: white; font-size: 1.8rem; font-weight: 600; margin-bottom: 30px;">Quick Actions</h3>
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                    <button class="btn" style="background: white; color: #667eea;">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </button>
+                    <button class="btn" style="background: white; color: #667eea;">
+                        <i class="fas fa-search"></i> Search Files
+                    </button>
+                    <button class="btn" style="background: white; color: #667eea;">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                    <button class="btn" style="background: white; color: #667eea;">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <footer class="container">
         <p>Hotel & Restaurant Document Management System &copy; 2023</p>
