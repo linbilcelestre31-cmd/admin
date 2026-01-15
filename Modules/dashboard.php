@@ -4,10 +4,13 @@
  * Purpose: Main admin dashboard with employee management, facilities, reservations
  * Features: Employee CRUD, maintenance logs, reports, facility management
  * HR4 Integration: Connected to integ/hr4_api.php for live employee data
+ * Financial API Integration: Connected to integ/fn.php for financial data
  */
 
 // Include HR4 API for employee management
 require_once __DIR__ . '/../integ/hr4_api.php';
+
+
 
 // facilities_reservation_system.php
 session_start();

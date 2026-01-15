@@ -4,10 +4,13 @@
  * Purpose: Upload, organize, and manage company documents with version control
  * Features: File upload/download, folder management, search/filter, archiving system
  * HR4 API Integration: Can link documents to employee records and fetch employee data
+ * Financial API Integration: Can fetch financial data and link documents to financial records
  */
 
 // Include HR4 API for employee-document linking
 require_once __DIR__ . '/../integ/hr4_api.php';
+
+
 
 session_start();
 // Check if user is logged in

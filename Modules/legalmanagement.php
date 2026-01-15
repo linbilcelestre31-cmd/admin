@@ -4,10 +4,12 @@
  * Purpose: Manage legal contracts, agreements, and compliance documents
  * Features: Contract tracking, risk assessment, deadline monitoring, document management
  * HR4 API Integration: Can link contracts to employee data and fetch employee information
+ * Financial API Integration: Access financial data for contract analysis
  */
 
 // Include HR4 API for employee-contract linking
 require_once __DIR__ . '/../integ/hr4_api.php';
+
 
 session_start();
 // Check if user is logged in

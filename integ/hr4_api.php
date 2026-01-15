@@ -9,7 +9,7 @@
  */
 
 $externalApiUrl = 'https://hr1.atierahotelandrestaurant.com/api/hr4_api.php';
-$financialApiUrl = 'https://financial.atierahotelandrestaurant.com/journal_entries_api';
+
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
