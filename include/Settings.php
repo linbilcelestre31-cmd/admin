@@ -22,24 +22,44 @@ function nl2br_custom($string) {
 
 $pdo = get_pdo();
 
-// Function to get email settings from database
+// Function to get email settings from database with enhanced design
 function getEmailSettings($pdo) {
     try {
-        $stmt = $pdo->query("SELECT setting_key, setting_value FROM email_settings");
+        $stmt = $pdo->query("SELECT setting_key, setting_value FROM email_settings ORDER BY setting_key ASC");
         $settings = [];
+        
+        // Define default settings with beautiful formatting
+        $defaultSettings = [
+            'password_subject' => '🔐 Security Notice: Your ATIERA Password was Updated',
+            'password_message' => "Hello {\$full_name},\n\n📧 This is a security notification to let you know that your password for ATIERA Admin Panel has been updated by an administrator.\n\n⚠️ If you did not authorized this change, please contact your system administrator immediately.\n\n🛡️ This is an automated security message - do not reply to this email.",
+            'new_account_subject' => '👤 New Account Created: ATIERA Admin Panel',
+            'new_account_message' => "Hello {\$full_name},\n\n🎉 Welcome to ATIERA Admin Panel!\n\n📋 An account has been created for you. Here are your credentials:\n\n👤 Username: {\$username}\n🔑 Password: {\$password}\n\n🔗 To complete your registration and set your New Password, please use the activation code sent separately.\n\n📧 For security reasons, please change your password after first login.\n\n🏨 ATIERA Administration Team",
+            'setup_subject' => '⚙️ Setup Your ATIERA Account Password',
+            'setup_message' => "Hello {\$full_name},\n\n🌟 Congratulations! You have been added as an administrator to ATIERA Admin Panel.\n\n📝 To complete your account setup, please set your New Password using the verification code sent separately.\n\n🔐 Security Tips:\n• Use a strong password with 8+ characters\n• Include uppercase, lowercase, numbers, and symbols\n• Enable two-factor authentication if available\n• Never share your credentials\n\n🏨 ATIERA Security Team"
+        ];
+        
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $settings[$row['setting_key']] = $row['setting_value'];
         }
+        
+        // Merge with defaults for any missing settings
+        foreach ($defaultSettings as $key => $value) {
+            if (!isset($settings[$key])) {
+                $settings[$key] = $value;
+            }
+        }
+        
         return $settings;
+        
     } catch (PDOException $e) {
-        // Return default settings if table doesn't exist
+        // Return enhanced default settings with beautiful formatting
         return [
-            'password_subject' => 'Security Notice: Your ATIERA Password was Updated',
-            'password_message' => "Hello {\$full_name},\n\nThis is a security notification to let you know that your password for ATIERA Admin Panel has been updated by an administrator.\n\nIf you did not authorized this change, please contact your system administrator immediately.",
-            'new_account_subject' => 'New Account Created: ATIERA Admin Panel',
-            'new_account_message' => "Hello {\$full_name},\n\nAn account has been created for you. Here are your credentials:\n\nUsername: {\$username}\nPassword: {\$password}\n\nTo complete your registration and set your New Password, please use the activation code sent separately.",
-            'setup_subject' => 'Setup Your ATIERA Account Password',
-            'setup_message' => "Hello {\$full_name},\n\nYou have been added as an administrator. To complete your account setup, please set your New Password using the verification code sent separately."
+            'password_subject' => '🔐 Security Notice: Your ATIERA Password was Updated',
+            'password_message' => "Hello {\$full_name},\n\n📧 This is a security notification to let you know that Your password for ATIERA Admin Panel has been updated by an administrator.\n\n⚠️ If you did not authorized this change, please contact your system administrator immediately.\n\n🛡️ This is an automated security message - do not reply to this email.\n\n🔒 Your account security is our top priority!",
+            'new_account_subject' => '👤 New Account Created: ATIERA Admin Panel',
+            'new_account_message' => "Hello {\$full_name},\n\n🎉 Welcome to ATIERA Admin Panel!\n\n📋 An account has been created for you. Here are your credentials:\n\n👤 Username: {\$username}\n🔑 Password: {\$password}\n\n🔗 To complete your registration and set your New Password, please use the activation code sent separately.\n\n📧 For security reasons, Please change Your password after first login.\n\n🏨 ATIERA Administration Team",
+            'setup_subject' => '⚙️ Setup Your ATIERA Account Password',
+            'setup_message' => "Hello {\$full_name},\n\n🌟 Congratulations! You have been added as an administrator to ATIERA Admin Panel.\n\n📝 To complete your account setup, Please set your New Password using the verification code sent separately.\n\n🔐 Security Tips:\n• Use a strong password with 8+ characters\n• Include uppercase, lowercase, numbers, and symbols\n• Enable two-factor authentication if available\n• Never share your credentials\n\n🏨 ATIERA Security Team"
         ];
     }
 }
