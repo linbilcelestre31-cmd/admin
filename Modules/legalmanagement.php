@@ -312,36 +312,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    // Add Invoice
-    if (isset($_POST['add_invoice'])) {
-        $inv_number = $_POST['invoice_number'] ?? '';
-        $client = $_POST['client'] ?? '';
-        $amount = floatval($_POST['amount'] ?? 0);
-        $due_date = $_POST['due_date'] ?? date('Y-m-d');
-        $status = $_POST['status'] ?? 'pending';
-        $q = "INSERT INTO billing (invoice_number, client_name, amount, due_date, status) VALUES (?, ?, ?, ?, ?)";
-        $s = $db->prepare($q);
-        if ($s->execute([$inv_number, $client, $amount, $due_date, $status])) {
-            $success_message = "Invoice created successfully!";
-        } else {
-            $error_message = "Failed to create invoice.";
-        }
-    }
-    // Pay invoice (set to paid)
-    if (isset($_POST['pay_invoice'])) {
-        $invoice_id = intval($_POST['invoice_id'] ?? 0);
-        if ($invoice_id > 0) {
-            $q = "UPDATE billing SET status = 'paid' WHERE id = ?";
-            $s = $db->prepare($q);
-            if ($s->execute([$invoice_id])) {
-                $success_message = "Invoice has been marked as PAID.";
-            } else {
-                $error_message = "Payment failed. Try again.";
-            }
-        } else {
-            $error_message = "Invalid invoice ID.";
-        }
-    }
 
     // Handle contract upload with AI analysis
     if (isset($_POST['add_contract'])) {
@@ -546,19 +516,6 @@ try {
     ];
 }
 
-$billing = [];
-try {
-    $query = "SELECT id, invoice_number, client_name as client, amount, due_date, status FROM billing ORDER BY due_date DESC";
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    $billing = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    // fallback demo data
-    $billing = [
-        ['invoice_number' => 'INV-001', 'client' => 'Hotel Management', 'amount' => 2500, 'due_date' => '2023-07-15', 'status' => 'paid'],
-        ['invoice_number' => 'INV-002', 'client' => 'Restaurant Owner', 'amount' => 1800, 'due_date' => '2023-08-05', 'status' => 'pending']
-    ];
-}
 
 // Risk summary with normalized casing
 $riskCounts = ['High' => 0, 'Medium' => 0, 'Low' => 0];
@@ -750,10 +707,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="nav-tab" data-target="internal">Internal</div>
                 <div class="nav-tab" data-target="external">External</div>
                 <div class="nav-tab" data-target="documents">Documents</div>
-                <div class="nav-tab" data-target="billing">Billing</div>
                 <div class="nav-tab" data-target="contracts">Contracts</div>
                 <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
-                <div class="nav-tab" data-target="members">Members</div>
             </div>
 
             <!-- Employees Section -->
@@ -960,59 +915,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </table>
             </div>
 
-            <div class="content-section" id="billing">
-                <div class="section-header">
-                    <h2 class="section-title">Billing & Invoices</h2>
-                    <button class="add-btn" id="addInvoiceBtn">
-                        <i>+</i> Create Invoice
-                    </button>
-                </div>
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Invoice #</th>
-                            <th>Client</th>
-                            <th>Amount</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billingTableBody">
-                        <?php if (!empty($billing)): ?>
-                            <?php foreach ($billing as $b): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($b['invoice_number'] ?? $b['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($b['client'] ?? 'N/A'); ?></td>
-                                    <td>₱<?php echo number_format($b['amount'] ?? 0, 2); ?></td>
-                                    <td><?php echo htmlspecialchars(!empty($b['due_date']) ? date('Y-m-d', strtotime($b['due_date'])) : 'N/A'); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars(ucfirst($b['status'] ?? 'unknown')); ?></td>
-                                    <td>
-                                        <button class="action-btn view-btn" data-type="invoice-view"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>View</button>
-                                        <button class="action-btn download-btn" data-type="invoice-download"
-                                            data-pdf-type="billing"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($b)); ?>'
-                                            style="background:#0284c7;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer;font-size:12px;">Download
-                                            PDF</button>
-                                        <button class="action-btn"
-                                            style="background:#16a34a;color:#fff;border-radius:8px;padding:6px 10px;"
-                                            data-type="invoice-pay"
-                                            data-invoice='<?php echo htmlspecialchars(json_encode($b)); ?>'>Pay</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" style="text-align:center;color:#666;padding:20px;">No billing records
-                                    found.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
 
             <!-- Contracts Section -->
             <div class="content-section" id="contracts" style="display:none;">
@@ -1273,36 +1175,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </div>
             </div>
 
-            <div class="content-section" id="members">
-                <div class="section-header">
-                    <h2 class="section-title">Team Members</h2>
-                </div>
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="membersTableBody">
-                        <?php foreach ($employees as $employee): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -1523,59 +1395,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- Invoice Form Modal -->
-    <div id="invoiceFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
-            <button type="button" id="closeInvoiceFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="invoiceFormContainer">
-                <h3>Create Invoice</h3>
-                <form method="POST" id="invoiceFormData">
-                    <input type="hidden" name="add_invoice" value="1">
-                    <div class="form-group"><label>Invoice #</label><input type="text" name="invoice_number"
-                            class="form-control" required></div>
-                    <div class="form-group"><label>Client</label><input type="text" name="client" class="form-control"
-                            required></div>
-                    <div class="form-group"><label>Amount</label><input type="number" step="0.01" name="amount"
-                            class="form-control" required></div>
-                    <div class="form-group"><label>Due Date</label><input type="date" name="due_date"
-                            class="form-control" required></div>
-                    <div class="form-group"><label>Status</label><select name="status" class="form-control" required>
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="overdue">Overdue</option>
-                        </select></div>
-                    <div class="form-actions"><button type="button" class="cancel-btn"
-                            id="cancelInvoiceBtn">Cancel</button><button type="submit" class="save-btn">Save
-                            Invoice</button></div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pay Confirmation Modal -->
-    <div id="payConfirmModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1600;">
-        <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:35px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.1);">
-            <h3>Confirm Payment</h3>
-            <p id="payConfirmText" style="margin:0 0 14px; color:#475569;">Do you want to pay this invoice?</p>
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" class="cancel-btn" id="cancelPayBtn">No</button>
-                <form method="POST" id="payInvoiceForm" style="margin:0;">
-                    <input type="hidden" name="pay_invoice" value="1">
-                    <input type="hidden" name="invoice_id" id="pay_invoice_id" value="">
-                    <button type="submit" class="save-btn" style="background:#16a34a;">Yes, Pay</button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- Supporting Document Modal -->
     <div id="contractDocsModal"
@@ -1610,7 +1429,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <script>
         (function () {
-            // GLOBALIZE CHART INIT FIRST (Ensures it's available for other scripts)
+            // GLOBALIZE CHART INIT FIRST (Ensures it's availab le for other scripts)
             window.riskChartRef = null;
             window.initRiskChart = function () {
                 const canvas = document.getElementById('riskDistributionChart');
@@ -1775,16 +1594,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             const editDocId = document.getElementById('edit_doc_id');
             const editDocName = document.getElementById('edit_doc_name');
             const editDocCase = document.getElementById('edit_doc_case');
-            // Invoice form modal
-            const invoiceFormModal = document.getElementById('invoiceFormModal');
-            const addInvoiceBtn = document.getElementById('addInvoiceBtn');
-            const closeInvoiceFormModal = document.getElementById('closeInvoiceFormModal');
-            const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
-            // Pay modal
-            const payConfirmModal = document.getElementById('payConfirmModal');
-            const cancelPayBtn = document.getElementById('cancelPayBtn');
-            const payInvoiceId = document.getElementById('pay_invoice_id');
-            const payConfirmText = document.getElementById('payConfirmText');
             // Contract docs modal
             const contractDocsModal = document.getElementById('contractDocsModal');
             const closeContractDocsModal = document.getElementById('closeContractDocsModal');
@@ -1853,19 +1662,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     `;
                         filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'billing':
-                        title = 'Invoice Summary';
-                        contentHTML = `
-                        <div style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px;">
-                            <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">Invoice #${data.invoice_number || data.id}</h3>
-                            <p><strong>Client:</strong> ${data.client || 'N/A'}</p>
-                            <p><strong>Amount:</strong> ₱${Number(data.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                            <p><strong>Due Date:</strong> ${data.due_date || 'N/A'}</p>
-                            <p><strong>Status:</strong> <span style="color: ${data.status === 'paid' ? '#059669' : '#dc2626'}; font-weight: bold;">${data.status.toUpperCase()}</span></p>
-                        </div>
-                    `;
-                        filename = `Invoice_${data.invoice_number || data.id}.pdf`;
                         break;
                     case 'contract':
                         title = 'Contract Risk Analysis';
@@ -2037,44 +1833,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                         injectModalPdfButton(detailsBody, 'document', d);
                     }
-                    // Invoice View
-                    else if (type === 'invoice-view') {
-                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                        detailsTitle.textContent = 'Invoice Details';
-                        detailsBody.innerHTML = `
-                      <div style="position: relative;">
-                          <div id="invSensitive" class="blurred-content">
-                              <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
-                                <div><strong>Invoice #</strong></div><div>${inv.invoice_number || inv.id || ''}</div>
-                                <div><strong>Client</strong></div><div>${inv.client || ''}</div>
-                                <div><strong>Amount</strong></div><div>₱${Number(inv.amount || 0).toFixed(2)}</div>
-                                <div><strong>Due Date</strong></div><div>${inv.due_date || ''}</div>
-                                <div><strong>Status</strong></div><div>${(inv.status || '').toString().toUpperCase()}</div>
-                              </div>
-                          </div>
-                          <div class="reveal-overlay" id="invReveal">
-                              <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
-                          </div>
-                      </div>`;
-                        openModal(detailsModal);
-
-                        document.getElementById('invReveal').addEventListener('click', function () {
-                            const overlay = this;
-                            withPasswordGate(() => {
-                                overlay.style.display = 'none';
-                                document.getElementById('invSensitive').classList.remove('blurred-content');
-                            });
-                        });
-
-                        injectModalPdfButton(detailsBody, 'billing', inv);
-                    }
-                    // Invoice Pay
-                    else if (type === 'invoice-pay') {
-                        const inv = JSON.parse(target.getAttribute('data-invoice') || '{}');
-                        payInvoiceId.value = inv.id || '';
-                        payConfirmText.textContent = `Do you want to pay invoice ${inv.invoice_number || inv.id || ''} for ₱${Number(inv.amount || 0).toFixed(2)}?`;
-                        openModal(payConfirmModal);
-                    }
                     // Contract View
                     else if (type === 'contract-view') {
                         const c = JSON.parse(target.getAttribute('data-contract') || '{}');
@@ -2187,12 +1945,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 });
             }
 
-            // Invoice Creation Button Logic
-            if (addInvoiceBtn) {
-                addInvoiceBtn.addEventListener('click', () => {
-                    openModal(invoiceFormModal);
-                });
-            }
 
             // ADDED: Contract Upload Modal Logic
             if (addContractBtn) {
@@ -2219,9 +1971,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
             if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
             if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
-            if (closeInvoiceFormModal) closeInvoiceFormModal.addEventListener('click', () => closeModal(invoiceFormModal));
-            if (cancelInvoiceBtn) cancelInvoiceBtn.addEventListener('click', () => closeModal(invoiceFormModal));
-            if (cancelPayBtn) cancelPayBtn.addEventListener('click', () => closeModal(payConfirmModal));
             if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
             if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
             if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));

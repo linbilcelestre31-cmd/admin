@@ -141,20 +141,9 @@ document.addEventListener('DOMContentLoaded', function () {
             { name: 'Supplier Agreement.docx', case: 'C-002', date: '2023-06-25' }
         ];
 
-        const billing = [
-            { invoice: 'INV-001', client: 'Hotel Management', amount: '$2,500', dueDate: '2023-07-15', status: 'paid' },
-            { invoice: 'INV-002', client: 'Restaurant Owner', amount: '$1,800', dueDate: '2023-08-05', status: 'pending' }
-        ];
-
-        const members = [
-            { name: 'Robert Wilson', position: 'Senior Legal Counsel', email: 'robert@legalteam.com', phone: '(555) 111-2222' },
-            { name: 'Emily Davis', position: 'Legal Assistant', email: 'emily@legalteam.com', phone: '(555) 333-4444' }
-        ];
 
         // Populate tables with data
         populateTable('documentsTableBody', documents, 'document');
-        populateTable('billingTableBody', billing, 'billing');
-        populateTable('membersTableBody', members, 'member');
         // Contracts table uses the mock data - REMOVED
         // populateTable('contractsTableBody', MOCK_CONTRACTS_DATA, 'contract');
 
@@ -211,34 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <i class="fa-solid fa-file-pdf"></i> Download PDF
                             </button>
                         </td>`;
-            } else if (type === 'billing') {
-                const invData = JSON.stringify({ id: item.id || 0, invoice_number: item.invoice, client: item.client, amount: parseFloat((item.amount || '0').replace(/[^0-9.]/g, '')), due_date: item.dueDate, status: item.status }).replace(/"/g, '&quot;');
-                const statusClass = `status-${item.status}`;
-                row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">${item.invoice}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${item.client}</td>
-                        <td class="px-6 py-4 whitespace-nowrap font-medium text-center">${item.amount}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">${item.dueDate}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center"><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap space-x-2 text-center">
-                            <button class="action-btn view-btn bg-blue-100 hover:bg-blue-200 text-blue-700 py-1 px-3 rounded-lg text-xs" 
-                                data-type="invoice-view" data-invoice="${invData}">View</button>
-                            <button class="action-btn download-btn bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded-lg text-xs" 
-                                data-pdf-type="billing" data-pdf-content="${invData}">Download PDF</button>
-                        </td>
-                    `;
-            } else if (type === 'member') {
-                const empData = JSON.stringify({ id: item.id || 0, name: item.name, position: item.position, email: item.email, phone: item.phone }).replace(/"/g, '&quot;');
-                row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${item.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.position}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-blue-600 hover:underline">${item.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${item.phone}</td>
-                        <td class="px-6 py-4 whitespace-nowrap space-x-2 text-center">
-                            <button class="action-btn view-btn bg-blue-100 hover:bg-blue-200 text-blue-700 py-1 px-3 rounded-lg text-xs" 
-                                data-type="employee-view" data-emp="${empData}">View</button>
-                        </td>
-                    `;
             } else if (type === 'contract') {
                 const statusClass = `status-${item.risk_level.toLowerCase()}`;
                 const contractDataString = JSON.stringify(item).replace(/"/g, '&quot;');
