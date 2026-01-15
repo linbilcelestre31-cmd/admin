@@ -897,9 +897,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                             <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Active Users</h3>
-                            <button class="btn btn-primary security-only" onclick="openCreateModal()">
-                                <i class="fas fa-plus"></i> Add User
-                            </button>
                         </div>
 
                         <div class="viewing-container">
@@ -914,7 +911,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
-                                            <th class="security-only">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -924,18 +920,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
-                                                <td class="security-only">
-                                                    <div style="display: flex; gap: 8px; justify-content: center;">
-                                                        <button class="btn btn-outline btn-sm"
-                                                            onclick='openEditModal(<?= json_encode($user) ?>)'>
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline btn-sm" style="color: #ef4444;"
-                                                            onclick="openDeleteModal(<?= $user['id'] ?>)">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -1359,7 +1343,8 @@ You have been added as an administrator. To complete your account setup, please 
 
             // For demonstration, using '1234'. In production, this should be verified via AJAX
             if (pin === '1234') {
-                document.getElementById('content-general').classList.add('security-unlocked');
+                document.body.classList.add('security-unlocked');
+                document.querySelector('.viewing-badge').style.display = 'none';
                 closeModal('securityUnlockModal');
                 // Reset pin boxes
                 document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
@@ -1472,6 +1457,11 @@ You have been added as an administrator. To complete your account setup, please 
         setupPinInputs('newPinInputs', 'realNewPin');
         setupPinInputs('confirmPinInputs', 'realConfirmPin');
         setupPinInputs('unlockPinInputs', null);
+
+        // Reset security state on page load
+        document.body.classList.remove('security-unlocked');
+        const viewingBadge = document.querySelector('.viewing-badge');
+        if (viewingBadge) viewingBadge.style.display = 'block';
 
         // Save Email Settings Function
         function saveEmailSettings() {
