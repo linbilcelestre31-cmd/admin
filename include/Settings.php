@@ -815,7 +815,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </header>
 
-            <div class="dashboard-content" style="padding: 2rem;">
+            <div class="dashboard-content" style="padding: 0.5rem 2rem 2rem 2rem;">
                 <?php if ($message): ?>
                     <div class="alert alert-success">
                         <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
@@ -1267,10 +1267,11 @@ You have been added as an administrator. To complete your account setup, please 
                 Invalid PIN. Access denied.
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline" style="flex: 1;"
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn btn-outline" style="min-width: 130px; justify-content: center;"
                     onclick="closeModal('securityUnlockModal')">Cancel</button>
-                <button class="btn btn-primary" style="flex: 1;" onclick="verifyManagementUnlock()">Unlock</button>
+                <button class="btn btn-primary" style="min-width: 130px; justify-content: center;"
+                    onclick="verifyManagementUnlock()">Unlock</button>
             </div>
         </div>
     </div>
