@@ -654,7 +654,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .table th {
-            text-align: left;
+            text-align: center;
             padding: 12px;
             background: #f8fafc;
             color: #64748b;
@@ -667,6 +667,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 12px;
             border-bottom: 1px solid #f1f5f9;
             font-size: 0.9rem;
+            text-align: center;
         }
 
         .alert {
@@ -762,9 +763,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             List</button>
                         <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
-                    <button class="swap-btn" onclick="toggleLayout()">
-                        <i class="fas fa-sync-alt"></i> Swap View
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="swap-btn" onclick="openSecurityModal('pin')">
+                            <i class="fas fa-key"></i> Security PIN
+                        </button>
+                        <button class="swap-btn" onclick="toggleLayout()">
+                            <i class="fas fa-sync-alt"></i> Swap View
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Users List Tab Content -->
