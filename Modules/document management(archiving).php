@@ -538,6 +538,10 @@ function formatFileSize($bytes)
                             Compliance</a></li>
                     <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                             Marketing</a></li>
+                    <li><a href="#" class="category-link" data-category="Internal"><i class="fas fa-building-lock"></i>
+                            Internal Docs</a></li>
+                    <li><a href="#" class="category-link" data-category="External"><i class="fas fa-handshake"></i>
+                            External Files</a></li>
                     <li><a href="#" class="category-link" data-category="Employees"><i class="fas fa-users-cog"></i>
                             HR Employees</a></li>
                 </ul>
@@ -598,6 +602,12 @@ function formatFileSize($bytes)
                 <div class="category-content" id="compliance-content">
                     <div class="file-grid" id="complianceFiles"></div>
                 </div>
+                <div class="category-content" id="internal-content">
+                    <div class="file-grid" id="internalFiles"></div>
+                </div>
+                <div class="category-content" id="external-content">
+                    <div class="file-grid" id="externalFiles"></div>
+                </div>
                 <div class="category-content" id="marketing-content">
                     <div class="file-grid" id="marketingFiles"></div>
                 </div>
@@ -634,6 +644,8 @@ function formatFileSize($bytes)
                         <option value="Inventory">Inventory</option>
                         <option value="Compliance">Compliance</option>
                         <option value="Marketing">Marketing</option>
+                        <option value="Internal">Internal</option>
+                        <option value="External">External</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -915,7 +927,9 @@ function formatFileSize($bytes)
                 'Guest Records': 'Guest Records',
                 'Inventory': 'Inventory',
                 'Compliance': 'Compliance',
-                'Marketing': 'Marketing'
+                'Marketing': 'Marketing',
+                'Internal': 'Internal Documents & Policies',
+                'External': 'External Agreements'
             };
             document.getElementById('contentTitle').textContent = titles[category] || 'Archive Management';
 
@@ -1163,7 +1177,9 @@ function formatFileSize($bytes)
                 'Inventory': 'fas fa-boxes',
                 'Compliance': 'fas fa-shield-alt',
                 'Marketing': 'fas fa-bullhorn',
-                'Employees': 'fas fa-users-cog'
+                'Employees': 'fas fa-users-cog',
+                'Internal': 'fas fa-building-lock',
+                'External': 'fas fa-handshake'
             };
 
             grid.innerHTML = `

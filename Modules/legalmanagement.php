@@ -747,6 +747,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             <div class="nav-tabs">
                 <div class="nav-tab active" data-target="employees">Employees</div>
+                <div class="nav-tab" data-target="internal">Internal</div>
+                <div class="nav-tab" data-target="external">External</div>
                 <div class="nav-tab" data-target="documents">Documents</div>
                 <div class="nav-tab" data-target="billing">Billing</div>
                 <div class="nav-tab" data-target="contracts">Contracts</div>
@@ -822,6 +824,86 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Internal Section -->
+            <div class="content-section" id="internal">
+                <div class="section-header">
+                    <h2 class="section-title">Internal Documents & Policies</h2>
+                    <button class="add-btn" onclick="document.getElementById('addDocumentBtn').click()">
+                        <i>+</i> Add Internal Doc
+                    </button>
+                </div>
+                <table class="data-table premium-table">
+                    <thead>
+                        <tr>
+                            <th>Policy Name</th>
+                            <th>Category</th>
+                            <th>Effective Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Employee Privacy Policy 2024</td>
+                            <td>HR Compliance</td>
+                            <td>2024-01-01</td>
+                            <td>
+                                <button class="action-btn view-btn">View</button>
+                                <button class="action-btn download-btn">Download</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Internal Operational Guidelines</td>
+                            <td>Operations</td>
+                            <td>2023-11-15</td>
+                            <td>
+                                <button class="action-btn view-btn">View</button>
+                                <button class="action-btn download-btn">Download</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- External Section -->
+            <div class="content-section" id="external">
+                <div class="section-header">
+                    <h2 class="section-title">External Agreements</h2>
+                    <button class="add-btn" onclick="document.getElementById('addContractBtn').click()">
+                        <i>+</i> Add External Contract
+                    </button>
+                </div>
+                <table class="data-table premium-table">
+                    <thead>
+                        <tr>
+                            <th>Agreement Name</th>
+                            <th>Partner / Vendor</th>
+                            <th>Expiry Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Global Logistics Supply Agreement</td>
+                            <td>LogiTrans Corp</td>
+                            <td>2025-12-31</td>
+                            <td>
+                                <button class="action-btn view-btn">View</button>
+                                <button class="action-btn analyze-btn">Analyze</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Outsourced Security Services NDA</td>
+                            <td>SafeGuard Solutions</td>
+                            <td>2026-06-30</td>
+                            <td>
+                                <button class="action-btn view-btn">View</button>
+                                <button class="action-btn analyze-btn">Analyze</button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -964,6 +1046,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <label for="contractCase">Case ID</label>
                             <input type="text" id="contractCase" name="contract_case" class="form-control"
                                 placeholder="Enter case ID (e.g., C-001)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractType">Contract Type</label>
+                            <select id="contractType" name="contract_type" class="form-control" required>
+                                <option value="Internal">Internal (Policies, SOPs)</option>
+                                <option value="External">External (Vendors, Clients)</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="contractDescription">Contract Description</label>
