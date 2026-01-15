@@ -707,66 +707,66 @@ function formatFileSize($bytes)
                 <!-- Total Documents Card -->
                 <div class="dashboard-card">
                     <div class="card-icon icon-blue">
-                        <i class="fas fa-file-alt" style="color: white; font-size: 1.5rem;"></i>
+                        <i class="fas fa-copy"></i>
                     </div>
                     <h3><?php echo number_format($stats['total']); ?></h3>
                     <p>Active Documents</p>
-                    <button class="btn btn-primary" style="width: 100%;"
-                        onclick="document.querySelector('[data-category=\'all\']').click()">
-                        <i class="fas fa-eye"></i> View All
+                    <button class="btn btn-primary" onclick="document.querySelector('[data-category=\'all\']').click()">
+                        <i class="fas fa-arrow-right"></i> View Full Archive
                     </button>
                 </div>
 
                 <!-- Trash Card -->
                 <div class="dashboard-card">
                     <div class="card-icon icon-red">
-                        <i class="fas fa-trash-alt" style="color: white; font-size: 1.5rem;"></i>
+                        <i class="fas fa-trash-can-arrow-up"></i>
                     </div>
                     <h3><?php echo number_format($stats['trash']); ?></h3>
                     <p>Files in Trash</p>
-                    <button class="btn btn-danger" style="width: 100%;"
+                    <button class="btn btn-danger"
                         onclick="document.querySelector('[data-category=\'all\']').click(); setTimeout(() => document.querySelector('[data-tab=\'trash\']').click(), 100);">
-                        <i class="fas fa-recycle"></i> Manage Trash
+                        <i class="fas fa-recycle"></i> Restore & Manage
                     </button>
                 </div>
 
                 <!-- Storage Used Card -->
                 <div class="dashboard-card">
                     <div class="card-icon icon-green">
-                        <i class="fas fa-database" style="color: white; font-size: 1.5rem;"></i>
+                        <i class="fas fa-server"></i>
                     </div>
                     <h3><?php echo $stats['storage']; ?></h3>
                     <p>Storage Used</p>
-                    <button class="btn btn-success" style="width: 100%;">
-                        <i class="fas fa-chart-pie"></i> Analytics
+                    <button class="btn btn-success">
+                        <i class="fas fa-chart-line"></i> View Analytics
                     </button>
                 </div>
 
                 <!-- Categories Card -->
                 <div class="dashboard-card">
                     <div class="card-icon icon-gray">
-                        <i class="fas fa-folder-open" style="color: #333; font-size: 1.5rem;"></i>
+                        <i class="fas fa-tags"></i>
                     </div>
                     <h3>6</h3>
                     <p>Protected Categories</p>
-                    <button class="btn btn-secondary" style="width: 100%;"
+                    <button class="btn btn-secondary"
                         onclick="document.querySelector('.sidebar').scrollIntoView({behavior:'smooth'})">
-                        <i class="fas fa-list"></i> View Categories
+                        <i class="fas fa-fingerprint"></i> Security Settings
                     </button>
                 </div>
             </div>
 
             <!-- Quick Actions -->
             <div class="quick-actions">
-                <h3>Quick Actions</h3>
+                <h3><i class="fas fa-bolt"></i> Global Operations</h3>
                 <div class="quick-actions-grid">
-                    <button class="btn btn-white" id="quickUpload"><i class="fas fa-upload"></i> Upload
+                    <button class="btn btn-white" id="quickUpload"><i class="fas fa-cloud-arrow-up"></i> Upload
                         Document</button>
-                    <button class="btn btn-white" id="quickSearch"><i class="fas fa-search"></i> Search Files</button>
-                    <button class="btn btn-white" id="quickExport"><i class="fas fa-download"></i> Export
+                    <button class="btn btn-white" id="quickSearch"><i class="fas fa-magnifying-glass-plus"></i> Search
+                        Archive</button>
+                    <button class="btn btn-white" id="quickExport"><i class="fas fa-file-export"></i> Export
                         Report</button>
-                    <button class="btn btn-white" id="quickSettings"><i class="fas fa-cog"></i> Security
-                        Settings</button>
+                    <button class="btn btn-white" id="quickSettings"><i class="fas fa-shield-halved"></i> Security
+                        Vault</button>
                 </div>
             </div>
         </div>
@@ -1146,7 +1146,7 @@ function formatFileSize($bytes)
                                             <td style="min-width: 200px;">${record.description}</td>
                                             <td style="font-weight: 700; white-space: nowrap;">$${amountValue}</td>
                                             <td>${record.venue || 'Hotel'}</td>
-                                            <td>
+                                            <td style="white-space: nowrap;">
                                                 <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})' title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
@@ -1212,7 +1212,7 @@ function formatFileSize($bytes)
                                     <td>${item.category}</td>
                                     <td>${item.file_size}</td>
                                     <td>${new Date(item.upload_date).toLocaleDateString()}</td>
-                                    <td>
+                                    <td style="white-space: nowrap;">
                                         <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
