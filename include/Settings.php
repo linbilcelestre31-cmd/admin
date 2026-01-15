@@ -689,6 +689,34 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+
+        /* Viewing Table Blur */
+        .viewing-container {
+            position: relative;
+        }
+
+        .viewing-blur {
+            filter: blur(3px);
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.7;
+        }
+
+        .viewing-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 58, 138, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -707,7 +735,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="header-actions">
                     <div class="user-info" style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
-                        <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <div
+                            style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
                         </div>
                         <span>Admin</span>
@@ -717,67 +746,61 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="dashboard-content" style="padding: 2rem;">
                 <?php if ($message): ?>
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
-                        </div>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
+                    </div>
                 <?php endif; ?>
                 <?php if ($error): ?>
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
-                        </div>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+                    </div>
                 <?php endif; ?>
 
                 <div class="tabs-container">
                     <div class="tabs-list">
-                        <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">General</button>
+                        <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
+                            List</button>
                         <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
-                        <button class="tab-btn" onclick="switchTab('dashboard')" id="tab-dashboard">Dashboard</button>
                     </div>
                     <button class="swap-btn" onclick="toggleLayout()">
                         <i class="fas fa-sync-alt"></i> Swap View
                     </button>
                 </div>
 
-                <!-- General Tab Content -->
+                <!-- Users List Tab Content -->
                 <div id="content-general">
                     <div class="content-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Users List</h3>
-                            <button class="btn btn-primary" onclick="openCreateModal()">
-                                <i class="fas fa-plus"></i> Add User
-                            </button>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Active Users</h3>
                         </div>
 
-                        <div style="overflow-x: auto;">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Full Name</th>
-                                        <th>Username</th>
-                                        <th>Email</th>
-                                        <th style="text-align: right;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($users as $user): ?>
+                        <div class="viewing-container">
+                            <div class="viewing-badge">
+                                <i class="fas fa-eye"></i> Viewing Mode Only
+                            </div>
+                            <div class="viewing-blur" style="overflow-x: auto;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Full Name</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($users as $user): ?>
                                             <tr>
                                                 <td style="font-weight: 600; color: #94a3b8;">#<?= $user['id'] ?></td>
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
-                                                <td style="text-align: right;">
-                                                    <button class="btn btn-outline btn-sm" onclick='openEditModal(<?= json_encode($user) ?>)'>
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="openDeleteModal(<?= $user['id'] ?>)">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </td>
                                             </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -785,7 +808,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <!-- Security Tab Content -->
                 <div id="content-security" style="display: none;">
                     <div class="content-card">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">Security Controls</h3>
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
+                            Security Controls</h3>
                         <div class="security-grid">
                             <div class="security-card" onclick="openSecurityModal('password')">
                                 <i class="fas fa-lock"></i>
@@ -814,56 +838,55 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
 
-                <!-- Dashboard Tab Content -->
-                <div id="content-dashboard" style="display: none;">
-                    <div class="content-card">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System Overview</h3>
-                        <div class="dashboard-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: #3b82f6;">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
-                                    <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
-                                </div>
+                <!-- Dashboard Section (Always at bottom) -->
+                <div class="content-card" style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System
+                        Overview</h3>
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #3b82f6;">
+                                <i class="fas fa-server"></i>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: #10b981;">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
-                                    <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: #f59e0b;">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
-                                    <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: #6366f1;">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 1.5rem; font-weight: 700;">247</div>
-                                    <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
-                                </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
+                                <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
                             </div>
                         </div>
-                        
-                        <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
-                            <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
-                                <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
-                                <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #10b981;">
+                                <i class="fas fa-users"></i>
                             </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
+                                <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f59e0b;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
+                                <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #6366f1;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">247</div>
+                                <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                            <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+                            <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
                         </div>
                     </div>
                 </div>
@@ -1051,18 +1074,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="modal-content">
                 <span class="close-modal" onclick="closeModal('securityEmailModal')">&times;</span>
                 <h3 style="margin-top: 0; color: #2d3748;">Email Settings</h3>
-                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">Update email content sent when accounts are changed.</p>
-                
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">Update email content sent when
+                    accounts are changed.</p>
+
                 <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Password Change Email</h4>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Password Change
+                        Email</h4>
+                    <div
+                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
                         <div style="margin-bottom: 10px;">
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="passwordSubject" class="form-control" value="Security Notice: Your ATIERA Password was Updated" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                            <input type="text" id="passwordSubject" class="form-control"
+                                value="Security Notice: Your ATIERA Password was Updated"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                         </div>
                         <div>
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="passwordMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+                            <textarea id="passwordMessage" class="form-control" rows="4"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 This is a security notification to let you know that your password for the ATIERA Admin Panel has been updated by an administrator.
 
@@ -1072,15 +1101,20 @@ If you did not authorized this change, please contact your system administrator 
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">New Account Email</h4>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">New Account
+                        Email</h4>
+                    <div
+                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
                         <div style="margin-bottom: 10px;">
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="newAccountSubject" class="form-control" value="New Account Created: ATIERA Admin Panel" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                            <input type="text" id="newAccountSubject" class="form-control"
+                                value="New Account Created: ATIERA Admin Panel"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                         </div>
                         <div>
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="newAccountMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+                            <textarea id="newAccountMessage" class="form-control" rows="4"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 An account has been created for you. Here are your credentials:
 
@@ -1093,22 +1127,28 @@ To complete your registration and set your New Password, please use the activati
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Account Setup Email</h4>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Account Setup
+                        Email</h4>
+                    <div
+                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
                         <div style="margin-bottom: 10px;">
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="setupSubject" class="form-control" value="Setup Your ATIERA Account Password" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                            <input type="text" id="setupSubject" class="form-control"
+                                value="Setup Your ATIERA Account Password"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                         </div>
                         <div>
                             <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="setupMessage" class="form-control" rows="4" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+                            <textarea id="setupMessage" class="form-control" rows="4"
+                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 You have been added as an administrator. To complete your account setup, please set your New Password using the verification code sent separately.</textarea>
                         </div>
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-primary btn-block" onclick="saveEmailSettings()">Save Email Settings</button>
+                <button type="button" class="btn btn-primary btn-block" onclick="saveEmailSettings()">Save Email
+                    Settings</button>
             </div>
         </div>
     </div>
@@ -1118,162 +1158,159 @@ You have been added as an administrator. To complete your account setup, please 
         <div class="spinner"></div>
         <h3 style="margin: 0; font-weight: 600; letter-spacing: 0.5px;">Sending Invitation...</h3>
 
-    <script src="../assets/Javascript/facilities-reservation.js"></script>
-    <script>
-        // Form submission loading state
-        document.getElementById('userForm').addEventListener('submit', function (e) {
-            const action = document.getElementById('formAction').value;
-            if (action === 'create_user') {
-                document.getElementById('inviteLoadingOverlay').style.display = 'flex';
+        <script src="../assets/Javascript/facilities-reservation.js"></script>
+        <script>
+            // Form submission loading state
+            document.getElementById('userForm').addEventListener('submit', function (e) {
+                const action = document.getElementById('formAction').value;
+                if (action === 'create_user') {
+                    document.getElementById('inviteLoadingOverlay').style.display = 'flex';
+                }
+            });
+            function openEditModal(user) {
+                document.getElementById('modalTitle').innerText = 'Edit User';
+                document.getElementById('formAction').value = 'update_user';
+                document.getElementById('userId').value = user.id;
+                document.getElementById('fullName').value = user.full_name;
+                document.getElementById('userName').value = user.username;
+                document.getElementById('userEmail').value = user.email;
+                document.getElementById('passwordGroup').style.display = 'block';
+
+                document.getElementById('userModal').classList.add('active');
             }
-        });
-        function openEditModal(user) {
-            document.getElementById('modalTitle').innerText = 'Edit User';
-            document.getElementById('formAction').value = 'update_user';
-            document.getElementById('userId').value = user.id;
-            document.getElementById('fullName').value = user.full_name;
-            document.getElementById('userName').value = user.username;
-            document.getElementById('userEmail').value = user.email;
-            document.getElementById('passwordGroup').style.display = 'block';
 
-            document.getElementById('userModal').classList.add('active');
-        }
+            function openCreateModal() {
+                document.getElementById('modalTitle').innerText = 'Add New User';
+                document.getElementById('formAction').value = 'create_user';
+                document.getElementById('userId').value = '';
+                document.getElementById('userForm').reset();
+                document.getElementById('userEmail').value = ''; // Ensure email is empty
+                document.getElementById('passwordGroup').style.display = 'block';
 
-        function openCreateModal() {
-            document.getElementById('modalTitle').innerText = 'Add New User';
-            document.getElementById('formAction').value = 'create_user';
-            document.getElementById('userId').value = '';
-            document.getElementById('userForm').reset();
-            document.getElementById('userEmail').value = ''; // Ensure email is empty
-            document.getElementById('passwordGroup').style.display = 'block';
-
-            document.getElementById('userModal').classList.add('active');
-        }
-
-        function openDeleteModal(id) {
-            document.getElementById('deleteUserId').value = id;
-            document.getElementById('deleteModal').classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        function openSecurityModal(type) {
-            if (type === 'password') document.getElementById('securityPasswordModal').classList.add('active');
-            if (type === 'pin') document.getElementById('securityPinModal').classList.add('active');
-            if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
-            if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
-        }
-
-        // Tab Switching Logic
-        function switchTab(tabName) {
-            // Hide all contents
-            if(document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
-            if(document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
-            if(document.getElementById('content-dashboard')) document.getElementById('content-dashboard').style.display = 'none';
-
-            // Remove active class from buttons
-            if(document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
-            if(document.getElementById('tab-users')) document.getElementById('tab-users').classList.remove('active');
-            if(document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
-            if(document.getElementById('tab-dashboard')) document.getElementById('tab-dashboard').classList.remove('active');
-
-            // Show selected content and activate button
-            const targetContent = document.getElementById('content-' + tabName);
-            const targetTab = document.getElementById('tab-' + tabName);
-            
-            if(targetContent) targetContent.style.display = 'block';
-            if(targetTab) targetTab.classList.add('active');
-        }
-
-        // Layout Toggle (Swap View)
-        let isDashboardView = false;
-        function toggleLayout() {
-            if (isDashboardView) {
-                switchTab('general');
-                isDashboardView = false;
-            } else {
-                switchTab('dashboard');
-                isDashboardView = true;
+                document.getElementById('userModal').classList.add('active');
             }
-        }
 
-        // Close modal on outside click
-        window.onclick = function (event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
+            function openDeleteModal(id) {
+                document.getElementById('deleteUserId').value = id;
+                document.getElementById('deleteModal').classList.add('active');
             }
-        }
 
-        // PIN Logic
-        function setupPinInputs(containerId, hiddenInputId) {
-            const container = document.getElementById(containerId);
-            const hidden = document.getElementById(hiddenInputId);
-            if (!container || !hidden) return;
-            const boxes = container.querySelectorAll('.pin-box');
+            function closeModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            }
 
-            boxes.forEach((box, idx) => {
-                box.addEventListener('input', (e) => {
-                    const val = e.target.value;
-                    if (!/^\d$/.test(val)) { e.target.value = ''; return; } // Numbers only
+            function openSecurityModal(type) {
+                if (type === 'password') document.getElementById('securityPasswordModal').classList.add('active');
+                if (type === 'pin') document.getElementById('securityPinModal').classList.add('active');
+                if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
+                if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
+            }
 
-                    if (idx < 3) boxes[idx + 1].focus();
-                    updateHidden();
+            // Tab Switching Logic
+            function switchTab(tabName) {
+                // Hide all contents
+                if (document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
+                if (document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
+
+                // Remove active class from buttons
+                if (document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
+                if (document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
+
+                // Show selected content and activate button
+                const targetContent = document.getElementById('content-' + tabName);
+                const targetTab = document.getElementById('tab-' + tabName);
+
+                if (targetContent) targetContent.style.display = 'block';
+                if (targetTab) targetTab.classList.add('active');
+            }
+
+            // Layout Toggle (Swap View) - Now toggles between Users and Security
+            let isSecurityView = false;
+            function toggleLayout() {
+                if (isSecurityView) {
+                    switchTab('general');
+                    isSecurityView = false;
+                } else {
+                    switchTab('security');
+                    isSecurityView = true;
+                }
+            }
+
+            // Close modal on outside click
+            window.onclick = function (event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.classList.remove('active');
+                }
+            }
+
+            // PIN Logic
+            function setupPinInputs(containerId, hiddenInputId) {
+                const container = document.getElementById(containerId);
+                const hidden = document.getElementById(hiddenInputId);
+                if (!container || !hidden) return;
+                const boxes = container.querySelectorAll('.pin-box');
+
+                boxes.forEach((box, idx) => {
+                    box.addEventListener('input', (e) => {
+                        const val = e.target.value;
+                        if (!/^\d$/.test(val)) { e.target.value = ''; return; } // Numbers only
+
+                        if (idx < 3) boxes[idx + 1].focus();
+                        updateHidden();
+                    });
+
+                    box.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && !e.target.value) {
+                            if (idx > 0) boxes[idx - 1].focus();
+                        }
+                    });
+                    box.addEventListener('keyup', updateHidden); // Update on backspace/delete too
                 });
 
-                box.addEventListener('keydown', (e) => {
-                    if (e.key === 'Backspace' && !e.target.value) {
-                        if (idx > 0) boxes[idx - 1].focus();
-                    }
-                });
-                box.addEventListener('keyup', updateHidden); // Update on backspace/delete too
-            });
-
-            function updateHidden() {
-                hidden.value = Array.from(boxes).map(b => b.value).join('');
+                function updateHidden() {
+                    hidden.value = Array.from(boxes).map(b => b.value).join('');
+                }
             }
-        }
 
-        setupPinInputs('newPinInputs', 'realNewPin');
-        setupPinInputs('confirmPinInputs', 'realConfirmPin');
+            setupPinInputs('newPinInputs', 'realNewPin');
+            setupPinInputs('confirmPinInputs', 'realConfirmPin');
 
-        // Save Email Settings Function
-        function saveEmailSettings() {
-            const passwordSubject = document.getElementById('passwordSubject').value;
-            const passwordMessage = document.getElementById('passwordMessage').value;
-            const newAccountSubject = document.getElementById('newAccountSubject').value;
-            const newAccountMessage = document.getElementById('newAccountMessage').value;
-            const setupSubject = document.getElementById('setupSubject').value;
-            const setupMessage = document.getElementById('setupMessage').value;
+            // Save Email Settings Function
+            function saveEmailSettings() {
+                const passwordSubject = document.getElementById('passwordSubject').value;
+                const passwordMessage = document.getElementById('passwordMessage').value;
+                const newAccountSubject = document.getElementById('newAccountSubject').value;
+                const newAccountMessage = document.getElementById('newAccountMessage').value;
+                const setupSubject = document.getElementById('setupSubject').value;
+                const setupMessage = document.getElementById('setupMessage').value;
 
-            // Create form data to send via AJAX
-            const formData = new FormData();
-            formData.append('action', 'update_email_settings');
-            formData.append('password_subject', passwordSubject);
-            formData.append('password_message', passwordMessage);
-            formData.append('new_account_subject', newAccountSubject);
-            formData.append('new_account_message', newAccountMessage);
-            formData.append('setup_subject', setupSubject);
-            formData.append('setup_message', setupMessage);
+                // Create form data to send via AJAX
+                const formData = new FormData();
+                formData.append('action', 'update_email_settings');
+                formData.append('password_subject', passwordSubject);
+                formData.append('password_message', passwordMessage);
+                formData.append('new_account_subject', newAccountSubject);
+                formData.append('new_account_message', newAccountMessage);
+                formData.append('setup_subject', setupSubject);
+                formData.append('setup_message', setupMessage);
 
-            // Send AJAX request
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                // Close modal and show success message
-                closeModal('securityEmailModal');
-                window.location.href = window.location.href; // Reload to show updated message
-            })
-            .catch(error => {
-                console.error('Error saving email settings:', error);
-                alert('Error saving email settings. Please try again.');
-            });
-        }
-    </script>
+                // Send AJAX request
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        // Close modal and show success message
+                        closeModal('securityEmailModal');
+                        window.location.href = window.location.href; // Reload to show updated message
+                    })
+                    .catch(error => {
+                        console.error('Error saving email settings:', error);
+                        alert('Error saving email settings. Please try again.');
+                    });
+            }
+        </script>
 </body>
 
 </html>
