@@ -33,132 +33,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Navigation setup
 function setupNavigation() {
-    // Main navigation
     const navLinks = document.querySelectorAll('.nav-link');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    function handleNavigation(pageId) {
+        showPage(pageId);
+
+        // Update Nav Links
+        navLinks.forEach(l => {
+            const navPage = l.getAttribute('data-page');
+            const mainPagePrefix = pageId.split('-')[0];
+            if (navPage === pageId || navPage === mainPagePrefix || (navPage.includes('-') && navPage.startsWith(mainPagePrefix))) {
+                l.classList.add('active');
+            } else {
+                l.classList.remove('active');
+            }
+        });
+
+        // Update Sidebar Links
+        sidebarLinks.forEach(l => {
+            if (l.getAttribute('data-page') === pageId) {
+                l.classList.add('active');
+            } else {
+                l.classList.remove('active');
+            }
+        });
+    }
+
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             const pageId = this.getAttribute('data-page');
             if (!pageId) return;
             e.preventDefault();
-            showPage(pageId);
-
-            // Update active states
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-
-            // Update sidebar
-            const sidebarLinks = document.querySelectorAll('.sidebar-link');
-            sidebarLinks.forEach(l => {
-                if (l.getAttribute('data-page') === pageId) {
-                    l.classList.add('active');
-                } else {
-                    l.classList.remove('active');
-                }
-            });
+            handleNavigation(pageId);
         });
     });
 
-    // Sidebar navigation
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             const pageId = this.getAttribute('data-page');
             if (!pageId) return;
             e.preventDefault();
-            // If the sidebar link targets a sub-section like 'hotel-checkin',
-            // split by '-' and use the parent page as the main page to show.
-            let mainPage = pageId;
-            let tabToActivate = null;
-            if (pageId.includes('-')) {
-                const parts = pageId.split('-');
-                mainPage = parts[0];
-                // For cases like 'hotel-checkin' or 'restaurant-checkin'
-                // reconstruct expected data-tab value
-                tabToActivate = pageId;
-            }
-
-            showPage(mainPage);
-
-            // Update active states for sidebar
-            sidebarLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-
-            // Update main nav active item
-            const mainPages = ['dashboard', 'hotel', 'restaurant', 'reports'];
-            if (mainPages.includes(mainPage)) {
-                navLinks.forEach(l => {
-                    if (l.getAttribute('data-page') === mainPage) {
-                        l.classList.add('active');
-                    } else {
-                        l.classList.remove('active');
-                    }
-                });
-            }
-
-            // If a specific inner tab is requested, activate it
-            if (tabToActivate) {
-                // Find the page container
-                const pageEl = document.getElementById(mainPage);
-                if (pageEl) {
-                    // Show corresponding tab content directly
-                    const tabContents = pageEl.querySelectorAll('.tab-content');
-                    tabContents.forEach(content => {
-                        if (content.id === `${tabToActivate}-tab`) {
-                            content.classList.add('active');
-                        } else {
-                            content.classList.remove('active');
-                        }
-                    });
-                }
-
-                // Also try to update tab elements if they exist (backwards compatibility)
-                const tabSelector = `.tab[data-tab="${tabToActivate}"]`;
-                const tabEl = document.querySelector(tabSelector);
-                if (tabEl) {
-                    const siblingTabs = tabEl.closest('.tabs')?.querySelectorAll('.tab') || [];
-                    siblingTabs.forEach(t => t.classList.remove('active'));
-                    tabEl.classList.add('active');
-                }
-            }
+            handleNavigation(pageId);
         });
     });
+}
+// Tab navigation
+const tabs = document.querySelectorAll('.tab');
+tabs.forEach(tab => {
+    tab.addEventListener('click', function () {
+        const tabId = this.getAttribute('data-tab');
+        const parent = this.closest('.page');
 
-    // Tab navigation
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            const tabId = this.getAttribute('data-tab');
-            const parent = this.closest('.page');
+        // Update active tab
+        const siblingTabs = parent.querySelectorAll('.tab');
+        siblingTabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
 
-            // Update active tab
-            const siblingTabs = parent.querySelectorAll('.tab');
-            siblingTabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-
-            // Show corresponding content
-            const tabContents = parent.querySelectorAll('.tab-content');
-            tabContents.forEach(content => {
-                if (content.id === `${tabId}-tab`) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            });
-        });
-    });
-
-    // Show report date range based on selection
-    const reportType = document.getElementById('report-type');
-    if (reportType) {
-        reportType.addEventListener('change', function () {
-            const customRange = document.getElementById('custom-date-range');
-            if (this.value === 'custom') {
-                customRange.style.display = 'block';
+        // Show corresponding content
+        const tabContents = parent.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
+            if (content.id === `${tabId}-tab`) {
+                content.classList.add('active');
             } else {
-                customRange.style.display = 'none';
+                content.classList.remove('active');
             }
         });
-    }
+    });
+});
+
+// Show report date range based on selection
+const reportType = document.getElementById('report-type');
+if (reportType) {
+    reportType.addEventListener('change', function () {
+        const customRange = document.getElementById('custom-date-range');
+        if (this.value === 'custom') {
+            customRange.style.display = 'block';
+        } else {
+            customRange.style.display = 'none';
+        }
+    });
 }
 
 // Show specific page
@@ -168,7 +122,6 @@ function showPage(pageId) {
     pages.forEach(page => page.classList.remove('active'));
 
     // Show requested page
-    // Show requested page
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active');
@@ -176,7 +129,7 @@ function showPage(pageId) {
         // Load data if needed
         if (pageId === 'dashboard') {
             updateDashboard();
-        } else if (pageId === 'hotel' || pageId === 'restaurant') {
+        } else if (pageId.startsWith('hotel') || pageId.startsWith('restaurant')) {
             loadCurrentVisitors();
         }
     }

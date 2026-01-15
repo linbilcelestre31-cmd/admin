@@ -178,8 +178,8 @@ function getLastInsertId()
                 <nav>
                     <ul>
                         <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
-                        <li><a href="#" class="nav-link" data-page="hotel">Hotel</a></li>
-                        <li><a href="#" class="nav-link" data-page="restaurant">Restaurant</a></li>
+                        <li><a href="#" class="nav-link" data-page="hotel-checkin">Hotel</a></li>
+                        <li><a href="#" class="nav-link" data-page="restaurant-checkin">Restaurant</a></li>
                         <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
                         <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
                     </ul>
@@ -250,13 +250,12 @@ function getLastInsertId()
                     </div>
                 </div>
 
-                <!-- Hotel Page -->
-                <div id="hotel" class="page">
-                    <h1>Hotel Management</h1>
-
+                <!-- Hotel Pages -->
+                <div id="hotel-checkin" class="page">
+                    <h1>Hotel Time-in</h1>
                     <div class="card">
                         <div class="tab-content active" id="hotel-checkin-tab">
-                            <h2><i class="fas fa-id-card-clip"></i> Hotel Guest Time-in</h2>
+                            <h2><i class="fas fa-id-card-clip"></i> Guest Registration Form</h2>
                             <form id="hotel-checkin-form" method="post" action="#">
                                 <div class="form-grid">
                                     <div class="form-group">
@@ -264,54 +263,50 @@ function getLastInsertId()
                                         <input type="text" id="full_name" name="full_name" class="form-control"
                                             placeholder="Full name" required>
                                     </div>
-
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" id="email" name="email" class="form-control"
                                             placeholder="Email address">
                                     </div>
-
                                     <div class="form-group">
                                         <label for="phone">Phone</label>
                                         <input type="text" id="phone" name="phone" class="form-control"
                                             placeholder="Phone number">
                                     </div>
-
                                     <div class="form-group">
                                         <label for="room_number">Room Number</label>
                                         <input type="text" id="room_number" name="room_number" class="form-control"
                                             placeholder="Room number">
                                     </div>
-
                                     <div class="form-group">
                                         <label for="host_id">Person to Visit (Host)</label>
                                         <select id="host_id" name="host_id" class="form-control">
                                             <option value="">Select Employee...</option>
-                                            <!-- Populated by JS from HR4 API -->
                                         </select>
                                     </div>
-
                                     <div class="form-group">
                                         <label for="time_in">Time-in Date</label>
                                         <input type="datetime-local" id="time_in" name="time_in" class="form-control">
                                     </div>
                                 </div>
-
                                 <div class="form-group">
                                     <label for="notes">Notes</label>
                                     <textarea id="notes" name="notes" class="form-control" rows="4"
                                         placeholder="Notes..."></textarea>
                                 </div>
-
-                                <div class="form-group" style="margin-bottom: 0;">
+                                <div class="form-group" style="margin-bottom: 2rem;">
                                     <button type="submit" class="btn btn-success" id="timein-submit">Time-in
                                         Guest</button>
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="tab-content" id="hotel-visitors-tab">
-                            <h2><i class="fas fa-user-tag"></i> Current Hotel Guests</h2>
+                <div id="hotel-visitors" class="page">
+                    <h1>Current Hotel Guests</h1>
+                    <div class="card">
+                        <div class="tab-content active" id="hotel-visitors-tab">
                             <div class="table-container">
                                 <table id="hotel-current-table">
                                     <thead>
@@ -323,15 +318,17 @@ function getLastInsertId()
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Data will be populated by JavaScript -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="tab-content" id="hotel-history-tab">
-                            <h2><i class="fas fa-history"></i> Hotel Visitor History</h2>
+                <div id="hotel-history" class="page">
+                    <h1>Hotel Visitor History</h1>
+                    <div class="card">
+                        <div class="tab-content active" id="hotel-history-tab">
                             <div class="form-group" style="max-width: 300px;">
                                 <label for="hotel-history-date">Filter by Date</label>
                                 <input type="date" id="hotel-history-date">
@@ -347,22 +344,19 @@ function getLastInsertId()
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Data will be populated by JavaScript -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Restaurant Page -->
-                <div id="restaurant" class="page">
-                    <h1>Restaurant Management</h1>
-
+                <!-- Restaurant Pages -->
+                <div id="restaurant-checkin" class="page">
+                    <h1>Restaurant Time-in</h1>
                     <div class="card">
                         <div class="tab-content active" id="restaurant-checkin-tab">
-                            <h2><i class="fas fa-utensils"></i> Restaurant Visitor Time-in</h2>
+                            <h2><i class="fas fa-utensils"></i> Visitor Registration Form</h2>
                             <form id="restaurant-checkin-form">
                                 <div class="form-grid">
                                     <div class="form-group">
@@ -385,7 +379,6 @@ function getLastInsertId()
                                         <label for="restaurant-host">Host / Waiter</label>
                                         <select id="restaurant-host" name="restaurant-host" class="form-control">
                                             <option value="">Select Employee...</option>
-                                            <!-- Populated by JS from HR4 API -->
                                         </select>
                                     </div>
                                 </div>
@@ -393,12 +386,18 @@ function getLastInsertId()
                                     <label for="restaurant-notes">Notes</label>
                                     <textarea id="restaurant-notes" name="restaurant-notes" rows="3"></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-success">Time-in Visitor</button>
+                                <div class="form-group" style="margin-top: 1rem; margin-bottom: 1rem;">
+                                    <button type="submit" class="btn btn-success">Time-in Visitor</button>
+                                </div>
                             </form>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="tab-content" id="restaurant-visitors-tab">
-                            <h2><i class="fas fa-users-rays"></i> Current Restaurant Visitors</h2>
+                <div id="restaurant-visitors" class="page">
+                    <h1>Current Restaurant Visitors</h1>
+                    <div class="card">
+                        <div class="tab-content active" id="restaurant-visitors-tab">
                             <div class="table-container">
                                 <table id="restaurant-current-table">
                                     <thead>
@@ -410,15 +409,17 @@ function getLastInsertId()
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Data will be populated by JavaScript -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="tab-content" id="restaurant-history-tab">
-                            <h2><i class="fas fa-clock-rotate-left"></i> Restaurant Visitor History</h2>
+                <div id="restaurant-history" class="page">
+                    <h1>Restaurant Visitor History</h1>
+                    <div class="card">
+                        <div class="tab-content active" id="restaurant-history-tab">
                             <div class="form-group" style="max-width: 300px;">
                                 <label for="restaurant-history-date">Filter by Date</label>
                                 <input type="date" id="restaurant-history-date">
@@ -434,9 +435,7 @@ function getLastInsertId()
                                             <th>Check-out</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Data will be populated by JavaScript -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
