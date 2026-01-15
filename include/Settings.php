@@ -411,7 +411,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 2rem;
+            margin-bottom: 0.75rem;
             border-bottom: 1px solid #e2e8f0;
             background: white;
             padding: 0 1rem;
@@ -815,7 +815,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </header>
 
-            <div class="dashboard-content" style="padding: 0.5rem 2rem 2rem 2rem;">
+            <div class="dashboard-content" style="padding: 0 2rem 2rem 2rem;">
                 <?php if ($message): ?>
                     <div class="alert alert-success">
                         <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
@@ -932,8 +932,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
 
             <!-- Dashboard Section (Always at bottom) -->
-            <div class="content-card" style="margin-top: 2rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System
+            <div class="content-card" style="margin-top: 0;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System
                     Overview</h3>
                 <div class="dashboard-grid">
                     <div class="stat-card">
