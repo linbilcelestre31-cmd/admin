@@ -710,13 +710,47 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             transform: translate(-50%, -50%);
             background: rgba(30, 58, 138, 0.9);
             color: white;
-            padding: 8px 20px;
+            padding: 10px 24px;
             border-radius: 30px;
             font-weight: 600;
-            font-size: 0.9rem;
-            z-index: 10;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 0.95rem;
+            z-index: 20;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .viewing-badge:hover {
+            background: rgba(30, 58, 138, 1);
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .viewing-badge i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Security Mode Hidden Elements */
+        .security-only {
+            display: none !important;
+        }
+
+        .security-unlocked .security-only {
+            display: inline-block !important;
+        }
+
+        .security-unlocked .viewing-blur {
+            filter: none;
+            pointer-events: auto;
+            user-select: auto;
+            opacity: 1;
+        }
+
+        .security-unlocked .viewing-badge {
+            display: none;
         }
     </style>
 </head>
@@ -779,10 +813,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                             <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Active Users</h3>
+                            <button class="btn btn-primary security-only" onclick="openCreateModal()">
+                                <i class="fas fa-plus"></i> Add User
+                            </button>
                         </div>
 
                         <div class="viewing-container">
-                            <div class="viewing-badge">
+                            <div class="viewing-badge" onclick="triggerSecurityUnlock()">
                                 <i class="fas fa-eye"></i> Viewing Mode Only
                             </div>
                             <div class="viewing-blur" style="overflow-x: auto;">
@@ -793,6 +830,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
+                                            <th class="security-only">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -802,6 +840,18 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
+                                                <td class="security-only">
+                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                        <button class="btn btn-outline btn-sm"
+                                                            onclick='openEditModal(<?= json_encode($user) ?>)'>
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-outline btn-sm" style="color: #ef4444;"
+                                                            onclick="openDeleteModal(<?= $user['id'] ?>)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -810,317 +860,318 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Security Tab Content -->
-                <div id="content-security" style="display: none;">
-                    <div class="content-card">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
-                            Security Controls</h3>
-                        <div class="security-grid">
-                            <div class="security-card" onclick="openSecurityModal('password')">
-                                <i class="fas fa-lock"></i>
-                                <h4>Change Admin Password</h4>
-                                <p>Update the master password for this account to maintain high security.</p>
-                            </div>
-
-                            <div class="security-card" onclick="openSecurityModal('pin')">
-                                <i class="fas fa-key"></i>
-                                <h4>Security PIN (4-Digit)</h4>
-                                <p>Manage the 4-digit PIN used for sensitive actions across the system.</p>
-                            </div>
-
-                            <div class="security-card" onclick="openSecurityModal('logs')">
-                                <i class="fas fa-clipboard-list"></i>
-                                <h4>Audit Logs</h4>
-                                <p>View comprehensive security events and user access logs.</p>
-                            </div>
-
-                            <div class="security-card" onclick="openSecurityModal('email')">
-                                <i class="fas fa-envelope-open-text"></i>
-                                <h4>Email Templates</h4>
-                                <p>Customize the automated emails sent for system notifications.</p>
-                            </div>
+            <!-- Security Tab Content -->
+            <div id="content-security" style="display: none;">
+                <div class="content-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
+                        Security Controls</h3>
+                    <div class="security-grid">
+                        <div class="security-card" onclick="openSecurityModal('password')">
+                            <i class="fas fa-lock"></i>
+                            <h4>Change Admin Password</h4>
+                            <p>Update the master password for this account to maintain high security.</p>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Dashboard Section (Always at bottom) -->
-                <div class="content-card" style="margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System
-                        Overview</h3>
-                    <div class="dashboard-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #3b82f6;">
-                                <i class="fas fa-server"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
-                                <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
-                            </div>
+                        <div class="security-card" onclick="openSecurityModal('pin')">
+                            <i class="fas fa-key"></i>
+                            <h4>Security PIN (4-Digit)</h4>
+                            <p>Manage the 4-digit PIN used for sensitive actions across the system.</p>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #10b981;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
-                                <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #f59e0b;">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
-                                <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: #6366f1;">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 700;">247</div>
-                                <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
-                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
-                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
-                            <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
-                            <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                        <div class="security-card" onclick="openSecurityModal('logs')">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h4>Audit Logs</h4>
+                            <p>View comprehensive security events and user access logs.</p>
+                        </div>
+
+                        <div class="security-card" onclick="openSecurityModal('email')">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <h4>Email Templates</h4>
+                            <p>Customize the automated emails sent for system notifications.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
 
-
-
-        <!-- Edit/Create User Modal -->
-        <div class="modal" id="userModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('userModal')">&times;</span>
-                <h3 id="modalTitle" style="margin-top: 0; margin-bottom: 1.5rem; color: var(--primary);">Edit User</h3>
-                <form method="POST" id="userForm">
-                    <input type="hidden" name="action" id="formAction" value="update_user">
-                    <input type="hidden" name="user_id" id="userId">
-
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" name="full_name" id="fullName" class="form-control" required
-                            placeholder="Enter full name">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="username" id="userName" class="form-control" required
-                            placeholder="Choose a username">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" id="userEmail" class="form-control" required
-                            placeholder="user@example.com">
-                    </div>
-
-                    <div class="form-group" id="passwordGroup">
-                        <label>Password <small style="font-weight: 400; color: #718096;">(Leave blank to keep
-                                unchanged)</small></label>
-                        <input type="password" name="password" class="form-control" placeholder="Enter new password">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
-                        <span class="icon-img-placeholder">💾</span> Save Changes
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Delete Confirmation Modal -->
-        <div class="modal" id="deleteModal">
-            <div class="modal-content" style="max-width:400px; text-align:center;">
-                <div style="color: #e53e3e; font-size: 3rem; margin-bottom: 1rem;">
-                    <span class="icon-img-placeholder">⚠️</span>
-                </div>
-                <h3 style="margin-top: 0; color: #2d3748;">Delete User?</h3>
-                <p style="color: #718096; margin-bottom: 1.5rem;">Are you sure you want to delete this user? This action
-                    cannot be undone.</p>
-                <form method="POST">
-                    <input type="hidden" name="action" value="delete_user">
-                    <input type="hidden" name="user_id" id="deleteUserId">
-                    <div style="display:flex; gap:10px; justify-content:center;">
-                        <button type="button" class="btn btn-outline" style="flex: 1;"
-                            onclick="closeModal('deleteModal')">Cancel</button>
-                        <button type="submit" class="btn btn-danger" style="flex: 1;">Delete User</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Security: Change Password Modal -->
-        <div class="modal" id="securityPasswordModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('securityPasswordModal')">&times;</span>
-                <h3 style="margin-top: 0; color: #2d3748;">Change Password</h3>
-                <form method="POST">
-                    <input type="hidden" name="action" value="update_own_password">
-                    <div class="form-group">
-                        <label>Current Password</label>
-                        <input type="password" name="current_password" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <input type="password" name="new_password" class="form-control" required minlength="6">
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm New Password</label>
-                        <input type="password" name="confirm_password" class="form-control" required minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Update Password</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Security: PIN Modal -->
-        <div class="modal" id="securityPinModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('securityPinModal')">&times;</span>
-                <h3 style="margin-top: 0; color: #2d3748;">Manage Security PIN</h3>
-                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">This 4-digit PIN is used to access
-                    sensitive records (e.g. Employee Info).</p>
-                <form method="POST" id="pinForm">
-                    <input type="hidden" name="action" value="update_security_pin">
-
-                    <div class="form-group">
-                        <label>New 4-Digit PIN</label>
-                        <div class="pin-inputs" id="newPinInputs">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="0">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="1">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="2">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="3">
-                        </div>
-                        <input type="hidden" name="security_pin" id="realNewPin">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Confirm PIN</label>
-                        <div class="pin-inputs" id="confirmPinInputs">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="0">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="1">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="2">
-                            <input type="text" maxlength="1" class="pin-box" data-idx="3">
-                        </div>
-                        <input type="hidden" name="confirm_pin" id="realConfirmPin">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">Set Security PIN</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Security: Logs Modal -->
-        <div class="modal" id="securityLogsModal">
-            <div class="modal-content" style="max-width: 600px;">
-                <span class="close-modal" onclick="closeModal('securityLogsModal')">&times;</span>
-                <h3 style="margin-top: 0; color: #2d3748; margin-bottom: 15px;">Audit Logs</h3>
-                <div style="background: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                        <tr style="background: #edf2f7; text-align: left;">
-                            <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Action</th>
-                            <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">IP Address</th>
-                            <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Time</th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">User Login</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">Just now</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Viewed Employee</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">2 mins ago</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px;">Update Settings</td>
-                            <td style="padding: 10px;">192.168.1.10</td>
-                            <td style="padding: 10px; color: #718096;">1 hour ago</td>
-                        </tr>
-                    </table>
-                </div>
-                <button class="btn btn-outline btn-block" style="margin-top: 15px;"
-                    onclick="closeModal('securityLogsModal')">Close</button>
-            </div>
-        </div>
-
-        <!-- Security: Sessions Modal -->
-        <div class="modal" id="securitySessionsModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('securitySessionsModal')">&times;</span>
-                <h3 style="margin-top: 0; color: #2d3748;">Active Sessions</h3>
-                <div style="margin-top: 15px;">
-                    <div
-                        style="display: flex; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
-                        <div style="font-size: 1.5rem; margin-right: 15px;">💻</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600;">Windows 10 • Chrome</div>
-                            <div style="font-size: 0.8rem; color: #16a34a;">Active Now (This Device)</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-danger btn-block" style="margin-top: 10px;">Logout All Other Sessions</button>
-            </div>
-        </div>
-
-        <!-- Security: Email Modal -->
-        <div class="modal" id="securityEmailModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('securityEmailModal')">&times;</span>
-                <h3 style="margin-top: 0; color: #2d3748;">Email Settings</h3>
-                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">Update email content sent when
-                    accounts are changed.</p>
-
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Password Change
-                        Email</h4>
-                    <div
-                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="passwordSubject" class="form-control"
-                                value="Security Notice: Your ATIERA Password was Updated"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+            <!-- Dashboard Section (Always at bottom) -->
+            <div class="content-card" style="margin-top: 2rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System
+                    Overview</h3>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #3b82f6;">
+                            <i class="fas fa-server"></i>
                         </div>
                         <div>
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="passwordMessage" class="form-control" rows="4"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+                            <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #10b981;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f59e0b;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #6366f1;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">247</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                        <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+                        <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </main>
+
+
+
+    <!-- Edit/Create User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('userModal')">&times;</span>
+            <h3 id="modalTitle" style="margin-top: 0; margin-bottom: 1.5rem; color: var(--primary);">Edit User</h3>
+            <form method="POST" id="userForm">
+                <input type="hidden" name="action" id="formAction" value="update_user">
+                <input type="hidden" name="user_id" id="userId">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" id="fullName" class="form-control" required
+                        placeholder="Enter full name">
+                </div>
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" id="userName" class="form-control" required
+                        placeholder="Choose a username">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" id="userEmail" class="form-control" required
+                        placeholder="user@example.com">
+                </div>
+
+                <div class="form-group" id="passwordGroup">
+                    <label>Password <small style="font-weight: 400; color: #718096;">(Leave blank to keep
+                            unchanged)</small></label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter new password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    <span class="icon-img-placeholder">💾</span> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width:400px; text-align:center;">
+            <div style="color: #e53e3e; font-size: 3rem; margin-bottom: 1rem;">
+                <span class="icon-img-placeholder">⚠️</span>
+            </div>
+            <h3 style="margin-top: 0; color: #2d3748;">Delete User?</h3>
+            <p style="color: #718096; margin-bottom: 1.5rem;">Are you sure you want to delete this user? This action
+                cannot be undone.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="delete_user">
+                <input type="hidden" name="user_id" id="deleteUserId">
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button type="button" class="btn btn-outline" style="flex: 1;"
+                        onclick="closeModal('deleteModal')">Cancel</button>
+                    <button type="submit" class="btn btn-danger" style="flex: 1;">Delete User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Security: Change Password Modal -->
+    <div class="modal" id="securityPasswordModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('securityPasswordModal')">&times;</span>
+            <h3 style="margin-top: 0; color: #2d3748;">Change Password</h3>
+            <form method="POST">
+                <input type="hidden" name="action" value="update_own_password">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" name="current_password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" class="form-control" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" name="confirm_password" class="form-control" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Update Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security: PIN Modal -->
+    <div class="modal" id="securityPinModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('securityPinModal')">&times;</span>
+            <h3 style="margin-top: 0; color: #2d3748;">Manage Security PIN</h3>
+            <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">This 4-digit PIN is used to access
+                sensitive records (e.g. Employee Info).</p>
+            <form method="POST" id="pinForm">
+                <input type="hidden" name="action" value="update_security_pin">
+
+                <div class="form-group">
+                    <label>New 4-Digit PIN</label>
+                    <div class="pin-inputs" id="newPinInputs">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="0">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="1">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="2">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="3">
+                    </div>
+                    <input type="hidden" name="security_pin" id="realNewPin">
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm PIN</label>
+                    <div class="pin-inputs" id="confirmPinInputs">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="0">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="1">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="2">
+                        <input type="text" maxlength="1" class="pin-box" data-idx="3">
+                    </div>
+                    <input type="hidden" name="confirm_pin" id="realConfirmPin">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Set Security PIN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security: Logs Modal -->
+    <div class="modal" id="securityLogsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-modal" onclick="closeModal('securityLogsModal')">&times;</span>
+            <h3 style="margin-top: 0; color: #2d3748; margin-bottom: 15px;">Audit Logs</h3>
+            <div style="background: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <tr style="background: #edf2f7; text-align: left;">
+                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Action</th>
+                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">IP Address</th>
+                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Time</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">User Login</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">Just now</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Viewed Employee</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">192.168.1.10</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #718096;">2 mins ago</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">Update Settings</td>
+                        <td style="padding: 10px;">192.168.1.10</td>
+                        <td style="padding: 10px; color: #718096;">1 hour ago</td>
+                    </tr>
+                </table>
+            </div>
+            <button class="btn btn-outline btn-block" style="margin-top: 15px;"
+                onclick="closeModal('securityLogsModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Security: Sessions Modal -->
+    <div class="modal" id="securitySessionsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('securitySessionsModal')">&times;</span>
+            <h3 style="margin-top: 0; color: #2d3748;">Active Sessions</h3>
+            <div style="margin-top: 15px;">
+                <div
+                    style="display: flex; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
+                    <div style="font-size: 1.5rem; margin-right: 15px;">💻</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">Windows 10 • Chrome</div>
+                        <div style="font-size: 0.8rem; color: #16a34a;">Active Now (This Device)</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-danger btn-block" style="margin-top: 10px;">Logout All Other Sessions</button>
+        </div>
+    </div>
+
+    <!-- Security: Email Modal -->
+    <div class="modal" id="securityEmailModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('securityEmailModal')">&times;</span>
+            <h3 style="margin-top: 0; color: #2d3748;">Email Settings</h3>
+            <p style="color: #718096; font-size: 0.9rem; margin-bottom: 20px;">Update email content sent when
+                accounts are changed.</p>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Password Change
+                    Email</h4>
+                <div
+                    style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                        <input type="text" id="passwordSubject" class="form-control"
+                            value="Security Notice: Your ATIERA Password was Updated"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                        <textarea id="passwordMessage" class="form-control" rows="4"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 This is a security notification to let you know that your password for the ATIERA Admin Panel has been updated by an administrator.
 
 If you did not authorized this change, please contact your system administrator immediately.</textarea>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">New Account
-                        Email</h4>
-                    <div
-                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="newAccountSubject" class="form-control"
-                                value="New Account Created: ATIERA Admin Panel"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="newAccountMessage" class="form-control" rows="4"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">New Account
+                    Email</h4>
+                <div
+                    style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                        <input type="text" id="newAccountSubject" class="form-control"
+                            value="New Account Created: ATIERA Admin Panel"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                        <textarea id="newAccountMessage" class="form-control" rows="4"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 An account has been created for you. Here are your credentials:
 
@@ -1128,35 +1179,65 @@ Username: {$username}
 Password: {$password}
 
 To complete your registration and set your New Password, please use the activation code sent separately.</textarea>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Account Setup
-                        Email</h4>
-                    <div
-                        style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                        <div style="margin-bottom: 10px;">
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
-                            <input type="text" id="setupSubject" class="form-control"
-                                value="Setup Your ATIERA Account Password"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
-                        </div>
-                        <div>
-                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
-                            <textarea id="setupMessage" class="form-control" rows="4"
-                                style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #2d3748; font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Account Setup
+                    Email</h4>
+                <div
+                    style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Subject:</label>
+                        <input type="text" id="setupSubject" class="form-control"
+                            value="Setup Your ATIERA Account Password"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Message:</label>
+                        <textarea id="setupMessage" class="form-control" rows="4"
+                            style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; resize: vertical;">Hello {$full_name},
 
 You have been added as an administrator. To complete your account setup, please set your New Password using the verification code sent separately.</textarea>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-                <button type="button" class="btn btn-primary btn-block" onclick="saveEmailSettings()">Save Email
-                    Settings</button>
+            <button type="button" class="btn btn-primary btn-block" onclick="saveEmailSettings()">Save Email
+                Settings</button>
+        </div>
+    </div>
+
+    <!-- Security Unlock Modal -->
+    <div class="modal" id="securityUnlockModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div style="margin-bottom: 20px;">
+                <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary-blue);"></i>
+            </div>
+            <h3 style="margin-top: 0; color: #1e293b;">Security Mode</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 24px;">Please enter the system PIN to unlock
+                management actions.</p>
+
+            <div class="pin-inputs" id="unlockPinInputs" style="justify-content: center; margin-bottom: 24px;">
+                <input type="password" maxlength="1" class="pin-box" data-idx="0">
+                <input type="password" maxlength="1" class="pin-box" data-idx="1">
+                <input type="password" maxlength="1" class="pin-box" data-idx="2">
+                <input type="password" maxlength="1" class="pin-box" data-idx="3">
+            </div>
+
+            <div id="unlockErrorMessage"
+                style="color: #ef4444; font-size: 0.85rem; margin-top: -15px; margin-bottom: 15px; display: none;">
+                Invalid PIN. Access denied.
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" style="flex: 1;"
+                    onclick="closeModal('securityUnlockModal')">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="verifyManagementUnlock()">Unlock</button>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Invitation Loading Overlay -->
@@ -1173,6 +1254,35 @@ You have been added as an administrator. To complete your account setup, please 
                     document.getElementById('inviteLoadingOverlay').style.display = 'flex';
                 }
             });
+
+            function triggerSecurityUnlock() {
+                document.getElementById('securityUnlockModal').classList.add('active');
+                // Focus first pin box after a short delay for transition
+                setTimeout(() => {
+                    const firstBox = document.querySelector('#unlockPinInputs .pin-box');
+                    if (firstBox) firstBox.focus();
+                }, 300);
+            }
+
+            function verifyManagementUnlock() {
+                const pin = Array.from(document.querySelectorAll('#unlockPinInputs .pin-box')).map(b => b.value).join('');
+
+                // For demonstration, using '1234'. In production, this should be verified via AJAX
+                if (pin === '1234') {
+                    document.getElementById('content-general').classList.add('security-unlocked');
+                    closeModal('securityUnlockModal');
+                    // Reset pin boxes
+                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+                } else {
+                    const error = document.getElementById('unlockErrorMessage');
+                    error.style.display = 'block';
+                    setTimeout(() => error.style.display = 'none', 3000);
+                    // Clear inputs
+                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+                    document.querySelector('#unlockPinInputs .pin-box').focus();
+                }
+            }
+
             function openEditModal(user) {
                 document.getElementById('modalTitle').innerText = 'Edit User';
                 document.getElementById('formAction').value = 'update_user';
@@ -1280,6 +1390,15 @@ You have been added as an administrator. To complete your account setup, please 
 
             setupPinInputs('newPinInputs', 'realNewPin');
             setupPinInputs('confirmPinInputs', 'realConfirmPin');
+            setupPinInputs('unlockPinInputs', null); // Use for verification
+
+            // Add click listener to viewing badge
+            document.addEventListener('DOMContentLoaded', function () {
+                const badge = document.querySelector('.viewing-badge');
+                if (badge) {
+                    badge.addEventListener('click', triggerSecurityUnlock);
+                }
+            });
 
             // Save Email Settings Function
             function saveEmailSettings() {
