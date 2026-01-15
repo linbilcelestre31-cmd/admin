@@ -197,11 +197,15 @@ function getLastInsertId()
                     <li><a href="#" class="sidebar-link" data-page="hotel-checkin"><i class="fas fa-hotel"
                                 style="margin-right: 12px;"></i>Hotel Time-in</a></li>
                     <li><a href="#" class="sidebar-link" data-page="hotel-visitors"><i class="fas fa-users"
-                                style="margin-right: 12px;"></i>Hotel Visitors</a></li>
+                                style="margin-right: 12px;"></i>Hotel Current Visitors</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="hotel-history"><i class="fas fa-history"
+                                style="margin-right: 12px;"></i>Hotel History</a></li>
                     <li><a href="#" class="sidebar-link" data-page="restaurant-checkin"><i class="fas fa-utensils"
                                 style="margin-right: 12px;"></i>Restaurant Time-in</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors"><i
-                                class="fas fa-clipboard-list" style="margin-right: 12px;"></i>Restaurant Visitors</a>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-visitors"><i class="fas fa-users-rays"
+                                style="margin-right: 12px;"></i>Restaurant Current Visitors</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="restaurant-history"><i
+                                class="fas fa-clock-rotate-left" style="margin-right: 12px;"></i>Restaurant History</a>
                     </li>
                     <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice"
                                 style="margin-right: 12px;"></i>Reports</a></li>
@@ -249,11 +253,6 @@ function getLastInsertId()
                 <!-- Hotel Page -->
                 <div id="hotel" class="page">
                     <h1>Hotel Management</h1>
-                    <div class="tabs">
-                        <div class="tab active" data-tab="hotel-checkin">Time-in</div>
-                        <div class="tab" data-tab="hotel-visitors">Current Visitors</div>
-                        <div class="tab" data-tab="hotel-history">Visitor History</div>
-                    </div>
 
                     <div class="card">
                         <div class="tab-content active" id="hotel-checkin-tab">
@@ -360,11 +359,6 @@ function getLastInsertId()
                 <!-- Restaurant Page -->
                 <div id="restaurant" class="page">
                     <h1>Restaurant Management</h1>
-                    <div class="tabs">
-                        <div class="tab active" data-tab="restaurant-checkin">Time-in</div>
-                        <div class="tab" data-tab="restaurant-visitors">Current Visitors</div>
-                        <div class="tab" data-tab="restaurant-history">Visitor History</div>
-                    </div>
 
                     <div class="card">
                         <div class="tab-content active" id="restaurant-checkin-tab">

@@ -97,18 +97,11 @@ function setupNavigation() {
 
             // If a specific inner tab is requested, activate it
             if (tabToActivate) {
-                // Find the tab element with matching data-tab
-                const tabSelector = `.tab[data-tab="${tabToActivate}"]`;
-                const tabEl = document.querySelector(tabSelector);
-                if (tabEl) {
-                    // Activate the tab within its parent page
-                    const parent = tabEl.closest('.page');
-                    const siblingTabs = parent.querySelectorAll('.tab');
-                    siblingTabs.forEach(t => t.classList.remove('active'));
-                    tabEl.classList.add('active');
-
-                    // Show corresponding tab content
-                    const tabContents = parent.querySelectorAll('.tab-content');
+                // Find the page container
+                const pageEl = document.getElementById(mainPage);
+                if (pageEl) {
+                    // Show corresponding tab content directly
+                    const tabContents = pageEl.querySelectorAll('.tab-content');
                     tabContents.forEach(content => {
                         if (content.id === `${tabToActivate}-tab`) {
                             content.classList.add('active');
@@ -116,6 +109,15 @@ function setupNavigation() {
                             content.classList.remove('active');
                         }
                     });
+                }
+
+                // Also try to update tab elements if they exist (backwards compatibility)
+                const tabSelector = `.tab[data-tab="${tabToActivate}"]`;
+                const tabEl = document.querySelector(tabSelector);
+                if (tabEl) {
+                    const siblingTabs = tabEl.closest('.tabs')?.querySelectorAll('.tab') || [];
+                    siblingTabs.forEach(t => t.classList.remove('active'));
+                    tabEl.classList.add('active');
                 }
             }
         });
