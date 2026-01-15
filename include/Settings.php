@@ -799,11 +799,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             filter: none;
             pointer-events: auto;
             user-select: auto;
-            opacity: 1;
-        }
-
-        .security-unlocked .viewing-badge {
-            display: none;
         }
 
         /* Modal Visibility Fix */
