@@ -536,9 +536,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .security-btn {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
             padding: 2rem;
             display: flex;
             flex-direction: column;
@@ -547,13 +547,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             cursor: pointer;
             transition: all 0.3s ease;
             color: #4a5568;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .security-btn:hover {
-            border-color: #3182ce;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.1);
-            color: #3182ce;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
         }
 
         .security-btn i {
@@ -636,8 +638,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom: 1rem;">
                             <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin: 0;">Users List</h3>
-                            <button class="btn btn-primary" onclick="openCreateModal()">
-                                <span class="icon-img-placeholder">➕</span> Add User
+                            <button class="btn btn-primary" onclick="openCreateModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; font-size: 1rem; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
+                                <i class="fas fa-user-plus"></i> Add User
                             </button>
                         </div>
 
