@@ -16,18 +16,20 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Function to convert newlines to <br> tags for HTML emails
-function nl2br_custom($string) {
+function nl2br_custom($string)
+{
     return str_replace(["\r\n", "\n", "\r"], '<br>', $string);
 }
 
 $pdo = get_pdo();
 
 // Function to get email settings from database with enhanced design
-function getEmailSettings($pdo) {
+function getEmailSettings($pdo)
+{
     try {
         $stmt = $pdo->query("SELECT setting_key, setting_value FROM email_settings ORDER BY setting_key ASC");
         $settings = [];
-        
+
         // Define default settings with beautiful formatting
         $defaultSettings = [
             'password_subject' => '🔐 Security Notice: Your ATIERA Password was Updated',
@@ -37,20 +39,20 @@ function getEmailSettings($pdo) {
             'setup_subject' => '⚙️ Setup Your ATIERA Account Password',
             'setup_message' => "Hello {\$full_name},\n\n🌟 Congratulations! You have been added as an administrator to ATIERA Admin Panel.\n\n📝 To complete your account setup, please set your New Password using the verification code sent separately.\n\n🔐 Security Tips:\n• Use a strong password with 8+ characters\n• Include uppercase, lowercase, numbers, and symbols\n• Enable two-factor authentication if available\n• Never share your credentials\n\n🏨 ATIERA Security Team"
         ];
-        
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $settings[$row['setting_key']] = $row['setting_value'];
         }
-        
+
         // Merge with defaults for any missing settings
         foreach ($defaultSettings as $key => $value) {
             if (!isset($settings[$key])) {
                 $settings[$key] = $value;
             }
         }
-        
+
         return $settings;
-        
+
     } catch (PDOException $e) {
         // Return enhanced default settings with beautiful formatting
         return [
@@ -359,12 +361,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/facilities-reservation.css">
     <style>
-        .icon-img-placeholder {
-            display: inline-block;
+        :root {
+            --primary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --text-gray: #64748b;
+            --bg-gray: #f8fafc;
         }
 
         .dashboard-layout .main-content {
             margin-left: 280px;
+            background-color: var(--bg-gray);
+            min-height: 100vh;
         }
 
         @media screen and (max-width: 991px) {
@@ -373,318 +380,314 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        /* Modal logic fix for this page */
-        .modal {
-            display: none;
+        /* Top Header Stylings */
+        .top-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            font-weight: 400;
+        }
+
+        /* Tab Navigation */
+        .tabs-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            padding: 0 1rem;
+        }
+
+        .tabs-list {
+            display: flex;
+            gap: 30px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-blue);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* Swap Button */
+        .swap-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .swap-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        /* Main Content Cards */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Security Grid */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .security-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .security-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .security-card i {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+        }
+
+        .security-card h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+
+        .security-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* Dashboard View */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        /* Modal logic */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             z-index: 1000;
-            transition: all 0.1s ease;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal.active {
             display: flex;
-            animation: fadeIn 0.1s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Loading Overlay Style */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
         }
 
         .modal-content {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
-            width: 100%;
+            width: 90%;
             max-width: 500px;
+            padding: 2rem;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .close-modal {
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
+            top: 1rem;
+            right: 1rem;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #718096;
+            color: var(--text-gray);
         }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        /* Enhanced Button Styles */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px; /* Fully rounded buttons */
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-            display: inline-flex;
+        /* Loading Animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            flex-direction: column;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(235, 51, 73, 0.4);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
-            color: #333;
-        }
-        
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(142, 158, 171, 0.4);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #e2e8f0;
-            color: #4a5568;
-        }
-        
-        .btn-outline:hover {
-            background: #f7fafc;
-            border-color: #cbd5e0;
-            transform: translateY(-2px);
-        }
-        
-        .btn-block {
-            width: 100%;
             justify-content: center;
         }
 
-        /* Enhanced Card Styles */
-        .card {
-            background: white;
-            border-radius: 20px; /* More rounded */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
-            border-color: #667eea;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        /* Enhanced Table Styles */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* General UI Elements */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 700;
-            padding: 15px 12px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.85rem;
-        }
-        
-        .table td {
-            padding: 15px 12px;
-            text-align: center;
-            border-bottom: 1px solid #f1f5f9;
-            transition: all 0.2s ease;
-        }
-        
-        .table tr:hover td {
-            background: #f8fafc;
-            color: #1e293b;
-            font-weight: 600;
-        }
-        
-        .table-container {
-            overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Enhanced Alert Styles */
+        .table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
         .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
+            padding: 1rem;
+            border-radius: 8px;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 600;
-            border-left: 4px solid;
-            animation: slideIn 0.3s ease;
         }
-        
+
         .alert-success {
-            background: linear-gradient(135deg, #d4edda 0%, #bbf7d0 100%);
+            background: #ecfdf5;
             color: #065f46;
-            border-left-color: #22c55e;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1);
+            border: 1px solid #a7f3d0;
         }
-        
+
         .alert-error {
-            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            background: #fef2f2;
             color: #991b1b;
-            border-left-color: #ef4444;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
-        }
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #718096;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            color: #3182ce;
-            border-bottom-color: #3182ce;
-        }
-
-        .security-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .security-btn {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 2px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #4a5568;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .security-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            color: white;
-        }
-
-        .security-btn i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Pin Input Styles */
-        .pin-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .pin-box {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 1.5rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .pin-box:focus {
-            border-color: #3182ce;
-            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+            border: 1px solid #fecaca;
         }
     </style>
 </head>
@@ -696,218 +699,178 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <main class="main-content">
             <header class="top-header">
                 <div class="header-title">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()" style="display:none;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1>Account Settings</h1>
-                    <span style="color: #718096; margin-left: 10px; font-size: 0.9rem; font-weight: 400;">Manage Admin
-                        Accounts and System Users</span>
+                    <p class="header-subtitle">Manage Admin Accounts and System Users</p>
                 </div>
                 <div class="header-actions">
-                    <div class="user-info" style="display: flex; align-items: center; gap: 10px; font-weight: 600;">
-                        <span class="icon-img-placeholder">👤</span> Admin
+                    <div class="user-info" style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
+                        <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
+                        </div>
+                        <span>Admin</span>
                     </div>
                 </div>
             </header>
 
-            <div class="dashboard-content">
+            <div class="dashboard-content" style="padding: 2rem;">
                 <?php if ($message): ?>
-                    <div class="alert alert-success"
-                        style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: flex; align-items: center; gap: 10px;">
-                        <span class="icon-img-placeholder">✅</span> <?= htmlspecialchars($message) ?>
-                    </div>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
+                        </div>
                 <?php endif; ?>
                 <?php if ($error): ?>
-                    <div class="alert alert-error"
-                        style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; background: #fed7d7; color: #c53030; border: 1px solid #feb2b2; display: flex; align-items: center; gap: 10px;">
-                        <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error) ?>
-                    </div>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+                        </div>
                 <?php endif; ?>
 
-                <div class="card"
-                    style="background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 1.5rem;">
-
-                    <!-- Tab Navigation -->
-                    <div
-                        style="display:flex; justify-content: flex-start; gap: 20px; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0;">
-                        <button class="tab-btn active" onclick="switchTab('users')" id="tab-users">Users List</button>
+                <div class="tabs-container">
+                    <div class="tabs-list">
+                        <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">General</button>
                         <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <button class="tab-btn" onclick="switchTab('dashboard')" id="tab-dashboard">Dashboard</button>
                     </div>
+                    <button class="swap-btn" onclick="toggleLayout()">
+                        <i class="fas fa-sync-alt"></i> Swap View
+                    </button>
+                </div>
 
-                    <!-- Users Tab Content -->
-                    <div id="content-users">
-                        <div
-                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom: 1rem;">
-                            <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin: 0;">Users List</h3>
-                            <button class="btn btn-primary" onclick="openCreateModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; font-size: 1rem; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
-                                <i class="fas fa-user-plus"></i> Add User
+                <!-- General Tab Content -->
+                <div id="content-general">
+                    <div class="content-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Users List</h3>
+                            <button class="btn btn-primary" onclick="openCreateModal()">
+                                <i class="fas fa-plus"></i> Add User
                             </button>
                         </div>
 
-                        <div class="table-container">
+                        <div style="overflow-x: auto;">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">ID</th>
-                                        <th style="text-align: center;">FULL NAME</th>
-                                        <th style="text-align: center;">USERNAME</th>
-                                        <th style="text-align: center;">EMAIL</th>
-
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th style="text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($users as $user): ?>
-                                        <tr>
-                                            <td style="text-align: center; font-weight: 600; color: #718096;">
-                                                #<?= $user['id'] ?></td>
-                                            <td style="text-align: center; font-weight: 500;">
-                                                <?= htmlspecialchars($user['full_name']) ?>
-                                            </td>
-                                            <td style="text-align: center;"><?= htmlspecialchars($user['username']) ?></td>
-                                            <td style="text-align: center;"><?= htmlspecialchars($user['email']) ?></td>
-                                        </tr>
+                                            <tr>
+                                                <td style="font-weight: 600; color: #94a3b8;">#<?= $user['id'] ?></td>
+                                                <td><?= htmlspecialchars($user['full_name']) ?></td>
+                                                <td><?= htmlspecialchars($user['username']) ?></td>
+                                                <td><?= htmlspecialchars($user['email']) ?></td>
+                                                <td style="text-align: right;">
+                                                    <button class="btn btn-outline btn-sm" onclick='openEditModal(<?= json_encode($user) ?>)'>
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="openDeleteModal(<?= $user['id'] ?>)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Security Tab Content -->
-                    <div id="content-security" style="display: none;">
-                        <h3 style="color: #2d3748; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Update
-                            Security</h3>
+                <!-- Security Tab Content -->
+                <div id="content-security" style="display: none;">
+                    <div class="content-card">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">Security Controls</h3>
                         <div class="security-grid">
-                            <button class="security-btn" onclick="openSecurityModal('password')">
+                            <div class="security-card" onclick="openSecurityModal('password')">
                                 <i class="fas fa-lock"></i>
-                                <span style="font-weight: 600;">Change Admin Password</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Update the master
-                                    password for this account</span>
-                            </button>
+                                <h4>Change Admin Password</h4>
+                                <p>Update the master password for this account to maintain high security.</p>
+                            </div>
 
-                            <button class="security-btn" onclick="openSecurityModal('pin')">
+                            <div class="security-card" onclick="openSecurityModal('pin')">
                                 <i class="fas fa-key"></i>
-                                <span style="font-weight: 600;">Security PIN (4-Digit)</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Manage 4-digit PIN
-                                    for sensitive actions</span>
-                            </button>
+                                <h4>Security PIN (4-Digit)</h4>
+                                <p>Manage the 4-digit PIN used for sensitive actions across the system.</p>
+                            </div>
 
-                            <button class="security-btn" onclick="openSecurityModal('logs')">
-                                <i class="fas fa-file-shield"></i>
-                                <span style="font-weight: 600;">Audit Logs</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">View security
-                                    events and access logs</span>
-                            </button>
+                            <div class="security-card" onclick="openSecurityModal('logs')">
+                                <i class="fas fa-clipboard-list"></i>
+                                <h4>Audit Logs</h4>
+                                <p>View comprehensive security events and user access logs.</p>
+                            </div>
 
-                            <button class="security-btn" onclick="openSecurityModal('email')">
-                                <i class="fas fa-envelope"></i>
-                                <span style="font-weight: 600;">Email Settings</span>
-                                <span style="font-size: 0.85rem; color: #718096; text-align: center;">Control active
-                                    sessions and timeouts</span>
+                            <div class="security-card" onclick="openSecurityModal('email')">
+                                <i class="fas fa-envelope-open-text"></i>
+                                <h4>Email Templates</h4>
+                                <p>Customize the automated emails sent for system notifications.</p>
+                            </div>
                         </div>
+                    </div>
+                </div>
 
+                <!-- Dashboard Tab Content -->
+                <div id="content-dashboard" style="display: none;">
+                    <div class="content-card">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">System Overview</h3>
+                        <div class="dashboard-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #3b82f6;">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #10b981;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #f59e0b;">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #6366f1;">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">247</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
+                            <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                                <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+                                <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- Dashboard Section -->
-        <section class="settings-dashboard" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; margin-top: 40px;">
-            <div class="container">
-                <div class="dashboard-header" style="text-align: center; margin-bottom: 50px;">
-                    <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px;">
-                        <i class="fas fa-cogs"></i> Settings Dashboard
-                    </h2>
-                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">
-                        System overview and quick access to administrative functions
-                    </p>
-                </div>
-                
-                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
-                    <!-- System Status Card -->
-                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <i class="fas fa-server" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">Online</h3>
-                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">System Status</p>
-                        <button class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-chart-line"></i> View Details
-                        </button>
-                    </div>
 
-                    <!-- Active Users Card -->
-                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <i class="fas fa-users-cog" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">12</h3>
-                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Active Administrators</p>
-                        <button class="btn btn-success" style="width: 100%;">
-                            <i class="fas fa-user-plus"></i> Manage Users
-                        </button>
-                    </div>
-
-                    <!-- Security Score Card -->
-                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <i class="fas fa-shield-alt" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">95%</h3>
-                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">Security Score</p>
-                        <button class="btn btn-danger" style="width: 100%;">
-                            <i class="fas fa-lock"></i> Security Settings
-                        </button>
-                    </div>
-
-                    <!-- System Logs Card -->
-                    <div class="dashboard-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transform: translateY(0); transition: all 0.3s ease;">
-                        <div class="card-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <i class="fas fa-clipboard-list" style="color: #333; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 style="color: #333; font-size: 2rem; font-weight: 700; margin-bottom: 10px;">247</h3>
-                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">System Logs Today</p>
-                        <button class="btn btn-secondary" style="width: 100%;">
-                            <i class="fas fa-file-alt"></i> View Logs
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="quick-actions" style="text-align: center;">
-                    <h3 style="color: white; font-size: 1.8rem; font-weight: 600; margin-bottom: 30px;">Quick Actions</h3>
-                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                        <button class="btn" style="background: white; color: #667eea;">
-                            <i class="fas fa-download"></i> Backup System
-                        </button>
-                        <button class="btn" style="background: white; color: #667eea;">
-                            <i class="fas fa-sync"></i> Clear Cache
-                        </button>
-                        <button class="btn" style="background: white; color: #667eea;">
-                            <i class="fas fa-bell"></i> Notifications
-                        </button>
-                        <button class="btn" style="background: white; color: #667eea;">
-                            <i class="fas fa-database"></i> Database
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dashboard Card Hover Effects -->
-        <style>
-        .settings-dashboard .dashboard-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .settings-dashboard .dashboard-card .card-icon {
-            transition: all 0.3s ease;
-        }
-        
-        .settings-dashboard .dashboard-card:hover .card-icon {
-            transform: scale(1.1);
-        }
-        </style>
 
         <!-- Edit/Create User Modal -->
         <div class="modal" id="userModal">
@@ -1206,16 +1169,34 @@ You have been added as an administrator. To complete your account setup, please 
         // Tab Switching Logic
         function switchTab(tabName) {
             // Hide all contents
-            document.getElementById('content-users').style.display = 'none';
-            document.getElementById('content-security').style.display = 'none';
+            if(document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
+            if(document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
+            if(document.getElementById('content-dashboard')) document.getElementById('content-dashboard').style.display = 'none';
 
             // Remove active class from buttons
-            document.getElementById('tab-users').classList.remove('active');
-            document.getElementById('tab-security').classList.remove('active');
+            if(document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
+            if(document.getElementById('tab-users')) document.getElementById('tab-users').classList.remove('active');
+            if(document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
+            if(document.getElementById('tab-dashboard')) document.getElementById('tab-dashboard').classList.remove('active');
 
             // Show selected content and activate button
-            document.getElementById('content-' + tabName).style.display = 'block';
-            document.getElementById('tab-' + tabName).classList.add('active');
+            const targetContent = document.getElementById('content-' + tabName);
+            const targetTab = document.getElementById('tab-' + tabName);
+            
+            if(targetContent) targetContent.style.display = 'block';
+            if(targetTab) targetTab.classList.add('active');
+        }
+
+        // Layout Toggle (Swap View)
+        let isDashboardView = false;
+        function toggleLayout() {
+            if (isDashboardView) {
+                switchTab('general');
+                isDashboardView = false;
+            } else {
+                switchTab('dashboard');
+                isDashboardView = true;
+            }
         }
 
         // Close modal on outside click
