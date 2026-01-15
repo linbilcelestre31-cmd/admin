@@ -433,7 +433,8 @@ function formatFileSize($bytes)
                 <nav>
                     <ul>
                         <li><a href="#" class="active">Dashboard</a></li>
-                        <li><a href="#">Settings</a></li>
+                        <li><a href="../include/Settings.php"
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '../include/Settings.php'; }, true);">Settings</a></li>
                         <li><a href="#">Help</a></li>
                         <li><a href="../Modules/dashboard.php"
                                 onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);">Back</a>
