@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .logo-title {
-            color: var(--text-white);
+            color: var(--text-dark);
             font-size: 32px;
             font-weight: 700;
             letter-spacing: 2px;
@@ -398,7 +398,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if ($step === 1): ?>
             <h2 class="welcome-text">Welcome Ateria</h2>
-            <p class="instruction-text">Enter your credentials to access the secure administrative area.</p>
+            <p class="instruction-text">Enter your credentials to access the secure Super-admin area.</p>
 
             <form action="" method="POST">
                 <input type="hidden" name="action" value="login">

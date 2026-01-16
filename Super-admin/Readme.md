@@ -22,3 +22,7 @@ To access the Super Admin area, use the following links depending on your enviro
 
 ## Security
 Access to the dashboard is restricted to sessions with the `super_admin` role. Unauthorized attempts are automatically redirected to the login page.
+
+### Default Credentials
+*   **Username**: `admin`
+*   **Password**: `password` (Note: Check the SQL database hash for exact match)
