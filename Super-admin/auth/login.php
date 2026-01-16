@@ -147,28 +147,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
+            /* Move form to the right */
             overflow: hidden;
             position: relative;
+            padding-right: 10%;
+            /* Spacing from right */
         }
 
         /* Generated background container */
         .bg-container {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            background: #000;
             z-index: -1;
         }
 
         .bg-overlay {
             position: absolute;
             inset: 0;
-            background-image: url('../../assets/image/super_admin_login_bg.png');
-            /* We will move the generated image here */
+            background-image: url('../css/super-admin.jpeg');
+            /* Use the JPEG file */
             background-size: cover;
             background-position: center;
-            opacity: 0.6;
-            mix-blend-mode: overlay;
+            opacity: 1;
+        }
+
+        /* Left side glass panel for aesthetics */
+        .glass-panel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 5%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .glass-panel h1 {
+            font-size: 4.5rem;
+            color: white;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel p {
+            font-size: 1.25rem;
+            color: var(--accent);
+            letter-spacing: 5px;
+            text-transform: uppercase;
         }
 
         .animated-shapes div {
@@ -371,6 +404,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="bg-container">
         <div class="bg-overlay"></div>
+        <div class="glass-panel">
+            <h1>ATIÉRA</h1>
+            <p>ADMINISTRATIVE SYSTEM</p>
+        </div>
         <div class="animated-shapes">
             <div style="width: 400px; height: 400px; left: -100px; top: -100px;"></div>
             <div style="width: 300px; height: 300px; right: -50px; bottom: -50px; animation-delay: -5s;"></div>
