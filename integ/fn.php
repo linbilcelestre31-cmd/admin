@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // External API endpoint
-$externalApiUrl = 'https://financial.atierahotelandrestaurant.com/journal_entries_api';
+$externalApiUrl = 'https://financial.atierahotelandrestaurant.com/admin/api/users.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -35,11 +35,11 @@ try {
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_USERAGENT, 'ATIERA-System/1.0');
-            
+
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            
+
             if ($response === false || $httpCode !== 200) {
                 // Return fallback data if external API fails
                 echo json_encode([
