@@ -28,3 +28,17 @@ Access to the dashboard is restricted to sessions with the `super_admin` role. U
 *   **Password**: `password`
 *   **Default Email**: `atiera41001@gmail.com` (for 2FA)
 
+## 🚪 Step-by-Step Login Guide
+1.  **Open the Login Page**: Go to the [Super Admin Login](https://admin.atierahotelandrestaurant.com/admin/Super-admin/auth/login.php).
+2.  **Enter Credentials**: Type `admin` as username and `password` as password.
+3.  **Check for OTP**:
+    *   Check your Gmail (**atiera41001@gmail.com**) for the 6-digit code.
+    *   **If the email doesn't arrive**: Look at the **Red Alert Box** on the login page. I have enabled a **"Development OTP"** display there so you can see the code immediately without checking your email.
+4.  **Verify**: Copy the 6-digit code, paste it into the field, and click **Verify & Login**.
+
+## 📧 Bakit walang email? (Troubleshooting)
+1.  **Spam Folder**: Minsan napupunta ang email sa Spam/Junk folder.
+2.  **SMTP Block**: Minsan hinaharang ng server ang automatic emails.
+3.  **App Password**: Siguraduhing active ang "App Password" sa Google Account settings kung gagamit ng sariling account sa `Config.php`.
+4.  **Bypass**: Gamitin muna ang **Development OTP** na lumalabas sa login screen para maka-access agad.
+
