@@ -16,6 +16,34 @@ $step = 1; // 1: Login, 2: 2FA OTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = get_pdo();
 
+    // Ensure administrators table exists (Self-healing)
+    try {
+        $pdo->query("SELECT 1 FROM administrators LIMIT 1");
+    } catch (PDOException $e) {
+        $sql = "CREATE TABLE IF NOT EXISTS `administrators` (
+            `admin_id` int(11) NOT NULL AUTO_INCREMENT,
+            `username` varchar(50) NOT NULL,
+            `email` varchar(100) NOT NULL,
+            `password_hash` varchar(255) NOT NULL,
+            `full_name` varchar(100) NOT NULL,
+            `role` enum('super_admin','manager','staff') DEFAULT 'staff',
+            `is_active` tinyint(1) DEFAULT 1,
+            `last_login` datetime DEFAULT NULL,
+            `login_attempts` int(11) DEFAULT 0,
+            `locked_until` datetime DEFAULT NULL,
+            `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (`admin_id`),
+            UNIQUE KEY `username` (`username`),
+            UNIQUE KEY `email` (`email`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+        $pdo->exec($sql);
+
+        // Insert default admin if table was just created
+        $default_pass = password_hash('password', PASSWORD_DEFAULT);
+        $pdo->exec("INSERT IGNORE INTO administrators (username, email, password_hash, full_name, role) VALUES ('admin', 'admin@atiera.com', '$default_pass', 'System Administrator', 'super_admin')");
+    }
+
     if (isset($_POST['action']) && $_POST['action'] === 'login') {
         $username = trim($_POST['username']);
         $password = $_POST['password'];
