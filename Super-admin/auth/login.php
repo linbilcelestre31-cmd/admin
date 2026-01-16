@@ -173,36 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             opacity: 1;
         }
 
-        /* Left side glass panel for aesthetics */
-        .glass-panel {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 50%;
-            background: linear-gradient(to right, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0) 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-left: 5%;
-            z-index: 5;
-            pointer-events: none;
-        }
 
-        .glass-panel h1 {
-            font-size: 4.5rem;
-            color: white;
-            font-weight: 800;
-            margin: 0;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .glass-panel p {
-            font-size: 1.25rem;
-            color: var(--accent);
-            letter-spacing: 5px;
-            text-transform: uppercase;
-        }
 
         .animated-shapes div {
             position: absolute;
@@ -267,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .logo-subtitle {
-            color: var(--accent);
+            color: #d4af37;
             font-size: 14px;
             font-weight: 400;
             letter-spacing: 4px;
@@ -404,10 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="bg-container">
         <div class="bg-overlay"></div>
-        <div class="glass-panel">
-            <h1>ATIÉRA</h1>
-            <p>ADMINISTRATIVE SYSTEM</p>
-        </div>
+
         <div class="animated-shapes">
             <div style="width: 400px; height: 400px; left: -100px; top: -100px;"></div>
             <div style="width: 300px; height: 300px; right: -50px; bottom: -50px; animation-delay: -5s;"></div>
@@ -429,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <?php if ($step === 1): ?>
-            <h2 class="welcome-text">Super Admin Portal</h2>
+            <h2 class="welcome-text">Login</h2>
             <p class="instruction-text">Enter your credentials to access the secure administrative area.</p>
 
             <form action="" method="POST">
@@ -445,7 +413,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-lock"></i>
                 </div>
                 <button type="submit" class="btn-login">
-                    Initialize Access <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                    Login <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
                 </button>
             </form>
         <?php else: ?>
@@ -469,9 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="login.php" class="back-link"><i class="fas fa-arrow-left"></i> Back to login</a>
         <?php endif; ?>
 
-        <div style="margin-top: 40px; color: var(--text-gray); font-size: 11px; letter-spacing: 1px;">
-            SECURE ACCESS PROTOCOL &bull; ENCRYPT_SESSION_ID v2.4
-        </div>
+
     </div>
 </body>
 
