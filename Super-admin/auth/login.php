@@ -200,12 +200,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 450px;
             padding: 50px;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(255, 251, 235, 0.9);
+            /* Soft Gold/Cream background */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 2px solid #d4af37;
+            /* Gold border */
             border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.2);
             position: relative;
             z-index: 10;
             text-align: center;
@@ -246,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .welcome-text {
-            color: var(--text-white);
+            color: #1e293b;
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 10px;
@@ -275,20 +277,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .input-control {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 15px 15px 15px 50px;
-            color: var(--text-white);
+            color: #1e293b;
             font-size: 16px;
             outline: none;
             transition: all 0.3s;
         }
 
         .input-control:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: #ffffff;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
         }
 
         .input-control:focus+i {
