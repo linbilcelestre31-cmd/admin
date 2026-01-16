@@ -926,6 +926,11 @@ footer {
 
 .category-link:hover {
     background-color: #f0f0f0;
+    color: #FFD700;
+}
+
+.category-link:hover i {
+    color: #FFD700;
 }
 
 .category-link.active {

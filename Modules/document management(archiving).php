@@ -494,6 +494,12 @@ function formatFileSize($bytes)
         .category-link.active {
             background-color: #2196F3 !important;
         }
+
+        .category-link:hover,
+        .category-link:hover i {
+            color: #FFD700 !important;
+            transition: color 0.3s ease;
+        }
     </style>
 </head>
 
