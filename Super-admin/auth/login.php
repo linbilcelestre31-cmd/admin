@@ -109,10 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $mail->send();
                 $step = 2; // Move to OTP step
+                // FOR DEVELOPMENT: Always show the OTP even if mail succeeds
+                $error = "Development OTP: $otp (Email process initiated)";
             } catch (Exception $e) {
                 $error = "Mailer Error: " . $mail->ErrorInfo;
-                // For development, if mail fails, just show the OTP (REMOVE IN PRODUCTION)
                 $error .= " (Development OTP: $otp)";
+                $step = 2; // Still move to OTP step even if mail fails
             }
         } else {
             $error = "Invalid username or password.";
@@ -460,6 +462,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                 </strong>.
             </p>
+
+            <!-- DEVELOPMENT BYPASS HINT -->
+            <?php if (isset($_SESSION['login_otp'])): ?>
+                <div
+                    style="background: rgba(212, 175, 55, 0.1); border: 1px dashed #d4af37; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="font-size: 13px; color: #b8860b; margin: 0;"><strong>Development Bypass:</strong></p>
+                    <p style="font-size: 18px; color: #1e293b; font-weight: 700; margin: 5px 0;">OTP:
+                        <?php echo $_SESSION['login_otp']; ?></p>
+                </div>
+            <?php endif; ?>
 
             <form action="" method="POST">
                 <input type="hidden" name="action" value="verify_otp">
