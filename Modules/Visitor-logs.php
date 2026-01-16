@@ -178,8 +178,8 @@ function getLastInsertId()
                 <nav>
                     <ul>
                         <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
-                        <li><a href="#" class="nav-link" data-page="hotel-checkin">Hotel</a></li>
-                        <li><a href="#" class="nav-link" data-page="restaurant-checkin">Restaurant</a></li>
+                        <li><a href="#" class="nav-link" data-page="hotel-visitors">Hotel</a></li>
+                        <li><a href="#" class="nav-link" data-page="restaurant-visitors">Restaurant</a></li>
                         <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
                         <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
                     </ul>
@@ -244,14 +244,14 @@ function getLastInsertId()
                 <div id="hotel" class="page">
                     <h1>Hotel Management</h1>
                     <div class="tabs">
-                        <div class="tab active" data-tab="hotel-checkin">Time-in</div>
-                        <div class="tab" data-tab="hotel-visitors">Current Visitors</div>
+                        <div class="tab active" data-tab="hotel-visitors">Current Visitors</div>
+                        <div class="tab" data-tab="hotel-checkin">Time-in</div>
                         <div class="tab" data-tab="hotel-history">Visitor History</div>
                     </div>
 
                     <div class="card">
                         <!-- Hotel Time-in Tab -->
-                        <div class="tab-content active" id="hotel-checkin-tab">
+                        <div class="tab-content" id="hotel-checkin-tab">
                             <h2><i class="fas fa-id-card-clip"></i> Guest Registration Form</h2>
                             <form id="hotel-checkin-form" method="post" action="#">
                                 <div class="form-grid">
@@ -299,7 +299,12 @@ function getLastInsertId()
                         </div>
 
                         <!-- Hotel Current Visitors Tab -->
-                        <div class="tab-content" id="hotel-visitors-tab">
+                        <div class="tab-content active" id="hotel-visitors-tab">
+                            <div style="margin-bottom: 25px;">
+                                <button class="btn btn-success" onclick="activateTab('hotel-checkin')"
+                                    style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">Time-in
+                                    Guest</button>
+                            </div>
                             <h2><i class="fas fa-users"></i> Current Guests</h2>
                             <div class="table-container">
                                 <table id="hotel-current-table">
@@ -346,14 +351,14 @@ function getLastInsertId()
                 <div id="restaurant" class="page">
                     <h1>Restaurant Management</h1>
                     <div class="tabs">
-                        <div class="tab active" data-tab="restaurant-checkin">Time-in</div>
-                        <div class="tab" data-tab="restaurant-visitors">Current Visitors</div>
+                        <div class="tab active" data-tab="restaurant-visitors">Current Visitors</div>
+                        <div class="tab" data-tab="restaurant-checkin">Time-in</div>
                         <div class="tab" data-tab="restaurant-history">Visitor History</div>
                     </div>
 
                     <div class="card">
                         <!-- Restaurant Time-in Tab -->
-                        <div class="tab-content active" id="restaurant-checkin-tab">
+                        <div class="tab-content" id="restaurant-checkin-tab">
                             <h2><i class="fas fa-utensils"></i> Visitor Registration Form</h2>
                             <form id="restaurant-checkin-form">
                                 <div class="form-grid">
@@ -391,7 +396,12 @@ function getLastInsertId()
                         </div>
 
                         <!-- Restaurant Current Visitors Tab -->
-                        <div class="tab-content" id="restaurant-visitors-tab">
+                        <div class="tab-content active" id="restaurant-visitors-tab">
+                            <div style="margin-bottom: 25px;">
+                                <button class="btn btn-success" onclick="activateTab('restaurant-checkin')"
+                                    style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">Time-in
+                                    Visitor</button>
+                            </div>
                             <h2><i class="fas fa-users-rays"></i> Current Visitors</h2>
                             <div class="table-container">
                                 <table id="restaurant-current-table">
@@ -698,35 +708,40 @@ function getLastInsertId()
             }
         }
 
+        // SHOW/HIDE PAGES from sidebar / top nav
+        function showPage(pageId) {
+            // hide all pages
+            document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+            // show requested page
+            const page = document.getElementById(pageId);
+            if (page) page.classList.add('active');
+
+            // update active state for any element with data-page
+            document.querySelectorAll('[data-page]').forEach(function (el) {
+                if (el.getAttribute('data-page') === pageId || el.getAttribute('data-page') === pageId + '-checkin' || el.getAttribute('data-page') === pageId + '-visitors') {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        // Activate inner tab (tabName e.g. "hotel-checkin" => content id "hotel-checkin-tab")
+        function activateTab(tabName) {
+            document.querySelectorAll('.tabs .tab').forEach(function (t) { t.classList.remove('active'); });
+            document.querySelectorAll('.tab-content').forEach(function (tc) { tc.classList.remove('active'); });
+            const tab = document.querySelector('.tabs .tab[data-tab="' + tabName + '"]');
+            if (tab) tab.classList.add('active');
+            const tc = document.getElementById(tabName + '-tab');
+            if (tc) tc.classList.add('active');
+
+            // If Visitor.js is loaded, trigger data refresh
+            if (typeof loadCurrentVisitors === 'function' && tabName.includes('visitors')) {
+                loadCurrentVisitors();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            // SHOW/HIDE PAGES from sidebar / top nav
-            function showPage(pageId) {
-                // hide all pages
-                document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-                // show requested page
-                const page = document.getElementById(pageId);
-                if (page) page.classList.add('active');
-
-                // update active state for any element with data-page
-                document.querySelectorAll('[data-page]').forEach(function (el) {
-                    if (el.getAttribute('data-page') === pageId || el.getAttribute('data-page') === pageId + '-checkin' || el.getAttribute('data-page') === pageId + '-visitors') {
-                        el.classList.add('active');
-                    } else {
-                        el.classList.remove('active');
-                    }
-                });
-            }
-
-            // Activate inner tab (tabName e.g. "hotel-checkin" => content id "hotel-checkin-tab")
-            function activateTab(tabName) {
-                document.querySelectorAll('.tabs .tab').forEach(function (t) { t.classList.remove('active'); });
-                document.querySelectorAll('.tab-content').forEach(function (tc) { tc.classList.remove('active'); });
-                const tab = document.querySelector('.tabs .tab[data-tab="' + tabName + '"]');
-                if (tab) tab.classList.add('active');
-                const tc = document.getElementById(tabName + '-tab');
-                if (tc) tc.classList.add('active');
-            }
-
             // Sidebar / nav click handling — attach only to elements that have data-page
             document.querySelectorAll('a[data-page]').forEach(function (el) {
                 el.addEventListener('click', function (e) {
