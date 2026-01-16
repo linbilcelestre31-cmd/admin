@@ -1519,7 +1519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Employee Management Functions
         function loadEmployees() {
-            fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php')
+            fetch('../integ/hr4_api.php?limit=5')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1591,7 +1591,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             function deleteEmployee(id) {
                 if (confirm('Are you sure you want to delete this employee?')) {
-                    fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php', {
+                    fetch('../integ/hr4_api.php', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1612,7 +1612,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             function exportEmployeeReport() {
-                fetch('https://hr1.atierahotelandrestaurant.com/api/hr4_api.php')
+                fetch('../integ/hr4_api.php')
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {

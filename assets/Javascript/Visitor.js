@@ -712,7 +712,7 @@ function applySettings() {
 
 // Load employees for host selection from HR4 API
 function loadEmployeesForHosts() {
-    const hr4ApiUrl = '../integ/hr4_api.php';
+    const hr4ApiUrl = '../integ/hr4_api.php?limit=10';
     const hostSelects = [
         document.getElementById('host_id'),
         document.getElementById('restaurant-host')

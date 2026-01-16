@@ -75,7 +75,12 @@ function fetchAllEmployees($limit = 0)
 
     $result = callLiveAPI('GET', $data);
     if ($result['success'] && is_array($result['data'])) {
-        return $result['data'];
+        $employees = $result['data'];
+        // Ensure limit is respected even if API returns more
+        if ($limit > 0 && count($employees) > $limit) {
+            $employees = array_slice($employees, 0, $limit);
+        }
+        return $employees;
     }
     return [];
 }
@@ -94,12 +99,8 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
     }
 
     if ($method == 'GET') {
-        $employees = fetchAllEmployees();
         $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
-
-        if ($limit > 0) {
-            $employees = array_slice($employees, 0, $limit);
-        }
+        $employees = fetchAllEmployees($limit);
 
         echo json_encode([
             'success' => true,

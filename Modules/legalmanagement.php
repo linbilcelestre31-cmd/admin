@@ -651,6 +651,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         .btn-primary {
             color: #ffffff !important;
         }
+
+        /* Added: Scrollable table container to handle large datasets */
+        .table-scroll-container {
+            width: 100%;
+            max-height: 450px;
+            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 10px;
+            background: #fff;
+        }
+
+        /* Fixed table header for scrollable containers */
+        .table-scroll-container table thead th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            z-index: 10;
+            box-shadow: 0 1px 0 #e2e8f0;
+        }
     </style>
 </head>
 
@@ -752,35 +772,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </form>
                 </div>
 
-                <!-- Employees Table -->
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="employeesTableBody">
-                        <?php foreach ($employees as $employee): ?>
+                <!-- Employees Table wrapped in scroll container -->
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
                             <tr>
-                                <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
-                                    <button class="action-btn view-btn" data-type="employee-view"
-                                        data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
-                                </td>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <?php foreach ($employees as $employee): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <button class="action-btn view-btn" data-type="employee-view"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>View</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Internal Section -->
@@ -791,36 +813,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add Internal Doc
                     </button>
                 </div>
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Policy Name</th>
-                            <th>Category</th>
-                            <th>Effective Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Employee Privacy Policy 2024</td>
-                            <td>HR Compliance</td>
-                            <td>2024-01-01</td>
-                            <td>
-                                <button class="action-btn view-btn">View</button>
-                                <button class="action-btn download-btn">Download</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Internal Operational Guidelines</td>
-                            <td>Operations</td>
-                            <td>2023-11-15</td>
-                            <td>
-                                <button class="action-btn view-btn">View</button>
-                                <button class="action-btn download-btn">Download</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
+                            <tr>
+                                <th>Policy Name</th>
+                                <th>Category</th>
+                                <th>Effective Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Employee Privacy Policy 2024</td>
+                                <td>HR Compliance</td>
+                                <td>2024-01-01</td>
+                                <td>
+                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn download-btn">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Internal Operational Guidelines</td>
+                                <td>Operations</td>
+                                <td>2023-11-15</td>
+                                <td>
+                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn download-btn">Download</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- External Section -->
@@ -831,36 +855,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add External Contract
                     </button>
                 </div>
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Agreement Name</th>
-                            <th>Partner / Vendor</th>
-                            <th>Expiry Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Global Logistics Supply Agreement</td>
-                            <td>LogiTrans Corp</td>
-                            <td>2025-12-31</td>
-                            <td>
-                                <button class="action-btn view-btn">View</button>
-                                <button class="action-btn analyze-btn">Analyze</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Outsourced Security Services NDA</td>
-                            <td>SafeGuard Solutions</td>
-                            <td>2026-06-30</td>
-                            <td>
-                                <button class="action-btn view-btn">View</button>
-                                <button class="action-btn analyze-btn">Analyze</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
+                            <tr>
+                                <th>Agreement Name</th>
+                                <th>Partner / Vendor</th>
+                                <th>Expiry Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Global Logistics Supply Agreement</td>
+                                <td>LogiTrans Corp</td>
+                                <td>2025-12-31</td>
+                                <td>
+                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn analyze-btn">Analyze</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Outsourced Security Services NDA</td>
+                                <td>SafeGuard Solutions</td>
+                                <td>2026-06-30</td>
+                                <td>
+                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn analyze-btn">Analyze</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Documents Section -->
@@ -871,48 +897,51 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Upload Document
                     </button>
                 </div>
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Document Name</th>
-                            <th>Case</th>
-                            <th>Date Uploaded</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="documentsTableBody">
-                        <?php if (!empty($documents)): ?>
-                            <?php foreach ($documents as $doc): ?>
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Case</th>
+                                <th>Date Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentsTableBody">
+                            <?php if (!empty($documents)): ?>
+                                <?php foreach ($documents as $doc): ?>
+                                    <tr>
+                                        <td>
+                                            <?php if (!empty($doc['file_path'])): ?>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                            <?php else: ?>
+                                                <?php echo htmlspecialchars($doc['name']); ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                        </td>
+                                        <td>
+                                            <button class="action-btn download-btn" data-type="doc-download"
+                                                data-pdf-type="document"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+                                                <i class="fa-solid fa-file-pdf"></i> Download PDF
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td>
-                                        <?php if (!empty($doc['file_path'])): ?>
-                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                        <?php else: ?>
-                                            <?php echo htmlspecialchars($doc['name']); ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                    </td>
-                                    <td>
-                                        <button class="action-btn download-btn" data-type="doc-download"
-                                            data-pdf-type="document"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                            style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
-                                            <i class="fa-solid fa-file-pdf"></i> Download PDF
-                                        </button>
+                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
 

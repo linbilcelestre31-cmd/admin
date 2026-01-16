@@ -991,7 +991,7 @@ function formatFileSize($bytes)
 
             if (apiMap[category]) {
                 if (category === 'Employees') {
-                    loadEmployeesList(apiMap[category] + '?limit=10', gridId);
+                    loadEmployeesList(apiMap[category] + '?limit=5', gridId);
                 } else {
                     loadFromExternalAPI(apiMap[category], gridId, category);
                 }
