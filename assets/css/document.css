@@ -1207,6 +1207,13 @@ footer {
 .sidebar-menu a.active,
 .sidebar-menu a.active i,
 .category-link.active,
-.category-link.active i {
+.category-link.active i,
+.sidebar-menu .category-link.active,
+.sidebar-menu .category-link.active i {
     color: #ffffff !important;
+}
+
+/* Ensure the background is consistent as well */
+.category-link.active {
+    background: #2196F3 !important;
 }

@@ -482,7 +482,18 @@ function formatFileSize($bytes)
         rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/document.css?v=6">
+    <link rel="stylesheet" href="../assets/css/document.css?v=<?php echo time(); ?>">
+    <style>
+        .sidebar-menu a.active, 
+        .sidebar-menu a.active i,
+        .category-link.active,
+        .category-link.active i {
+            color: #ffffff !important;
+        }
+        .category-link.active {
+            background-color: #2196F3 !important;
+        }
+    </style>
 </head>
 
 <body>
