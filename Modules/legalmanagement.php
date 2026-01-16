@@ -661,6 +661,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
             margin-top: 10px;
             background: #fff;
+            -ms-overflow-style: none;
+            /* Internet Explorer 10+ */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .table-scroll-container::-webkit-scrollbar {
+            display: none;
+            /* Safari and Chrome */
         }
 
         /* Fixed table header for scrollable containers */
