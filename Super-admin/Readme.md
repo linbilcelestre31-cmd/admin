@@ -25,4 +25,6 @@ Access to the dashboard is restricted to sessions with the `super_admin` role. U
 
 ### Default Credentials
 *   **Username**: `admin`
-*   **Password**: `password` (Note: Check the SQL database hash for exact match)
+*   **Password**: `password`
+*   **Default Email**: `atiera41001@gmail.com` (for 2FA)
+

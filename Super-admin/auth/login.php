@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insert default admin if table was just created
         $default_pass = password_hash('password', PASSWORD_DEFAULT);
-        $pdo->exec("INSERT IGNORE INTO administrators (username, email, password_hash, full_name, role) VALUES ('admin', 'admin@atiera.com', '$default_pass', 'System Administrator', 'super_admin')");
+        $pdo->exec("INSERT IGNORE INTO administrators (username, email, password_hash, full_name, role) VALUES ('admin', 'atiera41001@gmail.com', '$default_pass', 'System Administrator', 'super_admin')");
     }
 
     if (isset($_POST['action']) && $_POST['action'] === 'login') {
