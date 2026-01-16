@@ -108,9 +108,18 @@ try {
                     ]
                 ]);
             } else {
-                // Return external API response
-                header('Content-Type: application/json');
-                echo $response;
+                // Parse and re-encode to ensure valid structure and clean output
+                $data = json_decode($response, true);
+                if ($data === null) {
+                    // If parsing failed, return what we got or error
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'error' => 'Invalid JSON from external API', 'raw' => $response]);
+                } else {
+                    echo json_encode([
+                        'success' => true,
+                        'data' => $data
+                    ]);
+                }
             }
             break;
 

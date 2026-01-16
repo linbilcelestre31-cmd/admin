@@ -1046,7 +1046,9 @@ function formatFileSize($bytes)
             fetch('../integ/fn.php')
                 .then(response => response.json())
                 .then(result => {
-                    const data = Array.isArray(result) ? result : (result.success && result.data ? result.data : fallbackData);
+                    console.log('Financial Records Result:', result);
+                    const data = (result && result.success && Array.isArray(result.data)) ? result.data :
+                        (Array.isArray(result) ? result : fallbackData);
                     renderFinancialTable(data);
                 })
                 .catch(error => {
@@ -1063,6 +1065,7 @@ function formatFileSize($bytes)
                         <table class="financial-table">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Date</th>
                                     <th>Type</th>
                                     <th>Category</th>
@@ -1092,8 +1095,9 @@ function formatFileSize($bytes)
 
                     return `
                                         <tr>
+                                            <td style="font-weight: 700;">#${record.id || record.entry_number || 'N/A'}</td>
                                             <td style="white-space: nowrap;">${formattedDate}</td>
-                                            <td><span style="color: ${typeColor};" class="type-label" style="text-transform: capitalize;">${type}</span></td>
+                                            <td><span style="color: ${typeColor}; font-weight: 600; text-transform: capitalize;">${type}</span></td>
                                             <td>${record.department || record.category || 'N/A'}</td>
                                             <td style="min-width: 200px;">${record.full_name || record.description}</td>
                                             <td style="font-weight: 700; white-space: nowrap;">$${amountValue}</td>
@@ -1267,8 +1271,8 @@ function formatFileSize($bytes)
             const content = document.getElementById('fileDetailsContent');
 
             const type = record.role || record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-            const typeColor = (type.toLowerCase() === 'income' || type.toLowerCase() === 'admin') ? '#2ecc71' : 
-                             (type.toLowerCase() === 'staff' ? '#3498db' : '#e74c3c');
+            const typeColor = (type.toLowerCase() === 'income' || type.toLowerCase() === 'admin') ? '#2ecc71' :
+                (type.toLowerCase() === 'staff' ? '#3498db' : '#e74c3c');
             const title = record.username ? `User: ${record.username}` : `Journal Entry: ${record.entry_number}`;
 
             content.innerHTML = `
