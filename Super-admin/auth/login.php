@@ -42,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Insert default admin if table was just created
         $default_pass = password_hash('password', PASSWORD_DEFAULT);
         $pdo->exec("INSERT IGNORE INTO administrators (username, email, password_hash, full_name, role) VALUES ('admin', 'atiera41001@gmail.com', '$default_pass', 'System Administrator', 'super_admin')");
+
+        // Force update default admin email if it already existed with the old one
+        $pdo->exec("UPDATE administrators SET email = 'atiera41001@gmail.com' WHERE username = 'admin' AND email = 'admin@atiera.com'");
     }
 
     if (isset($_POST['action']) && $_POST['action'] === 'login') {
@@ -109,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Exception $e) {
                 $error = "Mailer Error: " . $mail->ErrorInfo;
                 // For development, if mail fails, just show the OTP (REMOVE IN PRODUCTION)
-                // $error .= " (Development OTP: $otp)";
+                $error .= " (Development OTP: $otp)";
             }
         } else {
             $error = "Invalid username or password.";
@@ -448,9 +451,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         <?php else: ?>
             <h2 class="welcome-text">Two-Factor Auth</h2>
-            <p class="instruction-text">We've sent a 6-digit verification code to your registered email ending in
+            <p class="instruction-text">We've sent a 6-digit verification code to your registered email:
                 <strong>
-                    <?php echo substr($_SESSION['temp_admin_email'], -10); ?>
+                    <?php
+                    $email = $_SESSION['temp_admin_email'];
+                    $parts = explode('@', $email);
+                    echo substr($parts[0], 0, 3) . '***@' . $parts[1];
+                    ?>
                 </strong>.
             </p>
 
