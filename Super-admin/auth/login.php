@@ -397,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <?php if ($step === 1): ?>
-            <h2 class="welcome-text">Login</h2>
+            <h2 class="welcome-text">Welcome Ateria</h2>
             <p class="instruction-text">Enter your credentials to access the secure administrative area.</p>
 
             <form action="" method="POST">
