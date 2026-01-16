@@ -563,12 +563,7 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link" data-category="Employees"><i class="fas fa-users-cog"></i>
                             HR Employees</a></li>
                 </ul>
-                <div class="sidebar-footer">
-                    <div class="security-status">
-                        <i class="fas fa-lock" id="securityIcon"></i>
-                        <span id="securityStatus">Secured</span>
-                    </div>
-                </div>
+                <!-- Sidebar footer removed as per user request -->
             </aside>
 
             <div class="content">
@@ -751,7 +746,6 @@ function formatFileSize($bytes)
         // Initialize
         document.addEventListener('DOMContentLoaded', function () {
             loadCategoryFiles('all');
-            updateSecurityStatus(false);
             setupEventListeners();
 
             // Hide loading screen
@@ -772,7 +766,8 @@ function formatFileSize($bytes)
                     e.preventDefault();
                     const category = this.getAttribute('data-category');
 
-                    if (!isAuthenticated && category !== 'all') {
+                    // Always require PIN for specific categories, except 'All Documents' which is the dashboard
+                    if (category !== 'all') {
                         targetCategory = category;
                         showPinGate();
                     } else {
@@ -820,15 +815,16 @@ function formatFileSize($bytes)
                 const enteredPin = Array.from(archivePinDigits).map(input => input.value).join('');
 
                 if (enteredPin === correctArchivePin) {
-                    isAuthenticated = true;
-                    startPinSession();
-                    updateSecurityStatus(true);
+                    isAuthenticated = true; // Temporary authentication for this navigation
                     passwordModal.style.display = 'none';
                     pinErrorMessage.style.display = 'none';
 
                     if (targetCategory) {
                         const activeLink = document.querySelector(`.category-link[data-category="${targetCategory}"]`);
                         if (activeLink) switchCategory(activeLink, targetCategory);
+                        // Reset authentication so next click requires PIN again
+                        isAuthenticated = false;
+                        targetCategory = null;
                     }
                     // Reset inputs
                     archivePinDigits.forEach(input => input.value = '');
@@ -895,8 +891,9 @@ function formatFileSize($bytes)
             document.getElementById('quickSearch')?.addEventListener('click', () => {
                 const search = prompt('Enter keywords to search documents:');
                 if (search) {
-                    isAuthenticated = true; // Temporary permit for search
-                    updateSecurityStatus(true);
+                    // Search results are shown in All Documents view, no PIN bypass needed for navigation here
+                    // but if specific categories are loaded, they will ask for PIN via loadCategoryFiles if modified there.
+                    // For now, search is global.
 
                     document.getElementById('contentTitle').textContent = `Search Results: "${search}"`;
                     document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
@@ -1413,21 +1410,7 @@ function formatFileSize($bytes)
             }
         }
 
-        function updateSecurityStatus(authenticated) {
-            const securityStatus = document.getElementById('securityStatus');
-            const securityIcon = document.getElementById('securityIcon');
-            const statusContainer = document.querySelector('.security-status');
-
-            if (authenticated) {
-                securityStatus.textContent = 'Authenticated';
-                securityIcon.className = 'fas fa-unlock';
-                statusContainer.classList.remove('locked');
-            } else {
-                securityStatus.textContent = 'Secured';
-                securityIcon.className = 'fas fa-lock';
-                statusContainer.classList.add('locked');
-            }
-        }
+        // Authentication display functions removed as status is no longer persistent
 
         // Trash Management Functions
         function loadTrashFiles() {
