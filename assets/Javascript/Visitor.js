@@ -407,9 +407,13 @@ function loadCurrentVisitors() {
                             <td>${guest.room_number || 'N/A'}</td>
                             <td>${formatDate(guest.checkin_date)}</td>
                             <td>${guest.checkout_date ? formatDate(guest.checkout_date) : 'Inside'}</td>
-                            <td>
-                                <button class="btn-info" onclick="viewVisitorDetails('${guest.id}')" style="margin-right: 5px; background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">View</button>
-                                <button class="btn-warning" onclick="timeOutHotelGuest('${guest.id}')">Time-out</button>
+                            <td style="display: flex; gap: 8px;">
+                                <button class="btn-action-view" onclick="viewVisitorDetails('${guest.id}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn-action-timeout" onclick="timeOutHotelGuest('${guest.id}')">
+                                    <i class="fas fa-sign-out-alt"></i> Time-out
+                                </button>
                             </td>
                         `;
                         tbody.appendChild(row);
@@ -442,7 +446,9 @@ function loadCurrentVisitors() {
                     <td>${visitor.table}</td>
                     <td>${formatTime(visitor.checkinTime)}</td>
                     <td>
-                        <button class="btn-warning" onclick="timeOutRestaurantVisitor(${visitor.id})">Time-out</button>
+                        <button class="btn-action-timeout" onclick="timeOutRestaurantVisitor(${visitor.id})">
+                            <i class="fas fa-sign-out-alt"></i> Time-out
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(row);

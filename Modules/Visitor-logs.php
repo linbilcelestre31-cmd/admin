@@ -172,8 +172,7 @@ function getLastInsertId()
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-shield-halved"></i>
-                    Atiera <span>Visitor Management</span>
+                    <img src="../assets/image/logo.png" alt="Atiera Logo" style="height: 45px; width: auto;">
                 </div>
                 <nav>
                     <ul>
@@ -301,9 +300,9 @@ function getLastInsertId()
                         <!-- Hotel Current Visitors Tab -->
                         <div class="tab-content active" id="hotel-visitors-tab">
                             <div style="margin-bottom: 25px;">
-                                <button class="btn btn-success" onclick="activateTab('hotel-checkin')"
-                                    style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">Time-in
-                                    Guest</button>
+                                <button class="btn-primary-action" onclick="activateTab('hotel-checkin')">
+                                    <i class="fas fa-plus-circle"></i> Time-in Guest
+                                </button>
                             </div>
                             <h2><i class="fas fa-users"></i> Current Guests</h2>
                             <div class="table-container">
@@ -398,9 +397,9 @@ function getLastInsertId()
                         <!-- Restaurant Current Visitors Tab -->
                         <div class="tab-content active" id="restaurant-visitors-tab">
                             <div style="margin-bottom: 25px;">
-                                <button class="btn btn-success" onclick="activateTab('restaurant-checkin')"
-                                    style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">Time-in
-                                    Visitor</button>
+                                <button class="btn-primary-action" onclick="activateTab('restaurant-checkin')">
+                                    <i class="fas fa-plus-circle"></i> Time-in Visitor
+                                </button>
                             </div>
                             <h2><i class="fas fa-users-rays"></i> Current Visitors</h2>
                             <div class="table-container">
