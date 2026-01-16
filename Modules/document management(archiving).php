@@ -484,12 +484,13 @@ function formatFileSize($bytes)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/document.css?v=<?php echo time(); ?>">
     <style>
-        .sidebar-menu a.active, 
+        .sidebar-menu a.active,
         .sidebar-menu a.active i,
         .category-link.active,
         .category-link.active i {
             color: #ffffff !important;
         }
+
         .category-link.active {
             background-color: #2196F3 !important;
         }
@@ -1041,11 +1042,11 @@ function formatFileSize($bytes)
                 // Add more fallback data as needed
             ];
 
-            // Try remote API first
-            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
+            // Try proxy API first
+            fetch('../integ/fn.php')
                 .then(response => response.json())
                 .then(result => {
-                    const data = (result.success && result.data && result.data.length > 0) ? result.data : fallbackData;
+                    const data = Array.isArray(result) ? result : (result.success && result.data ? result.data : fallbackData);
                     renderFinancialTable(data);
                 })
                 .catch(error => {
@@ -1073,14 +1074,16 @@ function formatFileSize($bytes)
                             </thead>
                             <tbody>
                                 ${data.map(record => {
-                    const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-                    const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+                    const type = record.role || record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+                    const typeColor = (type.toLowerCase() === 'income' || type.toLowerCase() === 'admin') ? '#2ecc71' :
+                        (type.toLowerCase() === 'staff' ? '#3498db' : '#e74c3c');
                     const safeRecord = JSON.stringify(record).replace(/'/g, "&apos;");
-                    const formattedDate = new Date(record.entry_date).toLocaleDateString('en-US', {
+                    const dateVal = record.created_at || record.entry_date;
+                    const formattedDate = dateVal ? new Date(dateVal).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit'
-                    });
+                    }) : 'N/A';
                     const amountValue = parseFloat(record.total_debit || record.amount || 0)
                         .toLocaleString(undefined, {
                             minimumFractionDigits: 2,
@@ -1090,11 +1093,11 @@ function formatFileSize($bytes)
                     return `
                                         <tr>
                                             <td style="white-space: nowrap;">${formattedDate}</td>
-                                            <td><span style="color: ${typeColor};" class="type-label">${type}</span></td>
-                                            <td>${record.category || 'Revenue'}</td>
-                                            <td style="min-width: 200px;">${record.description}</td>
+                                            <td><span style="color: ${typeColor};" class="type-label" style="text-transform: capitalize;">${type}</span></td>
+                                            <td>${record.department || record.category || 'N/A'}</td>
+                                            <td style="min-width: 200px;">${record.full_name || record.description}</td>
                                             <td style="font-weight: 700; white-space: nowrap;">$${amountValue}</td>
-                                            <td>${record.venue || 'Hotel'}</td>
+                                            <td>${record.status || record.venue || 'N/A'}</td>
                                             <td style="white-space: nowrap;">
                                                 <button class="btn-view-small" onclick='showFinancialDetails(${safeRecord})' title="View Details">
                                                     <i class="fas fa-eye"></i>
@@ -1263,40 +1266,42 @@ function formatFileSize($bytes)
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
 
-            const type = record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
-            const typeColor = type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c';
+            const type = record.role || record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
+            const typeColor = (type.toLowerCase() === 'income' || type.toLowerCase() === 'admin') ? '#2ecc71' : 
+                             (type.toLowerCase() === 'staff' ? '#3498db' : '#e74c3c');
+            const title = record.username ? `User: ${record.username}` : `Journal Entry: ${record.entry_number}`;
 
             content.innerHTML = `
                 <div style="position: relative;">
                     <div id="financialSensitive" class="financial-details blurred-content" style="padding: 10px;">
                         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
-                            <div style="font-size: 3rem; color: ${typeColor};"><i class="fas fa-file-invoice-dollar"></i></div>
-                            <h2 style="margin: 10px 0;">Journal Entry: ${record.entry_number}</h2>
+                            <div style="font-size: 3rem; color: ${typeColor};"><i class="fas ${record.username ? 'fa-user-shield' : 'fa-file-invoice-dollar'}"></i></div>
+                            <h2 style="margin: 10px 0;">${title}</h2>
                             <span class="type-badge" style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 20px;">${type.toUpperCase()}</span>
                         </div>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                             <div class="detail-item">
-                                <label>Transaction Date</label>
-                                <div>${new Date(record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
+                                <label>${record.created_at ? 'Created At' : 'Transaction Date'}</label>
+                                <div>${new Date(record.created_at || record.entry_date).toLocaleDateString('en-US', { dateStyle: 'full' })}</div>
                             </div>
                             <div class="detail-item">
                                 <label>Status</label>
                                 <div>${record.status}</div>
                             </div>
                             <div class="detail-item">
-                                <label>Total Debit</label>
-                                <div>$${parseFloat(record.total_debit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                <label>${record.email ? 'Email' : 'Total Debit'}</label>
+                                <div>${record.email || '$' + parseFloat(record.total_debit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                             </div>
                             <div class="detail-item">
-                                <label>Total Credit</label>
-                                <div>$${parseFloat(record.total_credit).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                <label>${record.phone ? 'Phone' : 'Total Credit'}</label>
+                                <div>${record.phone || '$' + parseFloat(record.total_credit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                             </div>
                         </div>
 
                         <div class="detail-item" style="margin-bottom: 20px;">
-                            <label>Description</label>
-                            <div>${record.description}</div>
+                            <label>${record.full_name ? 'Full Name' : 'Description'}</label>
+                            <div>${record.full_name || record.description}</div>
                         </div>
                     </div>
                     
