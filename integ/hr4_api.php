@@ -65,10 +65,15 @@ function callLiveAPI($method, $data = null)
     ];
 }
 
-// Wrapper function to fetch all employees
-function fetchAllEmployees()
+// Wrapper function to fetch employees with optional limit
+function fetchAllEmployees($limit = 0)
 {
-    $result = callLiveAPI('GET');
+    $data = [];
+    if ($limit > 0) {
+        $data['limit'] = $limit;
+    }
+
+    $result = callLiveAPI('GET', $data);
     if ($result['success'] && is_array($result['data'])) {
         return $result['data'];
     }
@@ -90,6 +95,12 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
 
     if ($method == 'GET') {
         $employees = fetchAllEmployees();
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
+
+        if ($limit > 0) {
+            $employees = array_slice($employees, 0, $limit);
+        }
+
         echo json_encode([
             'success' => true,
             'message' => 'Employees retrieved successfully from live server',

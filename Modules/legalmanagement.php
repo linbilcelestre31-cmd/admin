@@ -474,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $employees = [];
 $contracts = [];
 try {
-    $api_employees = fetchAllEmployees();
+    $api_employees = fetchAllEmployees(5);
     if (!empty($api_employees)) {
         foreach ($api_employees as $emp) {
             $employees[] = [
