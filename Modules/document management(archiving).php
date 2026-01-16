@@ -1030,8 +1030,8 @@ function formatFileSize($bytes)
                 // Add more fallback data as needed
             ];
 
-            // Try local API first
-            fetch('../integ/fn.php')
+            // Try remote API first
+            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
                 .then(response => response.json())
                 .then(result => {
                     const data = (result.success && result.data && result.data.length > 0) ? result.data : fallbackData;

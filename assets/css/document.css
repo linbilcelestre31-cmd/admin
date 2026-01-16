@@ -255,7 +255,7 @@ main {
 .sidebar ul li a:hover,
 .sidebar ul li a.active {
     background-color: var(--light);
-    color: var(--secondary);
+    color: #ffffff;
 }
 
 .content {
@@ -1201,4 +1201,12 @@ footer {
     .quick-actions {
         padding: 24px;
     }
+}
+
+/* Ensure white text on active sidebar links */
+.sidebar-menu a.active,
+.sidebar-menu a.active i,
+.category-link.active,
+.category-link.active i {
+    color: #ffffff !important;
 }

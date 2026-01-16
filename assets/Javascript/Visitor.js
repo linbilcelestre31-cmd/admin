@@ -15,14 +15,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up navigation
     setupNavigation();
 
+    // Set up tabs
+    setupTabs();
+
     // Set up form submissions
     setupForms();
 
     // Initialize dashboard
     updateDashboard();
 
-    // Load current visitors
+    // Load all data
     loadCurrentVisitors();
+    loadHistory();
 
     // Load employees for host selection
     loadEmployeesForHosts();
@@ -79,6 +83,39 @@ function setupNavigation() {
     });
 }
 
+// Tab navigation setup
+function setupTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            const tabId = this.getAttribute('data-tab');
+            const parent = this.closest('.page');
+
+            // Update active tab UI
+            const siblingTabs = parent.querySelectorAll('.tab');
+            siblingTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show corresponding content tab
+            const tabContents = parent.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+
+            // Trigger data refresh if needed for specific tabs
+            if (tabId.includes('visitors')) {
+                loadCurrentVisitors();
+            } else if (tabId.includes('history')) {
+                loadHistory();
+            }
+        });
+    });
+}
+
 // Show report date range based on selection
 const reportType = document.getElementById('report-type');
 if (reportType) {
@@ -106,8 +143,9 @@ function showPage(pageId) {
         // Load data if needed
         if (pageId === 'dashboard') {
             updateDashboard();
-        } else if (pageId.startsWith('hotel') || pageId.startsWith('restaurant')) {
+        } else if (pageId === 'hotel' || pageId === 'restaurant') {
             loadCurrentVisitors();
+            loadHistory();
         }
     }
 }
@@ -353,36 +391,27 @@ function updateRecentActivity() {
 
 // Load current visitors into tables
 function loadCurrentVisitors() {
-    // Hotel current visitors
+    // 1. Hotel current visitors (from API)
     const hotelCurrentTable = document.getElementById('hotel-current-table');
     if (hotelCurrentTable) {
         const tbody = hotelCurrentTable.querySelector('tbody');
-
-        // Fetch from API
         fetch(API_BASE_URL)
             .then(response => response.json())
             .then(data => {
                 tbody.innerHTML = '';
-                // Check status 'success' and ensure data array exists
                 if (data.status === 'success' && data.data && data.data.length > 0) {
                     data.data.forEach(guest => {
                         const row = document.createElement('tr');
-                        const name = guest.full_name || 'N/A';
-                        const room = guest.room_number || 'N/A';
-                        const checkin = guest.checkin_date || 'N/A';
-                        const checkout = guest.checkout_date || ''; // Assuming checkout_date exists
-
-                        // Note: timeOutHotelGuest might need ID update if it relies on localStorage ID
                         row.innerHTML = `
-                        <td>${name}</td>
-                        <td>${room}</td>
-                        <td>${formatDate(checkin)}</td>
-                        <td>${formatDate(checkout)}</td>
-                        <td>
-                            <button class="btn-info" onclick="viewVisitorDetails('${guest.id}')" style="margin-right: 5px; background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">View</button>
-                            <button class="btn-warning" onclick="timeOutHotelGuest('${guest.id}')">Time-out</button>
-                        </td>
-                     `;
+                            <td>${guest.full_name || 'N/A'}</td>
+                            <td>${guest.room_number || 'N/A'}</td>
+                            <td>${formatDate(guest.checkin_date)}</td>
+                            <td>${guest.checkout_date ? formatDate(guest.checkout_date) : 'Inside'}</td>
+                            <td>
+                                <button class="btn-info" onclick="viewVisitorDetails('${guest.id}')" style="margin-right: 5px; background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">View</button>
+                                <button class="btn-warning" onclick="timeOutHotelGuest('${guest.id}')">Time-out</button>
+                            </td>
+                        `;
                         tbody.appendChild(row);
                     });
                 } else {
@@ -393,6 +422,83 @@ function loadCurrentVisitors() {
                 console.error('Error fetching visitors:', error);
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
             });
+    }
+
+    // 2. Restaurant current visitors (from localStorage)
+    const restaurantCurrentTable = document.getElementById('restaurant-current-table');
+    if (restaurantCurrentTable) {
+        const tbody = restaurantCurrentTable.querySelector('tbody');
+        tbody.innerHTML = '';
+        const currentVisitors = restaurantVisitors.filter(visitor => visitor.status === 'timed-in');
+
+        if (currentVisitors.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current visitors</td></tr>';
+        } else {
+            currentVisitors.forEach(visitor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${visitor.name}</td>
+                    <td>${visitor.partySize}</td>
+                    <td>${visitor.table}</td>
+                    <td>${formatTime(visitor.checkinTime)}</td>
+                    <td>
+                        <button class="btn-warning" onclick="timeOutRestaurantVisitor(${visitor.id})">Time-out</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+}
+
+// Load visitor history into tables
+function loadHistory() {
+    // 1. Hotel History (Mock/Local for now, or you can fetch all from API)
+    const hotelHistoryTable = document.getElementById('hotel-history-table');
+    if (hotelHistoryTable) {
+        const tbody = hotelHistoryTable.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        // For demonstration, let's use the local array which might be empty if using only API
+        if (hotelVisitors.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No history records</td></tr>';
+        } else {
+            hotelVisitors.forEach(guest => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${guest.name}</td>
+                    <td>${guest.room}</td>
+                    <td>${formatDate(guest.checkin)}</td>
+                    <td>${guest.checkout ? formatDate(guest.checkout) : 'N/A'}</td>
+                    <td><span class="status-badge status-${guest.status.replace('-', '')}">${guest.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+
+    // 2. Restaurant History
+    const restaurantHistoryTable = document.getElementById('restaurant-history-table');
+    if (restaurantHistoryTable) {
+        const tbody = restaurantHistoryTable.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        if (restaurantVisitors.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No history records</td></tr>';
+        } else {
+            restaurantVisitors.forEach(visitor => {
+                const row = document.createElement('tr');
+                const checkOutTime = visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'N/A';
+                row.innerHTML = `
+                    <td>${visitor.name}</td>
+                    <td>${visitor.partySize}</td>
+                    <td>${visitor.table}</td>
+                    <td>${formatTime(visitor.checkinTime)}</td>
+                    <td>${checkOutTime}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
     }
 }
 
@@ -426,72 +532,11 @@ function viewVisitorDetails(guestId) {
         });
 }
 
-// Restaurant current visitors
-const restaurantCurrentTable = document.getElementById('restaurant-current-table');
-if (restaurantCurrentTable) {
-    const tbody = restaurantCurrentTable.querySelector('tbody');
-    tbody.innerHTML = '';
 
-    const currentVisitors = restaurantVisitors.filter(visitor => visitor.status === 'checked-in');
 
-    if (currentVisitors.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current visitors</td></tr>';
-    } else {
-        currentVisitors.forEach(visitor => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                            <td>${visitor.name}</td>
-                            <td>${visitor.partySize}</td>
-                            <td>${visitor.table}</td>
-                            <td>${formatTime(visitor.checkinTime)}</td>
-                            <td>
-                                <button class="btn-warning" onclick="timeOutRestaurantVisitor(${visitor.id})">Time-out</button>
-                            </td>
-                        `;
-            tbody.appendChild(row);
-        });
-    }
-}
 
-// Hotel history
-const hotelHistoryTable = document.getElementById('hotel-history-table');
-if (hotelHistoryTable) {
-    const tbody = hotelHistoryTable.querySelector('tbody');
-    tbody.innerHTML = '';
 
-    // For demo, show all guests
-    hotelVisitors.forEach(guest => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-                        <td>${guest.name}</td>
-                        <td>${guest.room}</td>
-                        <td>${formatDate(guest.checkin)}</td>
-                        <td>${formatDate(guest.checkout)}</td>
-                        <td><span class="status-badge status-${guest.status.replace('-', '')}">${guest.status}</span></td>
-                    `;
-        tbody.appendChild(row);
-    });
-}
 
-// Restaurant history
-const restaurantHistoryTable = document.getElementById('restaurant-history-table');
-if (restaurantHistoryTable) {
-    const tbody = restaurantHistoryTable.querySelector('tbody');
-    tbody.innerHTML = '';
-
-    // For demo, show all visitors
-    restaurantVisitors.forEach(visitor => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-                        <td>${visitor.name}</td>
-                        <td>${visitor.partySize}</td>
-                        <td>${visitor.table}</td>
-                        <td>${formatTime(visitor.checkinTime)}</td>
-                        <td>${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'N/A'}</td>
-                    `;
-        tbody.appendChild(row);
-    });
-}
 
 // Generate reports
 function generateReport() {
