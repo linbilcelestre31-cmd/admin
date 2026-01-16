@@ -114,13 +114,30 @@ class AuthManager {
     }
 
     showLogin() {
-        document.getElementById('loginPage').classList.add('active');
-        document.getElementById('dashboardPage').classList.remove('active');
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+
+        loginPage.classList.remove('hidden');
+        loginPage.classList.add('active');
+        dashboardPage.classList.remove('active');
+        dashboardPage.classList.add('hidden');
     }
 
     showDashboard() {
-        document.getElementById('loginPage').classList.remove('active');
-        document.getElementById('dashboardPage').classList.add('active');
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+
+        loginPage.classList.remove('active');
+        loginPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        dashboardPage.classList.add('active');
+
+        // Initialize dashboard if it hasn't been initialized yet
+        if (!window.dashboardManager) {
+            window.dashboardManager = new DashboardManager();
+        } else {
+            window.dashboardManager.loadDashboardData();
+        }
     }
 
     updateUI() {
@@ -701,11 +718,11 @@ class APIService {
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize auth manager
-    const authManager = new AuthManager();
+    window.authManager = new AuthManager();
 
-    // Initialize dashboard if on dashboard page
+    // Initialize dashboard if on dashboard page (already logged in)
     if (document.getElementById('dashboardPage').classList.contains('active')) {
-        const dashboardManager = new DashboardManager();
+        window.dashboardManager = new DashboardManager();
     }
 
     // Create global API instance
