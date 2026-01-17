@@ -1522,40 +1522,50 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </div>
                 </div>
             </div>
-            <div style="padding: 40px; background: white;">
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-row">
-                        <label
-                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
-                            Name</label>
-                        <div id="legalDetailName"
-                            style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                            -</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div>
+            <div style="padding: 40px; background: white; position: relative;">
+                <div id="legalDetailContent" class="blurred-content">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="info-row">
                             <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
-                                id="legalDetailSecondaryLabel">Secondary</label>
-                            <div id="legalDetailSecondary"
-                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
+                                Name</label>
+                            <div id="legalDetailName"
+                                style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
                                 -</div>
                         </div>
-                        <div>
-                            <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
-                                Date</label>
-                            <div id="legalDetailDate"
-                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                -</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
+                                    id="legalDetailSecondaryLabel">Secondary</label>
+                                <div id="legalDetailSecondary"
+                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                    -</div>
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
+                                    Date</label>
+                                <div id="legalDetailDate"
+                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                    -</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button type="button"
+                                onclick="document.getElementById('legalDetailModal').style.display='none'"
+                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
+                                Close Window
+                            </button>
                         </div>
                     </div>
-                    <div style="margin-top: 20px;">
-                        <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
-                            style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
-                            Close Window
-                        </button>
-                    </div>
+                </div>
+                <!-- Reveal Overlay for Modal -->
+                <div id="legalDetailRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn"
+                        onclick="withPasswordGate(() => { document.getElementById('legalDetailContent').classList.remove('blurred-content'); document.getElementById('legalDetailRevealOverlay').style.display='none'; })">
+                        <i class="fa-solid fa-lock"></i> Enter PIN to View Details
+                    </button>
                 </div>
             </div>
         </div>
@@ -1566,43 +1576,57 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div class="premium-modal modal-animate-in"
             style="width:94%; max-width:650px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-            <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 30px 40px; color: white; position: relative;">
+            <div
+                style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 30px 40px; color: white; position: relative;">
                 <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
                     style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s;">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
                 <div style="display: flex; align-items: center; gap: 20px;">
-                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem;">
+                    <div
+                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem;">
                         <i class="fa-solid fa-robot"></i>
                     </div>
                     <div>
                         <h2 style="margin:0; font-size: 1.3rem; font-weight: 800;">AI Risk Analysis Report</h2>
-                        <span id="analysisTargetType" style="display: inline-block; margin-top: 5px; background: rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">TYPE</span>
+                        <span id="analysisTargetType"
+                            style="display: inline-block; margin-top: 5px; background: rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">TYPE</span>
                     </div>
                 </div>
             </div>
             <div style="padding: 40px; background: white; max-height: 70vh; overflow-y: auto;">
                 <div style="display: flex; flex-direction: column; gap: 25px;">
-                    <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">Confidence Score</div>
+                    <div
+                        style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+                        <div
+                            style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">
+                            Confidence Score</div>
                         <div style="font-size: 2.5rem; font-weight: 900; color: #4338ca;">94%</div>
                     </div>
                     <div>
-                        <h4 id="analysisTargetName" style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
-                        <div id="analysisSummaryText" style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
-                            <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis suggests this document is highly compliant with standard legal framework. Minimal risk exposure detected.</p>
+                        <h4 id="analysisTargetName"
+                            style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
+                        <div id="analysisSummaryText"
+                            style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
+                            <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis
+                                suggests this document is highly compliant with standard legal framework. Minimal risk
+                                exposure detected.</p>
                         </div>
                     </div>
                     <div class="info-row">
-                        <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key Findings</label>
-                        <ul id="analysisKeyFindings" style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
+                        <label
+                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key
+                            Findings</label>
+                        <ul id="analysisKeyFindings"
+                            style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
                             <li>No restrictive clauses detected.</li>
                             <li>Liability terms are clearly defined and balanced.</li>
                             <li>Renewal and termination policies are standard.</li>
                         </ul>
                     </div>
                     <div style="margin-top: 10px;">
-                         <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
+                        <button type="button"
+                            onclick="document.getElementById('legalAnalysisModal').style.display='none'"
                             style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
                             Close Report
                         </button>
@@ -1752,6 +1776,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 document.getElementById('legalDetailSecondary').textContent = secondary;
                 document.getElementById('legalDetailDate').textContent = date;
                 document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
+
+                // Reset Blur State
+                document.getElementById('legalDetailContent').classList.add('blurred-content');
+                document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
+
                 document.getElementById('legalDetailModal').style.display = 'flex';
             };
 
