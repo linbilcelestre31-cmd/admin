@@ -46,11 +46,12 @@ if (isset($_GET['super_admin_session']) && $_GET['super_admin_session'] === 'tru
     $bypass_key = $_GET['bypass_key'];
     $stmt = $db->prepare("SELECT * FROM `SuperAdminLogin_tb` WHERE api_key = ? AND is_active = 1 LIMIT 1");
     $stmt->execute([$bypass_key]);
-    if ($stmt->fetch()) {
+    $sa_user = $stmt->fetch();
+    if ($sa_user) {
         $isSuperAdmin = true;
         // Don't overwrite if we already have a session ID
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['user_id'] = 'SUPER_ADMIN';
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === 'SUPER_ADMIN') {
+            $_SESSION['user_id'] = $sa_user['id'];
         }
         $_SESSION['role'] = 'super_admin';
     }
@@ -844,16 +845,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <div class="user-info">
                         <span>Welcome, Admin</span>
                         <?php if ($isSuperAdmin): ?>
-                                <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn" style="text-decoration: none;">
-                                    <span class="icon-img-placeholder">⏻</span>
-                                    Super-Admin Dashboard
-                                </a>
+                            <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
+                                style="text-decoration: none;">
+                                <span class="icon-img-placeholder">⏻</span>
+                                logout
+                            </a>
                         <?php else: ?>
-                                <button type="button" class="logout-btn" id="backDashboardBtn"
-                                    onclick="window.location.replace('../Modules/dashboard.php')">
-                                    <span class="icon-img-placeholder">⏻</span>
-                                    logout
-                                </button>
+                            <button type="button" class="logout-btn" id="backDashboardBtn"
+                                onclick="window.location.replace('../Modules/dashboard.php')">
+                                <span class="icon-img-placeholder">⏻</span>
+                                logout
+                            </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -863,11 +865,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="container">
             <!-- Success/Error Messages -->
             <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success"><?php echo $success_message; ?></div>
+                <div class="alert alert-success"><?php echo $success_message; ?></div>
             <?php endif; ?>
 
             <?php if (isset($error_message)): ?>
-                    <div class="alert alert-error"><?php echo $error_message; ?></div>
+                <div class="alert alert-error"><?php echo $error_message; ?></div>
             <?php endif; ?>
 
             <div class="nav-tabs">
@@ -935,38 +937,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </thead>
                         <tbody id="employeesTableBody">
                             <?php foreach ($employees as $employee): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                        <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                        <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                        <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                        <td>
-                                            <div class="action-container">
-                                                <button class="action-btn view-btn" data-type="employee-view"
-                                                    data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
-                                                    <i class="fa-solid fa-eye"></i> View
+                                <tr>
+                                    <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                    <td>
+                                        <div class="action-container">
+                                            <button class="action-btn view-btn" data-type="employee-view"
+                                                data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
+                                                <i class="fa-solid fa-eye"></i> View
+                                            </button>
+                                            <?php if ($isSuperAdmin): ?>
+                                                <button class="action-btn edit-btn"
+                                                    style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                    onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
+                                                    <i class="fa-solid fa-pen-to-square"></i> Edit
                                                 </button>
-                                                <?php if ($isSuperAdmin): ?>
-                                                        <button class="action-btn edit-btn"
-                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                            onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
-                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                        </button>
-                                                        <form method="POST"
-                                                            onsubmit="return confirm('Are you sure you want to delete this employee?');">
-                                                            <input type="hidden" name="employee_id"
-                                                                value="<?php echo $employee['id']; ?>">
-                                                            <button type="submit" name="delete_employee" class="action-btn delete-btn"
-                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                <i class="fa-solid fa-trash"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                <form method="POST"
+                                                    onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                                    <input type="hidden" name="employee_id"
+                                                        value="<?php echo $employee['id']; ?>">
+                                                    <button type="submit" name="delete_employee" class="action-btn delete-btn"
+                                                        style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                        <i class="fa-solid fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -1000,51 +1002,51 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     });
                                     if (!empty($internalDocs)):
                                         foreach ($internalDocs as $doc): ?>
-                                                    <tr>
-                                                        <td><a href="javascript:void(0)" class="clickable-name"
-                                                                onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                        </td>
-                                                        <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                        <td>
-                                                            <span
-                                                                class="status-badge status-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                                <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="action-container">
-                                                                <button class="action-btn view-btn"
-                                                                    onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
-                                                                        class="fa-solid fa-eye"></i> View</button>
-                                                                <button class="action-btn analyze-btn"
-                                                                    onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'Internal')"><i
-                                                                        class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
-
-                                                                <?php if ($isSuperAdmin): ?>
-                                                                        <button class="action-btn edit-btn"
-                                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                                        </button>
-                                                                        <form method="POST"
-                                                                            onsubmit="return confirm('Delete this internal document?');">
-                                                                            <input type="hidden" name="contract_id"
-                                                                                value="<?php echo $doc['id']; ?>">
-                                                                            <button type="submit" name="delete_contract"
-                                                                                class="action-btn delete-btn"
-                                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                                <i class="fa-solid fa-trash"></i>
-                                                                            </button>
-                                                                        </form>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                            <?php endforeach;
-                                    else: ?>
                                             <tr>
-                                                <td colspan="4">No internal documents found.</td>
+                                                <td><a href="javascript:void(0)" class="clickable-name"
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                                <td>
+                                                    <span
+                                                        class="status-badge status-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
+                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="action-container">
+                                                        <button class="action-btn view-btn"
+                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
+                                                                class="fa-solid fa-eye"></i> View</button>
+                                                        <button class="action-btn analyze-btn"
+                                                            onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'Internal')"><i
+                                                                class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
+
+                                                        <?php if ($isSuperAdmin): ?>
+                                                            <button class="action-btn edit-btn"
+                                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                                onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
+                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                            </button>
+                                                            <form method="POST"
+                                                                onsubmit="return confirm('Delete this internal document?');">
+                                                                <input type="hidden" name="contract_id"
+                                                                    value="<?php echo $doc['id']; ?>">
+                                                                <button type="submit" name="delete_contract"
+                                                                    class="action-btn delete-btn"
+                                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
                                             </tr>
+                                        <?php endforeach;
+                                    else: ?>
+                                        <tr>
+                                            <td colspan="4">No internal documents found.</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -1086,47 +1088,47 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     });
                                     if (!empty($externalDocs)):
                                         foreach ($externalDocs as $doc): ?>
-                                                    <tr>
-                                                        <td><a href="javascript:void(0)" class="clickable-name"
-                                                                onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                        </td>
-                                                        <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                        <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
-                                                        </td>
-                                                        <td>
-                                                            <div class="action-container">
-                                                                <button class="action-btn view-btn"
-                                                                    onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><i
-                                                                        class="fa-solid fa-eye"></i> View</button>
-                                                                <button class="action-btn analyze-btn"
-                                                                    onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'External')"><i
-                                                                        class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
-
-                                                                <?php if ($isSuperAdmin): ?>
-                                                                        <button class="action-btn edit-btn"
-                                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                                        </button>
-                                                                        <form method="POST"
-                                                                            onsubmit="return confirm('Delete this external agreement?');">
-                                                                            <input type="hidden" name="contract_id"
-                                                                                value="<?php echo $doc['id']; ?>">
-                                                                            <button type="submit" name="delete_contract"
-                                                                                class="action-btn delete-btn"
-                                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                                <i class="fa-solid fa-trash"></i>
-                                                                            </button>
-                                                                        </form>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                            <?php endforeach;
-                                    else: ?>
                                             <tr>
-                                                <td colspan="4">No external agreements found.</td>
+                                                <td><a href="javascript:void(0)" class="clickable-name"
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                                <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
+                                                </td>
+                                                <td>
+                                                    <div class="action-container">
+                                                        <button class="action-btn view-btn"
+                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><i
+                                                                class="fa-solid fa-eye"></i> View</button>
+                                                        <button class="action-btn analyze-btn"
+                                                            onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'External')"><i
+                                                                class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
+
+                                                        <?php if ($isSuperAdmin): ?>
+                                                            <button class="action-btn edit-btn"
+                                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                                onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
+                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                            </button>
+                                                            <form method="POST"
+                                                                onsubmit="return confirm('Delete this external agreement?');">
+                                                                <input type="hidden" name="contract_id"
+                                                                    value="<?php echo $doc['id']; ?>">
+                                                                <button type="submit" name="delete_contract"
+                                                                    class="action-btn delete-btn"
+                                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
                                             </tr>
+                                        <?php endforeach;
+                                    else: ?>
+                                        <tr>
+                                            <td colspan="4">No external agreements found.</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -1161,47 +1163,47 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </thead>
                         <tbody id="documentsTableBody">
                             <?php if (!empty($documents)): ?>
-                                    <?php foreach ($documents as $doc): ?>
-                                            <tr>
-                                                <td>
-                                                    <?php if (!empty($doc['file_path'])): ?>
-                                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline"
-                                                                data-pdf-type="document"
-                                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                    <?php else: ?>
-                                                            <?php echo htmlspecialchars($doc['name']); ?>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                                <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                                </td>
-                                                <td>
-                                                    <div class="action-container">
-                                                        <button class="action-btn download-btn" data-type="doc-download"
-                                                            data-pdf-type="document"
-                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                                            style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
-                                                            <i class="fa-solid fa-file-pdf"></i> Download
-                                                        </button>
-                                                        <?php if ($isSuperAdmin): ?>
-                                                                <form method="POST"
-                                                                    onsubmit="return confirm('Permanently delete this document?');">
-                                                                    <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
-                                                                    <button type="submit" name="delete_document" class="action-btn delete-btn"
-                                                                        style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;">
-                                                                        <i class="fa-solid fa-trash"></i> Delete
-                                                                    </button>
-                                                                </form>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                    <?php endforeach; ?>
-                            <?php else: ?>
+                                <?php foreach ($documents as $doc): ?>
                                     <tr>
-                                        <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                        <td>
+                                            <?php if (!empty($doc['file_path'])): ?>
+                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                            <?php else: ?>
+                                                <?php echo htmlspecialchars($doc['name']); ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                        </td>
+                                        <td>
+                                            <div class="action-container">
+                                                <button class="action-btn download-btn" data-type="doc-download"
+                                                    data-pdf-type="document"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                    style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+                                                    <i class="fa-solid fa-file-pdf"></i> Download
+                                                </button>
+                                                <?php if ($isSuperAdmin): ?>
+                                                    <form method="POST"
+                                                        onsubmit="return confirm('Permanently delete this document?');">
+                                                        <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
+                                                        <button type="submit" name="delete_document" class="action-btn delete-btn"
+                                                            style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;">
+                                                            <i class="fa-solid fa-trash"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
                                         </td>
                                     </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                    </td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -1317,48 +1319,48 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
                             $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
                             ?>
-                                <tr>
-                                    <td>
-                                        <?php if (!empty($contract['file_path'])): ?>
-                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                        <?php else: ?>
-                                                <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                            <tr>
+                                <td>
+                                    <?php if (!empty($contract['file_path'])): ?>
+                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                    <?php else: ?>
+                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                <td>
+                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
+                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
+                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                <td>
+                                    <div class="action-container">
+                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
+                                            <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
+                                        </button>
+                                        <button class="action-btn download-btn" data-type="contract-download"
+                                            data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        </button>
+                                        <?php if ($isSuperAdmin): ?>
+                                            <form method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this contract?');">
+                                                <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
+                                                <button type="submit" name="delete_contract" class="action-btn delete-btn"
+                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                </button>
+                                            </form>
                                         <?php endif; ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                    <td>
-                                        <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                            <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                    <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                    <td>
-                                        <div class="action-container">
-                                            <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
-                                                <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
-                                            </button>
-                                            <button class="action-btn download-btn" data-type="contract-download"
-                                                data-pdf-type="contract"
-                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                                style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                                <i class="fa-solid fa-file-pdf"></i> PDF
-                                            </button>
-                                            <?php if ($isSuperAdmin): ?>
-                                                    <form method="POST"
-                                                        onsubmit="return confirm('Are you sure you want to delete this contract?');">
-                                                        <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
-                                                        <button type="submit" name="delete_contract" class="action-btn delete-btn"
-                                                            style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                                            <i class="fa-solid fa-trash"></i> Delete
-                                                        </button>
-                                                    </form>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -1422,59 +1424,59 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
                             });
                             if (!empty($highContracts)): ?>
-                                    <div class="high-risk-items">
-                                        <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                                <div class="risk-item"
-                                                    style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
-                                                    <div
-                                                        style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                                        <div class="risk-item-info">
-                                                            <span class="risk-item-name"
-                                                                style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
-                                                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                                                                <span
-                                                                    style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="risk-item-score">
-                                                            <span class="score-badge"
-                                                                style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <?php if (!empty($hc['analysis_summary'])): ?>
-                                                            <div class="risk-ai-summary"
-                                                                style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
-                                                                <p
-                                                                    style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
-                                                                    <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
-                                                                    <strong>AI Result:</strong>
-                                                                    <?php echo htmlspecialchars($hc['analysis_summary']); ?>
-                                                                </p>
-                                                            </div>
-                                                    <?php endif; ?>
-
-                                                    <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
-                                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                            data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                            style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
-                                                            Full Report
-                                                        </button>
-                                                        <button class="action-btn download-btn" data-type="contract-download"
-                                                            data-pdf-type="contract"
-                                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                            style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
-                                                            Download PDF
-                                                        </button>
+                                <div class="high-risk-items">
+                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                        <div class="risk-item"
+                                            style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
+                                            <div
+                                                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                                <div class="risk-item-info">
+                                                    <span class="risk-item-name"
+                                                        style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                                        <span
+                                                            style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
                                                     </div>
                                                 </div>
-                                        <?php endforeach; ?>
-                                    </div>
+                                                <div class="risk-item-score">
+                                                    <span class="score-badge"
+                                                        style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                                </div>
+                                            </div>
+
+                                            <?php if (!empty($hc['analysis_summary'])): ?>
+                                                <div class="risk-ai-summary"
+                                                    style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
+                                                    <p
+                                                        style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
+                                                        <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
+                                                        <strong>AI Result:</strong>
+                                                        <?php echo htmlspecialchars($hc['analysis_summary']); ?>
+                                                    </p>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
+                                                <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                                    data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                    style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                                    Full Report
+                                                </button>
+                                                <button class="action-btn download-btn" data-type="contract-download"
+                                                    data-pdf-type="contract"
+                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                    style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                                    Download PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
                             <?php else: ?>
-                                    <div class="no-risk-data">
-                                        <i class="fa-solid fa-shield-check"></i>
-                                        <p>No high-risk contracts detected.</p>
-                                    </div>
+                                <div class="no-risk-data">
+                                    <i class="fa-solid fa-shield-check"></i>
+                                    <p>No high-risk contracts detected.</p>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
