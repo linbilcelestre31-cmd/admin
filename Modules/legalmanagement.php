@@ -838,7 +838,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <td>HR Compliance</td>
                                 <td>2024-01-01</td>
                                 <td>
-                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn view-btn"
+                                        onclick="showLegalDetails('Employee Privacy Policy 2024', 'HR Compliance', '2024-01-01', 'Internal', 'Compliance Category')">View</button>
                                     <button class="action-btn download-btn">Download</button>
                                 </td>
                             </tr>
@@ -847,7 +848,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <td>Operations</td>
                                 <td>2023-11-15</td>
                                 <td>
-                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn view-btn"
+                                        onclick="showLegalDetails('Internal Operational Guidelines', 'Operations', '2023-11-15', 'Internal', 'Department')">View</button>
                                     <button class="action-btn download-btn">Download</button>
                                 </td>
                             </tr>
@@ -880,7 +882,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <td>LogiTrans Corp</td>
                                 <td>2025-12-31</td>
                                 <td>
-                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn view-btn"
+                                        onclick="showLegalDetails('Global Logistics Supply Agreement', 'LogiTrans Corp', '2025-12-31', 'External Agreement', 'Partner / Vendor')">View</button>
                                     <button class="action-btn analyze-btn">Analyze</button>
                                 </td>
                             </tr>
@@ -889,7 +892,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <td>SafeGuard Solutions</td>
                                 <td>2026-06-30</td>
                                 <td>
-                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn view-btn"
+                                        onclick="showLegalDetails('Outsourced Security Services NDA', 'SafeGuard Solutions', '2026-06-30', 'External NDA', 'Partner / Vendor')">View</button>
                                     <button class="action-btn analyze-btn">Analyze</button>
                                 </td>
                             </tr>
@@ -1460,6 +1464,69 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
+    <!-- Internal/External Info Modal -->
+    <div id="legalDetailModal"
+        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+        <div class="premium-modal modal-animate-in"
+            style="width:94%; max-width:600px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
+            <div
+                style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
+                <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
+                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 20;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div
+                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; backdrop-filter: blur(5px);">
+                        <i class="fa-solid fa-file-contract"></i>
+                    </div>
+                    <div>
+                        <h2 id="legalDetailTitle" style="margin:0; font-size: 1.3rem; font-weight: 800;">Document
+                            Details</h2>
+                        <span id="legalDetailCategory"
+                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">CATEGORY</span>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 40px; background: white;">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
+                            Name</label>
+                        <div id="legalDetailName"
+                            style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            -</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
+                                id="legalDetailSecondaryLabel">Secondary</label>
+                            <div id="legalDetailSecondary"
+                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                -</div>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
+                                Date</label>
+                            <div id="legalDetailDate"
+                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                -</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
+                            style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
+                            Close Window
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
     </script>
@@ -1592,6 +1659,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             window.initRiskChart();
             document.addEventListener('DOMContentLoaded', window.initRiskChart);
             window.addEventListener('load', window.initRiskChart);
+
+            // Function to show Legal Details Modal
+            window.showLegalDetails = function (name, secondary, date, type, secondaryLabel) {
+                document.getElementById('legalDetailName').textContent = name;
+                document.getElementById('legalDetailCategory').textContent = type;
+                document.getElementById('legalDetailSecondary').textContent = secondary;
+                document.getElementById('legalDetailDate').textContent = date;
+                document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
+                document.getElementById('legalDetailModal').style.display = 'flex';
+            };
 
             const employeeInfoTitle = document.getElementById('employeeInfoTitle');
             const empInfoModal = document.getElementById('employeeInfoModal');
