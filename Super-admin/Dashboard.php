@@ -55,7 +55,7 @@ $modules = [
     ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
     ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
     ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
-    ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => '../Modules/financial.php'],
+    ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
     ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
 ];
 
@@ -488,7 +488,7 @@ $modules = [
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="#" class="nav-link" id="show-admins-btn">
                     <i class="fas fa-users"></i> Administrators
                 </a>
             </li>
@@ -527,7 +527,7 @@ $modules = [
         <div class="module-grid">
             <?php foreach ($modules as $module): ?>
                 <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="module-card">
+                    class="module-card" id="module-<?php echo $module['id']; ?>">
                     <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
                         <i class="fas fa-<?php echo $module['icon']; ?>"></i>
                     </div>
@@ -562,6 +562,142 @@ $modules = [
             </div>
         </div>
     </div>
+    <!-- Administrators Modal -->
+    <div id="adminsModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div
+                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#0f172a; color:white;">
+                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-user-shield"
+                        style="color:var(--primary-gold); margin-right:15px;"></i>Financial Administrators</h2>
+                <button id="closeAdminsModal"
+                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div id="adminsListContainer" style="padding:30px; overflow-y:auto; background:#f8fafc; flex-grow:1;">
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Financial Cluster...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Combined handler for Administrators list (from Sidebar or Card)
+        const showAdmins = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('adminsModal');
+            modal.style.display = 'flex';
+
+            // Show loading state initially
+            const container = document.getElementById('adminsListContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Financial Cluster...</p>
+                </div>
+            `;
+
+            fetch('integ/fn_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        if (result.data.length === 0) {
+                            container.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fas fa-users-slash" style="font-size:40px; margin-bottom:20px; display:block;"></i>No administrative accounts found in the financial system.</div>';
+                            return;
+                        }
+
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">Administrator</th>
+                                            <th style="padding:10px 20px;">Role</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Last Activity</th>
+                                            <th style="padding:10px 20px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(user => {
+                            const statusColor = user.status === 'active' ? '#10b981' : '#ef4444';
+                            const roleColor = user.role === 'admin' ? '#d4af37' : '#3b82f6';
+                            const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; border-radius:12px 0 0 12px;">
+                                        <div style="display:flex; align-items:center; gap:15px;">
+                                            <div style="width:40px; height:40px; border-radius:12px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#475569; font-weight:700;">
+                                                ${user.username.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight:600; color:#1e293b;">${user.full_name}</div>
+                                                <div style="font-size:12px; color:#64748b;">@${user.username}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <span style="background:${roleColor}15; color:${roleColor}; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase;">
+                                            ${user.role}
+                                        </span>
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:8px; height:8px; border-radius:50%; background:${statusColor};"></div>
+                                            <span style="font-size:14px; color:#475569; text-transform:capitalize;">${user.status}</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding:15px 20px; font-size:14px; color:#64748b;">
+                                        ${lastLogin}
+                                    </td>
+                                    <td style="padding:15px 20px; border-radius:0 12px 12px 0;">
+                                        <button style="background:transparent; border:1px solid #e2e8f0; color:#64748b; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary-gold)'; this.style.color='var(--primary-gold)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#64748b'">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:20px; display:block;"></i>Unable to connect to the financial system. Please try again later.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching admins:', error);
+                    document.getElementById('adminsListContainer').innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-wifi" style="font-size:40px; margin-bottom:20px; display:block;"></i>Network error occurred. The cluster might be unreachable.</div>';
+                });
+        };
+
+        // Attach to Sidebar button
+        document.getElementById('show-admins-btn').addEventListener('click', showAdmins);
+
+        // Attach to Financial Records card
+        document.getElementById('module-FINANCE').addEventListener('click', showAdmins);
+
+        document.getElementById('closeAdminsModal').addEventListener('click', function () {
+            document.getElementById('adminsModal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('adminsModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 
 </html>
