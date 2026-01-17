@@ -72,7 +72,6 @@ $clusters = [
         ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
         ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
         ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
-        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
     ],
     'Core Cluster' => [
         ['name' => 'CORE 1 - Front Office', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
@@ -641,27 +640,7 @@ $clusters = [
         </div>
     </div>
 
-    <!-- HR4 Modal -->
-    <div id="hr4Modal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
-        <div
-            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
-            <div
-                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#ef4444; color:white;">
-                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-users-between-lines"
-                        style="color:white; margin-right:15px;"></i>Employee Relations Cases</h2>
-                <button id="closeHr4Modal"
-                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
-                        class="fas fa-times"></i></button>
-            </div>
-            <div id="hr4ListContainer" style="padding:30px; overflow-y:auto; background:#fef2f2; flex-grow:1;">
-                <div style="text-align:center; padding:50px;">
-                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#ef4444;"></i>
-                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Logistics Modal -->
     <div id="logisticsModal"
@@ -944,13 +923,19 @@ $clusters = [
                         `;
 
                         result.data.forEach(item => {
+                            // Map API fields to display variables
+                            const name = item.applicant_name || (item.first_name && item.last_name ? `${item.first_name} ${item.last_name}` : 'Unknown');
+                            const position = item.position || item.job_title || 'N/A';
+                            const date = item.date_applied || item.hire_date || item.created_at || 'N/A';
+                            const status = item.status || 'Active';
+
                             html += `
                                 <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
                                     <td style="padding:15px 20px; font-weight:700; color:#3b82f6;">#${item.id}</td>
-                                    <td style="padding:15px 20px;">${item.applicant_name}</td>
-                                    <td style="padding:15px 20px;">${item.position}</td>
-                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
-                                    <td style="padding:15px 20px;">${item.date_applied}</td>
+                                    <td style="padding:15px 20px;">${name}</td>
+                                    <td style="padding:15px 20px;">${position}</td>
+                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${status}</span></td>
+                                    <td style="padding:15px 20px;">${date}</td>
                                      <td style="padding:15px 20px;">
                                         <div style="display:flex; justify-content: flex-start;">
                                             <a href="../HR1/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
@@ -971,67 +956,7 @@ $clusters = [
                 });
         };
 
-        // HR4 Modal Handler
-        const showHr4 = function (e) {
-            if (e) e.preventDefault();
-            const modal = document.getElementById('hr4Modal');
-            modal.style.display = 'flex';
 
-            const container = document.getElementById('hr4ListContainer');
-            container.innerHTML = `
-                <div style="text-align:center; padding:50px;">
-                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#ef4444;"></i>
-                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
-                </div>
-            `;
-
-            fetch('integ/hr4_api.php')
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success && result.data) {
-                        let html = `
-                            <div style="overflow-x:auto;">
-                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
-                                    <thead>
-                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
-                                            <th style="padding:10px 20px;">Case ID</th>
-                                            <th style="padding:10px 20px;">Employee</th>
-                                            <th style="padding:10px 20px;">Issue</th>
-                                            <th style="padding:10px 20px;">Status</th>
-                                            <th style="padding:10px 20px;">Date Filed</th>
-                                            <th style="padding:10px 20px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
-
-                        result.data.forEach(item => {
-                            html += `
-                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
-                                    <td style="padding:15px 20px; font-weight:700; color:#ef4444;">${item.case_id}</td>
-                                    <td style="padding:15px 20px;">${item.employee_name}</td>
-                                    <td style="padding:15px 20px;">${item.issue}</td>
-                                    <td style="padding:15px 20px;"><span style="background:#fef2f2; color:#ef4444; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
-                                    <td style="padding:15px 20px;">${item.date_filed}</td>
-                                     <td style="padding:15px 20px;">
-                                        <div style="display:flex; justify-content: flex-start;">
-                                            <a href="../HR4/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
-                                               target="_blank"
-                                               class="action-btn" 
-                                               style="color: #ef4444; text-decoration: none; background: #fef2f2; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" 
-                                               title="Access System">
-                                                <i class="fas fa-external-link-alt"></i> Login Access
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                        html += `</tbody></table></div>`;
-                        container.innerHTML = html;
-                    }
-                });
-        };
 
         // Attach to Sidebar button
         document.getElementById('show-admins-btn').addEventListener('click', showAdmins);
@@ -1051,10 +976,7 @@ $clusters = [
             document.getElementById('module-HR1').addEventListener('click', showHr1);
         }
 
-        // Attach to HR4 Card
-        if (document.getElementById('module-HR4')) {
-            document.getElementById('module-HR4').addEventListener('click', showHr4);
-        }
+
 
         document.getElementById('closeAdminsModal').addEventListener('click', function () {
             document.getElementById('adminsModal').style.display = 'none';
@@ -1068,20 +990,13 @@ $clusters = [
             document.getElementById('hr1Modal').style.display = 'none';
         });
 
-        document.getElementById('closeHr4Modal').addEventListener('click', function () {
-            document.getElementById('hr4Modal').style.display = 'none';
-        });
+
 
         window.addEventListener('click', function (e) {
             const modal = document.getElementById('adminsModal');
             const logModal = document.getElementById('logisticsModal');
             const hr1Modal = document.getElementById('hr1Modal');
-            const hr4Modal = document.getElementById('hr4Modal');
-            
-            if (e.target === modal) modal.style.display = 'none';
-            if (e.target === logModal) logModal.style.display = 'none';
             if (e.target === hr1Modal) hr1Modal.style.display = 'none';
-            if (e.target === hr4Modal) hr4Modal.style.display = 'none';
         });
     </script>
 </body>
