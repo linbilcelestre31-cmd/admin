@@ -251,10 +251,229 @@ $modules = [
             gap: 10px;
             font-weight: 600;
         }
+
+        /* --- LOADING SCREEN STYLES --- */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .fire {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .fire .flame {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            border-radius: 50% 0 50% 50%;
+            background: linear-gradient(-45deg, #d4af37, #fcf6ba, #aa771c);
+            transform: translateX(-50%) rotate(-45deg);
+            box-shadow: 0 0 10px #d4af37, 0 0 20px #aa771c;
+            animation: burn 1s infinite alternate ease-in-out;
+            opacity: 0.9;
+        }
+
+        .fire .flame:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            bottom: 5px;
+            background: linear-gradient(-45deg, #fcf6ba, #fff);
+            animation: burn 1.5s infinite alternate-reverse ease-in-out;
+            z-index: 2;
+        }
+
+        @keyframes burn {
+            0% {
+                transform: translateX(-50%) rotate(-45deg) scale(1);
+                border-radius: 50% 0 50% 50%;
+            }
+
+            50% {
+                transform: translateX(-50%) rotate(-45deg) scale(1.1);
+                border-radius: 40% 10% 40% 40%;
+            }
+
+            100% {
+                transform: translateX(-50%) rotate(-45deg) scale(1);
+                border-radius: 50% 0 50% 50%;
+            }
+        }
+
+        .brand-text-loader {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 5s infinite linear;
+            background-size: 200%;
+        }
+
+        .tagline-loader {
+            font-family: 'Montserrat', sans-serif;
+            color: #E6C86E;
+            font-weight: 700;
+            letter-spacing: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .admin-wrapper-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .admin-text-loader {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #E6C86E;
+            letter-spacing: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .wave-text-loader span {
+            display: inline-block;
+            animation: letterWaveLoader 2s ease-in-out infinite;
+            animation-delay: calc(0.1s * var(--i));
+        }
+
+        @keyframes letterWaveLoader {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .center-line-loader {
+            height: 1px;
+            width: 40px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        .loading-line-loader {
+            width: 250px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .loading-progress-loader {
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #E6C86E, #fcf6ba, #E6C86E);
+            box-shadow: 0 0 10px #E6C86E;
+            animation: loadProgress 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-container">
+            <div class="brand-wrapper">
+                <div class="fire">
+                    <div class="flame"></div>
+                    <div class="flame"></div>
+                </div>
+                <h1 class="brand-text-loader">ATIÉRA</h1>
+            </div>
+            <div class="tagline-loader wave-text-loader">Hotel & Restaurant</div>
+            <div class="admin-wrapper-loader">
+                <div class="center-line-loader"></div>
+                <div class="admin-text-loader wave-text-loader">ADMINISTRATIVE</div>
+                <div class="center-line-loader"></div>
+            </div>
+            <div class="loading-line-loader">
+                <div class="loading-progress-loader"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wave Text Animation for Loader
+        document.querySelectorAll('.wave-text-loader').forEach(container => {
+            const text = container.textContent;
+            container.innerHTML = '';
+            [...text].forEach((letter, index) => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter;
+                span.style.setProperty('--i', index);
+                container.appendChild(span);
+            });
+        });
+
+        // Hide Loading Screen
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                }, 800);
+            }, 2000); // 2 seconds delay
+        });
+    </script>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
