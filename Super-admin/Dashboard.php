@@ -229,20 +229,20 @@ $clusters = [
         /* Module Grid */
         .module-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
         }
 
         .module-card {
             background: var(--card-bg);
-            padding: 30px;
-            border-radius: 24px;
+            padding: 20px;
+            border-radius: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             transition: all 0.3s;
             text-decoration: none;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             border: 1px solid #e2e8f0;
         }
 
@@ -253,13 +253,13 @@ $clusters = [
         }
 
         .module-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 18px;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             color: white;
         }
 
