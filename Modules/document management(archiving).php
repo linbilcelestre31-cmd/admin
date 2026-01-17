@@ -622,8 +622,6 @@ function formatFileSize($bytes)
                             Compliance</a></li>
                     <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                             Marketing</a></li>
-                    <li><a href="#" class="category-link" data-category="Employees"><i class="fas fa-users-cog"></i>
-                            HR Employees</a></li>
                 </ul>
                 <!-- Sidebar footer removed as per user request -->
             </aside>
@@ -708,9 +706,6 @@ function formatFileSize($bytes)
                 </div>
                 <div class="category-content" id="marketing-content">
                     <div class="file-grid" id="marketingFiles"></div>
-                </div>
-                <div class="category-content" id="employees-content">
-                    <div id="employeesFiles"></div>
                 </div>
             </div>
         </div>
@@ -1051,16 +1046,11 @@ function formatFileSize($bytes)
                 'Guest Records': '../integ/guest_fn.php',
                 'Inventory': '../integ/inventory_fn.php',
                 'Compliance': '../integ/compliance_fn.php',
-                'Marketing': '../integ/marketing_fn.php',
-                'Employees': '../integ/hr4_api.php'
+                'Marketing': '../integ/marketing_fn.php'
             };
 
             if (apiMap[category]) {
-                if (category === 'Employees') {
-                    loadEmployeesList(apiMap[category] + '?limit=5', gridId);
-                } else {
-                    loadFromExternalAPI(apiMap[category], gridId, category);
-                }
+                loadFromExternalAPI(apiMap[category], gridId, category);
                 return;
             }
 
@@ -1263,8 +1253,7 @@ function formatFileSize($bytes)
                 'Guest Records': 'fas fa-user-check',
                 'Inventory': 'fas fa-boxes',
                 'Compliance': 'fas fa-shield-alt',
-                'Marketing': 'fas fa-bullhorn',
-                'Employees': 'fas fa-users-cog'
+                'Marketing': 'fas fa-bullhorn'
             };
 
             grid.innerHTML = `
@@ -1276,61 +1265,6 @@ function formatFileSize($bytes)
             `;
         }
 
-        function loadEmployeesList(apiUrl, gridId) {
-            const grid = document.getElementById(gridId);
-            if (!grid) return;
-
-            grid.innerHTML = '<div style="text-align: center; padding: 4rem; grid-column: 1/-1;"><div class="loading-spinner"></div> Loading employees...</div>';
-
-            fetch(apiUrl)
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success && res.data) {
-                        renderEmployeeTable(res.data, grid);
-                    } else {
-                        showNoDataMessage(grid, 'Employees');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error loading employees:', err);
-                    showNoDataMessage(grid, 'Employees');
-                });
-        }
-
-        function renderEmployeeTable(employees, grid) {
-            grid.innerHTML = `
-                <div class="financial-table-container" style="grid-column: 1/-1;">
-                    <table class="financial-table">
-                        <thead>
-                            <tr>
-                                <th>Emp ID</th>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Department</th>
-                                <th>Contact</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${employees.map(emp => {
-                const pos = emp.employment_details ? (emp.employment_details.job_title || 'N/A') : (emp.position || 'N/A');
-                const dept = emp.department_name || emp.department || 'N/A';
-                return `
-                                    <tr>
-                                        <td><strong>#${emp.employee_id || emp.id}</strong></td>
-                                        <td>${emp.first_name} ${emp.last_name}</td>
-                                        <td>${pos}</td>
-                                        <td>${dept}</td>
-                                        <td>${emp.contact_number || emp.email || 'N/A'}</td>
-                                        <td><span class="status-badge" style="background: ${emp.status === 'Active' ? '#22c55e' : '#64748b'}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">${emp.status || 'Active'}</span></td>
-                                    </tr>
-                                `;
-            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
 
         // Global functions for modals
         window.showFinancialDetails = function (record) {
