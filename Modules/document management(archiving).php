@@ -34,12 +34,12 @@ try {
 // Fetch dashboard stats
 $stats = [
     'total' => 0,
-    'trash' => 0,
+    'categories' => 0,
     'storage' => '0 B'
 ];
 try {
     $stats['total'] = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn();
-    $stats['trash'] = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn();
+    $stats['categories'] = $db->query("SELECT COUNT(DISTINCT category) FROM documents WHERE is_deleted = 0")->fetchColumn();
     $total_bytes = $db->query("SELECT SUM(file_size) FROM documents")->fetchColumn() ?: 0;
 
     function formatBytes($bytes, $precision = 2)
@@ -500,6 +500,72 @@ function formatFileSize($bytes)
             color: #FFD700 !important;
             transition: color 0.3s ease;
         }
+
+        /* Dashboard Stats Boxes */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-info h4 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-info p {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .bg-blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .bg-purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .bg-orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .bg-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
     </style>
 </head>
 
@@ -556,10 +622,6 @@ function formatFileSize($bytes)
                             Compliance</a></li>
                     <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                             Marketing</a></li>
-                    <li><a href="#" class="category-link" data-category="Internal"><i class="fas fa-building-lock"></i>
-                            Internal Docs</a></li>
-                    <li><a href="#" class="category-link" data-category="External"><i class="fas fa-handshake"></i>
-                            External Files</a></li>
                     <li><a href="#" class="category-link" data-category="Employees"><i class="fas fa-users-cog"></i>
                             HR Employees</a></li>
                 </ul>
@@ -581,21 +643,50 @@ function formatFileSize($bytes)
                 <!-- Success/Error Messages -->
                 <div id="messageContainer"></div>
 
-                <!-- All Documents View -->
+                <!-- All Documents View (Dashboard) -->
                 <div class="category-content active" id="all-content">
-                    <div class="tabs">
-                        <button class="tab active" data-tab="active">Active Files</button>
-                        <button class="tab" data-tab="trash">Trash Bin</button>
-                    </div>
-                    <div class="tab-content active" id="active-tab">
-                        <div class="file-grid" id="activeFiles">
-                            <!-- Active files will be populated here -->
+                    <!-- Dashboard Stats Section -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>Total Files</h4>
+                                <p><?php echo number_format($stats['total']); ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-purple">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>Categories</h4>
+                                <p><?php echo number_format($stats['categories']); ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-orange">
+                                <i class="fas fa-hdd"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>Storage Used</h4>
+                                <p><?php echo $stats['storage']; ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>System Status</h4>
+                                <p>Online</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="tab-content" id="trash-tab">
-                        <div class="file-grid" id="trashFiles">
-                            <!-- Trash files will be populated here -->
-                        </div>
+
+                    <div class="file-grid" id="activeFiles">
+                        <!-- Active files will be populated here -->
                     </div>
                 </div>
 
@@ -614,12 +705,6 @@ function formatFileSize($bytes)
                 </div>
                 <div class="category-content" id="compliance-content">
                     <div class="file-grid" id="complianceFiles"></div>
-                </div>
-                <div class="category-content" id="internal-content">
-                    <div class="file-grid" id="internalFiles"></div>
-                </div>
-                <div class="category-content" id="external-content">
-                    <div class="file-grid" id="externalFiles"></div>
                 </div>
                 <div class="category-content" id="marketing-content">
                     <div class="file-grid" id="marketingFiles"></div>
@@ -657,8 +742,6 @@ function formatFileSize($bytes)
                         <option value="Inventory">Inventory</option>
                         <option value="Compliance">Compliance</option>
                         <option value="Marketing">Marketing</option>
-                        <option value="Internal">Internal</option>
-                        <option value="External">External</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -776,22 +859,7 @@ function formatFileSize($bytes)
                 });
             });
 
-            // Tab Navigation
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-
-                    if (tabId === 'trash') {
-                        loadTrashFiles();
-                    } else if (tabId === 'active') {
-                        loadCategoryFiles('all');
-                    }
-                });
-            });
+            // Tab Navigation removed as per user request (Trash bin erased)
 
             // PIN Input handling
             archivePinDigits.forEach((input, index) => {
@@ -942,9 +1010,7 @@ function formatFileSize($bytes)
                 'Guest Records': 'Guest Records',
                 'Inventory': 'Inventory',
                 'Compliance': 'Compliance',
-                'Marketing': 'Marketing',
-                'Internal': 'Internal Documents & Policies',
-                'External': 'External Agreements'
+                'Marketing': 'Marketing'
             };
             document.getElementById('contentTitle').textContent = titles[category] || 'Archive Management';
 
@@ -1178,7 +1244,7 @@ function formatFileSize($bytes)
                                         <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Download">
                                             <i class="fas fa-download"></i>
                                         </a>
-                                        <button class="btn-view-small" style="color: #ef4444;" onclick="moveToTrash(${item.id})" title="Delete">
+                                        <button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})" title="Delete Permanently">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -1198,9 +1264,7 @@ function formatFileSize($bytes)
                 'Inventory': 'fas fa-boxes',
                 'Compliance': 'fas fa-shield-alt',
                 'Marketing': 'fas fa-bullhorn',
-                'Employees': 'fas fa-users-cog',
-                'Internal': 'fas fa-building-lock',
-                'External': 'fas fa-handshake'
+                'Employees': 'fas fa-users-cog'
             };
 
             grid.innerHTML = `
@@ -1412,77 +1476,6 @@ function formatFileSize($bytes)
 
         // Authentication display functions removed as status is no longer persistent
 
-        // Trash Management Functions
-        function loadTrashFiles() {
-            fetch('?api=1&action=deleted')
-                .then(r => r.json())
-                .then(data => {
-                    const grid = document.getElementById('trashFiles');
-                    if (!data || data.length === 0) {
-                        grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">Trash bin is empty</div>`;
-                        return;
-                    }
-                    renderTrashTable(data, grid);
-                });
-        }
-
-        function renderTrashTable(data, grid) {
-            grid.innerHTML = `
-                <div class="financial-table-container" style="grid-column: 1/-1;">
-                    <table class="financial-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Deleted Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.map(item => `
-                                <tr>
-                                    <td>📄 ${item.name}</td>
-                                    <td>${new Date(item.deleted_date).toLocaleDateString()}</td>
-                                    <td>
-                                        <button class="btn-view-small" onclick="restoreFile(${item.id})" style="color: #22c55e;" title="Restore">
-                                            <i class="fas fa-undo"></i>
-                                        </button>
-                                        <button class="btn-view-small" onclick="deletePermanent(${item.id})" style="color: #ef4444;" title="Delete Permanently">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        window.moveToTrash = function (id) {
-            if (!confirm('Move this document to trash?')) return;
-            const formData = new FormData();
-            formData.append('action', 'trash');
-            formData.append('id', id);
-            fetch('?api=1', { method: 'POST', body: formData })
-                .then(r => r.json())
-                .then(res => {
-                    alert(res.message);
-                    loadCategoryFiles('all');
-                });
-        };
-
-        window.restoreFile = function (id) {
-            const formData = new FormData();
-            formData.append('action', 'restore');
-            formData.append('id', id);
-            fetch('?api=1', { method: 'POST', body: formData })
-                .then(r => r.json())
-                .then(res => {
-                    alert(res.message);
-                    loadTrashFiles();
-                });
-        };
-
         window.deletePermanent = function (id) {
             if (!confirm('Are you sure you want to permanently delete this file? This action cannot be undone.')) return;
             fetch('?api=1', {
@@ -1493,7 +1486,7 @@ function formatFileSize($bytes)
                 .then(r => r.json())
                 .then(res => {
                     alert(res.message);
-                    loadTrashFiles();
+                    loadCategoryFiles('all');
                 });
         };
 
