@@ -617,6 +617,52 @@ $clusters = [
         </div>
     </div>
 
+    </div>
+
+    <!-- HR1 Modal -->
+    <div id="hr1Modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div
+                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#3b82f6; color:white;">
+                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-user-plus"
+                        style="color:white; margin-right:15px;"></i>Recruitment Dashboard</h2>
+                <button id="closeHr1Modal"
+                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div id="hr1ListContainer" style="padding:30px; overflow-y:auto; background:#eff6ff; flex-grow:1;">
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#3b82f6;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HR4 Modal -->
+    <div id="hr4Modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div
+                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#ef4444; color:white;">
+                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-users-between-lines"
+                        style="color:white; margin-right:15px;"></i>Employee Relations Cases</h2>
+                <button id="closeHr4Modal"
+                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div id="hr4ListContainer" style="padding:30px; overflow-y:auto; background:#fef2f2; flex-grow:1;">
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#ef4444;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Logistics Modal -->
     <div id="logisticsModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
@@ -795,7 +841,9 @@ $clusters = [
                                             <th style="padding:10px 20px;">Category</th>
                                             <th style="padding:10px 20px;">Stock</th>
                                             <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Status</th>
                                             <th style="padding:10px 20px;">Last Update</th>
+                                            <th style="padding:10px 20px;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -831,6 +879,16 @@ $clusters = [
                                     <td style="padding:15px 20px; color:#94a3b8; font-size:13px;">
                                         ${item.last_updated || 'N/A'}
                                     </td>
+                                    <td style="padding:15px 20px;">
+                                        <div style="display:flex; gap: 10px;">
+                                            <a href="#" class="action-btn" style="color: #3b82f6; text-decoration: none;" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="action-btn" style="color: #ef4444; text-decoration: none;" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>
                             `;
                         });
@@ -851,6 +909,120 @@ $clusters = [
                 });
         };
 
+        // HR1 Modal Handler
+        const showHr1 = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('hr1Modal');
+            modal.style.display = 'flex';
+
+            const container = document.getElementById('hr1ListContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#3b82f6;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
+                </div>
+            `;
+
+            fetch('integ/hr1_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">ID</th>
+                                            <th style="padding:10px 20px;">Applicant Name</th>
+                                            <th style="padding:10px 20px;">Position</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Date Applied</th>
+                                            <th style="padding:10px 20px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(item => {
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; font-weight:700; color:#3b82f6;">#${item.id}</td>
+                                    <td style="padding:15px 20px;">${item.applicant_name}</td>
+                                    <td style="padding:15px 20px;">${item.position}</td>
+                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
+                                    <td style="padding:15px 20px;">${item.date_applied}</td>
+                                     <td style="padding:15px 20px;">
+                                        <div style="display:flex; gap: 10px;">
+                                            <a href="#" class="action-btn" style="color: #3b82f6;" title="Edit"><i class="fas fa-edit"></i></a>
+                                            <a href="#" class="action-btn" style="color: #ef4444;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        html += `</tbody></table></div>`;
+                        container.innerHTML = html;
+                    }
+                });
+        };
+
+        // HR4 Modal Handler
+        const showHr4 = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('hr4Modal');
+            modal.style.display = 'flex';
+
+            const container = document.getElementById('hr4ListContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#ef4444;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with HR Cluster...</p>
+                </div>
+            `;
+
+            fetch('integ/hr4_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">Case ID</th>
+                                            <th style="padding:10px 20px;">Employee</th>
+                                            <th style="padding:10px 20px;">Issue</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Date Filed</th>
+                                            <th style="padding:10px 20px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(item => {
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; font-weight:700; color:#ef4444;">${item.case_id}</td>
+                                    <td style="padding:15px 20px;">${item.employee_name}</td>
+                                    <td style="padding:15px 20px;">${item.issue}</td>
+                                    <td style="padding:15px 20px;"><span style="background:#fef2f2; color:#ef4444; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
+                                    <td style="padding:15px 20px;">${item.date_filed}</td>
+                                     <td style="padding:15px 20px;">
+                                        <div style="display:flex; gap: 10px;">
+                                            <a href="#" class="action-btn" style="color: #3b82f6;" title="Edit"><i class="fas fa-edit"></i></a>
+                                            <a href="#" class="action-btn" style="color: #ef4444;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        html += `</tbody></table></div>`;
+                        container.innerHTML = html;
+                    }
+                });
+        };
+
         // Attach to Sidebar button
         document.getElementById('show-admins-btn').addEventListener('click', showAdmins);
 
@@ -864,6 +1036,16 @@ $clusters = [
             document.getElementById('module-LOG1').addEventListener('click', showLogistics);
         }
 
+        // Attach to HR1 Card
+        if (document.getElementById('module-HR1')) {
+            document.getElementById('module-HR1').addEventListener('click', showHr1);
+        }
+
+        // Attach to HR4 Card
+        if (document.getElementById('module-HR4')) {
+            document.getElementById('module-HR4').addEventListener('click', showHr4);
+        }
+
         document.getElementById('closeAdminsModal').addEventListener('click', function () {
             document.getElementById('adminsModal').style.display = 'none';
         });
@@ -871,16 +1053,25 @@ $clusters = [
         document.getElementById('closeLogisticsModal').addEventListener('click', function () {
             document.getElementById('logisticsModal').style.display = 'none';
         });
+        
+        document.getElementById('closeHr1Modal').addEventListener('click', function () {
+            document.getElementById('hr1Modal').style.display = 'none';
+        });
+
+        document.getElementById('closeHr4Modal').addEventListener('click', function () {
+            document.getElementById('hr4Modal').style.display = 'none';
+        });
 
         window.addEventListener('click', function (e) {
             const modal = document.getElementById('adminsModal');
             const logModal = document.getElementById('logisticsModal');
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-            if (e.target === logModal) {
-                logModal.style.display = 'none';
-            }
+            const hr1Modal = document.getElementById('hr1Modal');
+            const hr4Modal = document.getElementById('hr4Modal');
+            
+            if (e.target === modal) modal.style.display = 'none';
+            if (e.target === logModal) logModal.style.display = 'none';
+            if (e.target === hr1Modal) hr1Modal.style.display = 'none';
+            if (e.target === hr4Modal) hr4Modal.style.display = 'none';
         });
     </script>
 </body>
