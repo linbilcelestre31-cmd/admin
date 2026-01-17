@@ -21,6 +21,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Super Admin Isolation: Redirect Super Admins to their dedicated portal
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
+    header('Location: ../Super-admin/Dashboard.php');
+    exit;
+}
+
 // Load shared DB helper (keeps filename safe and centralized)
 require_once __DIR__ . '/../db/db.php';
 

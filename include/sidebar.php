@@ -1,19 +1,26 @@
 <?php
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+$isSuperAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin');
 $current_page = basename($_SERVER['PHP_SELF']);
 $is_dashboard = ($current_page == 'dashboard.php');
 
-function get_nav_link($tab, $is_dashboard)
+function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 {
     if ($is_dashboard) {
         return "#\" onclick=\"event.preventDefault(); handleSidebarNav('$tab'); return false;\"";
     } else {
+        if ($isSuperAdmin && $tab === 'dashboard') {
+            return "../Super-admin/Dashboard.php\"";
+        }
         return "../Modules/dashboard.php?tab=$tab\"";
     }
 }
 ?>
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="../Modules/dashboard.php" class="logo-link" title="Go to Dashboard">
+        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
+            title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
@@ -26,27 +33,27 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('dashboard', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
                     data-tab="dashboard">
                     <span class="icon-img-placeholder">📊</span> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
                     data-tab="facilities">
                     <span class="icon-img-placeholder">🏢</span> Facilities
                 </a></li>
-            <li><a href="<?= get_nav_link('reservations', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                     data-tab="reservations">
                     <span class="icon-img-placeholder">📅</span> Reservations
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
                     data-tab="calendar">
                     <span class="icon-img-placeholder">📅</span> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
                     data-tab="management">
                     <span class="icon-img-placeholder">⚙️</span> Management
@@ -71,7 +78,7 @@ function get_nav_link($tab, $is_dashboard)
     <div class="nav-section">
         <div class="nav-title">External Links</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('reports', $is_dashboard) ?>"
+            <li><a href="<?= get_nav_link('reports', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>"
                     data-tab="reports">
                     <span class="icon-img-placeholder">📈</span> Reports
