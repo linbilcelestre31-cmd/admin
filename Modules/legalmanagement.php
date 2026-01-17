@@ -822,39 +822,53 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add Internal Doc
                     </button>
                 </div>
-                <div class="table-scroll-container">
-                    <table class="data-table premium-table">
-                        <thead>
-                            <tr>
-                                <th>Policy Name</th>
-                                <th>Category</th>
-                                <th>Effective Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Employee Privacy Policy 2024</td>
-                                <td>HR Compliance</td>
-                                <td>2024-01-01</td>
-                                <td>
-                                    <button class="action-btn view-btn"
-                                        onclick="showLegalDetails('Employee Privacy Policy 2024', 'HR Compliance', '2024-01-01', 'Internal', 'Compliance Category')">View</button>
-                                    <button class="action-btn download-btn">Download</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Internal Operational Guidelines</td>
-                                <td>Operations</td>
-                                <td>2023-11-15</td>
-                                <td>
-                                    <button class="action-btn view-btn"
-                                        onclick="showLegalDetails('Internal Operational Guidelines', 'Operations', '2023-11-15', 'Internal', 'Department')">View</button>
-                                    <button class="action-btn download-btn">Download</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div style="position: relative;">
+                    <div id="internalSectionContent" class="blurred-content">
+                        <div class="table-scroll-container">
+                            <table class="data-table premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Policy Name</th>
+                                        <th>Category</th>
+                                        <th>Effective Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Employee Privacy Policy 2024</td>
+                                        <td>HR Compliance</td>
+                                        <td>2024-01-01</td>
+                                        <td>
+                                            <button class="action-btn view-btn"
+                                                onclick="showLegalDetails('Employee Privacy Policy 2024', 'HR Compliance', '2024-01-01', 'Internal', 'Compliance Category')">View</button>
+                                            <button class="action-btn analyze-btn"
+                                                onclick="showLegalAnalysis('Employee Privacy Policy 2024', 'Internal')">Analyze</button>
+                                            <button class="action-btn download-btn">Download</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Internal Operational Guidelines</td>
+                                        <td>Operations</td>
+                                        <td>2023-11-15</td>
+                                        <td>
+                                            <button class="action-btn view-btn"
+                                                onclick="showLegalDetails('Internal Operational Guidelines', 'Operations', '2023-11-15', 'Internal', 'Department')">View</button>
+                                            <button class="action-btn analyze-btn"
+                                                onclick="showLegalAnalysis('Internal Operational Guidelines', 'Internal')">Analyze</button>
+                                            <button class="action-btn download-btn">Download</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="internalRevealOverlay" class="reveal-overlay">
+                        <button class="reveal-btn"
+                            onclick="withPasswordGate(() => { document.getElementById('internalSectionContent').classList.remove('blurred-content'); document.getElementById('internalRevealOverlay').style.display='none'; })">
+                            <i class="fa-solid fa-lock"></i> Click to Reveal Documents
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -866,39 +880,51 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add External Contract
                     </button>
                 </div>
-                <div class="table-scroll-container">
-                    <table class="data-table premium-table">
-                        <thead>
-                            <tr>
-                                <th>Agreement Name</th>
-                                <th>Partner / Vendor</th>
-                                <th>Expiry Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Global Logistics Supply Agreement</td>
-                                <td>LogiTrans Corp</td>
-                                <td>2025-12-31</td>
-                                <td>
-                                    <button class="action-btn view-btn"
-                                        onclick="showLegalDetails('Global Logistics Supply Agreement', 'LogiTrans Corp', '2025-12-31', 'External Agreement', 'Partner / Vendor')">View</button>
-                                    <button class="action-btn analyze-btn">Analyze</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Outsourced Security Services NDA</td>
-                                <td>SafeGuard Solutions</td>
-                                <td>2026-06-30</td>
-                                <td>
-                                    <button class="action-btn view-btn"
-                                        onclick="showLegalDetails('Outsourced Security Services NDA', 'SafeGuard Solutions', '2026-06-30', 'External NDA', 'Partner / Vendor')">View</button>
-                                    <button class="action-btn analyze-btn">Analyze</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div style="position: relative;">
+                    <div id="externalSectionContent" class="blurred-content">
+                        <div class="table-scroll-container">
+                            <table class="data-table premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agreement Name</th>
+                                        <th>Partner / Vendor</th>
+                                        <th>Expiry Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Global Logistics Supply Agreement</td>
+                                        <td>LogiTrans Corp</td>
+                                        <td>2025-12-31</td>
+                                        <td>
+                                            <button class="action-btn view-btn"
+                                                onclick="showLegalDetails('Global Logistics Supply Agreement', 'LogiTrans Corp', '2025-12-31', 'External Agreement', 'Partner / Vendor')">View</button>
+                                            <button class="action-btn analyze-btn"
+                                                onclick="showLegalAnalysis('Global Logistics Supply Agreement', 'External')">Analyze</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Outsourced Security Services NDA</td>
+                                        <td>SafeGuard Solutions</td>
+                                        <td>2026-06-30</td>
+                                        <td>
+                                            <button class="action-btn view-btn"
+                                                onclick="showLegalDetails('Outsourced Security Services NDA', 'SafeGuard Solutions', '2026-06-30', 'External NDA', 'Partner / Vendor')">View</button>
+                                            <button class="action-btn analyze-btn"
+                                                onclick="showLegalAnalysis('Outsourced Security Services NDA', 'External')">Analyze</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="externalRevealOverlay" class="reveal-overlay">
+                        <button class="reveal-btn"
+                            onclick="withPasswordGate(() => { document.getElementById('externalSectionContent').classList.remove('blurred-content'); document.getElementById('externalRevealOverlay').style.display='none'; })">
+                            <i class="fa-solid fa-lock"></i> Click to Reveal Agreements
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1668,6 +1694,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 document.getElementById('legalDetailDate').textContent = date;
                 document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
                 document.getElementById('legalDetailModal').style.display = 'flex';
+            };
+
+            // Function to show Legal Analysis Modal
+            window.showLegalAnalysis = function (name, type) {
+                document.getElementById('analysisTargetName').textContent = name;
+                document.getElementById('analysisTargetType').textContent = type;
+                document.getElementById('legalAnalysisModal').style.display = 'flex';
             };
 
             const employeeInfoTitle = document.getElementById('employeeInfoTitle');
