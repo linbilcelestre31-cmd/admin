@@ -167,31 +167,6 @@
         </div>
     </div>
 
-    <!-- Revenue Section -->
-    <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-            <div>
-                <h2 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin: 0;">
-                    ₱<?= number_format($revenue, 2) ?></h2>
-                <div style="margin-top: 5px; color: #22c55e; font-weight: 600; font-size: 0.9rem;">
-                    <i class="fa-solid fa-arrow-up"></i> 16% <span style="color: #94a3b8; font-weight: 400;">from last
-                        month</span>
-                </div>
-            </div>
-            <div>
-                <!-- Mock Legend -->
-                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #64748b;">
-                    <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%;"></span> Revenue
-                </span>
-            </div>
-        </div>
-
-        <!-- Chart Container -->
-        <div style="height: 300px; width: 100%;">
-            <canvas id="revenueChart"></canvas>
-        </div>
-    </div>
-
     <!-- Bottom Split Section -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
 
@@ -199,48 +174,64 @@
         <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Recent activities</h3>
-                <a href="#" onclick="switchTab('reservations'); return false;"
-                    style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View all <i
+                <a href="#" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View all <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 20px;">
-                <?php if (empty($recent_activities)): ?>
+                <?php
+                // Fetch recent employees from HR4 API as "Recent Activities"
+                $recent_emps = is_array($employees_data) ? array_slice($employees_data, 0, 4) : [];
+
+                // Define some available modules for linking
+                $available_modules = [
+                    'legalmanagement.php' => 'Legal Management',
+                    'document management(archiving).php' => 'Document Archiving',
+                    'Visitor-logs.php' => 'Visitor Logs',
+                    'dashboard.php' => 'Dashboard'
+                ];
+                $module_keys = array_keys($available_modules);
+
+                if (empty($recent_emps)):
+                    ?>
                     <p style="text-align: center; color: #94a3b8; padding: 20px;">No recent activities.</p>
                 <?php else: ?>
-                    <?php foreach ($recent_activities as $activity): ?>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <!-- Avatar Placeholder -->
-                            <div
-                                style="width: 40px; height: 40px; background: #e0e7ff; color: #4338ca; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
-                                <?= substr($activity['customer_name'], 0, 2) ?>
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">
-                                    <?= htmlspecialchars($activity['customer_name']) ?>
+                    <?php
+                    $m_idx = 0;
+                    foreach ($recent_emps as $emp):
+                        // Determine gender image
+                        $gender = strtolower($emp['gender'] ?? 'male');
+                        $icon = ($gender === 'female' || $gender === 'f') ? '../assets/image/Women.png' : '../assets/image/Men.png';
+
+                        // Assign a module link
+                        $target_module = $module_keys[$m_idx % count($module_keys)];
+                        $module_name = $available_modules[$target_module];
+                        $m_idx++;
+                        ?>
+                        <a href="<?= $target_module ?>" style="text-decoration: none; display: block; transition: all 0.3s;"
+                            class="activity-item">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <!-- Icon Image -->
+                                <div
+                                    style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <img src="<?= $icon ?>" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
-                                <div style="font-size: 0.85rem; color: #64748b;">
-                                    <?= htmlspecialchars($activity['facility_name']) ?> <span
-                                        style="display: inline-block; width: 4px; height: 4px; background: #cbd5e1; border-radius: 50%; vertical-align: middle; margin: 0 4px;"></span>
-                                    <?= $activity['event_type'] ?>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">
+                                        <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?>
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">
+                                        <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?>
+                                        <span
+                                            style="display: inline-block; width: 4px; height: 4px; background: #cbd5e1; border-radius: 50%; vertical-align: middle; margin: 0 4px;"></span>
+                                        <span style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #94a3b8;">
+                                    Recently
                                 </div>
                             </div>
-                            <div style="font-size: 0.8rem; color: #94a3b8;">
-                                <!-- Simple Time Ago -->
-                                <?php
-                                $time = strtotime($activity['created_at']);
-                                $diff = time() - $time;
-                                if ($diff < 60)
-                                    echo "Just now";
-                                elseif ($diff < 3600)
-                                    echo round($diff / 60) . " mins";
-                                elseif ($diff < 86400)
-                                    echo round($diff / 3600) . " hours";
-                                else
-                                    echo round($diff / 86400) . " days";
-                                ?>
-                            </div>
-                        </div>
+                        </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -306,41 +297,10 @@
 
 </div>
 
-<!-- Initialize Charts -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('revenueChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                    datasets: [{
-                        label: 'Revenue',
-                        data: [5000, 8000, 6000, 15940, 9000, 12000, 10000], // Mock Data
-                        backgroundColor: '#10b981',
-                        borderRadius: 6,
-                        barThickness: 30
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { borderDash: [2, 4], color: '#f1f5f9' },
-                            ticks: { callback: function (value) { return '₱' + value / 1000 + 'k'; } }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
-    });
-</script>
+<!-- CSS for activity hover -->
+<style>
+    .activity-item:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+    }
+</style>
