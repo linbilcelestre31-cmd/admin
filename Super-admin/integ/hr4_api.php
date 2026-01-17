@@ -5,7 +5,7 @@
  */
 
 // External API endpoint for HR4 (Employee Relations)
-$hr4ApiUrl = 'https://hr4.atierahotelandrestaurant.com/api/v1/cases.php';
+$hr4ApiUrl = 'https://hr1.atierahotelandrestaurant.com/api/hr4_api.php';
 
 /**
  * Fetches case records from the HR4 system
