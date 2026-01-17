@@ -1594,43 +1594,50 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </div>
                 </div>
             </div>
-            <div style="padding: 40px; background: white; max-height: 70vh; overflow-y: auto;">
-                <div style="display: flex; flex-direction: column; gap: 25px;">
-                    <div
-                        style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+            <div style="padding: 40px; background: white; max-height: 70vh; overflow-y: auto;position: relative;">
+                <div id="legalAnalysisContent" class="blurred-content">
+                    <div style="display: flex; flex-direction: column; gap: 25px;">
                         <div
-                            style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">
-                            Confidence Score</div>
-                        <div style="font-size: 2.5rem; font-weight: 900; color: #4338ca;">94%</div>
-                    </div>
-                    <div>
-                        <h4 id="analysisTargetName"
-                            style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
-                        <div id="analysisSummaryText"
-                            style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
-                            <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis
-                                suggests this document is highly compliant with standard legal framework. Minimal risk
-                                exposure detected.</p>
+                            style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+                            <div
+                                style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">
+                                Confidence Score</div>
+                            <div style="font-size: 2.5rem; font-weight: 900; color: #4338ca;">94%</div>
+                        </div>
+                        <div>
+                            <h4 id="analysisTargetName"
+                                style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
+                            <div id="analysisSummaryText"
+                                style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
+                                <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis
+                                    suggests this document is highly compliant with standard legal framework. Minimal risk
+                                    exposure detected.</p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <label
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key
+                                Findings</label>
+                            <ul id="analysisKeyFindings"
+                                style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
+                                <li>No restrictive clauses detected.</li>
+                                <li>Liability terms are clearly defined and balanced.</li>
+                                <li>Renewal and termination policies are standard.</li>
+                            </ul>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
+                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
+                                Close Report
+                            </button>
                         </div>
                     </div>
-                    <div class="info-row">
-                        <label
-                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key
-                            Findings</label>
-                        <ul id="analysisKeyFindings"
-                            style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
-                            <li>No restrictive clauses detected.</li>
-                            <li>Liability terms are clearly defined and balanced.</li>
-                            <li>Renewal and termination policies are standard.</li>
-                        </ul>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <button type="button"
-                            onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                            style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
-                            Close Report
-                        </button>
-                    </div>
+                </div>
+                <!-- Reveal Overlay for Analysis -->
+                <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn" onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
+                        <i class="fa-solid fa-lock"></i> Enter PIN to View Analysis
+                    </button>
                 </div>
             </div>
         </div>
@@ -1811,6 +1818,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <li>Indemnification clauses are broad.</li>
                     `;
                 }
+
+                // Reset Blur State
+                document.getElementById('legalAnalysisContent').classList.add('blurred-content');
+                document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
 
                 document.getElementById('legalAnalysisModal').style.display = 'flex';
             };
