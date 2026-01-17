@@ -1055,7 +1055,7 @@ function formatFileSize($bytes)
             const apiMap = {
                 'HR Documents': '../integ/hr_fn.php',
                 'Guest Records': '../integ/guest_fn.php',
-                'Inventory': '../integ/inventory_fn.php',
+                'Inventory': '../integ/log1.php',
                 'Compliance': '../integ/compliance_fn.php',
                 'Marketing': '../integ/marketing_fn.php'
             };
@@ -1198,7 +1198,11 @@ function formatFileSize($bytes)
                     if (!grid) return;
 
                     if (data.success && data.data && data.data.length > 0) {
-                        renderDocumentTable(data.data, grid);
+                        if (category === 'Inventory') {
+                            renderInventoryTable(data.data, grid);
+                        } else {
+                            renderDocumentTable(data.data, grid);
+                        }
                     } else {
                         showNoDataMessage(grid, category);
                     }
@@ -1216,6 +1220,53 @@ function formatFileSize($bytes)
                         `;
                     }
                 });
+        }
+
+        function renderInventoryTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container" style="grid-column: 1/-1;">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Stock Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => {
+                const stock = parseInt(item.quantity || item.stock || 0);
+                const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
+                const statusLabel = stock > 10 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
+                const price = parseFloat(item.price || item.unit_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
+                
+                return `
+                                <tr>
+                                    <td style="font-weight: 700;">#${item.id || item.item_id || 'N/A'}</td>
+                                    <td style="font-weight: 600;">📦 ${item.name || item.product_name}</td>
+                                    <td>${item.category || 'General'}</td>
+                                    <td style="font-weight: 700;">${stock}</td>
+                                    <td style="font-weight: 700;">$${price}</td>
+                                    <td><span style="color: ${statusColor}; font-weight: 600;">${statusLabel}</span></td>
+                                    <td style="white-space: nowrap;">
+                                        <button class="btn-view-small" onclick='showInventoryDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-view-small" title="Print/Export">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         function renderDocumentTable(data, grid) {
@@ -1420,6 +1471,81 @@ function formatFileSize($bytes)
         }
 
         // Authentication display functions removed as status is no longer persistent
+
+        window.showInventoryDetails = function (item) {
+            const modal = document.getElementById('fileDetailsModal');
+            const content = document.getElementById('fileDetailsContent');
+
+            const stock = parseInt(item.quantity || item.stock || 0);
+            const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
+            const statusLabel = stock > 10 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
+
+            content.innerHTML = `
+                <div style="position: relative;">
+                    <div id="inventorySensitive" class="financial-details blurred-content" style="padding: 10px;">
+                        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                            <div style="font-size: 3rem; color: #3b82f6;"><i class="fas fa-boxes"></i></div>
+                            <h2 style="margin: 10px 0;">${item.name || item.product_name}</h2>
+                            <span class="type-badge" style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px;">${statusLabel}</span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="detail-item">
+                                <label>Category</label>
+                                <div>${item.category || 'General'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Stock Level</label>
+                                <div>${stock} units</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Unit Price</label>
+                                <div>$${parseFloat(item.price || item.unit_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Item ID</label>
+                                <div>#${item.id || item.item_id || 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        ${item.description ? `
+                        <div class="detail-item" style="margin-bottom: 20px;">
+                            <label>Product Description</label>
+                            <div>${item.description}</div>
+                        </div>` : ''}
+                    </div>
+                    
+                    <div class="reveal-overlay" id="inventoryReveal">
+                        <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Inventory Details</button>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Export Info
+                    </button>
+                    <button class="btn close-modal">Close</button>
+                </div>
+            `;
+
+            // Add reveal functionality
+            const revealBtn = content.querySelector('#inventoryReveal');
+            const sensitiveContent = content.querySelector('#inventorySensitive');
+
+            if (revealBtn && sensitiveContent) {
+                revealBtn.addEventListener('click', function () {
+                    this.style.display = 'none';
+                    sensitiveContent.classList.remove('blurred-content');
+                });
+            }
+
+            // Add close functionality
+            content.querySelector('.close-modal').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            modal.style.display = 'block';
+        };
 
         window.deletePermanent = function (id) {
             if (!confirm('Are you sure you want to permanently delete this file? This action cannot be undone.')) return;
