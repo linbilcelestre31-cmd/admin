@@ -780,7 +780,7 @@ function formatFileSize($bytes)
             <div style="margin-bottom: 25px;">
                 <img src="../assets/image/logo.png" alt="Logo" style="width: 140px; height: auto;">
             </div>
-            <h2>Archive Security</h2>
+            <h2 id="pinModalTitle">Archive Security</h2>
             <p style="color: #64748b; margin-bottom: 30px;">Enter your 4-digit PIN to access this category</p>
             <form id="pinForm">
                 <div class="archive-pin-inputs"
@@ -854,10 +854,10 @@ function formatFileSize($bytes)
                     e.preventDefault();
                     const category = this.getAttribute('data-category');
 
-                    // Require PIN for specific sensitive categories, but exempt Dashboard (all) and Financial Records
-                    if (category !== 'all' && category !== 'Financial Records') {
+                    // Require PIN for all specific categories except the main Dashboard
+                    if (category !== 'all') {
                         targetCategory = category;
-                        showPinGate();
+                        showPinGate(this.textContent.trim());
                     } else {
                         switchCategory(this, category);
                     }
@@ -995,8 +995,9 @@ function formatFileSize($bytes)
             });
         }
 
-        function showPinGate() {
+        function showPinGate(categoryName = 'Archive Security') {
             passwordModal.style.display = 'flex';
+            document.getElementById('pinModalTitle').textContent = categoryName;
             archivePinDigits.forEach(input => input.value = '');
             document.getElementById('archivePin1').focus();
             pinErrorMessage.style.display = 'none';
