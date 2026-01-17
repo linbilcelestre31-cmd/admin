@@ -841,7 +841,6 @@ $clusters = [
                                             <th style="padding:10px 20px;">Category</th>
                                             <th style="padding:10px 20px;">Stock</th>
                                             <th style="padding:10px 20px;">Status</th>
-                                            <th style="padding:10px 20px;">Status</th>
                                             <th style="padding:10px 20px;">Last Update</th>
                                             <th style="padding:10px 20px;">Action</th>
                                         </tr>
@@ -880,12 +879,13 @@ $clusters = [
                                         ${item.last_updated || 'N/A'}
                                     </td>
                                     <td style="padding:15px 20px;">
-                                        <div style="display:flex; gap: 10px;">
-                                            <a href="#" class="action-btn" style="color: #3b82f6; text-decoration: none;" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="#" class="action-btn" style="color: #ef4444; text-decoration: none;" title="Delete">
-                                                <i class="fas fa-trash"></i>
+                                        <div style="display:flex; justify-content: flex-start;">
+                                            <a href="../Logistics1/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
+                                               target="_blank"
+                                               class="action-btn" 
+                                               style="color: #3b82f6; text-decoration: none; background: #eff6ff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" 
+                                               title="Access System">
+                                                <i class="fas fa-external-link-alt"></i> Login Access
                                             </a>
                                         </div>
                                     </td>
@@ -952,9 +952,14 @@ $clusters = [
                                     <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
                                     <td style="padding:15px 20px;">${item.date_applied}</td>
                                      <td style="padding:15px 20px;">
-                                        <div style="display:flex; gap: 10px;">
-                                            <a href="#" class="action-btn" style="color: #3b82f6;" title="Edit"><i class="fas fa-edit"></i></a>
-                                            <a href="#" class="action-btn" style="color: #ef4444;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        <div style="display:flex; justify-content: flex-start;">
+                                            <a href="../HR1/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
+                                               target="_blank"
+                                               class="action-btn" 
+                                               style="color: #3b82f6; text-decoration: none; background: #eff6ff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" 
+                                               title="Access System">
+                                                <i class="fas fa-external-link-alt"></i> Login Access
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -1009,9 +1014,14 @@ $clusters = [
                                     <td style="padding:15px 20px;"><span style="background:#fef2f2; color:#ef4444; padding:5px 10px; border-radius:15px; font-size:12px;">${item.status}</span></td>
                                     <td style="padding:15px 20px;">${item.date_filed}</td>
                                      <td style="padding:15px 20px;">
-                                        <div style="display:flex; gap: 10px;">
-                                            <a href="#" class="action-btn" style="color: #3b82f6;" title="Edit"><i class="fas fa-edit"></i></a>
-                                            <a href="#" class="action-btn" style="color: #ef4444;" title="Delete"><i class="fas fa-trash"></i></a>
+                                        <div style="display:flex; justify-content: flex-start;">
+                                            <a href="../HR4/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
+                                               target="_blank"
+                                               class="action-btn" 
+                                               style="color: #ef4444; text-decoration: none; background: #fef2f2; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" 
+                                               title="Access System">
+                                                <i class="fas fa-external-link-alt"></i> Login Access
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
