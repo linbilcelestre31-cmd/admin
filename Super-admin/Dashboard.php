@@ -10,16 +10,27 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
 require_once __DIR__ . '/../db/db.php';
 $pdo = get_pdo();
 
-// Fetch some basic stats for initial load
-try {
-    $total_users = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-    $total_admins = $pdo->query("SELECT COUNT(*) FROM administrators")->fetchColumn();
-    $total_docs = $pdo->query("SELECT COUNT(*) FROM documents")->fetchColumn();
-} catch (PDOException $e) {
-    $total_users = 0;
-    $total_admins = 0;
-    $total_docs = 0;
-}
+// Ensure we are using the correct database
+$pdo->exec("USE `SuperAdminLogin_db`;");
+
+// Fetch current superadmin details
+$stmt = $pdo->prepare("SELECT * FROM `SuperAdminLogin_tb` WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$admin = $stmt->fetch();
+
+$api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
+
+// Define Modules for HR and other departments
+$modules = [
+    ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
+    ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
+    ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
+    ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
+    ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
+    ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => '../Modules/financial.php'],
+    ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
+];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,273 +38,282 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard | ATIERA</title>
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <title>Super Admin Command Center | ATIERA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/super-admin.css?v=<?php echo time(); ?>">
     <style>
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: #f8fafc;
+        :root {
+            --primary-gold: #d4af37;
+            --sidebar-bg: #0f172a;
+            --main-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background: var(--main-bg);
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
         .sidebar {
-            background: #0f172a;
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: var(--primary-gold);
+        }
+
+        .nav-list {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s;
+            gap: 15px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-gold);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-msg h1 {
+            font-size: 28px;
+            color: var(--text-dark);
+        }
+
+        .welcome-msg p {
+            color: var(--text-gray);
+        }
+
+        .api-key-badge {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .api-key-badge code {
+            color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        /* Module Grid */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-gold);
+        }
+
+        .module-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             color: white;
         }
 
-        .sidebar-menu a {
-            color: #94a3b8;
+        .module-info h3 {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
         }
 
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: #1e293b;
-            color: #3b82f6;
-            border-left-color: #3b82f6;
+        .module-info p {
+            font-size: 14px;
+            color: var(--text-gray);
         }
 
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
+        .bypass-status {
+            font-size: 12px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: auto;
         }
 
-        .stat-card {
-            border: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        /* Logout */
+        .logout-btn {
+            margin-top: auto;
+            color: #ef4444;
+            padding: 12px 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
-    <div id="dashboardPage" class="active">
-        <!-- Navigation Bar -->
-        <nav class="navbar">
-            <div class="nav-left">
-                <div class="logo">
-                    <i class="fas fa-shield-check"></i>
-                    <span>ATIERA SUPER_ADMIN</span>
-                </div>
-            </div>
-            <div class="nav-center">
-                <h1 id="currentSectionTitle">Dashboard Overview</h1>
-            </div>
-            <div class="nav-right">
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </div>
-                <div class="admin-info" id="adminDropdown">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="adminName"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Super Admin'); ?></span>
-                    <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
-                    <div class="admin-menu">
-                        <a href="#"><i class="fas fa-user"></i> My Profile</a>
-                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                        <a href="auth/logout.php" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-logo">ATIÉRA</h1>
+            <p style="font-size: 10px; color: #64748b; letter-spacing: 2px;">COMMAND CENTER</p>
+        </div>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-menu">
-                <a href="#" class="active" data-section="overview">
-                    <i class="fas fa-th-large"></i>
-                    <span>Overview</span>
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-home"></i> Dashboard
                 </a>
-                <a href="#" data-section="users">
-                    <i class="fas fa-users-cog"></i>
-                    <span>User Management</span>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-users"></i> Administrators
                 </a>
-                <a href="#" data-section="reports">
-                    <i class="fas fa-chart-line"></i>
-                    <span>System Reports</span>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-shield-halved"></i> Security Logs
                 </a>
-                <a href="#" data-section="audit">
-                    <i class="fas fa-history"></i>
-                    <span>Audit Logs</span>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-gear"></i> System Settings
                 </a>
-                <a href="#" data-section="settings">
-                    <i class="fas fa-tools"></i>
-                    <span>System Config</span>
-                </a>
-            </div>
+            </li>
+        </ul>
 
-            <div class="system-status">
-                <h4><i class="fas fa-server"></i> System Status</h4>
-                <div class="status-item">
-                    <span>Database</span>
-                    <span class="status online">Online</span>
-                </div>
-                <div class="status-item">
-                    <span>API Server</span>
-                    <span class="status online">Online</span>
-                </div>
-                <div class="status-item">
-                    <span>Storage</span>
-                    <span>85% Free</span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Overview Section -->
-            <section id="overview" class="content-section active">
-                <div class="section-header">
-                    <h2>Welcome back, Super Admin</h2>
-                    <div class="date-time" id="currentDateTime"></div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card total-revenue">
-                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="stat-info">
-                            <h3>Total Revenue</h3>
-                            <div class="stat-number">$124,580</div>
-                            <div class="stat-change"><i class="fas fa-arrow-up"></i> 12% from last month</div>
-                        </div>
-                    </div>
-                    <div class="stat-card total-users">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <h3>Total Users</h3>
-                            <div class="stat-number"><?php echo $total_users; ?></div>
-                            <div class="stat-change">Active accounts</div>
-                        </div>
-                    </div>
-                    <div class="stat-card active-bookings">
-                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                        <div class="stat-info">
-                            <h3>Staff/Admins</h3>
-                            <div class="stat-number"><?php echo $total_admins; ?></div>
-                            <div class="stat-change">Internal access</div>
-                        </div>
-                    </div>
-                    <div class="stat-card occupancy">
-                        <div class="stat-icon"><i class="fas fa-file-invoice"></i></div>
-                        <div class="stat-info">
-                            <h3>Docs Archived</h3>
-                            <div class="stat-number"><?php echo $total_docs; ?></div>
-                            <div class="stat-change">Managed files</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="quick-actions">
-                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                    <div class="actions-grid">
-                        <div class="action-btn" data-action="addUser">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Add New User</span>
-                        </div>
-                        <div class="action-btn" data-action="viewReports">
-                            <i class="fas fa-file-chart-column"></i>
-                            <span>Generate Reports</span>
-                        </div>
-                        <div class="action-btn" data-action="systemBackup">
-                            <i class="fas fa-database"></i>
-                            <span>Backup System</span>
-                        </div>
-                        <div class="action-btn" data-action="auditLogs">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>View Audit Logs</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="recent-activity">
-                    <h3><i class="fas fa-list-ul"></i> Recent System Activity</h3>
-                    <div class="activity-list">
-                        <!-- Loaded dynamically -->
-                        <div class="activity-item">
-                            <i class="fas fa-info-circle activity-icon settings"></i>
-                            <div class="activity-details">
-                                <p>System settings updated</p>
-                                <span class="activity-time">Just now</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Users Section -->
-            <section id="users" class="content-section">
-                <div class="section-header">
-                    <h2>User Management</h2>
-                    <button class="btn btn-primary" id="addUserBtn"><i class="fas fa-plus"></i> Add User</button>
-                </div>
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Last Login</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Other sections can be added here -->
-        </main>
+        <a href="auth/logout.php" class="logout-btn">
+            <i class="fas fa-power-off"></i> System Shutdown
+        </a>
     </div>
 
-    <!-- Modals -->
-    <div id="addUserModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New System User</h3>
-                <span class="close-modal">&times;</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="welcome-msg">
+                <h1>Welcome Back, <?php echo htmlspecialchars($admin['full_name']); ?></h1>
+                <p>Today is <?php echo date('l, F j, Y'); ?></p>
             </div>
-            <div class="modal-body">
-                <form id="addUserForm">
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label>Full Name</label>
-                        <input type="text" name="name" class="input-control" placeholder="Enter name" required
-                            style="border: 1px solid #ddd; padding: 10px; width:100%; border-radius:8px;">
+            <div class="api-key-badge">
+                <i class="fas fa-key"></i>
+                <span>Active Key: <code><?php echo substr($api_key, 0, 8) . '...'; ?></code></span>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 25px; font-size: 20px; color: var(--text-dark);">Department Gateways</h2>
+
+        <div class="module-grid">
+            <?php foreach ($modules as $module): ?>
+                <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                    class="module-card">
+                    <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
+                        <i class="fas fa-<?php echo $module['icon']; ?>"></i>
                     </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label>Email Address</label>
-                        <input type="email" name="email" class="input-control" placeholder="Enter email" required
-                            style="border: 1px solid #ddd; padding: 10px; width:100%; border-radius:8px;">
+                    <div class="module-info">
+                        <h3><?php echo htmlspecialchars($module['name']); ?></h3>
+                        <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <label>Access Role</label>
-                        <select name="role" class="input-control"
-                            style="border: 1px solid #ddd; padding: 10px; width:100%; border-radius:8px;">
-                            <option value="hotel_manager">Hotel Manager</option>
-                            <option value="restaurant_manager">Restaurant Manager</option>
-                            <option value="staff">Standard Staff</option>
-                        </select>
+                    <div class="bypass-status">
+                        <i class="fas fa-bolt"></i> Bypass Protocol Active
                     </div>
-                    <button type="submit" class="btn btn-primary"
-                        style="width: 100%; justify-content: center; padding: 15px;">Create Account</button>
-                </form>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- System Status -->
+        <div
+            style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
+            <div style="display: flex; gap: 40px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="super-js/super-admin.js?v=<?php echo time(); ?>"></script>
-    <script>
-        // Override the handleLogin in JS since we handle it in login.php
-        if (window.authManager) {
-            window.authManager.showDashboard = function () {
-                // Do nothing, we are already here
-            };
-        }
-    </script>
 </body>
 
 </html>

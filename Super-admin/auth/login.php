@@ -16,50 +16,66 @@ $step = 1; // 1: Login, 2: 2FA OTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = get_pdo();
 
-    // Ensure administrators table exists (Self-healing)
+    // Super Admin Specific Database Architecture
+    $sa_db = 'SuperAdminLogin_db';
+    $sa_table = 'SuperAdminLogin_tb';
+
     try {
-        $pdo->query("SELECT 1 FROM administrators LIMIT 1");
+        // Try to connect directly to the SA database
+        $pdo->exec("USE `$sa_db`;");
     } catch (PDOException $e) {
-        $sql = "CREATE TABLE IF NOT EXISTS `administrators` (
-            `admin_id` int(11) NOT NULL AUTO_INCREMENT,
+        // If it fails, creating the database
+        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$sa_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+        $pdo->exec("USE `$sa_db`;");
+    }
+
+    // Ensure SuperAdminLogin_tb exists (Self-healing)
+    try {
+        $pdo->query("SELECT 1 FROM `$sa_table` LIMIT 1");
+    } catch (PDOException $e) {
+        $sql = "CREATE TABLE IF NOT EXISTS `$sa_table` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
             `username` varchar(50) NOT NULL,
             `email` varchar(100) NOT NULL,
             `password_hash` varchar(255) NOT NULL,
             `full_name` varchar(100) NOT NULL,
-            `role` enum('super_admin','manager','staff') DEFAULT 'staff',
+            `api_key` varchar(255) DEFAULT NULL,
+            `role` varchar(50) DEFAULT 'super_admin',
             `is_active` tinyint(1) DEFAULT 1,
             `last_login` datetime DEFAULT NULL,
-            `login_attempts` int(11) DEFAULT 0,
-            `locked_until` datetime DEFAULT NULL,
             `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
             `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-            PRIMARY KEY (`admin_id`),
+            PRIMARY KEY (`id`),
             UNIQUE KEY `username` (`username`),
             UNIQUE KEY `email` (`email`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
         $pdo->exec($sql);
 
-        // Insert default admin if table was just created
+        // Insert default admin with API Key
         $default_pass = password_hash('password', PASSWORD_DEFAULT);
-        $pdo->exec("INSERT IGNORE INTO administrators (username, email, password_hash, full_name, role) VALUES ('admin', 'atiera41001@gmail.com', '$default_pass', 'System Administrator', 'super_admin')");
-
-        // Force update default admin email if it already existed with the old one
-        $pdo->exec("UPDATE administrators SET email = 'atiera41001@gmail.com' WHERE username = 'admin' AND email = 'admin@atiera.com'");
+        $api_key = bin2hex(random_bytes(32)); // Generated API Key
+        $pdo->exec("INSERT IGNORE INTO `$sa_table` (username, email, password_hash, full_name, api_key, role) 
+                   VALUES ('admin', 'atiera41001@gmail.com', '$default_pass', 'System Administrator', '$api_key', 'super_admin')");
     }
+
+    // Force update email and roles if needed
+    $pdo->exec("UPDATE `$sa_table` SET email = 'atiera41001@gmail.com' WHERE username = 'admin'");
 
     if (isset($_POST['action']) && $_POST['action'] === 'login') {
         $username = trim($_POST['username']);
         $password = $_POST['password'];
 
-        $stmt = $pdo->prepare("SELECT * FROM administrators WHERE username = ? AND is_active = 1");
+        $stmt = $pdo->prepare("SELECT * FROM `$sa_table` WHERE username = ? AND is_active = 1");
         $stmt->execute([$username]);
         $admin = $stmt->fetch();
 
         if ($admin && password_verify($password, $admin['password_hash'])) {
             // Generate OTP
             $otp = random_int(100000, 999999);
-            $_SESSION['temp_admin_id'] = $admin['admin_id'];
+            $_SESSION['temp_admin_id'] = $admin['id'];
+            $_SESSION['temp_admin_username'] = $admin['username'];
             $_SESSION['temp_admin_email'] = $admin['email'];
+            $_SESSION['temp_admin_apikey'] = $admin['api_key'];
             $_SESSION['login_otp'] = $otp;
             $_SESSION['otp_expiry'] = time() + (5 * 60); // 5 minutes
 
@@ -128,16 +144,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Success!
             $_SESSION['user_id'] = $_SESSION['temp_admin_id'];
             $_SESSION['role'] = 'super_admin';
-            $_SESSION['username'] = $username;
+            $_SESSION['username'] = $_SESSION['temp_admin_username'];
+            $_SESSION['api_key'] = $_SESSION['temp_admin_apikey'];
 
             // Clean up
+            unset($_SESSION['temp_admin_username']);
             unset($_SESSION['temp_admin_id']);
             unset($_SESSION['temp_admin_email']);
+            unset($_SESSION['temp_admin_apikey']);
             unset($_SESSION['login_otp']);
             unset($_SESSION['otp_expiry']);
 
             // Update last login
-            $pdo->prepare("UPDATE administrators SET last_login = NOW() WHERE admin_id = ?")->execute([$_SESSION['user_id']]);
+            $pdo->exec("USE `$sa_db`;");
+            $pdo->prepare("UPDATE `$sa_table` SET last_login = NOW() WHERE id = ?")->execute([$_SESSION['user_id']]);
 
             header('Location: ../Dashboard.php');
             exit;
@@ -154,18 +174,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Login | ATIERA</title>
+    <title>ATIERA Super Admin Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #1e40af;
-            --primary-dark: #1e3a8a;
-            --accent: #3b82f6;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-white: #ffffff;
-            --text-gray: #94a3b8;
+            --primary-gold: #d4af37;
+            --soft-gold: #fdf6e3;
+            --dark-gold: #b8860b;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --glass-bg: rgba(255, 251, 235, 0.9);
+            --glass-border: rgba(212, 175, 55, 0.3);
         }
 
         * {
@@ -176,56 +196,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body {
-            background: #0f172a;
             height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            /* Move form to the right */
+            justify-content: center;
+            background: #0f172a;
             overflow: hidden;
-            position: relative;
-            padding-right: 10%;
-            /* Spacing from right */
         }
 
-        /* Generated background container */
         .bg-container {
-            position: absolute;
-            inset: 0;
-            background: #000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
+            background: url('../css/super-admin.jpeg') center/cover no-repeat;
         }
 
         .bg-overlay {
             position: absolute;
-            inset: 0;
-            background-image: url('../css/super-admin.jpeg');
-            /* Use the JPEG file */
-            background-size: cover;
-            background-position: center;
-            opacity: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(212, 175, 55, 0.1) 100%);
         }
-
-
 
         .animated-shapes div {
             position: absolute;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
             filter: blur(40px);
-            z-index: 0;
-            animation: float 20s infinite ease-in-out;
+            animation: move 20s infinite alternate linear;
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
+        @keyframes move {
+            from {
+                transform: translate(0, 0) scale(1);
             }
 
-            50% {
-                transform: translateY(-50px) scale(1.1);
+            to {
+                transform: translate(100px, 100px) scale(1.2);
             }
         }
 
@@ -233,30 +245,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 450px;
             padding: 50px;
-            background: rgba(255, 251, 235, 0.9);
-            /* Soft Gold/Cream background */
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid #d4af37;
-            /* Gold border */
+            border: 2px solid var(--primary-gold);
             border-radius: 30px;
             box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.2);
+            text-align: center;
             position: relative;
             z-index: 10;
-            text-align: center;
-            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .logo-area {
@@ -264,16 +260,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .logo-title {
-            color: var(--text-dark);
-            font-size: 32px;
+            color: #0f172a;
+            font-size: 42px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 8px;
             margin-bottom: 5px;
-            text-transform: uppercase;
         }
 
         .logo-subtitle {
-            color: #d4af37;
+            color: var(--primary-gold);
             font-size: 14px;
             font-weight: 400;
             letter-spacing: 4px;
@@ -281,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .welcome-text {
-            color: #1e293b;
+            color: var(--text-dark);
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 10px;
@@ -293,10 +288,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 30px;
         }
 
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .form-group {
             margin-bottom: 20px;
             position: relative;
             text-align: left;
+        }
+
+        .input-control {
+            width: 100%;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px 15px 15px 50px;
+            color: var(--text-dark);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
         }
 
         .form-group i {
@@ -305,104 +330,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-gray);
-            transition: color 0.3s;
-        }
-
-        .input-control {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px 15px 15px 50px;
-            color: #1e293b;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .input-control:focus {
-            background: #ffffff;
-            border-color: #d4af37;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
-        }
-
-        .input-control:focus+i {
-            color: var(--accent);
         }
 
         .btn-login {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            color: white;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--dark-gold) 100%);
             border: none;
             border-radius: 12px;
-            padding: 16px;
+            color: white;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
-            box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(212, 175, 55, 0.3);
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(30, 64, 175, 0.4);
-            filter: brightness(1.1);
+            box-shadow: 0 20px 25px -5px rgba(212, 175, 55, 0.4);
         }
 
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            padding: 12px;
+        .otp-hint-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px dashed var(--primary-gold);
+            padding: 15px;
             border-radius: 10px;
-            font-size: 14px;
             margin-bottom: 20px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .otp-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 30px 0;
-        }
-
-        .otp-field {
-            width: 100%;
-            letter-spacing: 15px;
-            text-align: center;
-            padding-left: 20px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: var(--text-gray);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .back-link:hover {
-            color: var(--text-white);
-        }
-
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 30px;
-                border-radius: 20px;
-                margin: 20px;
-            }
         }
     </style>
 </head>
@@ -410,18 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="bg-container">
         <div class="bg-overlay"></div>
-
-        <div class="animated-shapes">
-            <div style="width: 400px; height: 400px; left: -100px; top: -100px;"></div>
-            <div style="width: 300px; height: 300px; right: -50px; bottom: -50px; animation-delay: -5s;"></div>
-            <div style="width: 250px; height: 250px; left: 50%; top: 50%; animation-delay: -10s;"></div>
-        </div>
     </div>
 
     <div class="login-card">
         <div class="logo-area">
             <h1 class="logo-title">ATIÉRA</h1>
-            <p class="logo-subtitle">ADMINISTRATIVE</p>
+            <p class="logo-subtitle">SUPERADMIN</p>
         </div>
 
         <?php if ($error): ?>
@@ -432,43 +380,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <?php if ($step === 1): ?>
-            <h2 class="welcome-text">Welcome Ateria</h2>
-            <p class="instruction-text">Enter your credentials to access the secure Super-admin area.</p>
+            <h2 class="welcome-text">Identification</h2>
+            <p class="instruction-text">Superadmin portal requires specialized biological and technical verification.</p>
 
             <form action="" method="POST">
                 <input type="hidden" name="action" value="login">
                 <div class="form-group">
-                    <input type="text" name="username" class="input-control" placeholder="Username" required
-                        autocomplete="username">
-                    <i class="fas fa-user-shield"></i>
+                    <input type="text" name="username" class="input-control" placeholder="Superadmin ID" required>
+                    <i class="fas fa-fingerprint"></i>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" class="input-control" placeholder="Password" required
-                        autocomplete="current-password">
-                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" class="input-control" placeholder="Security Access Code"
+                        required>
+                    <i class="fas fa-shield-halved"></i>
                 </div>
                 <button type="submit" class="btn-login">
-                    Login <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                    Initialize Access <i class="fas fa-bolt" style="margin-left: 10px;"></i>
                 </button>
             </form>
         <?php else: ?>
-            <h2 class="welcome-text">Two-Factor Auth</h2>
-            <p class="instruction-text">We've sent a 6-digit verification code to your registered email:
-                <strong>
-                    <?php
-                    $email = $_SESSION['temp_admin_email'];
-                    $parts = explode('@', $email);
-                    echo substr($parts[0], 0, 3) . '***@' . $parts[1];
-                    ?>
-                </strong>.
-            </p>
+            <h2 class="welcome-text">Verification</h2>
+            <p class="instruction-text">A security token has been generated and transmitted.</p>
 
-            <!-- DEVELOPMENT BYPASS HINT -->
             <?php if (isset($_SESSION['login_otp'])): ?>
-                <div
-                    style="background: rgba(212, 175, 55, 0.1); border: 1px dashed #d4af37; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <p style="font-size: 13px; color: #b8860b; margin: 0;"><strong>Development Bypass:</strong></p>
-                    <p style="font-size: 18px; color: #1e293b; font-weight: 700; margin: 5px 0;">OTP:
+                <div class="otp-hint-box">
+                    <p style="font-size: 13px; color: #b8860b; margin: 0;"><strong>System Bypass:</strong></p>
+                    <p style="font-size: 24px; color: #1e293b; font-weight: 700; margin: 5px 0; letter-spacing: 5px;">
                         <?php echo $_SESSION['login_otp']; ?></p>
                 </div>
             <?php endif; ?>
@@ -476,17 +413,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="" method="POST">
                 <input type="hidden" name="action" value="verify_otp">
                 <div class="form-group">
-                    <input type="text" name="otp" class="input-control otp-field" maxlength="6" placeholder="000000"
-                        required autofocus>
+                    <input type="text" name="otp" class="input-control" placeholder="Enter 6-Digit Token" required
+                        maxlength="6" pattern="\d{6}">
+                    <i class="fas fa-key"></i>
                 </div>
                 <button type="submit" class="btn-login">
-                    Verify & Login <i class="fas fa-shield-check" style="margin-left: 10px;"></i>
+                    Verify Identity <i class="fas fa-check-circle" style="margin-left: 10px;"></i>
                 </button>
             </form>
-            <a href="login.php" class="back-link"><i class="fas fa-arrow-left"></i> Back to login</a>
         <?php endif; ?>
 
-
+        <p style="margin-top: 30px; color: var(--text-gray); font-size: 12px;">
+            SECURE ACCESS PROTOCOL 5.0 • PROTECTED BY QUANTUM ENCRYPTION
+        </p>
     </div>
 </body>
 
