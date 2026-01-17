@@ -54,7 +54,7 @@ $modules = [
     ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
     ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
     ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
-    ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
+    ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => 'modules/legalmanamgent.php'],
     ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
     ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
 ];
