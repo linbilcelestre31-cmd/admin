@@ -12,8 +12,7 @@ To access the Super Admin area, use the following links depending on your enviro
 
 ## 🏗️ Isolated Architecture
 Following the latest directive, the Super Admin system uses a high-security isolated structure:
-1.  **Dedicated Database**: `SuperAdminLogin_db`
-2.  **Central Table**: `SuperAdminLogin_tb` (Stores Superadmin IDs and unique API Keys).
+1.  **Isolated Table**: `SuperAdminLogin_tb` (Dedicated high-security table within the main database).
 3.  **Cross-Module Bypass**: Enables instant access to HR1, HR2, HR3, HR4, Legal, for more departments without re-authenticating.
 
 ## 🚪 Step-by-Step Login Guide

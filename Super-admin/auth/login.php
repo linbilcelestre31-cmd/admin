@@ -16,18 +16,13 @@ $step = 1; // 1: Login, 2: 2FA OTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = get_pdo();
 
-    // Super Admin Specific Database Architecture
-    $sa_db = 'SuperAdminLogin_db';
+    // Super Admin Specific Database Architecture - Isolated within the main database
+    // Removed separate database requirement to avoid PDOException 1044 Access Denied
     $sa_table = 'SuperAdminLogin_tb';
 
-    try {
-        // Try to connect directly to the SA database
-        $pdo->exec("USE `$sa_db`;");
-    } catch (PDOException $e) {
-        // If it fails, creating the database
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$sa_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
-        $pdo->exec("USE `$sa_db`;");
-    }
+    // No need to USE another database as get_pdo() already connects to the main one
+    // This ensures compatibility with shared hosting environments
+
 
     // Ensure SuperAdminLogin_tb exists (Self-healing)
     try {
@@ -156,7 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_SESSION['otp_expiry']);
 
             // Update last login
-            $pdo->exec("USE `$sa_db`;");
             $pdo->prepare("UPDATE `$sa_table` SET last_login = NOW() WHERE id = ?")->execute([$_SESSION['user_id']]);
 
             header('Location: ../Dashboard.php');
@@ -406,7 +400,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="otp-hint-box">
                     <p style="font-size: 13px; color: #b8860b; margin: 0;"><strong>System Bypass:</strong></p>
                     <p style="font-size: 24px; color: #1e293b; font-weight: 700; margin: 5px 0; letter-spacing: 5px;">
-                        <?php echo $_SESSION['login_otp']; ?></p>
+                        <?php echo $_SESSION['login_otp']; ?>
+                    </p>
                 </div>
             <?php endif; ?>
 

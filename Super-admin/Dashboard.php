@@ -10,8 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
 require_once __DIR__ . '/../db/db.php';
 $pdo = get_pdo();
 
-// Ensure we are using the correct database
-$pdo->exec("USE `SuperAdminLogin_db`;");
+// Ensure we are using the correct context (SuperAdminLogin_tb is in the main database)
 
 // Fetch current superadmin details
 $stmt = $pdo->prepare("SELECT * FROM `SuperAdminLogin_tb` WHERE id = ?");
