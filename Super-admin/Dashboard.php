@@ -284,7 +284,7 @@ $modules = [
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../assets/image/login.jpeg') center/cover no-repeat;
+            background: url('../assets/image/login.jpeg') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;

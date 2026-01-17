@@ -226,26 +226,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(212, 175, 55, 0.1) 100%);
+            background: rgba(0, 0, 0, 0.2);
+            /* Much lighter overlay to focus on the image */
         }
 
-        .animated-shapes div {
-            position: absolute;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-            animation: move 20s infinite alternate linear;
-        }
 
-        @keyframes move {
-            from {
-                transform: translate(0, 0) scale(1);
-            }
-
-            to {
-                transform: translate(100px, 100px) scale(1.2);
-            }
-        }
 
         .login-card {
             width: 100%;
@@ -369,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../../assets/image/login.jpeg') center/cover no-repeat;
+            background: url('../../assets/image/login.jpeg') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
