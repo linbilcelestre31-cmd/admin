@@ -755,8 +755,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <div class="user-info">
                         <span>Welcome, Admin</span>
                         <button type="button" class="logout-btn" id="backDashboardBtn"
-                            onclick="window.location.replace('../Modules/dashboard.php')">
-                            <span class="icon-img-placeholder">⏻</span> logout
+                            onclick="window.location.replace('<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>')">
+                            <span class="icon-img-placeholder">⏻</span>
+                            <?php echo $isSuperAdmin ? 'Back to Portal' : 'logout'; ?>
                         </button>
                     </div>
                 </div>
@@ -2414,9 +2415,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             // Find the back button handler and update it:
             const backBtn = document.getElementById('backDashboardBtn');
             if (backBtn) {
-                backBtn.addEventListener('click', function () {
-                    // Redirect to facilities reservation dashboard
-                    window.location.href = 'dashboard.php';
+                backBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.location.href = '<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>';
                 });
             }
         })();
