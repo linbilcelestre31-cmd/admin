@@ -24,7 +24,10 @@ if (isset($_GET['super_admin_session']) && $_GET['super_admin_session'] === 'tru
     $stmt->execute([$bypass_key]);
     if ($stmt->fetch()) {
         $isSuperAdmin = true;
-        $_SESSION['user_id'] = 'SUPER_ADMIN';
+        // Don't overwrite if we already have a session ID
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['user_id'] = 'SUPER_ADMIN';
+        }
         $_SESSION['role'] = 'super_admin';
     }
 }
