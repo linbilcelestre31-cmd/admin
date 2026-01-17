@@ -693,12 +693,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
             <div class="pin-input">
-                <input type="password" maxlength="1" class="pin-digit" id="pin1">
-                <input type="password" maxlength="1" class="pin-digit" id="pin2">
-                <input type="password" maxlength="1" class="pin-digit" id="pin3">
-                <input type="password" maxlength="1" class="pin-digit" id="pin4">
+                <input type="password" maxlength="1" class="pin-digit" id="pin1" disabled>
+                <input type="password" maxlength="1" class="pin-digit" id="pin2" disabled>
+                <input type="password" maxlength="1" class="pin-digit" id="pin3" disabled>
+                <input type="password" maxlength="1" class="pin-digit" id="pin4" disabled>
             </div>
-            <button class="login-btn" id="loginBtn">Login</button>
+            <button class="login-btn" id="loginBtn" disabled>Login</button>
             <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
         </div>
     </div>
@@ -2223,14 +2223,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         // Hide loading screen after page loads
         window.addEventListener('load', function () {
+            // Initially disable login screen interactions
+            const loginScreen = document.getElementById('loginScreen');
+            if (loginScreen) loginScreen.style.pointerEvents = 'none';
+
             setTimeout(function () {
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
                     loader.style.opacity = '0';
-                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+
+                        // Enable inputs and button after loader is gone
+                        const pinInputs = document.querySelectorAll('.pin-digit');
+                        const loginBtn = document.getElementById('loginBtn');
+
+                        if (pinInputs.length > 0) {
+                            pinInputs.forEach(input => input.disabled = false);
+                            pinInputs[0].focus(); // Focus after enabling
+                        }
+                        if (loginBtn) {
+                            loginBtn.disabled = false;
+                        }
+                        if (loginScreen) {
+                            loginScreen.style.pointerEvents = 'auto';
+                        }
+                    }, 500);
                 }
                 document.body.classList.add('loaded');
-            }, 2000); // 2 seconds loading time on entry
+            }, 3000); // 3 seconds total loading time
         });
     </script>
 
