@@ -190,14 +190,14 @@ $clusters = [
         .main-content {
             margin-left: 280px;
             width: calc(100% - 280px);
-            padding: 40px;
+            padding: 15px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .welcome-msg h1 {
@@ -616,6 +616,29 @@ $clusters = [
             </div>
         </div>
     </div>
+
+    <!-- Logistics Modal -->
+    <div id="logisticsModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div
+                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#d97706; color:white;">
+                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-boxes-stacked"
+                        style="color:white; margin-right:15px;"></i>Logistics Inventory Dashboard</h2>
+                <button id="closeLogisticsModal"
+                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div id="logisticsListContainer" style="padding:30px; overflow-y:auto; background:#fff7ed; flex-grow:1;">
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#d97706;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Logistics Cluster...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Administrators Modal -->
     <div id="adminsModal"
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
@@ -739,20 +762,124 @@ $clusters = [
                 });
         };
 
+        // Logistics Modal Handler
+        const showLogistics = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('logisticsModal');
+            modal.style.display = 'flex';
+
+            const container = document.getElementById('logisticsListContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:#d97706;"></i>
+                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Logistics Cluster...</p>
+                </div>
+            `;
+
+            fetch('integ/log1_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        if (result.data.length === 0) {
+                            container.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fas fa-box-open" style="font-size:40px; margin-bottom:20px; display:block;"></i>No inventory items found.</div>';
+                            return;
+                        }
+
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">Item ID</th>
+                                            <th style="padding:10px 20px;">Item Name</th>
+                                            <th style="padding:10px 20px;">Category</th>
+                                            <th style="padding:10px 20px;">Stock</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Last Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(item => {
+                            let statusColor = '#10b981'; // Green for In Stock
+                            if (item.status === 'Low Stock') statusColor = '#f59e0b'; // Orange
+                            if (item.status === 'Critical') statusColor = '#ef4444'; // Red
+
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; font-weight:700; color:#d97706;">
+                                        ${item.item_id || 'N/A'}
+                                    </td>
+                                    <td style="padding:15px 20px; font-size:14px; color:#1e293b; font-weight:600;">
+                                        ${item.item_name || 'N/A'}
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <span style="background:#fff7ed; color:#d97706; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                            ${item.category || 'General'}
+                                        </span>
+                                    </td>
+                                    <td style="padding:15px 20px; font-weight:700; color:#475569;">
+                                        ${item.quantity || 0} <span style="font-size:12px; font-weight:400;">${item.unit || ''}</span>
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:8px; height:8px; border-radius:50%; background:${statusColor};"></div>
+                                            <span style="font-size:14px; color:${statusColor}; font-weight:600;">${item.status || 'Unknown'}</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding:15px 20px; color:#94a3b8; font-size:13px;">
+                                        ${item.last_updated || 'N/A'}
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:20px; display:block;"></i>Unable to connect to Logistics System.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching logistics:', error);
+                    container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-wifi" style="font-size:40px; margin-bottom:20px; display:block;"></i>Network error occurred.</div>';
+                });
+        };
+
         // Attach to Sidebar button
         document.getElementById('show-admins-btn').addEventListener('click', showAdmins);
 
         // Attach to Financial Records card
-        document.getElementById('module-FINANCE').addEventListener('click', showAdmins);
+        if (document.getElementById('module-FINANCE')) {
+            document.getElementById('module-FINANCE').addEventListener('click', showAdmins);
+        }
+
+        // Attach to Logistics 1 Card
+        if (document.getElementById('module-LOG1')) {
+            document.getElementById('module-LOG1').addEventListener('click', showLogistics);
+        }
 
         document.getElementById('closeAdminsModal').addEventListener('click', function () {
             document.getElementById('adminsModal').style.display = 'none';
         });
 
+        document.getElementById('closeLogisticsModal').addEventListener('click', function () {
+            document.getElementById('logisticsModal').style.display = 'none';
+        });
+
         window.addEventListener('click', function (e) {
             const modal = document.getElementById('adminsModal');
+            const logModal = document.getElementById('logisticsModal');
             if (e.target === modal) {
                 modal.style.display = 'none';
+            }
+            if (e.target === logModal) {
+                logModal.style.display = 'none';
             }
         });
     </script>
