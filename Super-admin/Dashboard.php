@@ -66,16 +66,31 @@ if (!$admin) {
 
 $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 
-// Define Modules for HR and other departments
-$modules = [
-    ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
-    ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
-    ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
-    ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
-    ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => 'modules/legalmanamgent.php'],
-    ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
-    ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
+// Define Modules grouped by Department Cluster
+$clusters = [
+    'HR Cluster' => [
+        ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
+        ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
+        ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
+        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'users-between-lines', 'color' => '#ef4444', 'url' => '../HR4/index.php'],
+    ],
+    'Core Cluster' => [
+        ['name' => 'CORE 1 - Front Office', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
+        ['name' => 'CORE 2 - Food & Beverage', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php'],
+    ],
+    'Logistics Cluster' => [
+        ['name' => 'Logistics 1 - Procurement', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
+        ['name' => 'Logistics 2 - Warehousing', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
+    ],
+    'Management & Operations' => [
+        ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
+        ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
+        ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
+        ['name' => 'Visitor Logs', 'id' => 'VISITOR', 'icon' => 'id-card-clip', 'color' => '#06b6d4', 'url' => '../Modules/Visitor-logs.php'],
+        ['name' => 'Operations Dashboard', 'id' => 'MOD_DASH', 'icon' => 'gauge-high', 'color' => '#14b8a6', 'url' => '../Modules/dashboard.php'],
+    ]
 ];
+
 
 ?>
 <!DOCTYPE html>
@@ -550,25 +565,36 @@ $modules = [
             </div>
         </div>
 
-        <h2 style="margin-bottom: 25px; font-size: 20px; color: var(--text-dark);">Department Gateways</h2>
+        <h2
+            style="margin-bottom: 35px; font-size: 24px; color: var(--text-dark); border-bottom: 2px solid var(--primary-gold); display: inline-block; padding-bottom: 5px;">
+            Department Gateways</h2>
 
-        <div class="module-grid">
-            <?php foreach ($modules as $module): ?>
-                <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="module-card" id="module-<?php echo $module['id']; ?>">
-                    <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
-                        <i class="fas fa-<?php echo $module['icon']; ?>"></i>
-                    </div>
-                    <div class="module-info">
-                        <h3><?php echo htmlspecialchars($module['name']); ?></h3>
-                        <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
-                    </div>
-                    <div class="bypass-status">
-                        <i class="fas fa-bolt"></i> Bypass Protocol Active
-                    </div>
-                </a>
-            <?php endforeach; ?>
-        </div>
+        <?php foreach ($clusters as $clusterName => $modules): ?>
+            <div class="cluster-section" style="margin-bottom: 40px;">
+                <h3
+                    style="margin-bottom: 20px; font-size: 18px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 10px; height: 10px; background: var(--primary-gold); border-radius: 50%;"></div>
+                    <?php echo $clusterName; ?>
+                </h3>
+                <div class="module-grid">
+                    <?php foreach ($modules as $module): ?>
+                        <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                            class="module-card" id="module-<?php echo $module['id']; ?>">
+                            <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
+                                <i class="fas fa-<?php echo $module['icon']; ?>"></i>
+                            </div>
+                            <div class="module-info">
+                                <h3><?php echo htmlspecialchars($module['name']); ?></h3>
+                                <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
+                            </div>
+                            <div class="bypass-status">
+                                <i class="fas fa-bolt"></i> Bypass Protocol Active
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
 
         <!-- System Status -->
         <div
