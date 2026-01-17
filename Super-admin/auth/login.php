@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: url('../../assets/image/Login Superadmin.png') center/cover no-repeat;
+            background: url('../../assets/image/loading page.jpeg') center/cover no-repeat;
         }
 
         .bg-overlay {
@@ -359,7 +359,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: #0f172a;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../../assets/image/Login Superadmin.png') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
