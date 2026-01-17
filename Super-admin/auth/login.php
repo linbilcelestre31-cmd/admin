@@ -382,12 +382,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="" method="POST">
                 <input type="hidden" name="action" value="login">
                 <div class="form-group">
-                    <input type="text" name="username" class="input-control" placeholder="Superadmin ID" required>
+                    <input type="text" name="username" class="input-control" placeholder="Enter: Username" required>
                     <i class="fas fa-fingerprint"></i>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" class="input-control" placeholder="Security Access Code"
-                        required>
+                    <input type="password" name="password" class="input-control" placeholder="Enter: Password" required>
                     <i class="fas fa-shield-halved"></i>
                 </div>
                 <button type="submit" class="btn-login">
