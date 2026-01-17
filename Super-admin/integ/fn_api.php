@@ -4,19 +4,19 @@
  * Fetches user data from the financial system for the Super Admin Command Center
  */
 
-// External API endpoint for Financial Users
-$financialUsersApiUrl = 'https://financial.atierahotelandrestaurant.com/admin/api/users.php';
+// External API endpoint for Financial Records (Journal Entries)
+$financialRecordsApiUrl = 'https://financial.atierahotelandrestaurant.com/journal_entries_api';
 
 /**
- * Fetches all users from the Financial system
+ * Fetches all records from the Financial system
  * @return array
  */
-function fetchFinancialUsers()
+function fetchFinancialRecords()
 {
-    global $financialUsersApiUrl;
+    global $financialRecordsApiUrl;
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $financialUsersApiUrl);
+    curl_setopt($ch, CURLOPT_URL, $financialRecordsApiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -30,43 +30,52 @@ function fetchFinancialUsers()
         // Fallback data if API fails
         return [
             [
-                'id' => 1,
-                'username' => 'fin_admin',
-                'full_name' => 'Financial Administrator',
-                'role' => 'admin',
-                'status' => 'active',
-                'last_login' => date('Y-m-d H:i:s')
+                'entry_number' => 'JE-001',
+                'entry_date' => '2025-10-24',
+                'type' => 'Income',
+                'category' => 'Room Revenue',
+                'description' => 'Room 101 - Check-out payment',
+                'amount' => 5500.00,
+                'venue' => 'Hotel',
+                'status' => 'posted'
             ],
             [
-                'id' => 2,
-                'username' => 'cashier_1',
-                'full_name' => 'Maria Santos',
-                'role' => 'staff',
-                'status' => 'active',
-                'last_login' => date('Y-m-d H:i:s', strtotime('-1 day'))
+                'entry_number' => 'JE-002',
+                'entry_date' => '2025-10-24',
+                'type' => 'Income',
+                'category' => 'Food Sales',
+                'description' => 'Restaurant Dinner Service',
+                'amount' => 1250.75,
+                'venue' => 'Restaurant',
+                'status' => 'posted'
             ],
             [
-                'id' => 3,
-                'username' => 'auditor_josh',
-                'full_name' => 'Joshua Reyes',
-                'role' => 'staff',
-                'status' => 'inactive',
-                'last_login' => date('Y-m-d H:i:s', strtotime('-5 days'))
+                'entry_number' => 'JE-003',
+                'entry_date' => '2025-10-24',
+                'type' => 'Expense',
+                'category' => 'Payroll',
+                'description' => 'October Staff Payroll',
+                'amount' => 45000.00,
+                'venue' => 'General',
+                'status' => 'posted'
             ]
         ];
     }
 
     $data = json_decode($response, true);
+    // If encapsulated in a results/data key, extract it
+    if (isset($data['success']) && isset($data['data']))
+        return $data['data'];
     return is_array($data) ? $data : [];
 }
 
 // If accessed directly via AJAX
 if (basename($_SERVER['PHP_SELF']) == 'fn_api.php') {
     header('Content-Type: application/json');
-    $users = fetchFinancialUsers();
+    $records = fetchFinancialRecords();
     echo json_encode([
         'success' => true,
-        'data' => $users
+        'data' => $records
     ]);
     exit;
 }

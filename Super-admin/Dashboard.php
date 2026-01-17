@@ -489,7 +489,7 @@ $modules = [
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link" id="show-admins-btn">
-                    <i class="fas fa-users"></i> Administrators
+                    <i class="fas fa-file-invoice-dollar"></i> Financial Records
                 </a>
             </li>
             <li class="nav-item">
@@ -569,8 +569,8 @@ $modules = [
             style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
             <div
                 style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#0f172a; color:white;">
-                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-user-shield"
-                        style="color:var(--primary-gold); margin-right:15px;"></i>Financial Administrators</h2>
+                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-chart-pie"
+                        style="color:var(--primary-gold); margin-right:15px;"></i>Financial Master Ledger</h2>
                 <button id="closeAdminsModal"
                     style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
                         class="fas fa-times"></i></button>
@@ -614,55 +614,55 @@ $modules = [
                                 <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
                                     <thead>
                                         <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
-                                            <th style="padding:10px 20px;">Administrator</th>
-                                            <th style="padding:10px 20px;">Role</th>
+                                            <th style="padding:10px 20px;">Entry #</th>
+                                            <th style="padding:10px 20px;">Date</th>
+                                            <th style="padding:10px 20px;">Category</th>
+                                            <th style="padding:10px 20px;">Description</th>
+                                            <th style="padding:10px 20px;">Amount</th>
                                             <th style="padding:10px 20px;">Status</th>
-                                            <th style="padding:10px 20px;">Last Activity</th>
                                             <th style="padding:10px 20px;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                         `;
 
-                        result.data.forEach(user => {
-                            const statusColor = user.status === 'active' ? '#10b981' : '#ef4444';
-                            const roleColor = user.role === 'admin' ? '#d4af37' : '#3b82f6';
-                            const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+                        result.data.forEach(item => {
+                            const statusColor = item.status === 'posted' ? '#10b981' : '#f59e0b';
+                            const typeColor = item.type === 'Income' ? '#10b981' : '#ef4444';
+                            const formattedAmount = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(item.amount || 0);
 
                             html += `
                                 <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
-                                    <td style="padding:15px 20px; border-radius:12px 0 0 12px;">
-                                        <div style="display:flex; align-items:center; gap:15px;">
-                                            <div style="width:40px; height:40px; border-radius:12px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#475569; font-weight:700;">
-                                                ${user.username.substring(0, 2).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <div style="font-weight:600; color:#1e293b;">${user.full_name}</div>
-                                                <div style="font-size:12px; color:#64748b;">@${user.username}</div>
-                                            </div>
-                                        </div>
+                                    <td style="padding:15px 20px; font-weight:700; color:var(--primary-gold);">
+                                        #${item.entry_number || 'N/A'}
+                                    </td>
+                                    <td style="padding:15px 20px; font-size:14px; color:#475569;">
+                                        ${item.entry_date || 'N/A'}
                                     </td>
                                     <td style="padding:15px 20px;">
-                                        <span style="background:${roleColor}15; color:${roleColor}; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase;">
-                                            ${user.role}
+                                        <span style="background:#e2e8f0; color:#475569; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                            ${item.category || item.department || 'General'}
                                         </span>
+                                    </td>
+                                    <td style="padding:15px 20px; font-size:14px; color:#64748b; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        ${item.description || 'No description'}
+                                    </td>
+                                    <td style="padding:15px 20px; font-weight:700; color:${typeColor};">
+                                        ${formattedAmount}
                                     </td>
                                     <td style="padding:15px 20px;">
                                         <div style="display:flex; align-items:center; gap:8px;">
                                             <div style="width:8px; height:8px; border-radius:50%; background:${statusColor};"></div>
-                                            <span style="font-size:14px; color:#475569; text-transform:capitalize;">${user.status}</span>
+                                            <span style="font-size:14px; color:#475569; text-transform:capitalize;">${item.status || 'pending'}</span>
                                         </div>
-                                    </td>
-                                    <td style="padding:15px 20px; font-size:14px; color:#64748b;">
-                                        ${lastLogin}
                                     </td>
                                     <td style="padding:15px 20px; border-radius:0 12px 12px 0;">
                                         <a href="https://financial.atierahotelandrestaurant.com/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
                                            target="_blank"
-                                           style="display:inline-flex; align-items:center; gap:8px; background:var(--primary-gold); color:white; padding:8px 15px; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; transition:all 0.3s; border:none;" 
-                                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(212, 175, 55, 0.3)'" 
-                                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                            <i class="fas fa-sign-in-alt"></i> Access System
+                                           style="display:inline-flex; align-items:center; background:#f1f5f9; color:#475569; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:12px; transition:all 0.2s;" 
+                                           onmouseover="this.style.background='#e2e8f0'" 
+                                           onmouseout="this.style.background='#f1f5f9'">
+                                            <i class="fas fa-external-link-alt"></i>
                                         </a>
                                     </td>
                                 </tr>
