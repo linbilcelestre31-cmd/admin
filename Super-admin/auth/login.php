@@ -359,7 +359,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: #0f172a;
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('../../assets/image/loading page.jpeg') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
