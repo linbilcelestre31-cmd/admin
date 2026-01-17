@@ -501,6 +501,16 @@ function formatFileSize($bytes)
             transition: color 0.3s ease;
         }
 
+        /* Hide Scrollbars */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         /* Dashboard Stats Boxes */
         .stats-grid {
             display: grid;
@@ -610,8 +620,8 @@ function formatFileSize($bytes)
                 <ul class="sidebar-menu">
                     <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
                             All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records"><i
-                                class="fas fa-dollar-sign"></i> Financial Records</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records" style="font-weight: 600;"><i
+                                class="fas fa-file-invoice-dollar"></i> Financial Records</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
                             Documents</a></li>
                     <li><a href="#" class="category-link" data-category="Guest Records"><i
@@ -844,8 +854,8 @@ function formatFileSize($bytes)
                     e.preventDefault();
                     const category = this.getAttribute('data-category');
 
-                    // Always require PIN for specific categories, except 'All Documents' which is the dashboard
-                    if (category !== 'all') {
+                    // Require PIN for specific sensitive categories, but exempt Dashboard (all) and Financial Records
+                    if (category !== 'all' && category !== 'Financial Records') {
                         targetCategory = category;
                         showPinGate();
                     } else {
