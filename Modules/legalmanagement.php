@@ -591,13 +591,17 @@ $employees = [];
 $contracts = [];
 try {
     $api_employees = fetchAllEmployees(5);
-    if (!empty($api_employees)) {
+    if (is_array($api_employees)) {
         foreach ($api_employees as $emp) {
+            $jobTitle = 'N/A';
+            if (isset($emp['employment_details']) && is_array($emp['employment_details'])) {
+                $jobTitle = $emp['employment_details']['job_title'] ?? 'N/A';
+            }
             $employees[] = [
                 'id' => $emp['id'],
                 'employee_id' => $emp['employee_id'] ?? ('EMN' . $emp['id']),
                 'name' => ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? ''),
-                'position' => $emp['employment_details']['job_title'] ?? $emp['position'] ?? 'N/A',
+                'position' => $jobTitle,
                 'email' => $emp['email'] ?? 'N/A',
                 'phone' => $emp['contact_number'] ?? $emp['phone'] ?? 'N/A'
             ];
@@ -636,7 +640,8 @@ try {
 // Risk summary with normalized casing
 $riskCounts = ['High' => 0, 'Medium' => 0, 'Low' => 0];
 foreach ($contracts as $c) {
-    $lvl = ucfirst(strtolower($c['risk_level'] ?? 'Low'));
+    $lvl_raw = $c['risk_level'] ?? 'Low';
+    $lvl = ucfirst(strtolower($lvl_raw));
     if (isset($riskCounts[$lvl])) {
         $riskCounts[$lvl]++;
     } else {
