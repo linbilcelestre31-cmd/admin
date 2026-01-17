@@ -11,12 +11,14 @@
 require_once __DIR__ . '/../integ/hr4_api.php';
 
 
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
 // Super Admin Bypass Protocol
 $isSuperAdmin = false;
 if (isset($_GET['super_admin_session']) && $_GET['super_admin_session'] === 'true' && isset($_GET['bypass_key'])) {
-    // Verify bypass key (implementation from super_admin_bypass.php)
     $bypass_key = $_GET['bypass_key'];
     $stmt = $db->prepare("SELECT * FROM `SuperAdminLogin_tb` WHERE api_key = ? AND is_active = 1 LIMIT 1");
     $stmt->execute([$bypass_key]);
@@ -25,6 +27,12 @@ if (isset($_GET['super_admin_session']) && $_GET['super_admin_session'] === 'tru
         $_SESSION['user_id'] = 'SUPER_ADMIN';
         $_SESSION['role'] = 'super_admin';
     }
+}
+
+// Check if user is logged in (after potential bypass)
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/login.php');
+    exit;
 }
 
 // Fetch security PIN from settings
