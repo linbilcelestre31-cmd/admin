@@ -11,9 +11,38 @@ require_once __DIR__ . '/../db/db.php';
 $pdo = get_pdo();
 
 // Ensure we are using the correct context (SuperAdminLogin_tb is in the main database)
+$sa_table = 'SuperAdminLogin_tb';
+try {
+    $pdo->query("SELECT 1 FROM `$sa_table` LIMIT 1");
+} catch (PDOException $e) {
+    // Self-healing: Create the table if it's missing in the main database
+    $sql = "CREATE TABLE IF NOT EXISTS `$sa_table` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `username` varchar(50) NOT NULL,
+        `email` varchar(100) NOT NULL,
+        `password_hash` varchar(255) NOT NULL,
+        `full_name` varchar(100) NOT NULL,
+        `api_key` varchar(255) DEFAULT NULL,
+        `role` varchar(50) DEFAULT 'super_admin',
+        `is_active` tinyint(1) DEFAULT 1,
+        `last_login` datetime DEFAULT NULL,
+        `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+        `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `username` (`username`),
+        UNIQUE KEY `email` (`email`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+    $pdo->exec($sql);
+
+    // Insert default admin if table was just created
+    $default_pass = password_hash('password', PASSWORD_DEFAULT);
+    $api_key = bin2hex(random_bytes(32));
+    $pdo->exec("INSERT IGNORE INTO `$sa_table` (username, email, password_hash, full_name, api_key, role) 
+               VALUES ('admin', 'atiera41001@gmail.com', '$default_pass', 'System Administrator', '$api_key', 'super_admin')");
+}
 
 // Fetch current superadmin details
-$stmt = $pdo->prepare("SELECT * FROM `SuperAdminLogin_tb` WHERE id = ?");
+$stmt = $pdo->prepare("SELECT * FROM `$sa_table` WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $admin = $stmt->fetch();
 
