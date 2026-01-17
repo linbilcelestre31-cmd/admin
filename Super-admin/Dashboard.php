@@ -657,9 +657,12 @@ $modules = [
                                         ${lastLogin}
                                     </td>
                                     <td style="padding:15px 20px; border-radius:0 12px 12px 0;">
-                                        <button style="background:transparent; border:1px solid #e2e8f0; color:#64748b; padding:8px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary-gold)'; this.style.color='var(--primary-gold)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#64748b'">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
+                                        <a href="https://financial.atierahotelandrestaurant.com/admin/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
+                                           style="display:inline-flex; align-items:center; gap:8px; background:var(--primary-gold); color:white; padding:8px 15px; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; transition:all 0.3s; border:none;" 
+                                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(212, 175, 55, 0.3)'" 
+                                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                            <i class="fas fa-sign-in-alt"></i> Access System
+                                        </a>
                                     </td>
                                 </tr>
                             `;
