@@ -16,6 +16,9 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Super Admin check
+$isSuperAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin');
+
 require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
@@ -599,9 +602,10 @@ function formatFileSize($bytes)
                         <li><a href="../include/Settings.php"
                                 onclick="window.runLoadingAnimation(() => { window.location.href = '../include/Settings.php'; }, true);"><i
                                     class="fas fa-cog"></i> Settings</a></li>
-                        <li><a href="../Modules/dashboard.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../Modules/dashboard.php'; }, true);"><i
-                                    class="fas fa-arrow-left"></i> Back</a></li>
+                        <li><a href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>"
+                                onclick="window.runLoadingAnimation(() => { window.location.href = '<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>'; }, true);"><i
+                                    class="fas fa-arrow-left"></i>
+                                <?php echo $isSuperAdmin ? 'Super-Admin Dashboard' : 'Back'; ?></a></li>
                     </ul>
                 </nav>
             </div>
