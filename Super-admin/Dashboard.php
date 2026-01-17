@@ -93,6 +93,16 @@ $modules = [
             min-height: 100vh;
         }
 
+        /* Hide scrollbar globally */
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
         /* Sidebar Styles */
         .sidebar {
             width: 280px;
@@ -256,7 +266,7 @@ $modules = [
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: #0f172a;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../assets/image/Login Superadmin.png') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;

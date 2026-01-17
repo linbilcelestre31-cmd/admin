@@ -200,6 +200,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overflow: hidden;
         }
 
+        /* Hide scrollbar for all elements */
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
         .bg-container {
             position: fixed;
             top: 0;
@@ -207,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: url('../../assets/image/loading page.jpeg') center/cover no-repeat;
+            background: url('../../assets/image/Login Superadmin.png') center/cover no-repeat;
         }
 
         .bg-overlay {
