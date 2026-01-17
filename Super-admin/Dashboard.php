@@ -284,7 +284,7 @@ $modules = [
         #loading-screen {
             position: fixed;
             inset: 0;
-            background: url('../assets/image/login.jpeg') center/cover no-repeat;
+            background: url('../assets/image/loading.png') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
