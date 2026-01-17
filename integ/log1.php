@@ -29,7 +29,14 @@ function fetchInventoryData()
 if (basename($_SERVER['PHP_SELF']) == 'log1.php') {
     header('Content-Type: application/json');
     $inventory = fetchInventoryData();
+
+    // Support limit parameter
+    $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
+
     if ($inventory) {
+        if ($limit > 0 && is_array($inventory)) {
+            $inventory = array_slice($inventory, 0, $limit);
+        }
         echo json_encode(['success' => true, 'data' => $inventory]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to fetch inventory data']);

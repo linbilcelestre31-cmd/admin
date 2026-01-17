@@ -1055,7 +1055,7 @@ function formatFileSize($bytes)
             const apiMap = {
                 'HR Documents': '../integ/hr_fn.php',
                 'Guest Records': '../integ/guest_fn.php',
-                'Inventory': '../integ/log1.php',
+                'Inventory': '../integ/log1.php?limit=10',
                 'Compliance': '../integ/compliance_fn.php',
                 'Marketing': '../integ/marketing_fn.php'
             };
@@ -1243,7 +1243,7 @@ function formatFileSize($bytes)
                 const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
                 const statusLabel = stock > 10 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
                 const price = parseFloat(item.price || item.unit_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
-                
+
                 return `
                                 <tr>
                                     <td style="font-weight: 700;">#${item.id || item.item_id || 'N/A'}</td>
