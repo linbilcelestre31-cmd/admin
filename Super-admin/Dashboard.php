@@ -606,102 +606,7 @@ $clusters = [
         </div>
     </div>
 
-    <script>
-        const showFinancialModal = function (e) {
-            if (e) e.preventDefault();
-            const modal = document.getElementById('financialModal');
-            modal.style.display = 'flex';
 
-            const container = document.getElementById('financialListContainer');
-
-            fetch('integ/fn_api.php')
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success && result.data) {
-                        let html = `
-                            <div style="overflow-x:auto;">
-                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
-                                    <thead>
-                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
-                                            <th style="padding:10px 20px;">ID</th>
-                                            <th style="padding:10px 20px;">Username</th>
-                                            <th style="padding:10px 20px;">Email</th>
-                                            <th style="padding:10px 20px;">Role</th>
-                                            <th style="padding:10px 20px;">Status</th>
-                                            <th style="padding:10px 20px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
-
-                        result.data.forEach(user => {
-                            html += `
-                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
-                                    <td style="padding:15px 20px; font-weight:700; color:#0f172a;">#${user.id || user.user_id || 'N/A'}</td>
-                                    <td style="padding:15px 20px; font-weight:600;">${user.username || 'Unknown'}</td>
-                                    <td style="padding:15px 20px;">${user.email || 'N/A'}</td>
-                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${user.role || 'User'}</span></td>
-                                    <td style="padding:15px 20px;">
-                                        <div style="display:flex; align-items:center; gap:8px;">
-                                            <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
-                                            <span style="font-size:14px; color:#10b981;">Active</span>
-                                        </div>
-                                    </td>
-                                    <td style="padding:15px 20px;">
-                                        <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" 
-                                           style="color: var(--primary-gold); text-decoration: none; background: rgba(212, 175, 55, 0.1); padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-external-link-alt"></i> Access System
-                                        </a>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-
-                        html += `</tbody></table></div>`;
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Failed to load data from Financial API.</div>';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Network error while connecting to Financial API.</div>';
-                });
-        };
-
-        document.getElementById('sidebar-financial-records').addEventListener('click', showFinancialModal);
-        document.getElementById('closeFinancialModal').addEventListener('click', () => {
-            document.getElementById('financialModal').style.display = 'none';
-        });
-
-        window.addEventListener('click', function (e) {
-            const modal = document.getElementById('financialModal');
-            if (e.target === modal) modal.style.display = 'none';
-        });
-
-        // Wave Text Animation for Loader
-        document.querySelectorAll('.wave-text-loader').forEach(container => {
-            const text = container.textContent;
-            container.innerHTML = '';
-            [...text].forEach((letter, index) => {
-                const span = document.createElement('span');
-                span.textContent = letter === ' ' ? '\u00A0' : letter;
-                span.style.setProperty('--i', index);
-                container.appendChild(span);
-            });
-        });
-
-        // Hide Loading Screen
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('loading-screen');
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.visibility = 'hidden';
-                }, 800);
-            }, 500); // Reduced delay for faster access
-        });
-    </script>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -819,6 +724,118 @@ $clusters = [
         </div>
     </div>
 
+    <script>
+        const showFinancialModal = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('financialModal');
+            modal.style.display = 'flex';
+
+            const container = document.getElementById('financialListContainer');
+
+            fetch('integ/fn_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">ID</th>
+                                            <th style="padding:10px 20px;">Username</th>
+                                            <th style="padding:10px 20px;">Email</th>
+                                            <th style="padding:10px 20px;">Role</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(user => {
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; font-weight:700; color:#0f172a;">#${user.id || user.user_id || 'N/A'}</td>
+                                    <td style="padding:15px 20px; font-weight:600;">${user.username || 'Unknown'}</td>
+                                    <td style="padding:15px 20px;">${user.email || 'N/A'}</td>
+                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${user.role || 'User'}</span></td>
+                                    <td style="padding:15px 20px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
+                                            <span style="font-size:14px; color:#10b981;">Active</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" 
+                                           style="color: var(--primary-gold); text-decoration: none; background: rgba(212, 175, 55, 0.1); padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-external-link-alt"></i> Access System
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `</tbody></table></div>`;
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Failed to load data from Financial API.</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Network error while connecting to Financial API.</div>';
+                });
+        };
+
+        // Attach event listener to sidebar link
+        const finLink = document.getElementById('sidebar-financial-records');
+        if (finLink) {
+            finLink.addEventListener('click', showFinancialModal);
+        }
+
+        document.getElementById('closeFinancialModal').addEventListener('click', () => {
+            document.getElementById('financialModal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('financialModal');
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        // Wave Text Animation for Loader
+        document.querySelectorAll('.wave-text-loader').forEach(container => {
+            const text = container.textContent;
+            container.innerHTML = '';
+            [...text].forEach((letter, index) => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter;
+                span.style.setProperty('--i', index);
+                container.appendChild(span);
+            });
+        });
+
+        // Hybrid Hiding Strategy: Hide after 800ms regardless of 'load' event, 
+        // but try to hide on 'load' if it happens sooner.
+        const hideLoader = () => {
+            const loader = document.getElementById('loading-screen');
+            if (loader && loader.style.opacity !== '0') {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                }, 800);
+            }
+        };
+
+        // Fallback: Force hide after 1.5 seconds if load event hasn't fired
+        setTimeout(hideLoader, 1500);
+
+        // Standard: Hide on window load
+        window.addEventListener('load', hideLoader);
+
+        // Immediate: If document is already complete
+        if (document.readyState === 'complete') {
+            hideLoader();
+        }
     </script>
 </body>
 
