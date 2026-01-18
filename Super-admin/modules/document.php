@@ -978,24 +978,35 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                 <th>Timeline</th>
                                 <th>Account Type</th>
                                 <th>Category</th>
-                                <th>Entity/Description</th>
+                                <th>Description</th>
                                 <th>Value</th>
-                                <th>Action</th>
+                                <th>Protocol Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${data.map(item => {
                                 const type = item.role || item.type || (parseFloat(item.total_credit) > 0 ? 'Income' : 'Expense');
+                                const timeline = item.created_at || item.entry_date || item.last_login || new Date();
                                 return `
                                     <tr>
                                         <td style="font-weight:700;">#${item.id || item.entry_number}</td>
-                                        <td>${new Date(item.created_at || item.entry_date).toLocaleDateString()}</td>
-                                        <td><span style="color: ${type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c'}; font-weight:600;">${type.toUpperCase()}</span></td>
-                                        <td>${item.department || item.category}</td>
-                                        <td>${item.full_name || item.description}</td>
+                                        <td>${new Date(timeline).toLocaleDateString()}</td>
+                                        <td><span style="color: ${type.toLowerCase() === 'income' || type.toLowerCase() === 'admin' ? '#2ecc71' : '#e74c3c'}; font-weight:600;">${type.toUpperCase()}</span></td>
+                                        <td>${item.department || item.category || 'Financial'}</td>
+                                        <td>${item.full_name || item.description || item.username}</td>
                                         <td style="font-weight:700;">$${parseFloat(item.amount || item.total_debit || 0).toLocaleString()}</td>
                                         <td>
-                                            <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Analysis">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #f59e0b;" onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="Modify Metadata">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleProtocol('delete', ${item.id})" title="Quarantine Resource">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 `;
@@ -1032,7 +1043,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                 <th>Stock Level</th>
                                 <th>Asset Value</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th>Protocol Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1045,10 +1056,20 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                         <td style="font-weight:600;">📦 ${item.name}</td>
                                         <td>${item.category}</td>
                                         <td>${stock}</td>
-                                        <td>$${parseFloat(item.price).toLocaleString()}</td>
+                                        <td>$${parseFloat(item.price || 0).toLocaleString()}</td>
                                         <td><span style="color:${statusColor}; font-weight:600;">${stock > 0 ? 'SYNCHRONIZED' : 'DEPLETED'}</span></td>
                                         <td>
-                                            <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Analysis">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #f59e0b;" onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="Modify Asset Metadata">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleProtocol('delete', ${item.id})" title="Quarantine Asset">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 `;
