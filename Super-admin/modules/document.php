@@ -58,9 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch stats
-$total_active = $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn();
-$total_deleted = $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn();
-$total_storage = $pdo->query("SELECT SUM(file_size) FROM documents")->fetchColumn() ?: 0;
+$stats = [
+    'total' => $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn(),
+    'trash' => $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn(),
+    'storage_raw' => $pdo->query("SELECT SUM(file_size) FROM documents")->fetchColumn() ?: 0,
+    'categories' => $pdo->query("SELECT COUNT(DISTINCT category) FROM documents")->fetchColumn()
+];
 
 function formatBytes($bytes, $precision = 2)
 {
@@ -72,6 +75,8 @@ function formatBytes($bytes, $precision = 2)
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
+$stats['storage'] = formatBytes($stats['storage_raw']);
+$isSuperAdmin = true; // This page is exclusively for Super Admin
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,9 +84,9 @@ function formatBytes($bytes, $precision = 2)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Document Control | Super Admin</title>
-    <link rel="icon" type="image/x-icon" href="../../assets/image/logo2.png">
+    <title>Master Document Control - Atiéra</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -110,55 +115,56 @@ function formatBytes($bytes, $precision = 2)
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 40px;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
+        /* Hide Scrollbars */
+        ::-webkit-scrollbar {
+            display: none;
         }
 
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--text-gray);
-            font-weight: 600;
-            transition: color 0.3s;
+        .sidebar-menu a.active,
+        .sidebar-menu a.active i,
+        .category-link.active,
+        .category-link.active i {
+            color: white !important;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink)) !important;
+            border-radius: 12px;
         }
 
-        .back-btn:hover {
-            color: var(--primary-purple);
+        .category-link:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple) !important;
+            border-radius: 12px;
         }
 
-        /* Stats Grid */
+        /* Dashboard Stats Boxes */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: var(--card-bg);
+            background: white;
             padding: 25px;
             border-radius: 24px;
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             gap: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .stat-icon {
@@ -172,190 +178,299 @@ function formatBytes($bytes, $precision = 2)
             color: white;
         }
 
-        .stat-info h3 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .stat-info p {
-            color: var(--text-gray);
+        .stat-info h4 {
             font-size: 14px;
+            color: #64748b;
+            margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        /* Tabs */
-        .tabs {
+        .stat-info p {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .bg-blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .bg-purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .bg-orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .bg-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .bg-red {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .category-content {
+            display: none;
+        }
+
+        .category-content.active {
+            display: block;
+        }
+
+        /* Layout */
+        .dashboard {
             display: flex;
             gap: 30px;
-            border-bottom: 2px solid #e2e8f0;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-gray);
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            border-radius: 12px;
+        }
+
+        .sidebar-menu a i {
+            font-size: 16px;
+            color: var(--text-gray);
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
             margin-bottom: 30px;
         }
 
-        .tab {
-            padding: 15px 5px;
-            cursor: pointer;
-            font-weight: 600;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h2 {
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
             color: var(--text-gray);
-            position: relative;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: color 0.3s;
         }
 
-        .tab.active {
+        nav a:hover,
+        nav a.active {
             color: var(--primary-purple);
         }
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
+        .btn-primary {
             background: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* Table */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: 24px;
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Tables */
+        .financial-table-container {
+            background: white;
+            border-radius: 20px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
-        table {
+        .financial-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th {
+        .financial-table th {
             background: #f8fafc;
-            padding: 18px 25px;
+            padding: 15px 20px;
             text-align: left;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--text-gray);
+            color: #64748b;
             border-bottom: 1px solid #e2e8f0;
         }
 
-        td {
-            padding: 18px 25px;
+        .financial-table td {
+            padding: 15px 20px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 15px;
-        }
-
-        tr:hover td {
-            background: #fefaff;
-        }
-
-        .doc-name {
-            font-weight: 600;
-            color: var(--text-dark);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .doc-icon {
-            width: 35px;
-            height: 35px;
-            background: #eff6ff;
-            color: #3b82f6;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 14px;
         }
 
-        .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+        .financial-table tr:hover td {
+            background: #f8fafc;
         }
 
-        .badge-active {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .badge-deleted {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-view-small {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
             cursor: pointer;
             transition: all 0.2s;
-            border: none;
+            color: #64748b;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view-small:hover {
             background: #f1f5f9;
-            color: var(--text-gray);
+            color: var(--primary-purple);
+            border-color: var(--primary-purple);
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-edit:hover {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .btn-delete:hover {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .btn-restore:hover {
-            background: #dcfce7;
-            color: #10b981;
-        }
-
-        .btn-view:hover {
-            background: #e0e7ff;
-            color: #4338ca;
-        }
-
-        /* Modal */
-        .modal-overlay {
+        /* Modals */
+        .modal {
+            display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .modal {
+        .modal-content {
             background: white;
-            width: 500px;
+            width: 100%;
+            max-width: 550px;
             border-radius: 24px;
             padding: 30px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.3s ease-out;
         }
 
-        .modal h2 {
-            margin-bottom: 20px;
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close {
+            cursor: pointer;
             font-size: 24px;
+            color: #94a3b8;
+            transition: color 0.3s;
         }
 
+        .close:hover {
+            color: #1e293b;
+        }
+
+        /* Form Controls */
         .form-group {
             margin-bottom: 20px;
         }
@@ -364,7 +479,7 @@ function formatBytes($bytes, $precision = 2)
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text-gray);
+            color: #475569;
         }
 
         .form-group input,
@@ -372,165 +487,247 @@ function formatBytes($bytes, $precision = 2)
         .form-group textarea {
             width: 100%;
             padding: 12px 15px;
-            border-radius: 12px;
             border: 1px solid #e2e8f0;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            font-size: 14px;
+            transition: all 0.3s;
         }
 
         .form-group input:focus {
             border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
-        .modal-footer {
+        .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
+            gap: 12px;
             margin-top: 30px;
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 12px 24px;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            border: none;
             transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
         }
 
         .btn-cancel {
-            background: #f1f5f9;
-            color: var(--text-gray);
+            background: #fee2e2;
+            color: #ef4444;
         }
 
-        .btn-save {
-            background: var(--primary-purple);
-            color: white;
-        }
-
-        .btn-save:hover {
-            background: #7c3aed;
-        }
-
+        /* Toast */
         #toast {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: var(--dark-blue);
+            background: #1e293b;
             color: white;
             padding: 15px 30px;
             border-radius: 12px;
             display: none;
-            animation: slideIn 0.3s ease-out;
             z-index: 2000;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s forwards;
         }
 
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
+                opacity: 0;
             }
 
             to {
                 transform: translateX(0);
+                opacity: 1;
             }
+        }
+
+        /* Blurred Content */
+        .blurred-content {
+            filter: blur(8px);
+            transition: filter 0.5s ease;
+        }
+
+        .reveal-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            z-index: 5;
+        }
+
+        .reveal-btn {
+            background: var(--dark-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="header">
-            <div>
-                <a href="../Dashboard.php" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to CommandCenter
-                </a>
-                <h1>Master Document Control</h1>
-            </div>
-            <div style="text-align: right;">
-                <p style="color: var(--text-gray); font-size: 14px;">System Health: <span
-                        style="color: #10b981; font-weight: 700;">OPTIONAL</span></p>
-                <p style="color: var(--text-gray); font-size: 12px;">Super Admin:
-                    <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h2>ATIÉRA MASTER CONTROL</h2>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-shield-alt"></i> Security Center</a></li>
+                        <li><a href="../../include/Settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="../Dashboard.php">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to CommandCenter</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
+    </header>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                    <i class="fas fa-file-alt"></i>
+    <main class="container">
+        <div class="dashboard">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Archive Sectors</h3>
                 </div>
-                <div class="stat-info">
-                    <h3><?php echo number_format($total_active); ?></h3>
-                    <p>Active Archives</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">
-                    <i class="fas fa-trash-alt"></i>
-                </div>
-                <div class="stat-info">
-                    <h3><?php echo number_format($total_deleted); ?></h3>
-                    <p>Quarantined Files</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);">
-                    <i class="fas fa-database"></i>
-                </div>
-                <div class="stat-info">
-                    <h3><?php echo formatBytes($total_storage); ?></h3>
-                    <p>Total Payload</p>
-                </div>
-            </div>
-        </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
+                            All Archives</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i
+                                class="fas fa-file-invoice-dollar"></i> Financial</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
+                            Human Resources</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i
+                                class="fas fa-user-check"></i>
+                            Guests</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
+                            Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
+                            Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
+                            Marketing</a></li>
+                    <li style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                        <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
+                            <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
+                        </a>
+                    </li>
+                </ul>
+            </aside>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab active" data-view="active">Active Archives</div>
-            <div class="tab" data-view="deleted">Trash Bin (Quarantine)</div>
-        </div>
+            <div class="content">
+                <div class="content-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 id="contentTitle" style="font-weight: 700;">Master Archive Control</h2>
+                    <div class="search-container" style="display: flex; gap: 10px;">
+                        <input type="text" id="documentSearch" placeholder="Search master records..."
+                            style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">
+                    </div>
+                </div>
 
-        <!-- Main Table -->
-        <div class="table-container">
-            <table id="docTable">
-                <thead>
-                    <tr>
-                        <th>Document Name</th>
-                        <th>Category</th>
-                        <th>Size</th>
-                        <th>Date Uploaded</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="docList">
-                    <!-- Content will be loaded via JS -->
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 50px;">
-                            <i class="fas fa-circle-notch fa-spin"
-                                style="font-size: 30px; color: var(--primary-purple);"></i>
-                            <p style="margin-top: 15px; color: var(--text-gray);">Decrypting Archive Data...</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- Shared Dashboard Stats Section -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Active Files</h4>
+                            <p><?php echo number_format($stats['total']); ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-red">
+                            <i class="fas fa-trash-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Trash Bin</h4>
+                            <p><?php echo number_format($stats['trash']); ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-orange">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Total Payload</h4>
+                            <p><?php echo $stats['storage']; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Access Level</h4>
+                            <p>Super Admin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Content Areas -->
+                <div class="category-content active" id="all-content">
+                    <div id="allFiles"></div>
+                </div>
+                <div class="category-content" id="financial-records-content">
+                    <div id="financialFiles"></div>
+                </div>
+                <div class="category-content" id="hr-documents-content">
+                    <div id="hrFiles"></div>
+                </div>
+                <div class="category-content" id="guest-records-content">
+                    <div id="guestFiles"></div>
+                </div>
+                <div class="category-content" id="inventory-content">
+                    <div id="inventoryFiles"></div>
+                </div>
+                <div class="category-content" id="compliance-content">
+                    <div id="complianceFiles"></div>
+                </div>
+                <div class="category-content" id="marketing-content">
+                    <div id="marketingFiles"></div>
+                </div>
+                <div class="category-content" id="deleted-content">
+                    <div id="deletedFiles"></div>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Edit Modal -->
-    <div class="modal-overlay" id="editModalOverlay">
-        <div class="modal">
-            <h2>Edit Document Details</h2>
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Document Metadata</h3>
+                <span class="close">&times;</span>
+            </div>
             <form id="editForm">
                 <input type="hidden" id="editId" name="id">
                 <div class="form-group">
-                    <label>Document Name</label>
+                    <label>Archive Name</label>
                     <input type="text" id="editName" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label>Category</label>
+                    <label>Category/Sector</label>
                     <select id="editCategory" name="category" required>
                         <option value="Financial Records">Financial Records</option>
                         <option value="HR Documents">HR Documents</option>
@@ -541,162 +738,266 @@ function formatBytes($bytes, $precision = 2)
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="editDescription" name="description" rows="3"></textarea>
+                    <label>Metadata Description</label>
+                    <textarea id="editDescription" name="description" rows="3"
+                        placeholder="Enter file details..."></textarea>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-save">Update Archive</button>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary close">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="toast">Operation Successful</div>
+    <!-- File Details Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Archive Resource Details</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="detailsContent"></div>
+            <div class="form-actions" style="margin-top: 30px;">
+                <button class="btn btn-secondary close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Atiéra Cloud Archive &copy; 2023 | Master Document Portal</p>
+    </footer>
+
+    <div id="toast">Protocol Executed Successfully</div>
 
     <script>
-        let currentView = 'active';
-        let documents = [];
+        let currentCategory = 'all';
 
-        async function loadData() {
-            try {
-                const response = await fetch('../../Modules/document management(archiving).php?api=1&action=' + (currentView === 'active' ? 'active' : 'deleted'));
-                documents = await response.json();
-                renderTable();
-            } catch (error) {
-                console.error('Error loading documents:', error);
-                document.getElementById('docList').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 50px; color: #ef4444;">Failed to fetch data from cluster.</td></tr>';
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDocuments('all');
+            setupListeners();
+        });
 
-        function renderTable() {
-            const tbody = document.getElementById('docList');
-            if (documents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 50px; color: var(--text-gray);">No documents found in this sector.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = documents.map(doc => `
-            <tr>
-                <td>
-                    <div class="doc-name">
-                        <div class="doc-icon"><i class="fas fa-file-pdf"></i></div>
-                        <div>
-                            <div>${doc.name}</div>
-                            <div style="font-size: 11px; color: var(--text-gray); font-weight: 400;">${doc.description || 'No description'}</div>
-                        </div>
-                    </div>
-                </td>
-                <td><span style="font-size: 13px; color: var(--text-gray);"><i class="fas fa-folder" style="margin-right: 5px;"></i> ${doc.category}</span></td>
-                <td>${formatBytes(doc.file_size)}</td>
-                <td>${doc.upload_date}</td>
-                <td><span class="badge ${doc.is_deleted == 1 ? 'badge-deleted' : 'badge-active'}">${doc.is_deleted == 1 ? 'Deleted' : 'Active'}</span></td>
-                <td>
-                    <div class="actions">
-                        ${doc.is_deleted == 0 ? `
-                            <button class="action-btn btn-view" onclick="window.open('../../Modules/document management(archiving).php?api=1&action=download&id=${doc.id}')" title="Download">
-                                <i class="fas fa-download"></i>
-                            </button>
-                            <button class="action-btn btn-edit" onclick="openEditModal(${doc.id})" title="Edit Metadata">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" onclick="handleAction('delete', ${doc.id})" title="Send to Trash">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        ` : `
-                            <button class="action-btn btn-restore" onclick="handleAction('restore', ${doc.id})" title="Restore Payload">
-                                <i class="fas fa-undo"></i>
-                            </button>
-                            <button class="action-btn btn-delete" onclick="handleAction('permanent_delete', ${doc.id})" title="Wipe Permanently">
-                                <i class="fas fa-skull"></i>
-                            </button>
-                        `}
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-        }
-
-        async function handleAction(action, id) {
-            if (!confirm('Are you sure you want to execute this protocol: ' + action.toUpperCase() + '?')) return;
-
-            const formData = new FormData();
-            formData.append('action', action);
-            formData.append('id', id);
-
-            const response = await fetch(window.location.href, {
-                method: 'POST',
-                body: formData
+        function setupListeners() {
+            // Category Links
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const cat = link.getAttribute('data-category');
+                    switchCategory(link, cat);
+                });
             });
 
-            const result = await response.json();
-            if (result.success) {
-                showToast(action.charAt(0).toUpperCase() + action.slice(1) + ' protocol completed.');
-                loadData();
-            }
-        }
-
-        function openEditModal(id) {
-            const doc = documents.find(d => d.id == id);
-            if (!doc) return;
-
-            document.getElementById('editId').value = doc.id;
-            document.getElementById('editName').value = doc.name;
-            document.getElementById('editCategory').value = doc.category;
-            document.getElementById('editDescription').value = doc.description;
-
-            document.getElementById('editModalOverlay').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('editModalOverlay').style.display = 'none';
-        }
-
-        document.getElementById('editForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            formData.append('action', 'edit');
-
-            const response = await fetch(window.location.href, {
-                method: 'POST',
-                body: formData
+            // Modal Close
+            document.querySelectorAll('.close').forEach(c => {
+                c.onclick = () => {
+                    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+                }
             });
 
-            const result = await response.json();
-            if (result.success) {
-                showToast('Document metadata updated successfully.');
-                closeModal();
-                loadData();
-            }
-        };
+            // Edit Form Submit
+            document.getElementById('editForm').onsubmit = (e) => {
+                e.preventDefault();
+                handleEdit(new FormData(e.target));
+            };
+
+            // Search
+            document.getElementById('documentSearch').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                filterTable(term);
+            });
+        }
+
+        function switchCategory(link, cat) {
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
+            const contentId = `${cat.toLowerCase().replace(/\s+/g, '-')}-content`;
+            const contentEl = document.getElementById(contentId) || document.getElementById('all-content');
+            if (contentEl) contentEl.classList.add('active');
+
+            const titles = {
+                'all': 'Master Archive Control',
+                'Financial Records': 'Financial Archives',
+                'HR Documents': 'Human Resource Logs',
+                'Guest Records': 'Guest Information Repository',
+                'Inventory': 'Inventory Master Logs',
+                'Compliance': 'Compliance & Legal Records',
+                'Marketing': 'Marketing Campaign Assets',
+                'deleted': 'Quarantined Archives (Trash)'
+            };
+            document.getElementById('contentTitle').textContent = titles[cat] || 'Master Archive Control';
+
+            currentCategory = cat;
+            loadDocuments(cat);
+        }
+
+        function loadDocuments(cat) {
+            const gridId = (cat === 'all' ? 'allFiles' : (cat === 'deleted' ? 'deletedFiles' : `${cat.toLowerCase().replace(/\s+/g, '')}Files`));
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+
+            grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Fetching records...</div>';
+
+            const endpoint = cat === 'deleted' ?
+                '../../Modules/document management(archiving).php?api=1&action=deleted' :
+                (cat === 'all' ? '../../Modules/document management(archiving).php?api=1&action=active' : `../../Modules/document management(archiving).php?api=1&action=active&category=${encodeURIComponent(cat)}`);
+
+            fetch(endpoint)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        grid.innerHTML = `<div style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 20px;"></i><p>No records found in this sector.</p></div>`;
+                    } else {
+                        renderMasterTable(data, grid);
+                    }
+                })
+                .catch(err => {
+                    grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Error connecting to database cluster.</div>`;
+                });
+        }
+
+        function renderMasterTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Archive Resource</th>
+                                <th>Sector</th>
+                                <th>Payload</th>
+                                <th>Timeline</th>
+                                <th>Protocol Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => `
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 35px; height: 35px; background: #eff6ff; color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600;">${item.name}</div>
+                                                <div style="font-size: 11px; color: #64748b;">${item.description || 'No metadata description'}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span style="font-size: 13px; color: #64748b;"><i class="fas fa-folder" style="margin-right: 5px;"></i> ${item.category}</span></td>
+                                    <td>${formatBytes(item.file_size)}</td>
+                                    <td>${new Date(item.upload_date).toLocaleDateString()}</td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="../../Modules/document management(archiving).php?api=1&action=download&id=${item.id}" class="btn-view-small" title="Secure Fetch">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Analysis">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            ${item.is_deleted == 0 ? `
+                                                <button class="btn-view-small" style="color: #f59e0b;" onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="Modify Metadata">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleProtocol('delete', ${item.id})" title="Quarantine Resource">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            ` : `
+                                                <button class="btn-view-small" style="color: #10b981;" onclick="handleProtocol('restore', ${item.id})" title="Restore Resource">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #64748b;" onclick="handleProtocol('permanent_delete', ${item.id})" title="Wipe Permanently">
+                                                    <i class="fas fa-skull"></i>
+                                                </button>
+                                            `}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        window.handleProtocol = function (action, id) {
+            const confirmMsg = action === 'permanent_delete' ?
+                'WARNING: THIS ACTION IS ADIABATIC AND PERMANENT. WIPE RESOURCE?' :
+                `EXECUTE ${action.toUpperCase()} PROTOCOL ON RESOURCE #${id}?`;
+
+            if (!confirm(confirmMsg)) return;
+
+            const fd = new FormData();
+            fd.append('action', action);
+            fd.append('id', id);
+
+            fetch(window.location.href, { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        showToast(`Archive protocol ${action} completed successfully.`);
+                        loadDocuments(currentCategory);
+                    }
+                });
+        }
+
+        window.openEditModal = function (item) {
+            document.getElementById('editId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCategory').value = item.category;
+            document.getElementById('editDescription').value = item.description || '';
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function handleEdit(fd) {
+            fd.append('action', 'edit');
+            fetch(window.location.href, { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        showToast('Document metadata updated and synchronized.');
+                        document.getElementById('editModal').style.display = 'none';
+                        loadDocuments(currentCategory);
+                    }
+                });
+        }
+
+        window.showDetails = function (item) {
+            const content = document.getElementById('detailsContent');
+            content.innerHTML = `
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px; color: var(--primary-purple);">${item.name}</h4>
+                    <p style="margin-bottom: 10px;"><strong>Sector:</strong> ${item.category}</p>
+                    <p style="margin-bottom: 10px;"><strong>Payload Size:</strong> ${formatBytes(item.file_size)}</p>
+                    <p style="margin-bottom: 10px;"><strong>Timeline:</strong> ${new Date(item.upload_date).toLocaleString()}</p>
+                    <p style="margin-bottom: 10px;"><strong>Status:</strong> ${item.is_deleted == 1 ? 'QUARANTINED' : 'ACTIVE'}</p>
+                    ${item.description ? `<p style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;"><strong>Description:</strong><br>${item.description}</p>` : ''}
+                </div>
+            `;
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function filterTable(term) {
+            const rows = document.querySelectorAll('.financial-table tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
 
         function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
         }
 
         function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            if (bytes == 0) return '0 B';
+            const k = 1024, sizes = ['B', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.onclick = () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                currentView = tab.dataset.view;
-                loadData();
-            };
-        });
-
-        // Initial load
-        loadData();
     </script>
 
 </body>

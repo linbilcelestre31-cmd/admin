@@ -829,6 +829,13 @@ function formatFileSize($bytes)
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
 
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
         /* Modals */
         .modal {
             display: none;
@@ -2017,7 +2024,7 @@ function formatFileSize($bytes)
             } else {
                 if (callback) callback();
             }
-        };
+    };
     </script>
 </body>
 
