@@ -85,7 +85,7 @@ $clusters = [
     'Management & Operations' => [
         ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
         ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
-        ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => '../Modules/document management(archiving).php'],
+        ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => 'modules/document.php'],
         ['name' => 'Visitor Logs', 'id' => 'VISITOR', 'icon' => 'id-card-clip', 'color' => '#06b6d4', 'url' => '../Modules/Visitor-logs.php'],
         ['name' => 'Operations Dashboard', 'id' => 'MOD_DASH', 'icon' => 'gauge-high', 'color' => '#14b8a6', 'url' => '../Modules/dashboard.php'],
     ]
