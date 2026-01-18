@@ -1006,7 +1006,7 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link" data-category="Financial Records"><i
                                 class="fas fa-file-invoice-dollar"></i> Financial</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
-                            Human Resources</a></li>
+                            HR Documents</a></li>
                     <li><a href="#" class="category-link" data-category="Guest Records"><i
                                 class="fas fa-user-check"></i> Guests</a></li>
                     <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
@@ -1021,7 +1021,7 @@ function formatFileSize($bytes)
             <div class="content">
                 <div class="content-header"
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2 id="contentTitle" style="font-weight: 700;">Archive Management</h2>
+                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | Admin ATIÉRA</h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
                         <input type="text" id="documentSearch" placeholder="Search archive..."
                             style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">
@@ -2024,7 +2024,7 @@ function formatFileSize($bytes)
             } else {
                 if (callback) callback();
             }
-    };
+        };
     </script>
 </body>
 
