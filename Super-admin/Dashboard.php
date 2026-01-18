@@ -637,58 +637,59 @@ $clusters = [
             style="margin-bottom: 35px; font-size: 24px; color: var(--text-dark); border-bottom: 2px solid var(--primary-gold); display: inline-block; padding-bottom: 5px;">
             Department Gateways</h2>
 
-        <?php foreach ($clusters as $clusterName => $modules): ?>
-            <div class="cluster-section" style="margin-bottom: 40px;">
-                <h3
-                    style="margin-bottom: 20px; font-size: 18px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 10px; height: 10px; background: var(--primary-gold); border-radius: 50%;"></div>
-                    <?php echo $clusterName; ?>
-                </h3>
-                <div class="module-grid">
-                    <?php foreach ($modules as $module): ?>
-                        <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                            class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
-                            id="module-<?php echo $module['id']; ?>">
-                            <?php if (isset($module['premium'])): ?>
+        <!-- Module Clusters -->
+        <div class="clusters-container" style="display: block; width: 100%;">
+            <?php foreach ($clusters as $clusterName => $modules): ?>
+                <div class="cluster-section" style="margin-bottom: 50px; display: block; clear: both; width: 100%;">
+                    <h3
+                        style="margin-bottom: 25px; font-size: 18px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 10px; height: 10px; background: var(--primary-gold); border-radius: 50%;"></div>
+                        <?php echo $clusterName; ?>
+                    </h3>
+                    <div class="module-grid">
+                        <?php foreach ($modules as $module): ?>
+                            <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                                class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
+                                id="module-<?php echo $module['id']; ?>">
+                                <?php if (isset($module['premium'])): ?>
+                                    <div class="premium-badge">Priority Module</div>
+                                <?php endif; ?>
+                                <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
+                                    <i class="fas fa-<?php echo $module['icon']; ?>"></i>
+                                </div>
+                                <div class="module-info">
+                                    <h3><?php echo htmlspecialchars($module['name']); ?></h3>
+                                    <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
+                                </div>
+                                <div class="bypass-status">
+                                    <i class="fas fa-bolt"></i> Bypass Protocol Active
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
 
-                        </div>
-                    <?php endif; ?>
-                    <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
-                        <i class="fas fa-<?php echo $module['icon']; ?>"></i>
-                    </div>
-                    <div class="module-info">
-                        <h3><?php echo htmlspecialchars($module['name']); ?></h3>
-                        <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
-                    </div>
-                    <div class="bypass-status">
-                        <i class="fas fa-bolt"></i> Bypass Protocol Active
-                    </div>
-                    </a>
-                <?php endforeach; ?>
+        <!-- System Status -->
+        <div
+            style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
+            <div style="display: flex; gap: 40px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
+                </div>
             </div>
         </div>
-    <?php endforeach; ?>
-
-    <!-- System Status -->
-    <div style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
-        <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
-        <div style="display: flex; gap: 40px;">
-            <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
-                <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
-                <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
-                <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
-            </div>
-        </div>
-    </div>
-    </div>
-
     </div>
 
     <!-- HR1 Modal -->
