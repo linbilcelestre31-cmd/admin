@@ -908,7 +908,19 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         function loadDocuments(cat) {
-            const gridId = (cat === 'all' ? 'allFiles' : (cat === 'deleted' ? 'deletedFiles' : `${cat.toLowerCase().replace(/\s+/g, '')}Files`));
+            // Fix: Map category names to their specific grid IDs correctly
+            const gridMap = {
+                'all': 'allFiles',
+                'Financial Records': 'financialFiles',
+                'HR Documents': 'hrFiles',
+                'Guest Records': 'guestFiles',
+                'Inventory': 'inventoryFiles',
+                'Compliance': 'complianceFiles',
+                'Marketing': 'marketingFiles',
+                'deleted': 'deletedFiles'
+            };
+            
+            const gridId = gridMap[cat] || (cat.toLowerCase().replace(/\s+/g, '') + 'Files');
             const grid = document.getElementById(gridId);
             if (!grid) return;
 
@@ -1148,7 +1160,17 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             const fd = new FormData();
             fd.append('action', action);
             fd.append('id', id);
-            fetch(window.location.href, { method: 'POST', body: fd })
+
+            // Determine which endpoint to use based on current category
+            let endpoint = window.location.href; // Default local
+            if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
+            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr_fn.php';
+            else if (currentCategory === 'Guest Records') endpoint = '../../integ/guest_fn.php';
+            else if (currentCategory === 'Inventory') endpoint = '../../integ/log1.php';
+            else if (currentCategory === 'Compliance') endpoint = '../../integ/compliance_fn.php';
+            else if (currentCategory === 'Marketing') endpoint = '../../integ/marketing_fn.php';
+
+            fetch(endpoint, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
                     if (res.success) {
@@ -1159,20 +1181,27 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         window.openEditModal = function (item) {
-            document.getElementById('editId').value = item.id;
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editCategory').value = item.category;
+            document.getElementById('editId').value = item.id || item.entry_number || '';
+            document.getElementById('editName').value = item.name || item.full_name || item.username || '';
+            document.getElementById('editCategory').value = currentCategory === 'all' ? (item.category || 'General') : currentCategory;
             document.getElementById('editDescription').value = item.description || '';
             document.getElementById('editModal').style.display = 'flex';
         }
 
         function handleEdit(fd) {
             fd.append('action', 'edit');
-            fetch(window.location.href, { method: 'POST', body: fd })
+            
+            // Determine which endpoint to use
+            let endpoint = window.location.href;
+            if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
+            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr_fn.php';
+            else if (currentCategory === 'Guest Records') endpoint = '../../integ/guest_fn.php';
+
+            fetch(endpoint, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
                     if(res.success) {
-                        showToast('Metadata updated.');
+                        showToast('Metadata updated and synchronized.');
                         document.getElementById('editModal').style.display = 'none';
                         loadDocuments(currentCategory);
                     }

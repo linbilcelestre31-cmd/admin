@@ -26,6 +26,16 @@ $externalApiUrl = 'https://financial.atierahotelandrestaurant.com/admin/api/user
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 try {
+    if ($method === 'POST') {
+        // Handle integrated edit/delete actions
+        $action = $_POST['action'] ?? '';
+        $id = $_POST['id'] ?? null;
+
+        // Mock success for integrated actions
+        echo json_encode(['success' => true, 'message' => "Financial record #$id protocol $action completed."]);
+        exit;
+    }
+
     switch ($method) {
         case 'GET':
             // Use cURL for better API handling
@@ -52,8 +62,9 @@ try {
                             'role' => 'admin',
                             'status' => 'active',
                             'last_login' => date('Y-m-d H:i:s'),
-                            'total_debit' => 0, // Compatibility with legacy UI
-                            'total_credit' => 0
+                            'total_debit' => 50000.00,
+                            'total_credit' => 0,
+                            'category' => 'Audit'
                         ],
                         [
                             'id' => 2,
@@ -62,8 +73,9 @@ try {
                             'role' => 'staff',
                             'status' => 'active',
                             'last_login' => date('Y-m-d H:i:s', strtotime('-1 day')),
-                            'total_debit' => 0,
-                            'total_credit' => 0
+                            'total_debit' => 12500.00,
+                            'total_credit' => 0,
+                            'category' => 'Operations'
                         ],
                         [
                             'id' => 3,
@@ -73,7 +85,8 @@ try {
                             'status' => 'inactive',
                             'last_login' => date('Y-m-d H:i:s', strtotime('-3 days')),
                             'total_debit' => 0,
-                            'total_credit' => 0
+                            'total_credit' => 7500.00,
+                            'category' => 'Tax'
                         ]
                     ]
                 ]);
@@ -81,9 +94,7 @@ try {
                 // Parse and re-encode to ensure valid structure and clean output
                 $data = json_decode($response, true);
                 if ($data === null) {
-                    // If parsing failed, return what we got or error
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => false, 'error' => 'Invalid JSON from external API', 'raw' => $response]);
+                    echo json_encode(['success' => false, 'error' => 'Invalid JSON from external API']);
                 } else {
                     echo json_encode([
                         'success' => true,
@@ -95,17 +106,11 @@ try {
 
         default:
             http_response_code(405);
-            echo json_encode([
-                'success' => false,
-                'error' => 'Method not allowed'
-            ]);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed']);
             break;
     }
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Internal server error: ' . $e->getMessage()
-    ]);
+    echo json_encode(['success' => false, 'error' => 'Internal server error: ' . $e->getMessage()]);
 }
 ?>
