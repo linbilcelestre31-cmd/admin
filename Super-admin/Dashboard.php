@@ -598,21 +598,6 @@ $clusters = [
                     <i class="fas fa-home"></i> Dashboard
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link" id="show-admins-btn">
-                    <i class="fas fa-file-invoice-dollar"></i> Financial Records
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-shield-halved"></i> Security Logs
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-gear"></i> System Settings
-                </a>
-            </li>
         </ul>
 
         <a href="auth/logout.php" class="logout-btn">
