@@ -1048,8 +1048,7 @@ $clusters = [
 
 
 
-        // Attach to Sidebar button
-        document.getElementById('show-admins-btn').addEventListener('click', showAdmins);
+        // Financial Records Click Handler is attached below via module-FINANCE ID
 
         // Attach to Financial Records card
         if (document.getElementById('module-FINANCE')) {
