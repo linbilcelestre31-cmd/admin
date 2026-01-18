@@ -694,7 +694,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             <div class="content">
                 <div class="content-header"
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2 id="contentTitle" style="font-weight: 700;">Master Archive Control</h2>
+                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | ATIÉRA</h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
                         <input type="text" id="documentSearch" placeholder="Search master records..."
                             style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">
