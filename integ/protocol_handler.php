@@ -59,6 +59,26 @@ class ProtocolHandler
         });
     }
 
+    public static function filterOnlyQuarantined($sector, $records, $idField = 'id')
+    {
+        $data = self::load();
+        return array_filter($records, function ($item) use ($sector, $idField, $data) {
+            $id = $item[$idField] ?? null;
+            return in_array($sector . '_' . $id, $data['quarantined']);
+        });
+    }
+
+    public static function countQuarantined($sector = null)
+    {
+        $data = self::load();
+        if ($sector) {
+            return count(array_filter($data['quarantined'], function ($key) use ($sector) {
+                return strpos($key, $sector . '_') === 0;
+            }));
+        }
+        return count($data['quarantined']);
+    }
+
     public static function getQuarantinedBySector($sector)
     {
         $data = self::load();

@@ -60,7 +60,12 @@ if (basename($_SERVER['PHP_SELF']) == 'log1.php' || isset($_GET['api'])) {
     }
 
     // Apply local quarantine filter
-    $inventory = ProtocolHandler::filter('Inventory', $inventory, 'inventory_id');
+    $action = $_GET['action'] ?? '';
+    if ($action === 'quarantined') {
+        $inventory = ProtocolHandler::filterOnlyQuarantined('Inventory', $inventory, 'inventory_id');
+    } else {
+        $inventory = ProtocolHandler::filter('Inventory', $inventory, 'inventory_id');
+    }
 
     if ($limit > 0 && is_array($inventory)) {
         $inventory = array_slice($inventory, 0, $limit);

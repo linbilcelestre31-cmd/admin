@@ -104,7 +104,12 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
 
         // Apply local quarantine filter
         require_once __DIR__ . '/protocol_handler.php';
-        $employees = ProtocolHandler::filter('HR', $employees, 'id');
+        $action = $_GET['action'] ?? '';
+        if ($action === 'quarantined') {
+            $employees = ProtocolHandler::filterOnlyQuarantined('HR', $employees, 'id');
+        } else {
+            $employees = ProtocolHandler::filter('HR', $employees, 'id');
+        }
 
         echo json_encode([
             'success' => true,

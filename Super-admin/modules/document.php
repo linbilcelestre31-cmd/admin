@@ -70,9 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch stats
+require_once __DIR__ . '/../../integ/protocol_handler.php';
+$quarantinedCount = ProtocolHandler::countQuarantined();
+
 $stats = [
     'total' => $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn(),
-    'trash' => $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn(),
+    'trash' => $pdo->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 1")->fetchColumn() + $quarantinedCount,
     'storage_raw' => $pdo->query("SELECT SUM(file_size) FROM documents")->fetchColumn() ?: 0,
     'categories' => $pdo->query("SELECT COUNT(DISTINCT category) FROM documents")->fetchColumn()
 ];
@@ -96,7 +99,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Document Control - Atiéra</title>
+    <title>Document Archiving | Atiera</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -448,8 +451,15 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal-header {
@@ -476,9 +486,20 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         /* Form Controls */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #e2e8f0;
@@ -487,12 +508,38 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             font-size: 14px;
             transition: all 0.3s;
         }
-        .form-group input:focus { border-color: var(--primary-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
 
-        .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
-        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; font-size: 14px; }
-        .btn-secondary { background: #f1f5f9; color: #475569; }
-        .btn-cancel { background: #fee2e2; color: #ef4444; }
+        .form-group input:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-cancel {
+            background: #fee2e2;
+            color: #ef4444;
+        }
 
         /* PIN Security Styles */
         #passwordModal {
@@ -551,8 +598,15 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         /* Blurred Content */
@@ -613,13 +667,14 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <h3>Archive Sectors</h3>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i
-                                class="fas fa-layer-group"></i> All Archives</a></li>
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
+                            All Archives</a></li>
                     <li><a href="#" class="category-link" data-category="Financial Records"><i
                                 class="fas fa-file-invoice-dollar"></i> Financial</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
                             Human Resources</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i
+                                class="fas fa-user-check"></i>
                             Guests</a></li>
                     <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
                             Inventory</a></li>
@@ -628,9 +683,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                             Marketing</a></li>
                     <li style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
-                         <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
-                             <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
-                         </a>
+                        <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
+                            <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
+                        </a>
                     </li>
                 </ul>
             </aside>
@@ -730,12 +785,15 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <input type="password" maxlength="1" class="pin-digit" id="pin3" required>
                     <input type="password" maxlength="1" class="pin-digit" id="pin4" required>
                 </div>
-                <div id="pinError" style="color: #ef4444; font-size: 0.9rem; margin-top: -25px; margin-bottom: 25px; display: none; font-weight: 600;">
+                <div id="pinError"
+                    style="color: #ef4444; font-size: 0.9rem; margin-top: -25px; margin-bottom: 25px; display: none; font-weight: 600;">
                     <i class="fas fa-exclamation-circle"></i> Invalid PIN Access Code
                 </div>
                 <div style="display: flex; gap: 15px; justify-content: center;">
-                    <button type="button" class="btn btn-secondary" id="pinCancel" style="min-width: 120px;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="min-width: 140px; background: #1e3a8a;">Unlock</button>
+                    <button type="button" class="btn btn-secondary" id="pinCancel"
+                        style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary"
+                        style="min-width: 140px; background: #1e3a8a;">Unlock</button>
                 </div>
             </form>
         </div>
@@ -767,7 +825,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 </div>
                 <div class="form-group">
                     <label>Metadata Description</label>
-                    <textarea id="editDescription" name="description" rows="3" placeholder="Enter file details..."></textarea>
+                    <textarea id="editDescription" name="description" rows="3"
+                        placeholder="Enter file details..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary close">Cancel</button>
@@ -813,7 +872,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const cat = link.getAttribute('data-category');
-                    
+
                     if (cat !== 'all' && cat !== 'deleted') {
                         targetCat = { link, cat };
                         showPinGate(cat);
@@ -826,7 +885,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             // PIN Inputs
             const pinInputs = document.querySelectorAll('.pin-digit');
             pinInputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
                     if (this.value && index < pinInputs.length - 1) pinInputs[index + 1].focus();
                 });
@@ -902,7 +961,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'deleted': 'Quarantined Archives (Trash)'
             };
             document.getElementById('contentTitle').textContent = titles[cat] || 'Master Archive Control';
-            
+
             currentCategory = cat;
             loadDocuments(cat);
         }
@@ -919,12 +978,18 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'Marketing': 'marketingFiles',
                 'deleted': 'deletedFiles'
             };
-            
+
             const gridId = gridMap[cat] || (cat.toLowerCase().replace(/\s+/g, '') + 'Files');
             const grid = document.getElementById(gridId);
             if (!grid) return;
 
             grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Fetching records...</div>';
+
+            // Special handling for Trash Bin (Unified)
+            if (cat === 'deleted') {
+                loadAllDeletedRecords(grid);
+                return;
+            }
 
             // Special handling for integrated modules
             if (cat === 'Financial Records') {
@@ -945,9 +1010,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 return;
             }
 
-            const endpoint = cat === 'deleted' ? 
-                '../../Modules/document management(archiving).php?api=1&action=deleted' : 
-                (cat === 'all' ? '../../Modules/document management(archiving).php?api=1&action=active' : `../../Modules/document management(archiving).php?api=1&action=active&category=${encodeURIComponent(cat)}`);
+            const endpoint = (cat === 'all' ? '../../Modules/document management(archiving).php?api=1&action=active' : `../../Modules/document management(archiving).php?api=1&action=active&category=${encodeURIComponent(cat)}`);
 
             fetch(endpoint)
                 .then(r => r.json())
@@ -963,6 +1026,102 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 });
         }
 
+        async function loadAllDeletedRecords(grid) {
+            grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #64748b;"><i class="fas fa-recycle fa-spin"></i> Scanning all sectors for quarantined items...</div>';
+
+            try {
+                // 1. Fetch deleted from documents table
+                const docRes = await fetch('../../Modules/document management(archiving).php?api=1&action=deleted');
+                const docData = await docRes.json();
+
+                // 2. Fetch quarantined from integrated sectors
+                const sectors = [
+                    { name: 'Inventory', url: '../../integ/log1.php?action=quarantined' },
+                    { name: 'HR Documents', url: '../../integ/hr4_api.php?action=quarantined' }
+                ];
+
+                const quarantinedItems = [];
+                for (const sector of sectors) {
+                    try {
+                        const res = await fetch(sector.url);
+                        const result = await res.json();
+                        if (result.success && result.data) {
+                            result.data.forEach(item => {
+                                quarantinedItems.push({
+                                    ...item,
+                                    id: item.id || item.inventory_id,
+                                    name: item.name || item.item_name || item.full_name || 'Quarantined Resource',
+                                    category: sector.name,
+                                    is_quarantined_sector: true,
+                                    sector_id: sector.name === 'Inventory' ? 'Inventory' : 'HR'
+                                });
+                            });
+                        }
+                    } catch (e) { console.error(`Failed to fetch quarantined for ${sector.name}`, e); }
+                }
+
+                const allDeleted = [...docData, ...quarantinedItems];
+
+                if (allDeleted.length === 0) {
+                    grid.innerHTML = `<div style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-trash-restore" style="font-size: 3rem; margin-bottom: 20px;"></i><p>Trash Bin is empty.</p></div>`;
+                } else {
+                    renderTrashTable(allDeleted, grid);
+                }
+            } catch (err) {
+                grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Failed to synchronize trash bin data.</div>`;
+            }
+        }
+
+        function renderTrashTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Quarantined Resource</th>
+                                <th>Original Sector</th>
+                                <th>Deleted Date / Timeline</th>
+                                <th>Protocol Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => {
+                const isSector = item.is_quarantined_sector;
+                const date = item.deleted_date || item.upload_date || 'N/A';
+                return `
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div style="width: 35px; height: 35px; background: ${isSector ? '#fff1f2' : '#f8fafc'}; color: ${isSector ? '#e11d48' : '#64748b'}; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-${isSector ? 'biohazard' : 'file-alt'}"></i>
+                                                </div>
+                                                <div>
+                                                    <div style="font-weight: 600;">${item.name}</div>
+                                                    <div style="font-size: 11px; color: #64748b;">${item.description || 'System quarantine override'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span style="font-size: 13px; color: #64748b;"><i class="fas fa-folder" style="margin-right: 5px;"></i> ${item.category}</span></td>
+                                        <td>${date !== 'N/A' ? new Date(date).toLocaleDateString() : 'N/A'}</td>
+                                        <td>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button class="btn-view-small" style="color: #10b981;" onclick="handleProtocol('restore', ${item.id}, '${item.sector_id || ''}')" title="Restore Resource">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #64748b;" onclick="handleProtocol('permanent_delete', ${item.id}, '${item.sector_id || ''}')" title="Wipe Permanently">
+                                                    <i class="fas fa-skull"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
         function loadFinancialRecords() {
             const grid = document.getElementById('financialFiles');
             fetch('../../integ/fn.php')
@@ -970,8 +1129,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 .then(result => {
                     const data = (result && result.success && Array.isArray(result.data)) ? result.data :
                         (Array.isArray(result) ? result : []);
-                    
-                    if(data.length === 0) {
+
+                    if (data.length === 0) {
                         grid.innerHTML = `<div style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 20px;"></i><p>No financial archives available.</p></div>`;
                         return;
                     }
@@ -997,9 +1156,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                         </thead>
                         <tbody>
                             ${data.map(item => {
-                                const type = item.role || item.type || (parseFloat(item.total_credit) > 0 ? 'Income' : 'Expense');
-                                const timeline = item.created_at || item.entry_date || item.last_login || new Date();
-                                return `
+                const type = item.role || item.type || (parseFloat(item.total_credit) > 0 ? 'Income' : 'Expense');
+                const timeline = item.created_at || item.entry_date || item.last_login || new Date();
+                return `
                                     <tr>
                                         <td style="font-weight:700;">#${item.id || item.entry_number}</td>
                                         <td>${new Date(timeline).toLocaleDateString()}</td>
@@ -1022,7 +1181,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                         </td>
                                     </tr>
                                 `;
-                            }).join('')}
+            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1060,9 +1219,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                         </thead>
                         <tbody>
                             ${data.map(item => {
-                                const stock = parseInt(item.quantity || item.stock || 0);
-                                const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
-                                return `
+                const stock = parseInt(item.quantity || item.stock || 0);
+                const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
+                return `
                                     <tr>
                                         <td>#${item.inventory_id || item.id}</td>
                                         <td style="font-weight:600;">📦 ${item.item_name || item.name}</td>
@@ -1085,7 +1244,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                         </td>
                                     </tr>
                                 `;
-                            }).join('')}
+            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1155,25 +1314,27 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             `;
         }
 
-        window.handleProtocol = function (action, id) {
+        window.handleProtocol = function (action, id, sectorOverride = null) {
             if (!confirm(`EXECUTE ${action.toUpperCase()} PROTOCOL ON RESOURCE #${id}?`)) return;
             const fd = new FormData();
             fd.append('action', action);
             fd.append('id', id);
 
-            // Determine which endpoint to use based on current category
-            let endpoint = window.location.href; // Default local
-            if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
-            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr4_api.php';
-            else if (currentCategory === 'Guest Records') endpoint = '../../integ/guest_fn.php';
-            else if (currentCategory === 'Inventory') endpoint = '../../integ/log1.php';
-            else if (currentCategory === 'Compliance') endpoint = '../../integ/compliance_fn.php';
-            else if (currentCategory === 'Marketing') endpoint = '../../integ/marketing_fn.php';
+            // Determine which endpoint to use
+            let endpoint = window.location.href;
+            const sector = sectorOverride || currentCategory;
+
+            if (sector === 'Financial Records') endpoint = '../../integ/fn.php';
+            else if (sector === 'HR Documents' || sector === 'HR') endpoint = '../../integ/hr4_api.php';
+            else if (sector === 'Guest Records') endpoint = '../../integ/guest_fn.php';
+            else if (sector === 'Inventory') endpoint = '../../integ/log1.php';
+            else if (sector === 'Compliance') endpoint = '../../integ/compliance_fn.php';
+            else if (sector === 'Marketing') endpoint = '../../integ/marketing_fn.php';
 
             fetch(endpoint, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
-                    if (res.success) {
+                    if (res.success || res.message) {
                         showToast(`Archive protocol ${action} completed.`);
                         loadDocuments(currentCategory);
                     }
@@ -1190,7 +1351,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
 
         function handleEdit(fd) {
             fd.append('action', 'edit');
-            
+
             // Determine which endpoint to use
             let endpoint = window.location.href;
             if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
@@ -1200,7 +1361,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             fetch(endpoint, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
-                    if(res.success) {
+                    if (res.success) {
                         showToast('Metadata updated and synchronized.');
                         document.getElementById('editModal').style.display = 'none';
                         loadDocuments(currentCategory);
@@ -1240,4 +1401,5 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
     </script>
 </body>
+
 </html>
