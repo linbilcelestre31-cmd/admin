@@ -933,7 +933,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             }
 
             const apiMap = {
-                'HR Documents': '../../integ/hr_fn.php',
+                'HR Documents': '../../integ/hr4_api.php',
                 'Guest Records': '../../integ/guest_fn.php',
                 'Inventory': '../../integ/log1.php?limit=10',
                 'Compliance': '../../integ/compliance_fn.php',
@@ -1164,7 +1164,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             // Determine which endpoint to use based on current category
             let endpoint = window.location.href; // Default local
             if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
-            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr_fn.php';
+            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr4_api.php';
             else if (currentCategory === 'Guest Records') endpoint = '../../integ/guest_fn.php';
             else if (currentCategory === 'Inventory') endpoint = '../../integ/log1.php';
             else if (currentCategory === 'Compliance') endpoint = '../../integ/compliance_fn.php';
@@ -1194,7 +1194,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             // Determine which endpoint to use
             let endpoint = window.location.href;
             if (currentCategory === 'Financial Records') endpoint = '../../integ/fn.php';
-            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr_fn.php';
+            else if (currentCategory === 'HR Documents') endpoint = '../../integ/hr4_api.php';
             else if (currentCategory === 'Guest Records') endpoint = '../../integ/guest_fn.php';
 
             fetch(endpoint, { method: 'POST', body: fd })
@@ -1212,9 +1212,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             const content = document.getElementById('detailsContent');
             content.innerHTML = `
                 <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 15px; color: var(--primary-purple);">${item.name || item.product_name || 'Resource Analysis'}</h4>
-                    <p><strong>Sector:</strong> ${item.category || 'General'}</p>
-                    <p><strong>Payload Size:</strong> ${item.file_size ? formatBytes(item.file_size) : 'Integrated Asset'}</p>
+                    <h4 style="margin-bottom: 15px; color: var(--primary-purple);">${item.name || item.product_name || item.item_name || item.full_name || 'Resource Analysis'}</h4>
+                    <p><strong>Sector:</strong> ${item.category || currentCategory || 'General'}</p>
+                    ${item.file_size ? `<p><strong>Payload Size:</strong> ${formatBytes(item.file_size)}</p>` : ''}
                     ${item.description ? `<p style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px;"><strong>Description:</strong> ${item.description}</p>` : ''}
                 </div>
             `;
