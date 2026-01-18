@@ -72,6 +72,7 @@ $clusters = [
         ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
         ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
         ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
+        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR4/index.php'],
     ],
     'Core Cluster' => [
         ['name' => 'CORE 1 - Front Office', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
@@ -985,7 +986,7 @@ $clusters = [
         document.getElementById('closeLogisticsModal').addEventListener('click', function () {
             document.getElementById('logisticsModal').style.display = 'none';
         });
-        
+
         document.getElementById('closeHr1Modal').addEventListener('click', function () {
             document.getElementById('hr1Modal').style.display = 'none';
         });
