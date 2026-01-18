@@ -10,6 +10,18 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
 require_once __DIR__ . '/../../db/db.php';
 $pdo = get_pdo();
 
+// Fetch security PIN from settings
+$archivePin = '1234'; // Default
+try {
+    $stmt = $pdo->prepare("SELECT setting_value FROM email_settings WHERE setting_key = 'archive_pin'");
+    $stmt->execute();
+    $savedPin = $stmt->fetchColumn();
+    if ($savedPin) {
+        $archivePin = $savedPin;
+    }
+} catch (PDOException $e) {
+}
+
 // Handle Actions (AJAX/POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
@@ -436,15 +448,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -471,20 +476,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         /* Form Controls */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #475569;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #e2e8f0;
@@ -493,37 +487,52 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             font-size: 14px;
             transition: all 0.3s;
         }
+        .form-group input:focus { border-color: var(--primary-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
 
-        .form-group input:focus {
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; font-size: 14px; }
+        .btn-secondary { background: #f1f5f9; color: #475569; }
+        .btn-cancel { background: #fee2e2; color: #ef4444; }
+
+        /* PIN Security Styles */
+        #passwordModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 30px;
+        .pin-container {
+            background: white;
+            padding: 40px;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        .btn {
-            padding: 12px 24px;
+        .pin-digit {
+            width: 55px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
+            background: #f8fafc;
+            outline: none;
             transition: all 0.3s;
-            border: none;
-            font-size: 14px;
         }
 
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-cancel {
-            background: #fee2e2;
-            color: #ef4444;
+        .pin-digit:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            background: white;
         }
 
         /* Toast */
@@ -542,15 +551,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         /* Blurred Content */
@@ -611,14 +613,13 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <h3>Archive Sectors</h3>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
-                            All Archives</a></li>
+                    <li><a href="#" class="category-link active" data-category="all"><i
+                                class="fas fa-layer-group"></i> All Archives</a></li>
                     <li><a href="#" class="category-link" data-category="Financial Records"><i
                                 class="fas fa-file-invoice-dollar"></i> Financial</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
                             Human Resources</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i>
                             Guests</a></li>
                     <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
                             Inventory</a></li>
@@ -627,9 +628,9 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
                             Marketing</a></li>
                     <li style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
-                        <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
-                            <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
-                        </a>
+                         <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
+                             <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
+                         </a>
                     </li>
                 </ul>
             </aside>
@@ -713,6 +714,33 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         </div>
     </main>
 
+    <!-- Modals -->
+    <!-- PIN Security Modal -->
+    <div id="passwordModal">
+        <div class="pin-container">
+            <div style="margin-bottom: 25px;">
+                <img src="../../assets/image/logo2.png" alt="Logo" style="width: 80px; height: auto;">
+            </div>
+            <h2 id="pinModalTitle">Archive Security</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">Enter your 4-digit PIN to access this sector</p>
+            <form id="pinForm">
+                <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 35px;">
+                    <input type="password" maxlength="1" class="pin-digit" id="pin1" required autofocus>
+                    <input type="password" maxlength="1" class="pin-digit" id="pin2" required>
+                    <input type="password" maxlength="1" class="pin-digit" id="pin3" required>
+                    <input type="password" maxlength="1" class="pin-digit" id="pin4" required>
+                </div>
+                <div id="pinError" style="color: #ef4444; font-size: 0.9rem; margin-top: -25px; margin-bottom: 25px; display: none; font-weight: 600;">
+                    <i class="fas fa-exclamation-circle"></i> Invalid PIN Access Code
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button type="button" class="btn btn-secondary" id="pinCancel" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="min-width: 140px; background: #1e3a8a;">Unlock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Modal -->
     <div class="modal" id="editModal">
         <div class="modal-content">
@@ -739,8 +767,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 </div>
                 <div class="form-group">
                     <label>Metadata Description</label>
-                    <textarea id="editDescription" name="description" rows="3"
-                        placeholder="Enter file details..."></textarea>
+                    <textarea id="editDescription" name="description" rows="3" placeholder="Enter file details..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary close">Cancel</button>
@@ -772,6 +799,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
 
     <script>
         let currentCategory = 'all';
+        let targetCat = null;
+        const correctPin = '<?php echo $archivePin; ?>';
 
         document.addEventListener('DOMContentLoaded', () => {
             loadDocuments('all');
@@ -784,9 +813,46 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const cat = link.getAttribute('data-category');
-                    switchCategory(link, cat);
+                    
+                    if (cat !== 'all' && cat !== 'deleted') {
+                        targetCat = { link, cat };
+                        showPinGate(cat);
+                    } else {
+                        switchCategory(link, cat);
+                    }
                 });
             });
+
+            // PIN Inputs
+            const pinInputs = document.querySelectorAll('.pin-digit');
+            pinInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                    if (this.value && index < pinInputs.length - 1) pinInputs[index + 1].focus();
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) pinInputs[index - 1].focus();
+                });
+            });
+
+            // PIN Form
+            document.getElementById('pinForm').onsubmit = (e) => {
+                e.preventDefault();
+                const entered = Array.from(pinInputs).map(i => i.value).join('');
+                if (entered === correctPin) {
+                    document.getElementById('passwordModal').style.display = 'none';
+                    if (targetCat) switchCategory(targetCat.link, targetCat.cat);
+                    pinInputs.forEach(i => i.value = '');
+                } else {
+                    document.getElementById('pinError').style.display = 'block';
+                    pinInputs.forEach(i => i.value = '');
+                    pinInputs[0].focus();
+                }
+            };
+
+            document.getElementById('pinCancel').onclick = () => {
+                document.getElementById('passwordModal').style.display = 'none';
+            };
 
             // Modal Close
             document.querySelectorAll('.close').forEach(c => {
@@ -806,6 +872,14 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 const term = e.target.value.toLowerCase();
                 filterTable(term);
             });
+        }
+
+        function showPinGate(catName) {
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('pinModalTitle').textContent = catName;
+            document.getElementById('pinError').style.display = 'none';
+            document.querySelectorAll('.pin-digit').forEach(i => i.value = '');
+            document.getElementById('pin1').focus();
         }
 
         function switchCategory(link, cat) {
@@ -828,7 +902,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'deleted': 'Quarantined Archives (Trash)'
             };
             document.getElementById('contentTitle').textContent = titles[cat] || 'Master Archive Control';
-
+            
             currentCategory = cat;
             loadDocuments(cat);
         }
@@ -840,8 +914,27 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
 
             grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Fetching records...</div>';
 
-            const endpoint = cat === 'deleted' ?
-                '../../Modules/document management(archiving).php?api=1&action=deleted' :
+            // Special handling for integrated modules
+            if (cat === 'Financial Records') {
+                loadFinancialRecords();
+                return;
+            }
+
+            const apiMap = {
+                'HR Documents': '../../integ/hr_fn.php',
+                'Guest Records': '../../integ/guest_fn.php',
+                'Inventory': '../../integ/log1.php?limit=10',
+                'Compliance': '../../integ/compliance_fn.php',
+                'Marketing': '../../integ/marketing_fn.php'
+            };
+
+            if (apiMap[cat]) {
+                loadFromExternalAPI(apiMap[cat], gridId, cat);
+                return;
+            }
+
+            const endpoint = cat === 'deleted' ? 
+                '../../Modules/document management(archiving).php?api=1&action=deleted' : 
                 (cat === 'all' ? '../../Modules/document management(archiving).php?api=1&action=active' : `../../Modules/document management(archiving).php?api=1&action=active&category=${encodeURIComponent(cat)}`);
 
             fetch(endpoint)
@@ -856,6 +949,114 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 .catch(err => {
                     grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Error connecting to database cluster.</div>`;
                 });
+        }
+
+        function loadFinancialRecords() {
+            const grid = document.getElementById('financialFiles');
+            fetch('../../integ/fn.php')
+                .then(r => r.json())
+                .then(result => {
+                    const data = (result && result.success && Array.isArray(result.data)) ? result.data :
+                        (Array.isArray(result) ? result : []);
+                    
+                    if(data.length === 0) {
+                        grid.innerHTML = `<div style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 20px;"></i><p>No financial archives available.</p></div>`;
+                        return;
+                    }
+                    renderFinancialTable(data, grid);
+                })
+                .catch(() => grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #ef4444;">Financial system offline.</div>`);
+        }
+
+        function renderFinancialTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Journal ID</th>
+                                <th>Timeline</th>
+                                <th>Account Type</th>
+                                <th>Category</th>
+                                <th>Entity/Description</th>
+                                <th>Value</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => {
+                                const type = item.role || item.type || (parseFloat(item.total_credit) > 0 ? 'Income' : 'Expense');
+                                return `
+                                    <tr>
+                                        <td style="font-weight:700;">#${item.id || item.entry_number}</td>
+                                        <td>${new Date(item.created_at || item.entry_date).toLocaleDateString()}</td>
+                                        <td><span style="color: ${type.toLowerCase() === 'income' ? '#2ecc71' : '#e74c3c'}; font-weight:600;">${type.toUpperCase()}</span></td>
+                                        <td>${item.department || item.category}</td>
+                                        <td>${item.full_name || item.description}</td>
+                                        <td style="font-weight:700;">$${parseFloat(item.amount || item.total_debit || 0).toLocaleString()}</td>
+                                        <td>
+                                            <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function loadFromExternalAPI(apiUrl, gridId, category) {
+            fetch(apiUrl)
+                .then(r => r.json())
+                .then(data => {
+                    const grid = document.getElementById(gridId);
+                    if (data.success && data.data && data.data.length > 0) {
+                        if (category === 'Inventory') renderInventoryTable(data.data, grid);
+                        else renderMasterTable(data.data, grid);
+                    } else {
+                        grid.innerHTML = `<div style="text-align:center; padding: 60px; color: #94a3b8;"><p>No ${category} data synchronized.</p></div>`;
+                    }
+                });
+        }
+
+        function renderInventoryTable(data, grid) {
+            grid.innerHTML = `
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Resource ID</th>
+                                <th>Product Asset</th>
+                                <th>Category</th>
+                                <th>Stock Level</th>
+                                <th>Asset Value</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => {
+                                const stock = parseInt(item.quantity || item.stock || 0);
+                                const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
+                                return `
+                                    <tr>
+                                        <td>#${item.id}</td>
+                                        <td style="font-weight:600;">📦 ${item.name}</td>
+                                        <td>${item.category}</td>
+                                        <td>${stock}</td>
+                                        <td>$${parseFloat(item.price).toLocaleString()}</td>
+                                        <td><span style="color:${statusColor}; font-weight:600;">${stock > 0 ? 'SYNCHRONIZED' : 'DEPLETED'}</span></td>
+                                        <td>
+                                            <button class="btn-view-small" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         function renderMasterTable(data, grid) {
@@ -922,21 +1123,15 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         window.handleProtocol = function (action, id) {
-            const confirmMsg = action === 'permanent_delete' ?
-                'WARNING: THIS ACTION IS ADIABATIC AND PERMANENT. WIPE RESOURCE?' :
-                `EXECUTE ${action.toUpperCase()} PROTOCOL ON RESOURCE #${id}?`;
-
-            if (!confirm(confirmMsg)) return;
-
+            if (!confirm(`EXECUTE ${action.toUpperCase()} PROTOCOL ON RESOURCE #${id}?`)) return;
             const fd = new FormData();
             fd.append('action', action);
             fd.append('id', id);
-
             fetch(window.location.href, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
                     if (res.success) {
-                        showToast(`Archive protocol ${action} completed successfully.`);
+                        showToast(`Archive protocol ${action} completed.`);
                         loadDocuments(currentCategory);
                     }
                 });
@@ -955,8 +1150,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             fetch(window.location.href, { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(res => {
-                    if (res.success) {
-                        showToast('Document metadata updated and synchronized.');
+                    if(res.success) {
+                        showToast('Metadata updated.');
                         document.getElementById('editModal').style.display = 'none';
                         loadDocuments(currentCategory);
                     }
@@ -967,12 +1162,10 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             const content = document.getElementById('detailsContent');
             content.innerHTML = `
                 <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 15px; color: var(--primary-purple);">${item.name}</h4>
-                    <p style="margin-bottom: 10px;"><strong>Sector:</strong> ${item.category}</p>
-                    <p style="margin-bottom: 10px;"><strong>Payload Size:</strong> ${formatBytes(item.file_size)}</p>
-                    <p style="margin-bottom: 10px;"><strong>Timeline:</strong> ${new Date(item.upload_date).toLocaleString()}</p>
-                    <p style="margin-bottom: 10px;"><strong>Status:</strong> ${item.is_deleted == 1 ? 'QUARANTINED' : 'ACTIVE'}</p>
-                    ${item.description ? `<p style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;"><strong>Description:</strong><br>${item.description}</p>` : ''}
+                    <h4 style="margin-bottom: 15px; color: var(--primary-purple);">${item.name || item.product_name || 'Resource Analysis'}</h4>
+                    <p><strong>Sector:</strong> ${item.category || 'General'}</p>
+                    <p><strong>Payload Size:</strong> ${item.file_size ? formatBytes(item.file_size) : 'Integrated Asset'}</p>
+                    ${item.description ? `<p style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px;"><strong>Description:</strong> ${item.description}</p>` : ''}
                 </div>
             `;
             document.getElementById('detailsModal').style.display = 'flex';
@@ -980,10 +1173,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
 
         function filterTable(term) {
             const rows = document.querySelectorAll('.financial-table tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
+            rows.forEach(row => row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none');
         }
 
         function showToast(msg) {
@@ -999,7 +1189,5 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
     </script>
-
 </body>
-
 </html>
