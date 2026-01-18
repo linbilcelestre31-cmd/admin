@@ -723,41 +723,53 @@ $clusters = [
         </div>
     </div>
 
-    <!-- Administrators Modal -->
-    <div id="adminsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+    <!-- Financial Ledger Modal -->
+    <div id="financialModal"
+        style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.85); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(10px);">
         <div
-            style="background:white; width:90%; max-width:1000px; max-height:80vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            style="background:#ffffff; width:95%; max-width:1100px; max-height:90vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 30px 60px -12px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);">
             <div
-                style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#0f172a; color:white;">
-                <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-chart-pie"
-                        style="color:var(--primary-gold); margin-right:15px;"></i>Financial Master Ledger</h2>
-                <button id="closeAdminsModal"
-                    style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
-                        class="fas fa-times"></i></button>
+                style="padding:25px 35px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#1e293b; color:white;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(212, 175, 55, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chart-pie" style="color:var(--primary-gold); font-size: 20px;"></i>
+                    </div>
+                    <h2
+                        style="font-size:24px; font-weight:700; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">
+                        Financial Master Ledger</h2>
+                </div>
+                <button id="closeFinancialModal"
+                    style="background:rgba(255,255,255,0.1); border:none; color:white; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div id="adminsListContainer" style="padding:30px; overflow-y:auto; background:#f8fafc; flex-grow:1;">
+            <div id="financialListContainer" style="padding:30px; overflow-y:auto; background:#f8fafc; flex-grow:1;">
                 <div style="text-align:center; padding:50px;">
-                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
-                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Financial Cluster...</p>
+                    <div class="loader-container">
+                        <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
+                        <p style="margin-top:20px; color:#64748b; font-weight: 500;">Establishing encrypted link to
+                            Financial cluster...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Combined handler for Administrators list (from Sidebar or Card)
-        const showAdmins = function (e) {
+        // Financial Ledger Modal Handler
+        const showFinancialLedger = function (e) {
             if (e) e.preventDefault();
-            const modal = document.getElementById('adminsModal');
+            const modal = document.getElementById('financialModal');
             modal.style.display = 'flex';
 
-            // Show loading state initially
-            const container = document.getElementById('adminsListContainer');
+            const container = document.getElementById('financialListContainer');
             container.innerHTML = `
                 <div style="text-align:center; padding:50px;">
                     <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
-                    <p style="margin-top:20px; color:#64748b;">Synchronizing with Financial Cluster...</p>
+                    <p style="margin-top:20px; color:#64748b;">Requesting ledger data...</p>
                 </div>
             `;
 
@@ -766,15 +778,15 @@ $clusters = [
                 .then(result => {
                     if (result.success && result.data) {
                         if (result.data.length === 0) {
-                            container.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fas fa-users-slash" style="font-size:40px; margin-bottom:20px; display:block;"></i>No administrative accounts found in the financial system.</div>';
+                            container.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fas fa-file-invoice-dollar" style="font-size:40px; margin-bottom:20px; display:block;"></i>No records found in the financial system.</div>';
                             return;
                         }
 
                         let html = `
                             <div style="overflow-x:auto;">
-                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 12px;">
                                     <thead>
-                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                        <tr style="text-align:left; color:#94a3b8; font-size:12px; text-transform:uppercase; letter-spacing:1.5px; font-weight: 700;">
                                             <th style="padding:10px 20px;">Entry #</th>
                                             <th style="padding:10px 20px;">Date</th>
                                             <th style="padding:10px 20px;">Category</th>
@@ -789,40 +801,41 @@ $clusters = [
 
                         result.data.forEach(item => {
                             const statusColor = item.status === 'posted' ? '#10b981' : '#f59e0b';
-                            const typeColor = item.type === 'Income' ? '#10b981' : '#ef4444';
+                            const amountColor = item.type === 'Income' ? '#10b981' : '#ef4444';
                             const formattedAmount = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(item.amount || 0);
 
                             html += `
-                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
-                                    <td style="padding:15px 20px; font-weight:700; color:var(--primary-gold);">
+                                <tr style="background:white; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); border-radius:16px; transition: transform 0.2s;">
+                                    <td style="padding:20px; font-weight:700; color:var(--primary-gold); border-radius:16px 0 0 16px;">
                                         #${item.entry_number || 'N/A'}
                                     </td>
-                                    <td style="padding:15px 20px; font-size:14px; color:#475569;">
+                                    <td style="padding:20px; font-size:14px; color:#475569; font-weight: 500;">
                                         ${item.entry_date || 'N/A'}
                                     </td>
-                                    <td style="padding:15px 20px;">
-                                        <span style="background:#e2e8f0; color:#475569; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">
-                                            ${item.category || item.department || 'General'}
+                                    <td style="padding:20px;">
+                                        <span style="background:#f1f5f9; color:#64748b; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; text-transform: uppercase;">
+                                            ${item.category || 'General'}
                                         </span>
                                     </td>
-                                    <td style="padding:15px 20px; font-size:14px; color:#64748b; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <td style="padding:20px; font-size:14px; color:#64748b; max-width:250px;">
                                         ${item.description || 'No description'}
                                     </td>
-                                    <td style="padding:15px 20px; font-weight:700; color:${typeColor};">
+                                    <td style="padding:20px; font-weight:700; color:${amountColor}; font-size: 16px;">
                                         ${formattedAmount}
                                     </td>
-                                    <td style="padding:15px 20px;">
-                                        <div style="display:flex; align-items:center; gap:8px;">
-                                            <div style="width:8px; height:8px; border-radius:50%; background:${statusColor};"></div>
-                                            <span style="font-size:14px; color:#475569; text-transform:capitalize;">${item.status || 'pending'}</span>
+                                    <td style="padding:20px;">
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div style="width:10px; height:10px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 10px ${statusColor}40;"></div>
+                                            <span style="font-size:14px; color:#475569; font-weight: 600; text-transform:capitalize;">${item.status || 'pending'}</span>
                                         </div>
                                     </td>
-                                    <td style="padding:15px 20px; border-radius:0 12px 12px 0;">
+                                    <td style="padding:20px; border-radius:0 16px 16px 0;">
                                         <a href="https://financial.atierahotelandrestaurant.com/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
                                            target="_blank"
-                                           style="display:inline-flex; align-items:center; background:#f1f5f9; color:#475569; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:12px; transition:all 0.2s;" 
-                                           onmouseover="this.style.background='#e2e8f0'" 
-                                           onmouseout="this.style.background='#f1f5f9'">
+                                           style="display:inline-flex; align-items:center; justify-content: center; width: 40px; height: 40px; background:#f8fafc; color:#64748b; border-radius:10px; text-decoration:none; transition:all 0.2s; border: 1px solid #e2e8f0;" 
+                                           onmouseover="this.style.background='#1e293b'; this.style.color='white'; this.style.borderColor='#1e293b'" 
+                                           onmouseout="this.style.background='#f8fafc'; this.style.color='#64748b'; this.style.borderColor='#e2e8f0'"
+                                           title="Access System">
                                             <i class="fas fa-external-link-alt"></i>
                                         </a>
                                     </td>
@@ -834,6 +847,24 @@ $clusters = [
                                     </tbody>
                                 </table>
                             </div>
+                            <div style="margin-top: 25px; padding: 20px; background: #f1f5f9; border-radius: 15px; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 45px; height: 45px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 20px;">
+                                        <i class="fas fa-shield-halved"></i>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size: 14px; color: #1e293b; margin-bottom: 2px;">Encrypted Session Active</h4>
+                                        <p style="font-size: 12px; color: #64748b;">Direct bypass protocol enabled for Super Admin</p>
+                                    </div>
+                                </div>
+                                <a href="https://financial.atierahotelandrestaurant.com/index.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true" 
+                                   target="_blank"
+                                   style="background: #1e293b; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s;"
+                                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)'"
+                                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                    Full System Access <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                                </a>
+                            </div>
                         `;
                         container.innerHTML = html;
                     } else {
@@ -841,8 +872,8 @@ $clusters = [
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching admins:', error);
-                    document.getElementById('adminsListContainer').innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-wifi" style="font-size:40px; margin-bottom:20px; display:block;"></i>Network error occurred. The cluster might be unreachable.</div>';
+                    console.error('Error fetching financial ledger:', error);
+                    document.getElementById('financialListContainer').innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;"><i class="fas fa-wifi" style="font-size:40px; margin-bottom:20px; display:block;"></i>Network error occurred. The cluster might be unreachable.</div>';
                 });
         };
 
@@ -1022,7 +1053,7 @@ $clusters = [
 
         // Attach to Financial Records card
         if (document.getElementById('module-FINANCE')) {
-            document.getElementById('module-FINANCE').addEventListener('click', showAdmins);
+            document.getElementById('module-FINANCE').addEventListener('click', showFinancialLedger);
         }
 
         // Attach to Logistics 1 Card
@@ -1037,8 +1068,8 @@ $clusters = [
 
 
 
-        document.getElementById('closeAdminsModal').addEventListener('click', function () {
-            document.getElementById('adminsModal').style.display = 'none';
+        document.getElementById('closeFinancialModal').addEventListener('click', function () {
+            document.getElementById('financialModal').style.display = 'none';
         });
 
         document.getElementById('closeLogisticsModal').addEventListener('click', function () {
@@ -1049,13 +1080,12 @@ $clusters = [
             document.getElementById('hr1Modal').style.display = 'none';
         });
 
-
-
         window.addEventListener('click', function (e) {
-            const modal = document.getElementById('adminsModal');
-            const logModal = document.getElementById('logisticsModal');
-            const hr1Modal = document.getElementById('hr1Modal');
-            if (e.target === hr1Modal) hr1Modal.style.display = 'none';
+            const modals = ['financialModal', 'logisticsModal', 'hr1Modal'];
+            modals.forEach(id => {
+                const modal = document.getElementById(id);
+                if (e.target === modal) modal.style.display = 'none';
+            });
         });
     </script>
 </body>
