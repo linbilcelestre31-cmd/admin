@@ -69,25 +69,21 @@ $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 // Define Modules grouped by Department Cluster
 $clusters = [
     'HR Cluster' => [
-        ['name' => 'HR1 - Admin', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
-        ['name' => 'HR2 - Admin', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
-        ['name' => 'HR3 - Admin', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
-        ['name' => 'HR4 - Admin', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => '../HR4/index.php'],
+        ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
+        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
+        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
+        ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => '../HR4/index.php'],
     ],
     'Core Cluster' => [
-        ['name' => 'CORE 1 - Admin', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
-        ['name' => 'CORE 2 - Admin', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php'],
+        ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
+        ['name' => 'CORE 2', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php'],
     ],
     'Logistics Cluster' => [
-        ['name' => 'Logistics 1 - Admin', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
-        ['name' => 'Logistics 2 - Admin', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
+        ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
+        ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
     ],
-    'Management & Operations' => [
-        ['name' => 'Legal Management - Admin', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
-        ['name' => 'Financial Records - Admin', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
-        ['name' => 'Document Archiving - Admin', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => 'modules/document.php'],
-        ['name' => 'Visitor Logs - Admin', 'id' => 'VISITOR', 'icon' => 'id-card-clip', 'color' => '#06b6d4', 'url' => '../Modules/Visitor-logs.php'],
-        ['name' => 'Operations Dashboard - Admin', 'id' => 'MOD_DASH', 'icon' => 'gauge-high', 'color' => '#14b8a6', 'url' => '../Modules/dashboard.php'],
+    'ADMIN' => [
+        ['name' => 'ADMIN', 'id' => 'ADMIN_SYSTEM', 'icon' => 'shield-halved', 'color' => '#0f172a', 'url' => 'https://admin.atierahotelandrestaurant.com/admin/auth/login.php'],
     ]
 ];
 
@@ -158,6 +154,25 @@ $clusters = [
             font-weight: 700;
             letter-spacing: 5px;
             color: var(--primary-gold);
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 25px 0 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.1);
         }
 
         .nav-list {
@@ -596,6 +611,33 @@ $clusters = [
             <li class="nav-item">
                 <a href="#" class="nav-link active">
                     <i class="fas fa-home"></i> Dashboard
+                </a>
+            </li>
+
+            <div class="nav-section-label">Management & Operations</div>
+
+            <li class="nav-item">
+                <a href="../Modules/legalmanagement.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                    class="nav-link">
+                    <i class="fas fa-scale-balanced"></i> Legal Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="integ/fn_api.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                    class="nav-link">
+                    <i class="fas fa-chart-line"></i> Financial Records
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="modules/document.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                    class="nav-link">
+                    <i class="fas fa-box-archive"></i> Document Archiving
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="../Modules/Visitor-logs.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                    class="nav-link">
+                    <i class="fas fa-id-card-clip"></i> Visitor Logs
                 </a>
             </li>
         </ul>
