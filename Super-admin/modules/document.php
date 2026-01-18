@@ -644,7 +644,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h2>ATIÉRA MASTER CONTROL</h2>
+                    <h2>Document Archiving | ATIÉRA</h2>
                 </div>
                 <nav>
                     <ul>
