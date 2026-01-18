@@ -72,7 +72,7 @@ $clusters = [
         ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
         ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
         ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
-        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR4/index.php'],
+        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => '../HR4/index.php', 'premium' => true],
     ],
     'Core Cluster' => [
         ['name' => 'CORE 1 - Front Office', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
@@ -281,6 +281,74 @@ $clusters = [
             align-items: center;
             gap: 5px;
             margin-top: auto;
+        }
+
+        /* Premium Card Styles for HR4 */
+        .premium-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 243, 255, 0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+
+        .premium-card:hover::before {
+            transform: scale(2);
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+        }
+
+        .premium-card .module-icon {
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+            background-size: 200% 200% !important;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        .premium-card h3 {
+            background: linear-gradient(to right, #1e293b, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Logout */
@@ -579,42 +647,45 @@ $clusters = [
                 <div class="module-grid">
                     <?php foreach ($modules as $module): ?>
                         <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                            class="module-card" id="module-<?php echo $module['id']; ?>">
-                            <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
-                                <i class="fas fa-<?php echo $module['icon']; ?>"></i>
-                            </div>
-                            <div class="module-info">
-                                <h3><?php echo htmlspecialchars($module['name']); ?></h3>
-                                <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
-                            </div>
-                            <div class="bypass-status">
-                                <i class="fas fa-bolt"></i> Bypass Protocol Active
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endforeach; ?>
-
-        <!-- System Status -->
-        <div
-            style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
-            <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
-            <div style="display: flex; gap: 40px;">
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
-                </div>
+                            class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>" id="module-<?php echo $module['id']; ?>">
+                                    <?php if (isset($module['premium'])): ?>
+                                            <div class="premium-badge">Priority Module
+                        </div>
+                    <?php endif; ?>
+                    <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
+                        <i class="fas fa-<?php echo $module['icon']; ?>"></i>
+                    </div>
+                    <div class="module-info">
+                        <h3><?php echo htmlspecialchars($module['name']); ?></h3>
+                        <p>Access the <?php echo $module['id']; ?> internal system with superuser privileges.</p>
+                    </div>
+                    <div class="bypass-status">
+                        <i class="fas fa-bolt"></i> Bypass Protocol Active
+                    </div>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
+    <?php endforeach; ?>
+
+    <!-- System Status -->
+    <div style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
+        <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
+        <div style="display: flex; gap: 40px;">
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
+                <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
+                <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
+                <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
+            </div>
+        </div>
+    </div>
     </div>
 
     </div>
