@@ -102,10 +102,14 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
         $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
         $employees = fetchAllEmployees($limit);
 
+        // Apply local quarantine filter
+        require_once __DIR__ . '/protocol_handler.php';
+        $employees = ProtocolHandler::filter('HR', $employees, 'id');
+
         echo json_encode([
             'success' => true,
             'message' => 'Employees retrieved successfully from live server',
-            'data' => $employees,
+            'data' => array_values($employees),
             'total' => count($employees)
         ]);
         exit();
@@ -120,6 +124,21 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
     if ($method == 'POST') {
         // Proxy to live API if desired, or handle local
         // User mainly asked for visibility, but let's make it robust
+        $action = $data['action'] ?? $_POST['action'] ?? '';
+        $id = $data['id'] ?? $_POST['id'] ?? null;
+
+        if ($action === 'delete') {
+            require_once __DIR__ . '/protocol_handler.php';
+            ProtocolHandler::quarantine('HR', $id);
+            echo json_encode(['success' => true, 'message' => "HR protocol delete completed."]);
+            exit;
+        } elseif ($action === 'restore') {
+            require_once __DIR__ . '/protocol_handler.php';
+            ProtocolHandler::restore('HR', $id);
+            echo json_encode(['success' => true, 'message' => "HR protocol restore completed."]);
+            exit;
+        }
+
         $result = callLiveAPI('POST', $data);
         echo json_encode($result);
         exit();
