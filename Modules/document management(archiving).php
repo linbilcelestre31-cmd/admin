@@ -1438,7 +1438,7 @@ function formatFileSize($bytes)
 
             // API integrations for other categories
             const apiMap = {
-                'HR Documents': '../integ/hr_fn.php',
+                'HR Documents': '../integ/hr4_api.php',
                 'Guest Records': '../integ/guest_fn.php',
                 'Inventory': '../integ/log1.php?limit=10',
                 'Compliance': '../integ/compliance_fn.php',

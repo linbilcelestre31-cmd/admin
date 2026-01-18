@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // GET handler
 $data = [
-    ['id' => 101, 'full_name' => 'John Guest', 'category' => 'VIP', 'status' => 'Checked-in'],
-    ['id' => 102, 'full_name' => 'Jane Visitor', 'category' => 'Regular', 'status' => 'Checked-out']
+    ['id' => 101, 'name' => 'John Guest', 'full_name' => 'John Guest', 'category' => 'VIP', 'status' => 'Checked-in'],
+    ['id' => 102, 'name' => 'Jane Visitor', 'full_name' => 'Jane Visitor', 'category' => 'Regular', 'status' => 'Checked-out']
 ];
 
 $data = ProtocolHandler::filter('Guest', $data, 'id');
