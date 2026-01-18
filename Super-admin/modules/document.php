@@ -673,7 +673,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                     <li><a href="#" class="category-link" data-category="Financial Records"><i
                                 class="fas fa-file-invoice-dollar"></i> Financial</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
-                            Human Resources</a></li>
+                            HR Document</a></li>
                     <li><a href="#" class="category-link" data-category="Guest Records"><i
                                 class="fas fa-user-check"></i>
                             Guests</a></li>
