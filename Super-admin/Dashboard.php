@@ -69,25 +69,25 @@ $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 // Define Modules grouped by Department Cluster
 $clusters = [
     'HR Cluster' => [
-        ['name' => 'HR1 - Recruitment', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
-        ['name' => 'HR2 - Payroll', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
-        ['name' => 'HR3 - Training', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
-        ['name' => 'HR4 - Employee Relations', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => '../HR4/index.php'],
+        ['name' => 'HR1 - admin', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => '../HR1/index.php'],
+        ['name' => 'HR2 - admin', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => '../HR2/index.php'],
+        ['name' => 'HR3 - admin', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => '../HR3/index.php'],
+        ['name' => 'HR4 - admin', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => '../HR4/index.php'],
     ],
     'Core Cluster' => [
-        ['name' => 'CORE 1 - Front Office', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
-        ['name' => 'CORE 2 - Food & Beverage', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php'],
+        ['name' => 'CORE 1 - admin', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
+        ['name' => 'CORE 2 - admin', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php'],
     ],
     'Logistics Cluster' => [
-        ['name' => 'Logistics 1 - Procurement', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
-        ['name' => 'Logistics 2 - Warehousing', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
+        ['name' => 'Logistics 1 - admin', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
+        ['name' => 'Logistics 2 - admin', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
     ],
     'Management & Operations' => [
-        ['name' => 'Legal Management', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
-        ['name' => 'Financial Records', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
-        ['name' => 'Document Archiving', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => 'modules/document.php'],
-        ['name' => 'Visitor Logs', 'id' => 'VISITOR', 'icon' => 'id-card-clip', 'color' => '#06b6d4', 'url' => '../Modules/Visitor-logs.php'],
-        ['name' => 'Operations Dashboard', 'id' => 'MOD_DASH', 'icon' => 'gauge-high', 'color' => '#14b8a6', 'url' => '../Modules/dashboard.php'],
+        ['name' => 'Legal Management - admin', 'id' => 'LEGAL', 'icon' => 'scale-balanced', 'color' => '#8b5cf6', 'url' => '../Modules/legalmanagement.php'],
+        ['name' => 'Financial Records - admin', 'id' => 'FINANCE', 'icon' => 'chart-line', 'color' => '#ec4899', 'url' => 'integ/fn_api.php'],
+        ['name' => 'Document Archiving - admin', 'id' => 'ARCHIVE', 'icon' => 'box-archive', 'color' => '#64748b', 'url' => 'modules/document.php'],
+        ['name' => 'Visitor Logs - admin', 'id' => 'VISITOR', 'icon' => 'id-card-clip', 'color' => '#06b6d4', 'url' => '../Modules/Visitor-logs.php'],
+        ['name' => 'Operations Dashboard - admin', 'id' => 'MOD_DASH', 'icon' => 'gauge-high', 'color' => '#14b8a6', 'url' => '../Modules/dashboard.php'],
     ]
 ];
 
@@ -685,7 +685,7 @@ $clusters = [
             <div
                 style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#3b82f6; color:white;">
                 <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-user-plus"
-                        style="color:white; margin-right:15px;"></i>Recruitment Dashboard</h2>
+                        style="color:white; margin-right:15px;"></i>HR1 Admin Dashboard</h2>
                 <button id="closeHr1Modal"
                     style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
                         class="fas fa-times"></i></button>
@@ -709,7 +709,7 @@ $clusters = [
             <div
                 style="padding:30px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#d97706; color:white;">
                 <h2 style="font-size:24px; font-weight:700;"><i class="fas fa-boxes-stacked"
-                        style="color:white; margin-right:15px;"></i>Logistics Inventory Dashboard</h2>
+                        style="color:white; margin-right:15px;"></i>Logistics Admin Dashboard</h2>
                 <button id="closeLogisticsModal"
                     style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i
                         class="fas fa-times"></i></button>
@@ -737,7 +737,7 @@ $clusters = [
                     </div>
                     <h2
                         style="font-size:24px; font-weight:700; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">
-                        Financial Master Ledger</h2>
+                        Financial Admin Ledger</h2>
                 </div>
                 <button id="closeFinancialModal"
                     style="background:rgba(255,255,255,0.1); border:none; color:white; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
