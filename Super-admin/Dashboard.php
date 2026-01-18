@@ -532,7 +532,7 @@ $clusters = [
             width: 0%;
             background: linear-gradient(90deg, #E6C86E, #fcf6ba, #E6C86E);
             box-shadow: 0 0 10px #E6C86E;
-            animation: loadProgress 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: loadProgress 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes loadProgress {
@@ -699,7 +699,7 @@ $clusters = [
                 setTimeout(() => {
                     loader.style.visibility = 'hidden';
                 }, 800);
-            }, 2000); // 2 seconds delay
+            }, 500); // Reduced delay for faster access
         });
     </script>
     <!-- Sidebar -->
