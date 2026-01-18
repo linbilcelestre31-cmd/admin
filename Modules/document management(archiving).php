@@ -593,8 +593,83 @@ function formatFileSize($bytes)
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
 
-        .bg-green {
-            background: linear-gradient(135deg, #10b981, #059669);
+        .bg-green { background: linear-gradient(135deg, #10b981, #059669); }
+
+        /* Layout */
+        .dashboard {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-gray);
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .category-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: all 0.3s;
+            border-radius: 12px;
+            font-size: 15px;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard { flex-direction: column; }
+            .sidebar { width: 100%; position: static; }
         }
 
         /* Premium Table Look */
@@ -760,28 +835,17 @@ function formatFileSize($bytes)
         <div class="dashboard">
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <h3><i class="fas fa-folder-tree"></i> Categories</h3>
-                    <button class="sidebar-toggle" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <h3><i class="fas fa-folder-tree"></i> Archive Sectors</h3>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
-                            All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records" style="font-weight: 600;"><i
-                                class="fas fa-file-invoice-dollar"></i> Financial Records</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
-                            Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i> Guest Records</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
-                            Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
-                            Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                            Marketing</a></li>
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i> All Archives</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i class="fas fa-file-invoice-dollar"></i> Financial</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> Human Resources</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i> Guests</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i> Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i> Marketing</a></li>
                 </ul>
-                <!-- Sidebar footer removed as per user request -->
             </aside>
 
             <div class="content">
@@ -1427,34 +1491,44 @@ function formatFileSize($bytes)
                     <table class="financial-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Size</th>
-                                <th>Upload Date</th>
-                                <th>Actions</th>
+                                <th>Archive Name</th>
+                                <th>Sector</th>
+                                <th>Payload</th>
+                                <th>Timeline</th>
+                                <th>Protocols</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${data.map(item => `
                                 <tr>
                                     <td style="font-weight: 600; color: #1e293b;">
-                                        <i class="fas fa-file-pdf" style="margin-right: 10px; color: #ef4444;"></i>${item.name}
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 35px; height: 35px; background: #eff6ff; color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </div>
+                                            <div>
+                                                <div>${item.name}</div>
+                                                <div style="font-size: 11px; color: #64748b; font-weight: 400;">${item.description || 'No metadata'}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td><span style="font-size: 13px; color: #64748b;"><i class="fas fa-folder" style="margin-right: 5px;"></i> ${item.category}</span></td>
-                                    <td>${item.file_size}</td>
+                                    <td>${typeof item.file_size === 'number' ? formatBytes(item.file_size) : item.file_size}</td>
                                     <td>${new Date(item.upload_date).toLocaleDateString()}</td>
                                     <td style="white-space: nowrap;">
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View metadata">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Secure Download">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                        ${isSuperAdmin ? `
-                                        <button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})" title="Wipe Data">
-                                            <i class="fas fa-skull"></i>
-                                        </button>
-                                        ` : ''}
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Secure Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Metadata">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            ${isSuperAdmin ? `
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})" title="Wipe Permanently">
+                                                    <i class="fas fa-skull"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
                                     </td>
                                 </tr>
                             `).join('')}
