@@ -1064,8 +1064,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                 const statusColor = stock > 10 ? '#2ecc71' : (stock > 0 ? '#f1c40f' : '#e74c3c');
                                 return `
                                     <tr>
-                                        <td>#${item.id}</td>
-                                        <td style="font-weight:600;">📦 ${item.name}</td>
+                                        <td>#${item.inventory_id || item.id}</td>
+                                        <td style="font-weight:600;">📦 ${item.item_name || item.name}</td>
                                         <td>${item.category}</td>
                                         <td>${stock}</td>
                                         <td>$${parseFloat(item.price || 0).toLocaleString()}</td>
@@ -1078,7 +1078,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                                                 <button class="btn-view-small" style="color: #f59e0b;" onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="Modify Asset Metadata">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleProtocol('delete', ${item.id})" title="Quarantine Asset">
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleProtocol('delete', ${item.inventory_id || item.id})" title="Quarantine Asset">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </div>
