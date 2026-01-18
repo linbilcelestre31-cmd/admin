@@ -82,6 +82,9 @@ $clusters = [
         ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
         ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
     ],
+    'Financial Records' => [
+        ['name' => 'Financial Records', 'id' => 'FINANCIAL_RECORDS', 'icon' => 'chart-line', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/'],
+    ],
     'ADMIN' => [
         ['name' => 'ADMIN', 'id' => 'ADMIN_SYSTEM', 'icon' => 'shield-halved', 'color' => '#0f172a', 'url' => '../Modules/dashboard.php'],
     ]
@@ -680,7 +683,8 @@ $clusters = [
                     </h3>
                     <div class="module-grid">
                         <?php foreach ($modules as $module): ?>
-                            <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
+                            <a href="<?php echo isset($module['js_action']) ? '#' : htmlspecialchars($module['url']) . '?bypass_key=' . urlencode($api_key) . '&super_admin_session=true'; ?>"
+                                <?php echo isset($module['js_action']) ? 'onclick="' . $module['js_action'] . '"' : ''; ?>
                                 class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
                                 id="module-<?php echo $module['id']; ?>">
                                 <?php if (isset($module['premium'])): ?>
