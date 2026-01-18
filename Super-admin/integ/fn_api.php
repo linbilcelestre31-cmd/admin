@@ -4,8 +4,8 @@
  * Fetches user data from the financial system for the Super Admin Command Center
  */
 
-// External API endpoint for Financial Records (Journal Entries)
-$financialRecordsApiUrl = 'https://financial.atierahotelandrestaurant.com/journal_entries_api';
+// External API endpoint for Financial Records (Users)
+$financialRecordsApiUrl = 'https://financial.atierahotelandrestaurant.com/admin/api/users.php';
 
 /**
  * Fetches all records from the Financial system
@@ -30,34 +30,25 @@ function fetchFinancialRecords()
         // Fallback data if API fails
         return [
             [
-                'entry_number' => 'JE-001',
-                'entry_date' => '2025-10-24',
-                'type' => 'Income',
-                'category' => 'Room Revenue',
-                'description' => 'Room 101 - Check-out payment',
-                'amount' => 5500.00,
-                'venue' => 'Hotel',
-                'status' => 'posted'
+                'id' => 1,
+                'username' => 'fin_admin',
+                'email' => 'finance@atiera.com',
+                'role' => 'Administrator',
+                'status' => 'Active'
             ],
             [
-                'entry_number' => 'JE-002',
-                'entry_date' => '2025-10-24',
-                'type' => 'Income',
-                'category' => 'Food Sales',
-                'description' => 'Restaurant Dinner Service',
-                'amount' => 1250.75,
-                'venue' => 'Restaurant',
-                'status' => 'posted'
+                'id' => 2,
+                'username' => 'accountant_01',
+                'email' => 'acc01@atiera.com',
+                'role' => 'Accountant',
+                'status' => 'Active'
             ],
             [
-                'entry_number' => 'JE-003',
-                'entry_date' => '2025-10-24',
-                'type' => 'Expense',
-                'category' => 'Payroll',
-                'description' => 'October Staff Payroll',
-                'amount' => 45000.00,
-                'venue' => 'General',
-                'status' => 'posted'
+                'id' => 3,
+                'username' => 'audit_user',
+                'email' => 'audit@atiera.com',
+                'role' => 'Auditor',
+                'status' => 'Active'
             ]
         ];
     }

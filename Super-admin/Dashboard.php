@@ -576,7 +576,109 @@ $clusters = [
         </div>
     </div>
 
+    <!-- Financial Records Modal -->
+    <div id="financialModal"
+        style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.85); z-index:100000; justify-content:center; align-items:center; backdrop-filter:blur(10px);">
+        <div
+            style="background:#ffffff; width:95%; max-width:1100px; max-height:90vh; border-radius:30px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 30px 60px -12px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);">
+            <div
+                style="padding:25px 35px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#0f172a; color:white;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(212, 175, 55, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chart-pie" style="color:var(--primary-gold); font-size: 20px;"></i>
+                    </div>
+                    <h2
+                        style="font-size:24px; font-weight:700; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">
+                        Financial System Users</h2>
+                </div>
+                <button id="closeFinancialModal"
+                    style="background:rgba(255,255,255,0.1); border:none; color:white; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="financialListContainer" style="padding:30px; overflow-y:auto; background:#f8fafc; flex-grow:1;">
+                <div style="text-align:center; padding:50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary-gold);"></i>
+                    <p style="margin-top:20px; color:#64748b;">Fetching users from Financial API...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const showFinancialModal = function (e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('financialModal');
+            modal.style.display = 'flex';
+
+            const container = document.getElementById('financialListContainer');
+
+            fetch('integ/fn_api.php')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        let html = `
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:separate; border-spacing:0 10px;">
+                                    <thead>
+                                        <tr style="text-align:left; color:#64748b; font-size:14px; text-transform:uppercase; letter-spacing:1px;">
+                                            <th style="padding:10px 20px;">ID</th>
+                                            <th style="padding:10px 20px;">Username</th>
+                                            <th style="padding:10px 20px;">Email</th>
+                                            <th style="padding:10px 20px;">Role</th>
+                                            <th style="padding:10px 20px;">Status</th>
+                                            <th style="padding:10px 20px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        result.data.forEach(user => {
+                            html += `
+                                <tr style="background:white; box-shadow:0 2px 4px rgba(0,0,0,0.02); border-radius:12px;">
+                                    <td style="padding:15px 20px; font-weight:700; color:#0f172a;">#${user.id || user.user_id || 'N/A'}</td>
+                                    <td style="padding:15px 20px; font-weight:600;">${user.username || 'Unknown'}</td>
+                                    <td style="padding:15px 20px;">${user.email || 'N/A'}</td>
+                                    <td style="padding:15px 20px;"><span style="background:#eff6ff; color:#3b82f6; padding:5px 10px; border-radius:15px; font-size:12px;">${user.role || 'User'}</span></td>
+                                    <td style="padding:15px 20px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
+                                            <span style="font-size:14px; color:#10b981;">Active</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding:15px 20px;">
+                                        <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" 
+                                           style="color: var(--primary-gold); text-decoration: none; background: rgba(212, 175, 55, 0.1); padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-external-link-alt"></i> Access System
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `</tbody></table></div>`;
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Failed to load data from Financial API.</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Network error while connecting to Financial API.</div>';
+                });
+        };
+
+        document.getElementById('sidebar-financial-records').addEventListener('click', showFinancialModal);
+        document.getElementById('closeFinancialModal').addEventListener('click', () => {
+            document.getElementById('financialModal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('financialModal');
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
         // Wave Text Animation for Loader
         document.querySelectorAll('.wave-text-loader').forEach(container => {
             const text = container.textContent;
@@ -622,8 +724,7 @@ $clusters = [
                 </a>
             </li>
             <li class="nav-item">
-                <a href="integ/fn_api.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="nav-link">
+                <a href="#" class="nav-link" id="sidebar-financial-records">
                     <i class="fas fa-chart-line"></i> Financial Records
                 </a>
             </li>
