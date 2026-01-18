@@ -603,6 +603,14 @@ function formatFileSize($bytes)
             background: linear-gradient(135deg, #10b981, #059669);
         }
 
+        .category-content {
+            display: none;
+        }
+
+        .category-content.active {
+            display: block;
+        }
+
         /* Layout */
         .dashboard {
             display: flex;
@@ -1021,48 +1029,48 @@ function formatFileSize($bytes)
                 <!-- Success/Error Messages -->
                 <div id="messageContainer"></div>
 
-                <!-- All Documents View (Dashboard) -->
-                <div class="category-content active" id="all-content">
-                    <!-- Dashboard Stats Section -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-blue">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Total Files</h4>
-                                <p><?php echo number_format($stats['total']); ?></p>
-                            </div>
+                <!-- Shared Dashboard Stats Section -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-file-alt"></i>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-purple">
-                                <i class="fas fa-tags"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Categories</h4>
-                                <p><?php echo number_format($stats['categories']); ?></p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-orange">
-                                <i class="fas fa-hdd"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Storage Used</h4>
-                                <p><?php echo $stats['storage']; ?></p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-green">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>System Status</h4>
-                                <p>Online</p>
-                            </div>
+                        <div class="stat-info">
+                            <h4>Total Files</h4>
+                            <p><?php echo number_format($stats['total']); ?></p>
                         </div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-purple">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Categories</h4>
+                            <p><?php echo number_format($stats['categories']); ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-orange">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Storage Used</h4>
+                            <p><?php echo $stats['storage']; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>System Status</h4>
+                            <p>Online</p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- All Documents View (Dashboard) -->
+                <div class="category-content active" id="all-content">
                     <div class="file-grid" id="activeFiles">
                         <!-- Active files will be populated here -->
                     </div>
