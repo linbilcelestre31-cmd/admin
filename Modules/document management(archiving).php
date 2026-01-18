@@ -507,6 +507,12 @@ function formatFileSize($bytes)
             min-height: 100vh;
         }
 
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
         /* Hide Scrollbars */
         ::-webkit-scrollbar {
             display: none;
@@ -593,7 +599,9 @@ function formatFileSize($bytes)
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
 
-        .bg-green { background: linear-gradient(135deg, #10b981, #059669); }
+        .bg-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
 
         /* Layout */
         .dashboard {
@@ -668,8 +676,14 @@ function formatFileSize($bytes)
         }
 
         @media (max-width: 992px) {
-            .dashboard { flex-direction: column; }
-            .sidebar { width: 100%; position: static; }
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
         }
 
         /* Premium Table Look */
@@ -798,6 +812,140 @@ function formatFileSize($bytes)
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 24px;
+            width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #ef4444;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-purple);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        #cancelUpload {
+            background: #f1f5f9;
+            color: var(--text-gray);
+        }
+
+        /* PIN Modal specific */
+        #passwordModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-container {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Table protocol redesign */
+        .financial-table-container {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -838,13 +986,20 @@ function formatFileSize($bytes)
                     <h3><i class="fas fa-folder-tree"></i> Archive Sectors</h3>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i> All Archives</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records"><i class="fas fa-file-invoice-dollar"></i> Financial</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> Human Resources</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i class="fas fa-user-check"></i> Guests</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i> Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i> Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i> Marketing</a></li>
+                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
+                            All Archives</a></li>
+                    <li><a href="#" class="category-link" data-category="Financial Records"><i
+                                class="fas fa-file-invoice-dollar"></i> Financial</a></li>
+                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
+                            Human Resources</a></li>
+                    <li><a href="#" class="category-link" data-category="Guest Records"><i
+                                class="fas fa-user-check"></i> Guests</a></li>
+                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
+                            Inventory</a></li>
+                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
+                            Compliance</a></li>
+                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
+                            Marketing</a></li>
                 </ul>
             </aside>
 
@@ -1172,7 +1327,7 @@ function formatFileSize($bytes)
             document.addEventListener('scroll', resetPinSession);
 
             // Quick Actions Event Listeners
-            document.getElementById('quickUpload')?.addEventListener('click', () => {
+            document.getElementById('uploadBtn')?.addEventListener('click', () => {
                 document.getElementById('uploadModal').style.display = 'block';
             });
 
@@ -1541,6 +1696,7 @@ function formatFileSize($bytes)
         function showNoDataMessage(grid, category) {
             const icons = {
                 'all': 'fas fa-layer-group',
+                'Financial Records': 'fas fa-file-invoice-dollar',
                 'HR Documents': 'fas fa-users',
                 'Guest Records': 'fas fa-user-check',
                 'Inventory': 'fas fa-boxes',
@@ -1551,7 +1707,7 @@ function formatFileSize($bytes)
             grid.innerHTML = `
                 <div style="text-align: center; padding: 4rem; color: #adb5bd; grid-column: 1/-1;">
                     <i class="${icons[category] || 'fas fa-layer-group'}" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
-                    <p style="font-size: 1.2rem; font-weight: 500;">No ${category.toLowerCase()} found</p>
+                    <p style="font-size: 1.2rem; font-weight: 500;">No ${category.toLowerCase() === 'all' ? 'archives' : category.toLowerCase()} found</p>
                     <p style="font-size: 0.9rem;">Upload documents to see them here.</p>
                 </div>
             `;
@@ -1566,10 +1722,10 @@ function formatFileSize($bytes)
             const type = record.role || record.type || (parseFloat(record.total_credit) > 0 ? 'Income' : 'Expense');
             const typeColor = (type.toLowerCase() === 'income' || type.toLowerCase() === 'admin') ? '#2ecc71' :
                 (type.toLowerCase() === 'staff' ? '#3498db' : '#e74c3c');
-            const title = record.username ? `User: ${record.username}` : `Journal Entry: ${record.entry_number}`;
+            const title = record.username ? `User: ${record.username} ` : `Journal Entry: ${record.entry_number} `;
 
             content.innerHTML = `
-                <div style="position: relative;">
+                < div style = "position: relative;" >
                     <div id="financialSensitive" class="financial-details blurred-content" style="padding: 10px;">
                         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
                             <div style="font-size: 3rem; color: ${typeColor};"><i class="fas ${record.username ? 'fa-user-shield' : 'fa-file-invoice-dollar'}"></i></div>
@@ -1605,7 +1761,7 @@ function formatFileSize($bytes)
                     <div class="reveal-overlay" id="financialReveal">
                         <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Sensitive Info</button>
                     </div>
-                </div>
+                </div >
 
                 <div class="form-actions" style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="window.print()">
@@ -1639,7 +1795,7 @@ function formatFileSize($bytes)
             const content = document.getElementById('fileDetailsContent');
 
             content.innerHTML = `
-                <div style="position: relative;">
+                < div style = "position: relative;" >
                     <div id="fileSensitive" class="blurred-content">
                         <h4 style="margin-top:0;">${file.name || 'Unnamed'}</h4>
                         <p><strong>Category:</strong> ${file.category || 'N/A'}</p>
@@ -1650,7 +1806,7 @@ function formatFileSize($bytes)
                     <div class="reveal-overlay" id="fileReveal">
                         <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Details</button>
                     </div>
-                </div>
+                </div >
                 <div style="margin-top:1rem;display:flex;gap:0.5rem;">
                     ${file.id ? `<a href="?api=1&action=download&id=${encodeURIComponent(file.id)}" class="btn btn-primary" target="_blank">Download</a>` : ''}
                     <button class="btn close-modal">Close</button>
@@ -1711,7 +1867,7 @@ function formatFileSize($bytes)
             const statusLabel = stock > 10 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
 
             content.innerHTML = `
-                <div style="position: relative;">
+                < div style = "position: relative;" >
                     <div id="inventorySensitive" class="financial-details blurred-content" style="padding: 10px;">
                         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
                             <div style="font-size: 3rem; color: #3b82f6;"><i class="fas fa-boxes"></i></div>
@@ -1748,7 +1904,7 @@ function formatFileSize($bytes)
                     <div class="reveal-overlay" id="inventoryReveal">
                         <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Inventory Details</button>
                     </div>
-                </div>
+                </div >
 
                 <div class="form-actions" style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="window.print()">
@@ -1782,7 +1938,7 @@ function formatFileSize($bytes)
             fetch('?api=1', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `id=${id}`
+                body: `id = ${id}`
             })
                 .then(r => r.json())
                 .then(res => {
