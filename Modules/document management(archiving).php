@@ -480,28 +480,31 @@ function formatFileSize($bytes)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Management - Atiéra</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/document.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .sidebar-menu a.active,
-        .sidebar-menu a.active i,
-        .category-link.active,
-        .category-link.active i {
-            color: #ffffff !important;
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-pink: #d946ef;
+            --dark-blue: #0f172a;
+            --main-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
         }
 
-        .category-link.active {
-            background-color: #2196F3 !important;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
         }
 
-        .category-link:hover,
-        .category-link:hover i {
-            color: #FFD700 !important;
-            transition: color 0.3s ease;
+        body {
+            background: var(--main-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
         /* Hide Scrollbars */
@@ -512,6 +515,21 @@ function formatFileSize($bytes)
         * {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        .sidebar-menu a.active,
+        .sidebar-menu a.active i,
+        .category-link.active,
+        .category-link.active i {
+            color: white !important;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink)) !important;
+            border-radius: 12px;
+        }
+
+        .category-link:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple) !important;
+            border-radius: 12px;
         }
 
         /* Dashboard Stats Boxes */
@@ -525,24 +543,23 @@ function formatFileSize($bytes)
         .stat-card {
             background: white;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             gap: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
         .stat-icon {
             width: 60px;
             height: 60px;
-            border-radius: 15px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -579,6 +596,134 @@ function formatFileSize($bytes)
         .bg-green {
             background: linear-gradient(135deg, #10b981, #059669);
         }
+
+        /* Premium Table Look */
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .financial-table th {
+            background: #f8fafc;
+            padding: 18px 25px;
+            text-align: left;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-gray);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .financial-table td {
+            padding: 18px 25px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .btn-view-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: var(--text-gray);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-view-small:hover {
+            transform: translateY(-2px);
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .blurred-content {
+            filter: blur(8px);
+            transition: filter 0.5s ease;
+        }
+
+        .reveal-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            z-index: 5;
+        }
+
+        .reveal-btn {
+            background: var(--dark-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        header {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h2 {
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--primary-purple);
+        }
+
+        .btn-primary {
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -594,18 +739,17 @@ function formatFileSize($bytes)
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img src="../assets/image/logo.png" alt="Logo" style="height: 40px; vertical-align: middle;">
+                    <h2>ATIÉRA ARCHIVE</h2>
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                        <li><a href="../include/Settings.php"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '../include/Settings.php'; }, true);"><i
-                                    class="fas fa-cog"></i> Settings</a></li>
-                        <li><a href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>"
-                                onclick="window.runLoadingAnimation(() => { window.location.href = '<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>'; }, true);"><i
-                                    class="fas fa-arrow-left"></i>
-                                <?php echo $isSuperAdmin ? 'Super-Admin Dashboard' : 'Back'; ?></a></li>
+                        <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="../include/Settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a
+                                href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>">
+                                <i class="fas fa-arrow-left"></i>
+                                <?php echo $isSuperAdmin ? 'Command Center' : 'Back'; ?></a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -614,46 +758,70 @@ function formatFileSize($bytes)
 
     <main class="container">
         <div class="dashboard">
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h3><i class="fas fa-folder-tree"></i> Categories</h3>
-                    <button class="sidebar-toggle" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+            <aside class="sidebar"
+                style="background: white; border-radius: 24px; border: 1px solid #e2e8f0; padding: 20px;">
+                <div class="sidebar-header" style="margin-bottom: 20px;">
+                    <h3
+                        style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-gray);">
+                        <i class="fas fa-folder-tree"></i> Archive Sectors</h3>
                 </div>
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
-                            All Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Financial Records" style="font-weight: 600;"><i
-                                class="fas fa-file-invoice-dollar"></i> Financial Records</a></li>
-                    <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i> HR
-                            Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i> Guest Records</a></li>
-                    <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
-                            Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
-                            Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                            Marketing</a></li>
+                <ul class="sidebar-menu" style="list-style: none;">
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link active" data-category="all"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-layer-group"></i> All Archives</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="Financial Records"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-file-invoice-dollar"></i> Financial</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="HR Documents"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-users"></i> Human Resources</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="Guest Records"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-user-check"></i> Guests</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="Inventory"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-boxes"></i> Inventory</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="Compliance"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-shield-alt"></i> Compliance</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#" class="category-link" data-category="Marketing"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; text-decoration: none; color: var(--text-dark); transition: all 0.3s;"><i
+                                class="fas fa-bullhorn"></i> Marketing</a></li>
                 </ul>
-                <!-- Sidebar footer removed as per user request -->
             </aside>
 
             <div class="content">
-                <div class="content-header">
-                    <h2 id="contentTitle">Archive Management</h2>
+                <div class="content-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 id="contentTitle" style="font-weight: 700;">Archive Management</h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
-                        <input type="text" id="documentSearch" placeholder="Search in this view..."
-                            style="padding: 8px 15px; border-radius: 20px; border: 1px solid #e2e8f0; width: 250px;">
-                        <button class="btn btn-primary" id="uploadBtn" style="padding: 8px 20px; border-radius: 20px;">
-                            <i class="fas fa-plus"></i> Upload
-                        </button>
+                        <input type="text" id="documentSearch" placeholder="Search archive..."
+                            style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">
+                        <?php if ($isSuperAdmin): ?>
+                            <button class="btn-primary" id="uploadBtn">
+                                <i class="fas fa-plus"></i> NEW UPLOAD
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Success/Error Messages -->
                 <div id="messageContainer"></div>
+
+                <!-- Tabs (Only for Dashboard/All view) -->
+                <div id="tabContainer" style="display: none;">
+                    <div class="tabs"
+                        style="display: flex; gap: 30px; border-bottom: 2px solid #e2e8f0; margin-bottom: 30px;">
+                        <div class="tab active" data-view="active"
+                            style="padding: 15px 5px; cursor: pointer; font-weight: 600; color: var(--text-gray); position: relative;">
+                            Active Archives</div>
+                        <?php if ($isSuperAdmin): ?>
+                            <div class="tab" data-view="deleted"
+                                style="padding: 15px 5px; cursor: pointer; font-weight: 600; color: var(--text-gray); position: relative;">
+                                Trash Bin (Quarantine)</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
                 <!-- All Documents View (Dashboard) -->
                 <div class="category-content active" id="all-content">
@@ -664,41 +832,32 @@ function formatFileSize($bytes)
                                 <i class="fas fa-file-alt"></i>
                             </div>
                             <div class="stat-info">
-                                <h4>Total Files</h4>
+                                <h4>Archives</h4>
                                 <p><?php echo number_format($stats['total']); ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon bg-purple">
-                                <i class="fas fa-tags"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>Categories</h4>
-                                <p><?php echo number_format($stats['categories']); ?></p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-orange">
                                 <i class="fas fa-hdd"></i>
                             </div>
                             <div class="stat-info">
-                                <h4>Storage Used</h4>
+                                <h4>Data Size</h4>
                                 <p><?php echo $stats['storage']; ?></p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon bg-green">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fas fa-shield-check"></i>
                             </div>
                             <div class="stat-info">
-                                <h4>System Status</h4>
-                                <p>Online</p>
+                                <h4>Status</h4>
+                                <p>SECURE</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="file-grid" id="activeFiles">
-                        <!-- Active files will be populated here -->
+                    <div id="activeFiles">
+                        <!-- Content loaded here -->
                     </div>
                 </div>
 
@@ -707,19 +866,19 @@ function formatFileSize($bytes)
                     <div id="financialFiles"></div>
                 </div>
                 <div class="category-content" id="hr-documents-content">
-                    <div class="file-grid" id="hrFiles"></div>
+                    <div id="hrFiles"></div>
                 </div>
                 <div class="category-content" id="guest-records-content">
-                    <div class="file-grid" id="guestFiles"></div>
+                    <div id="guestFiles"></div>
                 </div>
                 <div class="category-content" id="inventory-content">
-                    <div class="file-grid" id="inventoryFiles"></div>
+                    <div id="inventoryFiles"></div>
                 </div>
                 <div class="category-content" id="compliance-content">
-                    <div class="file-grid" id="complianceFiles"></div>
+                    <div id="complianceFiles"></div>
                 </div>
                 <div class="category-content" id="marketing-content">
-                    <div class="file-grid" id="marketingFiles"></div>
+                    <div id="marketingFiles"></div>
                 </div>
             </div>
         </div>
@@ -1273,36 +1432,65 @@ function formatFileSize($bytes)
             `;
         }
 
+        let currentView = 'active';
+
         function renderDocumentTable(data, grid) {
+            const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
             grid.innerHTML = `
-                <div class="financial-table-container" style="grid-column: 1/-1;">
+                <div class="table-container" style="grid-column: 1/-1;">
                     <table class="financial-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Size</th>
-                                <th>Upload Date</th>
-                                <th>Actions</th>
+                                <th>Archive Name</th>
+                                <th>Sector</th>
+                                <th>Payload</th>
+                                <th>Timeline</th>
+                                <th>Status</th>
+                                <th>Protocols</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${data.map(item => `
                                 <tr>
-                                    <td style="font-weight: 600;">📄 ${item.name}</td>
-                                    <td>${item.category}</td>
-                                    <td>${item.file_size}</td>
+                                    <td style="font-weight: 600; color: #1e293b;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 35px; height: 35px; background: #eff6ff; color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </div>
+                                            <div>
+                                                <div>${item.name}</div>
+                                                <div style="font-size: 11px; color: #64748b; font-weight: 400;">${item.description || 'No metadata'}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span style="font-size: 13px; color: #64748b;"><i class="fas fa-folder" style="margin-right: 5px;"></i> ${item.category}</span></td>
+                                    <td>${typeof item.file_size === 'number' ? formatBytes(item.file_size) : item.file_size}</td>
                                     <td>${new Date(item.upload_date).toLocaleDateString()}</td>
+                                    <td><span style="padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; ${item.is_deleted == 1 ? 'background: #fee2e2; color: #b91c1c;' : 'background: #dcfce7; color: #15803d;'}">${item.is_deleted == 1 ? 'QUARANTINED' : 'ACTIVE'}</span></td>
                                     <td style="white-space: nowrap;">
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Download">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                        <button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})" title="Delete Permanently">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="?api=1&action=download&id=${encodeURIComponent(item.id)}" class="btn-view-small" title="Secure Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Metadata">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            ${isSuperAdmin ? (item.is_deleted == 0 ? `
+                                                <button class="btn-view-small" style="color: #d97706;" onclick='openEditModal(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="Edit Metadata">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #ef4444;" onclick="handleAction('trash', ${item.id})" title="Send to Quarantine">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            ` : `
+                                                <button class="btn-view-small" style="color: #10b981;" onclick="handleAction('restore', ${item.id})" title="Restore Payload">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                                <button class="btn-view-small" style="color: #64748b;" onclick="deletePermanent(${item.id})" title="Wipe Permanently">
+                                                    <i class="fas fa-skull"></i>
+                                                </button>
+                                            `) : ''}
+                                        </div>
                                     </td>
                                 </tr>
                             `).join('')}
@@ -1310,6 +1498,26 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
+        }
+
+        async function handleAction(action, id) {
+            if (!confirm(`Execute protocol: ${action.toUpperCase()}?`)) return;
+            const formData = new FormData();
+            formData.append('action', action);
+            formData.append('id', id);
+            const r = await fetch('?api=1', { method: 'POST', body: formData });
+            const res = await r.json();
+            alert(res.message);
+            loadCategoryFiles('all');
+        }
+
+        function openEditModal(doc) {
+            document.getElementById('editId').value = doc.id;
+            document.getElementById('editName').value = doc.name;
+            document.getElementById('editCategory').value = doc.category;
+            document.getElementById('editDescription').value = doc.description;
+            document.getElementById('uploadModal').style.display = 'block';
+            document.getElementById('uploadModal').querySelector('h3').textContent = 'Edit Archive Metadata';
         }
 
         function showNoDataMessage(grid, category) {
