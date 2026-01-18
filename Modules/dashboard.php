@@ -22,7 +22,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Super Admin Isolation: Redirect Super Admins to their dedicated portal
-if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
+// Bypass redirect if we're coming from the Super Admin dashboard
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin' && !isset($_GET['super_admin_session'])) {
     header('Location: ../Super-admin/Dashboard.php');
     exit;
 }
