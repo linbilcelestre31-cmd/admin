@@ -320,6 +320,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
         }
 
         .logo h2 {
+            text-transform: capitalize;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
             -webkit-background-clip: text;
