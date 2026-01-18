@@ -647,9 +647,10 @@ $clusters = [
                 <div class="module-grid">
                     <?php foreach ($modules as $module): ?>
                         <a href="<?php echo htmlspecialchars($module['url']); ?>?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                            class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>" id="module-<?php echo $module['id']; ?>">
-                                    <?php if (isset($module['premium'])): ?>
-                                            <div class="premium-badge">Priority Module
+                            class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
+                            id="module-<?php echo $module['id']; ?>">
+                            <?php if (isset($module['premium'])): ?>
+
                         </div>
                     <?php endif; ?>
                     <div class="module-icon" style="background: <?php echo $module['color']; ?>;">
