@@ -34,15 +34,17 @@ body {
 /* Sidebar */
 .sidebar {
     width: 280px;
-    background: linear-gradient(180deg, #1a365d 0%, #2d3748 100%);
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
     color: white;
-    padding: 20px;
+    padding: 0;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
     position: fixed;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 100;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.6) transparent;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -50,16 +52,17 @@ body {
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+    background: rgba(212, 175, 55, 0.6);
+    border-radius: 10px;
+    transition: all 0.3s;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(212, 175, 55, 0.9);
 }
 
 .logo-area {
@@ -183,11 +186,11 @@ body {
 .sidebar-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 0.5rem;
-    gap: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    border: none;
+    margin-bottom: 20px;
 }
 
 .sidebar-burger-btn,
@@ -236,15 +239,15 @@ body {
 
 /* Logo Area Adjusted */
 .logo-area {
-    padding: 1.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem 1rem 1rem;
+    background: transparent;
     text-align: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100px;
-    flex: 1;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo-link {
@@ -252,6 +255,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 /* Main Content */
