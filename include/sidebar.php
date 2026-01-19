@@ -25,6 +25,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 <div class="logo">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
                         style="height:80px; width:auto; display:block; margin:0 auto;">
+                    <?php if ($isSuperAdmin): ?>
+                        <div
+                            style="color: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; text-align: center; opacity: 0.8;">
+                            Super Admin</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </a>
@@ -84,12 +89,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
                     <span class="icon-img-placeholder">🚶</span> Visitors Log
                 </a></li>
-            <?php if ($isSuperAdmin): ?>
-                <div class="nav-title" style="margin-top: 20px; color: #d4af37;">System Integrity</div>
-                <li><a href="https://financial.atierahotelandrestaurant.com/" target="_blank" style="color: #d4af37;">
-                        <span class="icon-img-placeholder">🔓</span> Full System Access
-                    </a></li>
-            <?php endif; ?>
+
         </ul>
     </div>
 

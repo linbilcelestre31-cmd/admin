@@ -163,6 +163,9 @@ $clusters = [
     <div class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-logo">ATIÉRA</h1>
+            <div
+                style="color: var(--primary-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: -10px; opacity: 0.8;">
+                Super Admin</div>
         </div>
 
         <ul class="nav-list">
@@ -205,13 +208,7 @@ $clusters = [
                 </a>
             </li>
 
-            <div class="nav-section-label">System Integrity</div>
-            <li class="nav-item">
-                <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" class="nav-link"
-                    style="color: var(--primary-gold);">
-                    <i class="fas fa-unlock-keyhole"></i> Full System Access
-                </a>
-            </li>
+
         </ul>
 
         <a href="auth/logout.php" class="logout-btn">

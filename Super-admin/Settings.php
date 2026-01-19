@@ -395,6 +395,9 @@ $api_key = $admin['api_key'] ?? '';
     <div class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-logo">ATIÉRA</h1>
+            <div
+                style="color: var(--primary-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: -10px; opacity: 0.8;">
+                Super Admin</div>
         </div>
 
         <ul class="nav-list">
