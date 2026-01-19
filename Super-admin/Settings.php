@@ -24,7 +24,7 @@ $error = '';
 // Handle Settings Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
-        /* Update Profile */
+        /* Update Profile (Self) */
         if ($_POST['action'] === 'update_profile') {
             $full_name = trim($_POST['full_name']);
             $email = trim($_POST['email']);
@@ -38,6 +38,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $admin['email'] = $email;
             } catch (PDOException $e) {
                 $error = "Error updating profile: " . $e->getMessage();
+            }
+        }
+        /* Update Admin Account (Other) */ elseif ($_POST['action'] === 'edit_admin') {
+            $target_id = $_POST['target_id'];
+            $full_name = trim($_POST['full_name']);
+            $email = trim($_POST['email']);
+            $username = trim($_POST['username']);
+
+            try {
+                $stmt = $pdo->prepare("UPDATE `$sa_table` SET full_name = ?, email = ?, username = ? WHERE id = ?");
+                $stmt->execute([$full_name, $email, $username, $target_id]);
+                $message = "Admin account updated successfully!";
+            } catch (PDOException $e) {
+                $error = "Error updating admin: " . $e->getMessage();
+            }
+        }
+        /* Delete Admin Account */ elseif ($_POST['action'] === 'delete_admin') {
+            $target_id = $_POST['target_id'];
+
+            if ($target_id == $admin_id) {
+                $error = "Security Protocol Violation: You cannot delete your own active session.";
+            } else {
+                try {
+                    $stmt = $pdo->prepare("DELETE FROM `$sa_table` WHERE id = ?");
+                    $stmt->execute([$target_id]);
+                    $message = "Admin account has been permanently purged from the system.";
+                } catch (PDOException $e) {
+                    $error = "Error purging admin: " . $e->getMessage();
+                }
             }
         }
         /* Update Password */ elseif ($_POST['action'] === 'update_password') {
@@ -294,6 +323,70 @@ $api_key = $admin['api_key'] ?? '';
         .tab-content.active {
             display: block;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--primary-gold);
+            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+
+        .action-btn {
+            border: none;
+            background: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .edit-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .delete-btn {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .delete-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
     </style>
 </head>
 
@@ -438,9 +531,14 @@ $api_key = $admin['api_key'] ?? '';
             <!-- List Accounts Tab -->
             <div id="accounts-tab" class="tab-content">
                 <div class="settings-card">
-                    <h2><i class="fas fa-users-shield"></i> Registered Super Administrators</h2>
-                    <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 25px;">Verified accounts with
-                        master system access.</p>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div>
+                            <h2><i class="fas fa-users-shield"></i> Registered Super Administrators</h2>
+                            <p style="color: var(--text-gray); font-size: 14px;">Verified accounts with master system
+                                access.</p>
+                        </div>
+                    </div>
 
                     <div style="overflow-x: auto;">
                         <table class="account-table">
@@ -450,8 +548,8 @@ $api_key = $admin['api_key'] ?? '';
                                     <th>Full Name</th>
                                     <th>Username</th>
                                     <th>Email</th>
-                                    <th>Joined Date</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -467,13 +565,24 @@ $api_key = $admin['api_key'] ?? '';
                                         </td>
                                         <td>@<?php echo htmlspecialchars($acc['username']); ?></td>
                                         <td><?php echo htmlspecialchars($acc['email']); ?></td>
-                                        <td style="color: var(--text-gray);">
-                                            <?php echo date('M d, Y', strtotime($acc['created_at'])); ?>
-                                        </td>
                                         <td>
                                             <span class="status-badge status-active">
                                                 <i class="fas fa-check-circle"></i> Authorized
                                             </span>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button class="action-btn edit-btn"
+                                                    onclick='openEditModal(<?php echo json_encode($acc); ?>)'
+                                                    title="Edit Account">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="action-btn delete-btn"
+                                                    onclick="openDeleteModal(<?php echo $acc['id']; ?>, '<?php echo htmlspecialchars($acc['full_name']); ?>')"
+                                                    title="Delete Account">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -520,6 +629,56 @@ $api_key = $admin['api_key'] ?? '';
         </div>
     </div>
 
+    <!-- Edit Admin Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+            <h2 style="color: var(--text-dark); margin-bottom: 25px;"><i class="fas fa-user-edit"
+                    style="color: var(--primary-gold);"></i> Edit Admin Account</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="edit_admin">
+                <input type="hidden" name="target_id" id="edit_target_id">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" id="edit_full_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" id="edit_email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" id="edit_username" class="form-input" required>
+                </div>
+                <button type="submit" class="save-btn">Update Admin Details <i class="fas fa-shield-check"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+            <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 style="color: #0f172a; margin-bottom: 15px;">Confirm Access Revocation</h2>
+            <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6; margin-bottom: 30px;">
+                You are about to permanently purge <strong id="delete_admin_name" style="color: #0f172a;"></strong> from
+                the Super Admin registry. All associated access privileges will be immediately revoked.
+            </p>
+            <form method="POST">
+                <input type="hidden" name="action" value="delete_admin">
+                <input type="hidden" name="target_id" id="delete_target_id">
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="save-btn" style="background: #f1f5f9; color: #64748b;"
+                        onclick="closeModal('deleteModal')">Cancel</button>
+                    <button type="submit" class="save-btn" style="background: #ef4444;">Confirm Purge</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function showTab(tabId) {
             // Hide all contents
@@ -535,6 +694,31 @@ $api_key = $admin['api_key'] ?? '';
             document.getElementById(tabId + '-tab').classList.add('active');
             // Activate target button
             event.currentTarget.classList.add('active');
+        }
+
+        function openEditModal(admin) {
+            document.getElementById('edit_target_id').value = admin.id;
+            document.getElementById('edit_full_name').value = admin.full_name;
+            document.getElementById('edit_email').value = admin.email;
+            document.getElementById('edit_username').value = admin.username;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function openDeleteModal(id, name) {
+            document.getElementById('delete_target_id').value = id;
+            document.getElementById('delete_admin_name').innerText = name;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
         }
     </script>
 </body>
