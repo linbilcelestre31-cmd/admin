@@ -215,7 +215,7 @@ $clusters = [
             </li>
             <li class="nav-item">
                 <a href="modules/reservation.php" class="nav-link">
-                    <i class="fas fa-calendar-check"></i> Reservations
+                    <i class="fas fa-calendar-check"></i> Reservations Management
                 </a>
             </li>
             <li class="nav-item">
