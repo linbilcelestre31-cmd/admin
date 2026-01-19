@@ -1504,7 +1504,7 @@ function formatFileSize($bytes)
                     grid.innerHTML = `
                         <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
                             <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
-                            <p style="font-size: 1.2rem; font-weight: 500;">Error loading financial API</p>
+                            <p style="font-size: 1.2rem; font-weight: 500;">Error loading Financial Records API</p>
                             <p style="font-size: 0.9rem;">Please try again later.</p>
                         </div>
                     `;
@@ -1590,7 +1590,7 @@ function formatFileSize($bytes)
                         grid.innerHTML = `
                             <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
                                 <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
-                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading ${category}</p>
+                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading ${category} API</p>
                                 <p style="font-size: 0.9rem;">Please try again later.</p>
                             </div>
                         `;
