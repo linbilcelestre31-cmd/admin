@@ -86,7 +86,7 @@ $clusters = [
         ['name' => 'Financial Management', 'id' => 'Financial Management', 'icon' => 'chart-line', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/'],
     ],
     'Administrative' => [
-        ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'building', 'color' => '#d4af37', 'url' => 'modules/facilities.php'],
+        ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'shield-halved', 'color' => '#d4af37', 'url' => 'modules/facilities.php'],
     ]
 ];
 
@@ -160,7 +160,7 @@ $clusters = [
 
 
     <!-- Sidebar -->
-    <div class="sidebar" style="overflow-y: auto;">
+    <div class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-logo">ATIÉRA</h1>
             <div
