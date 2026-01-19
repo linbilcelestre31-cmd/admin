@@ -69,10 +69,10 @@ $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 // Define Modules grouped by Department Cluster
 $clusters = [
     'HR Cluster' => [
-        ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => 'https://hr1.atierahotelandrestaurant.com/index.php'],
-        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'https://hr2.atierahotelandrestaurant.com/index.php'],
-        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'https://hr3.atierahotelandrestaurant.com/index.php'],
-        ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'https://hr4.atierahotelandrestaurant.com/index.php'],
+        ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => 'gateway.php?dept=HR1'],
+        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'gateway.php?dept=HR2'],
+        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3'],
+        ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4'],
     ],
     'Core Cluster' => [
         ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php'],
