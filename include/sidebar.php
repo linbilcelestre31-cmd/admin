@@ -24,11 +24,21 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <div class="logo-area">
                 <div class="logo">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
-                        style="height:80px; width:auto; display:block; margin:0 auto;">
+                        style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <?php if ($isSuperAdmin): ?>
                         <div
-                            style="color: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 15px; text-align: center; opacity: 0.8; width: 100%;">
-                            Super Admin</div>
+                            style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 12px; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
+                            Super Admin
+                        </div>
+                        <?php
+                        $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
+                        if (!empty($display_key)): ?>
+                            <div
+                                style="margin-top: 8px; font-size: 10px; color: #94a3b8; font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px;">
+                                <i class="fas fa-key" style="margin-right: 4px; color: #d4af37;"></i>
+                                <?= substr($display_key, 0, 8) . '...' ?>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>

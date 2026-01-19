@@ -238,10 +238,7 @@ $clusters = [
                 <h1>Super Admin</h1>
                 <p>Today is <?php echo date('l, F j, Y'); ?></p>
             </div>
-            <div class="api-key-badge">
-                <i class="fas fa-key"></i>
-                <span>Active Key: <code><?php echo substr($api_key, 0, 8) . '...'; ?></code></span>
-            </div>
+
         </div>
         <h2
             style="margin-bottom: 35px; font-size: 24px; color: var(--text-dark); border-bottom: 2px solid var(--primary-gold); display: inline-block; padding-bottom: 5px;">
