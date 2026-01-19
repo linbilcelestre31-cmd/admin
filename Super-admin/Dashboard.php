@@ -87,6 +87,9 @@ $clusters = [
     ],
     'Administrative' => [
         ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'shield-halved', 'color' => '#0f172a', 'url' => '../Modules/dashboard.php'],
+        ['name' => 'Facilities', 'id' => 'Facilities', 'icon' => 'building', 'color' => '#d4af37', 'url' => 'modules/facilities.php'],
+        ['name' => 'Reservations', 'id' => 'Reservations', 'icon' => 'calendar-check', 'color' => '#3b82f6', 'url' => 'modules/reservation.php'],
+        ['name' => 'Operations', 'id' => 'Operations', 'icon' => 'tasks', 'color' => '#10b981', 'url' => 'modules/management.php'],
     ]
 ];
 
@@ -163,7 +166,9 @@ $clusters = [
     <div class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-logo">ATIÉRA</h1>
-            <div style="color: var(--primary-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; opacity: 0.8; text-align: center; width: 100%;">Super Admin</div>
+            <div
+                style="color: var(--primary-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; opacity: 0.8; text-align: center; width: 100%;">
+                Super Admin</div>
         </div>
 
         <ul class="nav-list">
@@ -203,6 +208,23 @@ $clusters = [
                 <a href="../Modules/Visitor-logs.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
                     class="nav-link">
                     <i class="fas fa-id-card-clip"></i> Visitor Logs
+                </a>
+            </li>
+
+            <div class="nav-section-label">Master Controls</div>
+            <li class="nav-item">
+                <a href="modules/facilities.php" class="nav-link">
+                    <i class="fas fa-building"></i> Facility Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="modules/reservation.php" class="nav-link">
+                    <i class="fas fa-calendar-check"></i> Master Reservations
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="modules/management.php" class="nav-link">
+                    <i class="fas fa-tasks"></i> Operational Logs
                 </a>
             </li>
 
