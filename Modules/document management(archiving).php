@@ -1492,10 +1492,10 @@ function formatFileSize($bytes)
                 .then(data => {
                     // Handle response being an array or object
                     let records = Array.isArray(data) ? data : (data.data || []);
-                    
+
                     if (records.length === 0) {
-                         grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">No financial records found.</div>`;
-                         return;
+                        grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">No financial records found.</div>`;
+                        return;
                     }
                     renderFinancialTable(records, grid);
                 })
@@ -1512,7 +1512,7 @@ function formatFileSize($bytes)
         }
 
         function renderFinancialTable(data, grid) {
-             grid.innerHTML = `
+            grid.innerHTML = `
                 <div class="financial-table-container" style="grid-column: 1/-1; overflow-x: auto; border-radius: 12px; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
                     <table class="financial-table" style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px;">
                         <thead>
@@ -1523,12 +1523,13 @@ function formatFileSize($bytes)
                                 <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Role</th>
                                 <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Department</th>
                                 <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Status</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${data.map(item => {
-                                const statusColor = item.status === 'active' ? '#2ecc71' : '#e74c3c';
-                                return `
+                const statusColor = item.status === 'active' ? '#2ecc71' : '#e74c3c';
+                return `
                                 <tr style="transition: background 0.2s;">
                                     <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">#${item.id}</td>
                                     <td style="font-weight: 600; text-align: left; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; white-space: nowrap;">
@@ -1547,9 +1548,14 @@ function formatFileSize($bytes)
                                             ${item.status}
                                         </span>
                                     </td>
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
+                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 `;
-                            }).join('')}
+            }).join('')}
                         </tbody>
                     </table>
                 </div>
