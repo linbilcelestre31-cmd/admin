@@ -208,7 +208,7 @@ $clusters = [
     <div class="main-content">
         <div class="header">
             <div class="welcome-msg">
-                <h1>Welcome Back, <?php echo htmlspecialchars($admin['full_name']); ?></h1>
+                <h1>Super Admin</h1>
                 <p>Today is <?php echo date('l, F j, Y'); ?></p>
             </div>
             <div class="api-key-badge">
@@ -216,10 +216,9 @@ $clusters = [
                 <span>Active Key: <code><?php echo substr($api_key, 0, 8) . '...'; ?></code></span>
             </div>
         </div>
-
         <h2
             style="margin-bottom: 35px; font-size: 24px; color: var(--text-dark); border-bottom: 2px solid var(--primary-gold); display: inline-block; padding-bottom: 5px;">
-            Department Gateways</h2>
+            Department</h2>
 
         <!-- Module Clusters -->
         <div class="clusters-container" style="display: block; width: 100%;">
