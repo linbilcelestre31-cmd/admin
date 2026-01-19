@@ -267,25 +267,7 @@ $clusters = [
             <?php endforeach; ?>
         </div>
 
-        <!-- System Status -->
-        <div
-            style="margin-top: 50px; background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0;">
-            <h3 style="margin-bottom: 20px;">Cluster Connectivity</h3>
-            <div style="display: flex; gap: 40px;">
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: #10b981;">100%</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">API Sync</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">Active</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">Bypass Service</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; font-weight: 700; color: var(--primary-gold);">Secure</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">Encryption</div>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <script>
