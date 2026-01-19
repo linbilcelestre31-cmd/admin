@@ -1007,12 +1007,9 @@ function formatFileSize($bytes)
                                 class="fas fa-file-invoice-dollar"></i> Financial Records</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
                             HR Documents</a></li>
-                    <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i> Guest Records</a></li>
                     <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
                             Inventory</a></li>
-                    <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
-                            Compliance</a></li>
+
                 </ul>
             </aside>
 
@@ -1094,9 +1091,7 @@ function formatFileSize($bytes)
                 <div class="category-content" id="inventory-content">
                     <div class="file-grid" id="inventoryFiles"></div>
                 </div>
-                <div class="category-content" id="compliance-content">
-                    <div class="file-grid" id="complianceFiles"></div>
-                </div>
+
             </div>
         </div>
     </main>
@@ -1125,7 +1120,7 @@ function formatFileSize($bytes)
                         <option value="HR Documents">HR Documents</option>
                         <option value="Guest Records">Guest Records</option>
                         <option value="Inventory">Inventory</option>
-                        <option value="Compliance">Compliance</option>
+
                     </select>
                 </div>
                 <div class="form-group">
@@ -1392,9 +1387,7 @@ function formatFileSize($bytes)
                 'all': 'Archive Management',
                 'Financial Records': 'Financial Records',
                 'HR Documents': 'HR Documents',
-                'Guest Records': 'Guest Records',
                 'Inventory': 'Inventory',
-                'Compliance': 'Compliance'
             };
             document.getElementById('contentTitle').textContent = titles[category] || 'Archive Management';
 
@@ -1425,7 +1418,6 @@ function formatFileSize($bytes)
                 const gridIdMap = {
                     'Guest Records': 'guestFiles',
                     'HR Documents': 'hrFiles',
-                    'Compliance': 'complianceFiles',
                     'Inventory': 'inventoryFiles'
                 };
                 gridId = gridIdMap[category] || `${category.toLowerCase().replace(/\s+/g, '')}Files`;
