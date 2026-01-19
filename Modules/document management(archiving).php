@@ -1967,7 +1967,7 @@ function formatFileSize($bytes)
             const statusLabel = stock > 10 ? 'In Stock' : (stock > 0 ? 'Low Stock' : 'Out of Stock');
 
             content.innerHTML = `
-                < div style = "position: relative;" >
+                <div style="position: relative;">
                     <div id="inventorySensitive" class="financial-details blurred-content" style="padding: 10px;">
                         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
                             <div style="font-size: 3rem; color: #3b82f6;"><i class="fas fa-boxes"></i></div>
@@ -2004,7 +2004,7 @@ function formatFileSize($bytes)
                     <div class="reveal-overlay" id="inventoryReveal">
                         <button class="reveal-btn"><i class="fas fa-eye"></i> Click to Reveal Inventory Details</button>
                     </div>
-                </div >
+                </div>
 
                 <div class="form-actions" style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="window.print()">
