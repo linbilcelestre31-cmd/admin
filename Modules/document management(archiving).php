@@ -1439,10 +1439,8 @@ function formatFileSize($bytes)
 
             // API integrations for other categories
             const apiMap = {
-                'HR Documents': '../integ/hr4_api.php',
                 'Guest Records': '../integ/guest_fn.php',
-                'Inventory': '../integ/log1.php?limit=10',
-                'Compliance': '../integ/compliance_fn.php'
+                'Inventory': '../integ/log1.php?limit=10'
             };
 
             if (apiMap[category]) {
@@ -1465,13 +1463,13 @@ function formatFileSize($bytes)
                     renderDocumentTable(data, grid);
                 })
                 .catch(error => {
-                    console.error('Error loading documents:', error);
+                    console.error(`Error loading ${category}:`, error);
                     const grid = document.getElementById(gridId);
                     if (grid) {
                         grid.innerHTML = `
                             <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
                                 <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
-                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading documents</p>
+                                <p style="font-size: 1.2rem; font-weight: 500;">Error loading ${category} Archive</p>
                                 <p style="font-size: 0.9rem;">Please try again later.</p>
                             </div>
                         `;
