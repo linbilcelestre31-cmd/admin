@@ -82,7 +82,7 @@ $clusters = [
         ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php'],
         ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php'],
     ],
-    'Financial Records' => [
+    'Financial Management' => [
         ['name' => 'Financial Records', 'id' => 'Financial Management', 'icon' => 'chart-line', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/'],
     ],
     'Administrative' => [
