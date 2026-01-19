@@ -1,11 +1,14 @@
 <?php
+error_reporting(0); // Suppress warnings to ensure valid JSON output
 /**
  * Guest Records API Integration
  */
 require_once __DIR__ . '/protocol_handler.php';
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$request_method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+if ($request_method === 'POST') {
     $action = $_POST['action'] ?? '';
     $id = $_POST['id'] ?? null;
     if ($action === 'delete')
