@@ -604,9 +604,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-shield-halved"></i>
                 </div>
                 <button type="submit" class="btn-login">
-                    Initialize Access <i class="fas fa-bolt" style="margin-left: 10px;"></i>
+                    Sign in <i class="fas fa-bolt" style="margin-left: 10px;"></i>
                 </button>
             </form>
+
+            <div style="margin-top: 20px; font-size: 13px; color: var(--text-gray);">
+                Don't have an account? <a href="register.php"
+                    style="color: var(--dark-gold); text-decoration: none; font-weight: 600;">Create Account</a>
+            </div>
         <?php else: ?>
             <h2 class="welcome-text">Verification</h2>
             <p class="instruction-text">A security token has been generated and transmitted.</p>
