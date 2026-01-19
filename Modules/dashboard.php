@@ -1571,13 +1571,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </td>
                     </tr>
                 `;
-            else {
-                    employees.forEach(employee => {
-                        const position = employee.employment_details ? (employee.employment_details.job_title || 'N/A') : (employee.position || 'N/A');
-                        const department = employee.department_name || (employee.employment_details ? employee.employment_details.department_name : null) || employee.department || 'N/A';
-                        const salary = employee.employment_details ? (employee.employment_details.basic_salary || 0) : (employee.salary || 0);
+            } else {
+                employees.forEach(employee => {
+                    const position = employee.employment_details ? (employee.employment_details.job_title || 'N/A') : (employee.position || 'N/A');
+                    const department = employee.department_name || (employee.employment_details ? employee.employment_details.department_name : null) || employee.department || 'N/A';
+                    const salary = employee.employment_details ? (employee.employment_details.basic_salary || 0) : (employee.salary || 0);
 
-                        tbody.innerHTML += `
+                    tbody.innerHTML += `
                         <tr>
                             <td style="text-align: center;">#${employee.id}</td>
                             <td>${employee.first_name}</td>
@@ -1598,73 +1598,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </td>
                         </tr>
                     `;
-                    });
-                }
+                });
             }
+        }
 
-            function openEmployeeModal() {
-                // Implementation for Add/Edit Employee modal
-                alert('Employee modal functionality would be implemented here');
-            }
+        function openEmployeeModal() {
+            // Implementation for Add/Edit Employee modal
+            alert('Employee modal functionality would be implemented here');
+        }
 
-            function editEmployee(id) {
-                // Implementation for edit employee
-                alert('Edit employee functionality for ID: ' + id);
-            }
+        function editEmployee(id) {
+            // Implementation for edit employee
+            alert('Edit employee functionality for ID: ' + id);
+        }
 
-            function deleteEmployee(id) {
-                if (confirm('Are you sure you want to delete this employee?')) {
-                    fetch('../integ/hr4_api.php', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id: id })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                loadEmployees(); // Reload employees after deletion
-                                alert('Employee deleted successfully!');
-                            } else {
-                                alert('Error deleting employee: ' + data.message);
-                            }
-                        })
-                        .catch(error => console.error('API Error:', error));
-                }
-            }
-
-            function exportEmployeeReport() {
-                fetch('../integ/hr4_api.php')
+        function deleteEmployee(id) {
+            if (confirm('Are you sure you want to delete this employee?')) {
+                fetch('../integ/hr4_api.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: id })
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Create CSV content
-                            let csvContent = 'ID,First Name,Last Name,Email,Position,Department,Salary,Hire Date,Created At\n';
-
-                            data.data.forEach(employee => {
-                                csvContent += `${employee.id},"${employee.first_name}","${employee.last_name}","${employee.email}","${employee.position}","${employee.department}","${employee.salary}","${employee.hire_date}","${employee.created_at}"\n`;
-                            });
-
-                            // Download CSV
-                            const blob = new Blob([csvContent], { type: 'text/csv' });
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'employees_report.csv';
-                            a.click();
-                            window.URL.revokeObjectURL(url);
+                            loadEmployees(); // Reload employees after deletion
+                            alert('Employee deleted successfully!');
                         } else {
-                            alert('Error generating report: ' + data.message);
+                            alert('Error deleting employee: ' + data.message);
                         }
                     })
                     .catch(error => console.error('API Error:', error));
             }
+        }
 
-            // Initialize on page load
-            document.addEventListener('DOMContentLoaded', function () {
-                loadEmployees();
-            });
+        function exportEmployeeReport() {
+            fetch('../integ/hr4_api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Create CSV content
+                        let csvContent = 'ID,First Name,Last Name,Email,Position,Department,Salary,Hire Date,Created At\n';
+
+                        data.data.forEach(employee => {
+                            csvContent += `${employee.id},"${employee.first_name}","${employee.last_name}","${employee.email}","${employee.position}","${employee.department}","${employee.salary}","${employee.hire_date}","${employee.created_at}"\n`;
+                        });
+
+                        // Download CSV
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'employees_report.csv';
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        alert('Error generating report: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('API Error:', error));
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadEmployees();
+        });
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
