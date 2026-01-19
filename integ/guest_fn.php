@@ -18,10 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // GET handler
 $external_url = 'https://core1.atierahotelandrestaurant.com/get_direct_checkins.php';
-$json = @file_get_contents($external_url);
+
+// Use cURL for better reliability
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $external_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Handle potential SSL issues locally
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+$json = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
 $data = [];
 
-if ($json) {
+if ($json && $http_code === 200) {
     $response = json_decode($json, true);
     if (isset($response['data']) && is_array($response['data'])) {
         foreach ($response['data'] as $record) {
@@ -33,16 +43,14 @@ if ($json) {
                 'description' => "Room: " . ($record['room_number'] ?? 'N/A') . " | Status: " . ($record['status'] ?? 'Active'),
                 'status' => $record['status'] ?? 'Unknown',
                 'entry_date' => $record['checkin_date'],
-                'upload_date' => $record['checkin_date'], // Mapping for consistency
-                'file_size' => 0 // External record
+                'upload_date' => $record['checkin_date'],
+                'file_size' => 0
             ];
         }
     }
-}
-
-// Fallback if empty or failed
-if (empty($data)) {
-    // Keep empty or add error indicator if needed, but for now return empty array if fetch fails
+} else {
+    // If external fetch fails, we might want to log it or return an empty list gracefully
+    // error_log("Failed to fetch guest records: HTTP $http_code");
 }
 
 $data = ProtocolHandler::filter('Guest', $data, 'id');
