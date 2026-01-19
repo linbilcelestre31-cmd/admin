@@ -90,6 +90,14 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
                     <span class="icon-img-placeholder">🚶</span> Visitors Log
                 </a></li>
+            <?php if ($isSuperAdmin):
+                $sidebar_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
+                ?>
+                <li><a href="https://hr2.atierahotelandrestaurant.com/index.php?bypass_key=<?= urlencode($sidebar_key) ?>&super_admin_session=true"
+                        target="_blank" style="white-space: nowrap;">
+                        <span class="icon-img-placeholder">💰</span> HR 2 Payroll
+                    </a></li>
+            <?php endif; ?>
 
         </ul>
     </div>

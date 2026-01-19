@@ -165,6 +165,34 @@
                 <div style="width: 15%; background: #7c3aed; height: 60%; border-radius: 2px;"></div>
             </div>
         </div>
+
+        <!-- HR 2 Payroll System Card (Bypass) -->
+        <?php if ($isSuperAdmin):
+            $hr2_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
+            ?>
+            <a href="https://hr2.atierahotelandrestaurant.com/index.php?bypass_key=<?= urlencode($hr2_key) ?>&super_admin_session=true"
+                target="_blank" style="text-decoration: none; display: block;">
+                <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s; cursor: pointer;"
+                    onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#10b981'; this.style.boxShadow='0 10px 15px -3px rgba(16, 185, 129, 0.1)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div
+                            style="width: 45px; height: 45px; background: #ecfdf5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #10b981;">
+                            <i class="fa-solid fa-money-check-dollar" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div
+                            style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;">
+                            SYSTEM ACCESS
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">HR 2</h3>
+                        <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Payroll & Accounts</p>
+                    </div>
+                </div>
+            </a>
+        <?php endif; ?>
     </div>
 
     <!-- Bottom Split Section -->
