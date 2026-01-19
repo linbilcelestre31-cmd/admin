@@ -1013,8 +1013,6 @@ function formatFileSize($bytes)
                             Inventory</a></li>
                     <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
                             Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                            Marketing</a></li>
                 </ul>
             </aside>
 
@@ -1099,9 +1097,6 @@ function formatFileSize($bytes)
                 <div class="category-content" id="compliance-content">
                     <div class="file-grid" id="complianceFiles"></div>
                 </div>
-                <div class="category-content" id="marketing-content">
-                    <div class="file-grid" id="marketingFiles"></div>
-                </div>
             </div>
         </div>
     </main>
@@ -1131,7 +1126,6 @@ function formatFileSize($bytes)
                         <option value="Guest Records">Guest Records</option>
                         <option value="Inventory">Inventory</option>
                         <option value="Compliance">Compliance</option>
-                        <option value="Marketing">Marketing</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1400,8 +1394,7 @@ function formatFileSize($bytes)
                 'HR Documents': 'HR Documents',
                 'Guest Records': 'Guest Records',
                 'Inventory': 'Inventory',
-                'Compliance': 'Compliance',
-                'Marketing': 'Marketing'
+                'Compliance': 'Compliance'
             };
             document.getElementById('contentTitle').textContent = titles[category] || 'Archive Management';
 
@@ -1441,8 +1434,7 @@ function formatFileSize($bytes)
                 'HR Documents': '../integ/hr4_api.php',
                 'Guest Records': '../integ/guest_fn.php',
                 'Inventory': '../integ/log1.php?limit=10',
-                'Compliance': '../integ/compliance_fn.php',
-                'Marketing': '../integ/marketing_fn.php'
+                'Compliance': '../integ/compliance_fn.php'
             };
 
             if (apiMap[category]) {

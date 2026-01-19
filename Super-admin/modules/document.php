@@ -691,8 +691,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                             Inventory</a></li>
                     <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
                             Compliance</a></li>
-                    <li><a href="#" class="category-link" data-category="Marketing"><i class="fas fa-bullhorn"></i>
-                            Marketing</a></li>
                     <li style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
                         <a href="#" class="category-link" data-category="deleted" style="color: #ef4444;">
                             <i class="fas fa-trash-alt" style="color: #ef4444;"></i> Trash Bin
@@ -770,9 +768,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 <div class="category-content" id="compliance-content">
                     <div id="complianceFiles"></div>
                 </div>
-                <div class="category-content" id="marketing-content">
-                    <div id="marketingFiles"></div>
-                </div>
                 <div class="category-content" id="deleted-content">
                     <div id="deletedFiles"></div>
                 </div>
@@ -831,7 +826,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                         <option value="Guest Records">Guest Records</option>
                         <option value="Inventory">Inventory</option>
                         <option value="Compliance">Compliance</option>
-                        <option value="Marketing">Marketing</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -968,7 +962,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'Guest Records': 'Guest Information Repository',
                 'Inventory': 'Inventory Master Logs',
                 'Compliance': 'Compliance & Legal Records',
-                'Marketing': 'Marketing Campaign Assets',
                 'deleted': 'Quarantined Archives (Trash)'
             };
             document.getElementById('contentTitle').textContent = titles[cat] || 'Master Archive Control';
@@ -986,7 +979,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'Guest Records': 'guestFiles',
                 'Inventory': 'inventoryFiles',
                 'Compliance': 'complianceFiles',
-                'Marketing': 'marketingFiles',
                 'deleted': 'deletedFiles'
             };
 
@@ -1012,8 +1004,7 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
                 'HR Documents': '../../integ/hr4_api.php',
                 'Guest Records': '../../integ/guest_fn.php',
                 'Inventory': '../../integ/log1.php?limit=10',
-                'Compliance': '../../integ/compliance_fn.php',
-                'Marketing': '../../integ/marketing_fn.php'
+                'Compliance': '../../integ/compliance_fn.php'
             };
 
             if (apiMap[cat]) {
@@ -1340,7 +1331,6 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             else if (sector === 'Guest Records') endpoint = '../../integ/guest_fn.php';
             else if (sector === 'Inventory') endpoint = '../../integ/log1.php';
             else if (sector === 'Compliance') endpoint = '../../integ/compliance_fn.php';
-            else if (sector === 'Marketing') endpoint = '../../integ/marketing_fn.php';
 
             fetch(endpoint, { method: 'POST', body: fd })
                 .then(r => r.json())
