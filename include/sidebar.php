@@ -33,9 +33,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     <div class="nav-section">
         <div class="nav-title">Settings</div>
         <ul class="nav-links">
-            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
+            <li>
+                <a href="<?= $isSuperAdmin ? '../Super-admin/Settings.php' : '../include/Settings.php' ?>"
+                    class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
                     <span class="icon-img-placeholder">👤</span> Account
-                </a></li>
+                </a>
+            </li>
         </ul>
     </div>
 
