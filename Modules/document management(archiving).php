@@ -1479,7 +1479,82 @@ function formatFileSize($bytes)
                 });
         }
 
-        // Financial functions renderFinancialTable etc... (kept as is)
+        function loadFinancialRecords() {
+            const gridId = 'financialFiles';
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+
+            // Show loading state
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #8b5cf6;"></i><p style="margin-top: 10px; color: #64748b;">Loading financial records...</p></div>';
+
+            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Handle response being an array or object
+                    let records = Array.isArray(data) ? data : (data.data || []);
+                    
+                    if (records.length === 0) {
+                         grid.innerHTML = `<div style="text-align: center; padding: 4rem; color: #64748b; grid-column: 1/-1;">No financial records found.</div>`;
+                         return;
+                    }
+                    renderFinancialTable(records, grid);
+                })
+                .catch(error => {
+                    console.error('Error loading financial records:', error);
+                    grid.innerHTML = `
+                        <div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1.5rem;"></i>
+                            <p style="font-size: 1.2rem; font-weight: 500;">Error loading financial API</p>
+                            <p style="font-size: 0.9rem;">Please try again later.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function renderFinancialTable(data, grid) {
+             grid.innerHTML = `
+                <div class="financial-table-container" style="grid-column: 1/-1; overflow-x: auto; border-radius: 12px; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+                    <table class="financial-table" style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px;">
+                        <thead>
+                            <tr style="background: #f8fafc;">
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">User ID</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Name</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Username</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Role</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Department</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => {
+                                const statusColor = item.status === 'active' ? '#2ecc71' : '#e74c3c';
+                                return `
+                                <tr style="transition: background 0.2s;">
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">#${item.id}</td>
+                                    <td style="font-weight: 600; text-align: left; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; white-space: nowrap;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                              <div style="width: 32px; height: 32px; background: #e0f2fe; color: #0284c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <i class="fas fa-user-circle"></i>
+                                            </div>
+                                            <span style="color: #1e293b;">${item.full_name || 'N/A'}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #475569;">${item.username || 'N/A'}</td>
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;"><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">${item.role}</span></td>
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #475569;">${item.department || 'N/A'}</td>
+                                    <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
+                                        <span style="color: ${statusColor}; background: ${statusColor}15; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block;">
+                                            ${item.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+             `;
+        }
 
         // ... (lines 1474-1569 omitted, assuming they are unchanged)
 
@@ -1891,7 +1966,7 @@ function formatFileSize($bytes)
                         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
                             <div style="font-size: 3rem; color: #3b82f6;"><i class="fas fa-boxes"></i></div>
                             <h2 style="margin: 10px 0;">${item.name || item.product_name}</h2>
-                            <span class="type-badge" style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px;">${statusLabel}</span>
+                 <span class="type-badge" style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px;">${statusLabel}</span>
                         </div>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
