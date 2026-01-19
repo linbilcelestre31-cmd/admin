@@ -18,16 +18,26 @@ body {
     display: flex;
     background: var(--main-bg);
     min-height: 100vh;
+    overflow: hidden;
 }
 
-/* Hide scrollbar globally */
-* {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-*::-webkit-scrollbar {
-    display: none;
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.2);
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.5);
 }
 
 /* Sidebar Styles */
@@ -40,6 +50,10 @@ body {
     flex-direction: column;
     position: fixed;
     height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
 }
 
 .sidebar-header {
@@ -103,7 +117,20 @@ body {
 .main-content {
     margin-left: 280px;
     width: calc(100% - 280px);
-    padding: 15px;
+    padding: 40px;
+    height: 100vh;
+    overflow-y: auto;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+.clusters-container {
+    width: 100%;
+}
+
+.cluster-section {
+    margin-bottom: 50px;
+    width: 100%;
 }
 
 .header {

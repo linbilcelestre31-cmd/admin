@@ -133,14 +133,22 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             padding: 0 40px;
         }
 
-        /* Hide Scrollbars */
+        /* Custom Scrollbar Styling */
         ::-webkit-scrollbar {
-            display: none;
+            width: 6px;
         }
 
-        * {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.5);
         }
 
         .sidebar-menu a.active,
@@ -251,6 +259,8 @@ $isSuperAdmin = true; // This page is exclusively for Super Admin
             border: 1px solid #e2e8f0;
             padding: 25px;
             height: fit-content;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
             position: sticky;
             top: 20px;
         }
