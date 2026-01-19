@@ -86,10 +86,7 @@ $clusters = [
         ['name' => 'Financial Management', 'id' => 'Financial Management', 'icon' => 'chart-line', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/'],
     ],
     'Administrative' => [
-        ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'shield-halved', 'color' => '#0f172a', 'url' => '../Modules/dashboard.php'],
         ['name' => 'Facilities', 'id' => 'Facilities', 'icon' => 'building', 'color' => '#d4af37', 'url' => 'modules/facilities.php'],
-        ['name' => 'Reservations', 'id' => 'Reservations', 'icon' => 'calendar-check', 'color' => '#3b82f6', 'url' => 'modules/reservation.php'],
-        ['name' => 'Operations', 'id' => 'Operations', 'icon' => 'tasks', 'color' => '#10b981', 'url' => 'modules/management.php'],
     ]
 ];
 
