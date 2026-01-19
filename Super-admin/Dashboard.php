@@ -208,7 +208,6 @@ $clusters = [
                 </a>
             </li>
 
-            <div class="nav-section-label">Master Controls</div>
             <li class="nav-item">
                 <a href="modules/facilities.php" class="nav-link">
                     <i class="fas fa-building"></i> Facility Management
@@ -224,13 +223,12 @@ $clusters = [
                     <i class="fas fa-tasks"></i> Operational Logs
                 </a>
             </li>
-
-
+            <li class="nav-item">
+                <a href="auth/logout.php" class="nav-link" style="color: #ef4444;">
+                    <i class="fas fa-power-off"></i> Log Out
+                </a>
+            </li>
         </ul>
-
-        <a href="auth/logout.php" class="logout-btn">
-            <i class="fas fa-power-off"></i> Log Out
-        </a>
     </div>
 
     <!-- Main Content -->
