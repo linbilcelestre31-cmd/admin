@@ -9,7 +9,7 @@ const closeButtons = document.querySelectorAll('.close');
 const activeFilesContainer = document.getElementById('activeFiles');
 const trashFilesContainer = document.getElementById('trashFiles');
 const fileDetailsContent = document.getElementById('fileDetailsContent');
-const searchInput = document.querySelector('.search-box input');
+const searchInput = document.getElementById('documentSearch') || document.querySelector('.search-box input');
 const searchButton = document.querySelector('.search-box button');
 
 // Event Listeners
@@ -78,25 +78,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Search functionality
-    searchButton.addEventListener('click', function () {
-        const searchTerm = searchInput.value.trim();
-        if (searchTerm) {
-            searchFiles(searchTerm);
-        } else {
-            loadActiveFiles();
-        }
-    });
-
-    searchInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const searchTerm = searchInput.value.trim();
+    if (searchButton) {
+        searchButton.addEventListener('click', function () {
+            const searchTerm = searchInput ? searchInput.value.trim() : '';
             if (searchTerm) {
                 searchFiles(searchTerm);
             } else {
                 loadActiveFiles();
             }
-        }
-    });
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    searchFiles(searchTerm);
+                } else {
+                    loadActiveFiles();
+                }
+            }
+        });
+    }
 });
 
 // Functions
