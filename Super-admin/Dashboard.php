@@ -204,6 +204,14 @@ $clusters = [
                     <i class="fas fa-id-card-clip"></i> Visitor Logs
                 </a>
             </li>
+
+            <div class="nav-section-label">System Integrity</div>
+            <li class="nav-item">
+                <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" class="nav-link"
+                    style="color: var(--primary-gold);">
+                    <i class="fas fa-unlock-keyhole"></i> Full System Access
+                </a>
+            </li>
         </ul>
 
         <a href="auth/logout.php" class="logout-btn">
@@ -334,7 +342,17 @@ $clusters = [
                             `;
                         });
 
-                        html += `</tbody></table></div>`;
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                                <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" 
+                                   style="background: linear-gradient(135deg, var(--primary-gold), #b8860b); color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); transition: all 0.3s;">
+                                    <i class="fas fa-unlock-alt"></i> Initialize Full System Access
+                                </a>
+                            </div>
+                        `;
                         container.innerHTML = html;
                     } else {
                         container.innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Failed to load data from Financial API.</div>';

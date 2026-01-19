@@ -69,6 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Fetch all system accounts (Super Admins)
+$stmt = $pdo->query("SELECT id, username, email, full_name, created_at, is_active FROM `$sa_table` ORDER BY created_at DESC");
+$accounts = $stmt->fetchAll();
+
 $api_key = $admin['api_key'] ?? '';
 ?>
 <!DOCTYPE html>
@@ -86,15 +90,43 @@ $api_key = $admin['api_key'] ?? '';
     <link rel="stylesheet" href="css/Dashboard.css?v=<?php echo time(); ?>">
     <style>
         .settings-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
+        .settings-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-gold);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-gold);
+            border-radius: 3px 3px 0 0;
         }
 
         .settings-card {
@@ -103,6 +135,13 @@ $api_key = $admin['api_key'] ?? '';
             border-radius: 24px;
             border: 1px solid #e2e8f0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
         }
 
         .settings-card h2 {
@@ -189,6 +228,44 @@ $api_key = $admin['api_key'] ?? '';
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
+        /* Account Table Styles */
+        .account-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .account-table th {
+            text-align: left;
+            padding: 15px;
+            color: var(--text-gray);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .account-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
         .api-regen-box {
             background: #f8fafc;
             padding: 20px;
@@ -208,6 +285,14 @@ $api_key = $admin['api_key'] ?? '';
             display: block;
             font-size: 13px;
             color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -276,106 +361,182 @@ $api_key = $admin['api_key'] ?? '';
         <div class="settings-container">
             <?php if ($message): ?>
                 <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <?php echo $message; ?>
+                    <i class="fas fa-check-circle"></i> <?php echo $message; ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($error): ?>
                 <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?php echo $error; ?>
+                    <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
                 </div>
             <?php endif; ?>
 
-            <div class="settings-grid">
-                <!-- Profile Settings -->
-                <div class="settings-card">
-                    <h2><i class="fas fa-user-circle"></i> Personal Profile</h2>
-                    <form method="POST">
-                        <input type="hidden" name="action" value="update_profile">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" name="full_name" class="form-input"
-                                value="<?php echo htmlspecialchars($admin['full_name']); ?>" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" name="email" class="form-input"
-                                value="<?php echo htmlspecialchars($admin['email']); ?>" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" class="form-input"
-                                value="<?php echo htmlspecialchars($admin['username']); ?>" disabled
-                                style="background: #f1f5f9;">
-                        </div>
-                        <button type="submit" class="save-btn">
-                            Save Profile <i class="fas fa-save"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Password Settings -->
-                <div class="settings-card">
-                    <h2><i class="fas fa-shield-alt"></i> Security & Access</h2>
-                    <form method="POST">
-                        <input type="hidden" name="action" value="update_password">
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <input type="password" name="current_password" class="form-input" placeholder="••••••••"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" name="new_password" class="form-input" placeholder="••••••••"
-                                required minlength="8">
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" name="confirm_password" class="form-input" placeholder="••••••••"
-                                required>
-                        </div>
-                        <button type="submit" class="save-btn">
-                            Update Password <i class="fas fa-key"></i>
-                        </button>
-                    </form>
-                </div>
+            <div class="settings-tabs">
+                <button class="tab-btn active" onclick="showTab('profile')">Account Details</button>
+                <button class="tab-btn" onclick="showTab('accounts')">System Accounts List</button>
+                <button class="tab-btn" onclick="showTab('protocols')">Security Protocols</button>
             </div>
 
-            <!-- System Protocols -->
-            <div class="settings-card" style="margin-top: 30px;">
-                <h2><i class="fas fa-microchip"></i> System Integrity Protocols</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
-                    <div>
-                        <p style="font-size: 14px; color: var(--text-gray); line-height: 1.6; margin-bottom: 20px;">
-                            Your <strong>System Bypass Key</strong> is the primary authentication token used to access
-                            integrated departmental systems (HR, Logistics, Finance).
-                            Regenerating this key will immediately invalidate the previous key across all active
-                            sessions.
-                        </p>
-                        <form method="POST"
-                            onsubmit="return confirm('WARNING: All current bypass links will become invalid. Proceed?');">
-                            <input type="hidden" name="action" value="regen_api">
-                            <button type="submit" class="save-btn" style="background: #0f172a; color: white;">
-                                Regenerate Bypass Key <i class="fas fa-sync"></i>
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content active">
+                <div class="settings-grid">
+                    <!-- Profile Settings -->
+                    <div class="settings-card">
+                        <h2><i class="fas fa-user-circle"></i> Personal Profile</h2>
+                        <form method="POST">
+                            <input type="hidden" name="action" value="update_profile">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="full_name" class="form-input"
+                                    value="<?php echo htmlspecialchars($admin['full_name']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" class="form-input"
+                                    value="<?php echo htmlspecialchars($admin['email']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" class="form-input"
+                                    value="<?php echo htmlspecialchars($admin['username']); ?>" disabled
+                                    style="background: #f1f5f9;">
+                            </div>
+                            <button type="submit" class="save-btn">
+                                Save Profile <i class="fas fa-save"></i>
                             </button>
                         </form>
                     </div>
-                    <div class="api-regen-box">
-                        <label
-                            style="font-size: 12px; font-weight: 700; color: var(--primary-gold); text-transform: uppercase;">Active
-                            Bypass Token</label>
-                        <code class="api-key-text"><?php echo $api_key; ?></code>
-                        <p style="font-size: 11px; color: #64748b; margin-top: 5px;">
-                            <i class="fas fa-info-circle"></i> Keep this token confidential. It provides superuser
-                            access to all ATIERA modules.
-                        </p>
+
+                    <!-- Password Settings -->
+                    <div class="settings-card">
+                        <h2><i class="fas fa-shield-alt"></i> Security & Access</h2>
+                        <form method="POST">
+                            <input type="hidden" name="action" value="update_password">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" name="current_password" class="form-input" placeholder="••••••••"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="new_password" class="form-input" placeholder="••••••••"
+                                    required minlength="8">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-input" placeholder="••••••••"
+                                    required>
+                            </div>
+                            <button type="submit" class="save-btn">
+                                Update Password <i class="fas fa-key"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Accounts Tab -->
+            <div id="accounts-tab" class="tab-content">
+                <div class="settings-card">
+                    <h2><i class="fas fa-users-shield"></i> Registered Super Administrators</h2>
+                    <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 25px;">Verified accounts with
+                        master system access.</p>
+
+                    <div style="overflow-x: auto;">
+                        <table class="account-table">
+                            <thead>
+                                <tr>
+                                    <th>Admin ID</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Joined Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($accounts as $acc): ?>
+                                    <tr>
+                                        <td style="font-weight: 700;">#<?php echo $acc['id']; ?></td>
+                                        <td style="font-weight: 600; color: var(--text-dark);">
+                                            <?php echo htmlspecialchars($acc['full_name']); ?>
+                                            <?php if ($acc['id'] == $admin_id): ?>
+                                                <span
+                                                    style="font-size: 10px; background: #0f172a; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">YOU</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>@<?php echo htmlspecialchars($acc['username']); ?></td>
+                                        <td><?php echo htmlspecialchars($acc['email']); ?></td>
+                                        <td style="color: var(--text-gray);">
+                                            <?php echo date('M d, Y', strtotime($acc['created_at'])); ?>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-check-circle"></i> Authorized
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Protocols Tab -->
+            <div id="protocols-tab" class="tab-content">
+                <div class="settings-card">
+                    <h2><i class="fas fa-microchip"></i> System Integrity Protocols</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+                        <div>
+                            <p style="font-size: 14px; color: var(--text-gray); line-height: 1.6; margin-bottom: 20px;">
+                                Your <strong>System Bypass Key</strong> is the primary authentication token used to
+                                access
+                                integrated departmental systems (HR, Logistics, Finance).
+                                Regenerating this key will immediately invalidate the previous key across all active
+                                sessions.
+                            </p>
+                            <form method="POST"
+                                onsubmit="return confirm('WARNING: All current bypass links will become invalid. Proceed?');">
+                                <input type="hidden" name="action" value="regen_api">
+                                <button type="submit" class="save-btn" style="background: #0f172a; color: white;">
+                                    Regenerate Bypass Key <i class="fas fa-sync"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="api-regen-box">
+                            <label
+                                style="font-size: 12px; font-weight: 700; color: var(--primary-gold); text-transform: uppercase;">Active
+                                Bypass Token</label>
+                            <code class="api-key-text"><?php echo $api_key; ?></code>
+                            <p style="font-size: 11px; color: #64748b; margin-top: 5px;">
+                                <i class="fas fa-info-circle"></i> Keep this token confidential. It provides superuser
+                                access to all ATIERA modules.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show target content
+            document.getElementById(tabId + '-tab').classList.add('active');
+            // Activate target button
+            event.currentTarget.classList.add('active');
+        }
+    </script>
 </body>
 
 </html>

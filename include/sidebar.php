@@ -84,6 +84,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
                     <span class="icon-img-placeholder">🚶</span> Visitors Log
                 </a></li>
+            <?php if ($isSuperAdmin): ?>
+                <div class="nav-title" style="margin-top: 20px; color: #d4af37;">System Integrity</div>
+                <li><a href="https://financial.atierahotelandrestaurant.com/" target="_blank" style="color: #d4af37;">
+                        <span class="icon-img-placeholder">🔓</span> Full System Access
+                    </a></li>
+            <?php endif; ?>
         </ul>
     </div>
 
