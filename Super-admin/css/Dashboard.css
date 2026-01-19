@@ -53,7 +53,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+    scrollbar-color: rgba(212, 175, 55, 0.6) transparent;
     z-index: 100;
 }
 
@@ -261,6 +261,7 @@ body {
 .premium-card h3 {
     background: linear-gradient(to right, #1e293b, #8b5cf6);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
 }
