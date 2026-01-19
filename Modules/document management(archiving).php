@@ -1523,12 +1523,12 @@ function formatFileSize($bytes)
                     <table class="financial-table">
                         <thead>
                             <tr>
-                                <th>Guest Name</th>
-                                <th>Room Type</th>
-                                <th>Status</th>
-                                <th>Check-in Date</th>
-                                <th>Description</th>
-                                <th>Actions</th>
+                                <th style="text-align: left; padding-left: 20px;">Guest Name</th>
+                                <th style="text-align: left;">Room Type</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: center; white-space: nowrap;">Check-In Date</th>
+                                <th style="text-align: left;">Description</th>
+                                <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1537,19 +1537,19 @@ function formatFileSize($bytes)
                     (item.status === 'Checked-Out' ? '#95a5a6' : '#e74c3c');
                 return `
                                 <tr>
-                                    <td style="font-weight: 600;">
+                                    <td style="font-weight: 600; text-align: left; padding-left: 20px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
                                             <div style="width: 32px; height: 32px; background: #f3e8ff; color: #9333ea; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                 <i class="fas fa-user"></i>
                                             </div>
-                                            ${item.full_name || item.name}
+                                            <span style="display: inline-block; vertical-align: middle;">${item.full_name || item.name}</span>
                                         </div>
                                     </td>
-                                    <td>${item.category || 'N/A'}</td>
-                                    <td><span style="color: ${statusColor}; font-weight: 600;">${item.status}</span></td>
-                                    <td>${new Date(item.entry_date).toLocaleDateString()}</td>
-                                    <td>${item.description}</td>
-                                    <td>
+                                    <td style="text-align: left; vertical-align: middle;">${item.category || 'N/A'}</td>
+                                    <td style="text-align: center; vertical-align: middle;"><span style="color: ${statusColor}; font-weight: 600; display: inline-block;">${item.status}</span></td>
+                                    <td style="text-align: center; vertical-align: middle;">${new Date(item.entry_date).toLocaleDateString()}</td>
+                                    <td style="text-align: left; vertical-align: middle;">${item.description}</td>
+                                    <td style="text-align: center; vertical-align: middle;">
                                         <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
