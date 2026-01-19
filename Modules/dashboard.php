@@ -520,9 +520,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h1 id="page-title">Dashboard</h1>
                 </div>
 
-                <div class="header-actions">
+                <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                    <?php
+                    // Display Active Key if Super Admin
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
+                        $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
+                        if (!empty($display_key)) {
+                            ?>
+                            <div class="api-key-display"
+                                style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <i class="fas fa-key" style="color: #d4af37;"></i>
+                                <span>Key: <strong
+                                        style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
+                            </div>
+                            <?php
+                        }
+                    }
+                    ?>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
-                    <button class="btn btn-outline" onclick="openLogoutModal()" style="margin-left: 10px;">
+                    <button class="btn btn-outline" onclick="openLogoutModal()">
                         <span class="icon-img-placeholder">🚪</span> Logout
                     </button>
                 </div>
