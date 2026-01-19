@@ -70,7 +70,7 @@ $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 $clusters = [
     'HR Cluster' => [
         ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => 'gateway.php?dept=HR1'],
-        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'gateway.php?dept=HR2'],
+        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'https://hr2.atierahotelandrestaurant.com/index.php'],
         ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3'],
         ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4'],
     ],
