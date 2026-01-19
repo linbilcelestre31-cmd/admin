@@ -172,6 +172,13 @@ $clusters = [
                 </a>
             </li>
 
+            <div class="nav-section-label">Settings</div>
+            <li class="nav-item">
+                <a href="../include/Settings.php" class="nav-link">
+                    <i class="fas fa-user-gear"></i> Account
+                </a>
+            </li>
+
             <div class="nav-section-label">Management & Operations</div>
 
             <li class="nav-item">

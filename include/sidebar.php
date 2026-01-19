@@ -31,6 +31,15 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </div>
 
     <div class="nav-section">
+        <div class="nav-title">Settings</div>
+        <ul class="nav-links">
+            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
+                    <span class="icon-img-placeholder">👤</span> Account
+                </a></li>
+        </ul>
+    </div>
+
+    <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
             <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
@@ -83,9 +92,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="reports">
                     <span class="icon-img-placeholder">📈</span> Reports
                 </a></li>
-            <li><a href="../include/Settings.php" class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">⚙️</span> Settings
-                </a></li>
+
         </ul>
     </div>
 </nav>
