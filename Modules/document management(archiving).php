@@ -986,7 +986,7 @@ function formatFileSize($bytes)
                         <li><a
                                 href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>">
                                 <i class="fas fa-arrow-left"></i>
-                                <?php echo $isSuperAdmin ? 'Command Center' : 'Back'; ?></a>
+                                Back</a>
                         </li>
                     </ul>
                 </nav>
@@ -1004,7 +1004,7 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link active" data-category="all"><i class="fas fa-layer-group"></i>
                             All Archives</a></li>
                     <li><a href="#" class="category-link" data-category="Financial Records"><i
-                                class="fas fa-file-invoice-dollar"></i> Financial</a></li>
+                                class="fas fa-file-invoice-dollar"></i> Financial Records</a></li>
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
                             HR Documents</a></li>
                     <li><a href="#" class="category-link" data-category="Guest Records"><i
