@@ -239,6 +239,13 @@ $clusters = [
                 <p>Today is <?php echo date('l, F j, Y'); ?></p>
             </div>
 
+            <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                <div class="api-key-display"
+                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <i class="fas fa-key" style="color: #d4af37;"></i>
+                    <span>Key: <strong style="color: #334155;"><?= substr($api_key, 0, 8) . '...' ?></strong></span>
+                </div>
+            </div>
         </div>
         <h2
             style="margin-bottom: 35px; font-size: 24px; color: var(--text-dark); border-bottom: 2px solid var(--primary-gold); display: inline-block; padding-bottom: 5px;">
