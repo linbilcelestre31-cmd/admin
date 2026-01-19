@@ -1519,16 +1519,16 @@ function formatFileSize($bytes)
 
         function renderGuestTable(data, grid) {
             grid.innerHTML = `
-                <div class="financial-table-container" style="grid-column: 1/-1;">
-                    <table class="financial-table">
+                <div class="financial-table-container" style="grid-column: 1/-1; overflow-x: auto; border-radius: 12px; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+                    <table class="financial-table" style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px;">
                         <thead>
-                            <tr>
-                                <th style="text-align: left; padding-left: 20px; white-space: nowrap;">Guest Name</th>
-                                <th style="text-align: left; white-space: nowrap;">Room Type</th>
-                                <th style="text-align: center; white-space: nowrap;">Status</th>
-                                <th style="text-align: center; white-space: nowrap;">Check-In Date</th>
-                                <th style="text-align: left; white-space: nowrap;">Description</th>
-                                <th style="text-align: center; white-space: nowrap;">Actions</th>
+                            <tr style="background: #f8fafc;">
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Guest Name</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Room Type</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Status</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Check-In Date</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Description</th>
+                                <th style="text-align: center; padding: 15px 20px; white-space: nowrap; font-weight: 700; color: #64748b; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1536,21 +1536,25 @@ function formatFileSize($bytes)
                 const statusColor = item.status === 'Checked-In' ? '#2ecc71' :
                     (item.status === 'Checked-Out' ? '#95a5a6' : '#e74c3c');
                 return `
-                                <tr>
-                                    <td style="font-weight: 600; text-align: left; padding-left: 20px; white-space: nowrap;">
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div style="width: 32px; height: 32px; background: #f3e8ff; color: #9333ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <tr style="transition: background 0.2s;">
+                                    <td style="font-weight: 600; text-align: left; padding: 15px 20px; white-space: nowrap; border-bottom: 1px solid #f1f5f9;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 35px; height: 35px; background: #f3e8ff; color: #9333ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem;">
                                                 <i class="fas fa-user"></i>
                                             </div>
-                                            <span style="display: inline-block; vertical-align: middle;">${item.full_name || item.name}</span>
+                                            <span style="color: #1e293b; font-size: 0.95rem;">${item.full_name || item.name}</span>
                                         </div>
                                     </td>
-                                    <td style="text-align: left; vertical-align: middle; white-space: nowrap;">${item.category || 'N/A'}</td>
-                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap;"><span style="color: ${statusColor}; font-weight: 600; display: inline-block;">${item.status}</span></td>
-                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap;">${new Date(item.entry_date).toLocaleDateString()}</td>
-                                    <td style="text-align: left; vertical-align: middle; white-space: nowrap;">${item.description}</td>
-                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap;">
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details">
+                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #475569;">${item.category || 'N/A'}</td>
+                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
+                                        <span style="color: ${statusColor}; background: ${statusColor}15; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block;">
+                                            ${item.status}
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #475569;">${new Date(item.entry_date).toLocaleDateString()}</td>
+                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b; max-width: 250px; overflow: hidden; text-overflow: ellipsis;">${item.description}</td>
+                                    <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
+                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </td>
