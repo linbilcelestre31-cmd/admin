@@ -1192,7 +1192,7 @@ function formatFileSize($bytes)
         <p>Hotel & Restaurant Document Management System &copy; 2023</p>
     </footer>
 
-    <script src="../assets/Javascript/document.js"></script>
+    <script src="../assets/Javascript/document.js?v=<?php echo time(); ?>"></script>
     <script>
         // Main JavaScript functionality
         let targetCategory = null;
