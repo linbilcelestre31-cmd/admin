@@ -1,35 +1,72 @@
-# Super Admin Portal 🔐
+# Super Admin Database Schema 🗄️
 
-This directory contains the Super Admin management portal for the ATIERA Administrative System.
+This document contains the SQL queries required to set up the Super Admin and SSO system.
 
-## Access Links
+## 1. Super Admin Authentication Table
+This table stores the centralized credentials and API keys for the Super Admin users.
 
-To access the Super Admin area, use the following links depending on your environment:
+```sql
+CREATE TABLE IF NOT EXISTS `SuperAdminLogin_tb` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) NOT NULL,
+    `full_name` varchar(100) NOT NULL,
+    `password` varchar(255) NOT NULL,
+    `email` varchar(100) NOT NULL,
+    `api_key` varchar(255) NOT NULL,
+    `is_active` tinyint(1) DEFAULT 1,
+    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `username` (`username`),
+    UNIQUE KEY `api_key` (`api_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-### Live Production (Unified Access)
-*   **Login Page**: [https://admin.atierahotelandrestaurant.com/admin/Super-admin/auth/login.php](https://admin.atierahotelandrestaurant.com/admin/Super-admin/auth/login.php)
-*   **Main Dashboard**: [https://admin.atierahotelandrestaurant.com/admin/Super-admin/Dashboard.php](https://admin.atierahotelandrestaurant.com/admin/Super-admin/Dashboard.php)
+-- Default Admin (Password: password)
+INSERT INTO `SuperAdminLogin_tb` (`username`, `full_name`, `password`, `email`, `api_key`) 
+VALUES ('admin', 'Super Administrator', '$2y$10$8Wk/XfV/P2hP.JzU4.v.XuL6.v.X/X.v.X.v.X.v.X.v.X.v.X.v.', 'atiera41001@gmail.com', SHA2(RAND(), 256));
+```
 
-## 🏗️ Isolated Architecture
-Following the latest directive, the Super Admin system uses a high-security isolated structure:
-1.  **Isolated Table**: `SuperAdminLogin_tb` (Dedicated high-security table within the main database).
-3.  **Cross-Module Bypass**: Enables instant access to HR1, HR2, HR3, HR4, Legal, for more departments without re-authenticating.
+## 2. SSO Department Secrets Table
+This table stores the shared secret keys used to sign SSO tokens for different clusters (HR1, HR2, HR3, etc.).
 
-## 🚪 Step-by-Step Login Guide
-1.  **Open the Login Page**: Go to the [Super Admin Login](https://admin.atierahotelandrestaurant.com/admin/Super-admin/auth/login.php).
-2.  **Enter Credentials**: Type `admin` as username and `password` as password.
-3.  **Check for OTP**:
-    *   Check your Gmail (**atiera41001@gmail.com**) for the 6-digit code.
-    *   **Bypass**: Look at the **Golden Box** on the activation screen for the **"System Bypass"** token.
-4.  **Verify**: Copy the code, paste it into the field, and click **Verify Identity**.
+```sql
+CREATE TABLE IF NOT EXISTS department_secrets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  department VARCHAR(50) UNIQUE,
+  secret_key VARCHAR(255),
+  is_active TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-### Default Credentials
-*   **Username**: `admin`
-*   **Password**: `password`
-*   **Default Email**: `atiera41001@gmail.com` (for 2FA)
+-- Initialize Department Secrets
+INSERT INTO department_secrets (department, secret_key) VALUES
+('HR1', SHA2('hr_secret_key_2026', 256)),
+('HR2', SHA2('hr_secret_key_2026', 256)),
+('HR3', SHA2('hr_secret_key_2026', 256)),
+('HR4', SHA2('hr_secret_key_2026', 256)),
+('CORE1', SHA2('hr_secret_key_2026', 256)),
+('CORE2', SHA2('hr_secret_key_2026', 256)),
+('LOG1', SHA2('hr_secret_key_2026', 256)),
+('LOG2', SHA2('hr_secret_key_2026', 256))
+ON DUPLICATE KEY UPDATE secret_key = VALUES(secret_key);
+```
 
-## 🔑 Super Admin Bypass Protocol (For other Groups)
-To allow the Super Admin to access your group's system:
-1.  Add `SuperAdminLogin_tb` to your existing database.
-2.  Integrate the `handleSuperAdminBypass()` function from `integ/super_admin_bypass.php`.
-3.  The Super Admin dashboard will push the session `api_key` to your system to authorize access.
+## 3. Documents Archive Table
+Used for the Document Management (Archiving) module.
+
+```sql
+CREATE TABLE IF NOT EXISTS `documents` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `category` varchar(50) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `file_size` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  `upload_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_deleted` tinyint(1) DEFAULT 0,
+  `deleted_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+---
+**Note:** These tables should be created in the `admin_new` database or the dedicated per-cluster database for SSO integration.
