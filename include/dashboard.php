@@ -170,7 +170,7 @@
         <?php if ($isSuperAdmin):
             $hr2_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
             ?>
-            <a href="https://hr2.atierahotelandrestaurant.com/index.php?bypass_key=<?= urlencode($hr2_key) ?>&super_admin_session=true"
+            <a href="https://hr2.atierahotelandrestaurant.com/Modules/dashboard.php?bypass_key=<?= urlencode($hr2_key) ?>&super_admin_session=true"
                 target="_blank" style="text-decoration: none; display: block;">
                 <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s; cursor: pointer;"
                     onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#10b981'; this.style.boxShadow='0 10px 15px -3px rgba(16, 185, 129, 0.1)';"
