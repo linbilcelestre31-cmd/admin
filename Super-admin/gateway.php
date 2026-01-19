@@ -6,7 +6,12 @@ if (!isset($_SESSION['user_id']) || !isset($_GET['dept'])) {
     die("Unauthorized access or missing department.");
 }
 
-$dept = $_GET['dept'];
+$dept = $_GET['dept'] ?? '';
+// Clean dept name in case query strings were appended (e.g. HR2?bypass=...)
+if (strpos($dept, '?') !== false) {
+    $dept = explode('?', $dept)[0];
+}
+
 $user_email = $_SESSION['email'] ?? 'admin@atiera.com';
 $user_role = $_SESSION['role'] ?? 'super_admin';
 

@@ -261,9 +261,12 @@ $clusters = [
                         <?php echo $clusterName; ?>
                     </h3>
                     <div class="module-grid">
-                        <?php foreach ($modules as $module): ?>
-                            <a href="<?php echo isset($module['js_action']) ? '#' : htmlspecialchars($module['url']) . '?bypass_key=' . urlencode($api_key) . '&super_admin_session=true'; ?>"
-                                <?php echo isset($module['js_action']) ? 'onclick="' . $module['js_action'] . '"' : ''; ?>
+                        <?php foreach ($modules as $module):
+                            $base_url = htmlspecialchars($module['url']);
+                            $separator = (strpos($base_url, '?') !== false) ? '&' : '?';
+                            $final_url = isset($module['js_action']) ? '#' : $base_url . $separator . 'bypass_key=' . urlencode($api_key) . '&super_admin_session=true';
+                            ?>
+                            <a href="<?php echo $final_url; ?>" <?php echo isset($module['js_action']) ? 'onclick="' . $module['js_action'] . '"' : ''; ?>
                                 class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
                                 id="module-<?php echo $module['id']; ?>">
                                 <?php if (isset($module['premium'])): ?>
