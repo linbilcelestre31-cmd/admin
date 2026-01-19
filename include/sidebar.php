@@ -27,7 +27,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         style="height:80px; width:auto; display:block; margin:0 auto;">
                     <?php if ($isSuperAdmin): ?>
                         <div
-                            style="color: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; text-align: center; opacity: 0.8;">
+                            style="color: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 15px; text-align: center; opacity: 0.8; width: 100%;">
                             Super Admin</div>
                     <?php endif; ?>
                 </div>
