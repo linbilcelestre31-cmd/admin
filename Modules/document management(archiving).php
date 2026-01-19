@@ -1008,7 +1008,7 @@ function formatFileSize($bytes)
                     <li><a href="#" class="category-link" data-category="HR Documents"><i class="fas fa-users"></i>
                             HR Documents</a></li>
                     <li><a href="#" class="category-link" data-category="Guest Records"><i
-                                class="fas fa-user-check"></i> Guests</a></li>
+                                class="fas fa-user-check"></i> Guest Records</a></li>
                     <li><a href="#" class="category-link" data-category="Inventory"><i class="fas fa-boxes"></i>
                             Inventory</a></li>
                     <li><a href="#" class="category-link" data-category="Compliance"><i class="fas fa-shield-alt"></i>
