@@ -50,7 +50,17 @@ try {
         ['Board Resolution 2024-001', 'GOV-RES-001', 'Internal', 'Board approval for FY 2024 budget allocation.', 'Low', 0],
         ['Corporate By-Laws 2024 Amendment', 'GOV-LAW-002', 'Internal', 'Amendments to corporate by-laws regarding shareholder meetings.', 'Medium', 25],
         ['Annual Risk Audit Report', 'RSK-AUD-2023', 'Internal', 'Comprehensive risk assessment audit for 2023.', 'Medium', 40],
-        ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 'High', 65]
+        ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 'High', 65],
+
+        // External
+        ['Food Supplier Contract - BestMeats', 'SUP-2024-001', 'External', 'Annual contract for premium meat supply.', 'Low', 20],
+        ['Beverage Partnership Agreement', 'SUP-2024-002', 'External', 'Exclusive partnership with Major Soda Co.', 'Low', 15],
+        ['City Hall Business Permit 2024', 'GOV-PER-2024', 'External', 'Annual business operation permit renewal.', 'High', 80],
+        ['BIR Tax Compliance Certificate', 'GOV-TAX-001', 'External', 'Certificate of updated tax compliance.', 'High', 75],
+        ['Pending Litigation - Case 8821', 'LAW-DISP-001', 'External', 'Ongoing labor dispute case filed by former contractor.', 'High', 90],
+        ['Settlement Agreement - Slip/Fall', 'LAW-SET-002', 'External', 'Settlement agreement regarding minor guest accident.', 'Medium', 45],
+        ['Data Privacy Compliance 2024', 'REG-DPA-001', 'External', 'Compliance report for National Data Privacy Act.', 'Medium', 50],
+        ['Guest Waiver & Release Form', 'CON-PROT-001', 'External', 'Standard liability waiver for swimming pool usage.', 'Low', 30]
     ];
 
     foreach ($extraDocs as $doc) {
@@ -1179,55 +1189,70 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add External Contract
                     </button>
                 </div>
-                <!-- External Legal Management Note -->
-                <div
-                    style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                    <h4
-                        style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
-                        <i class="fa-solid fa-briefcase text-emerald-500" style="color: #10b981;"></i> External
-                        (Panlabas) – Legal Management
-                    </h4>
-                    <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
-                        Ito ay mga legal matters na may kinalaman sa labas ng kumpanya.
-                    </p>
-
-                    <strong
-                        style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 10px;">Submodules:</strong>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-file-contract" style="color: #10b981;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Supplier Contracts</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-landmark" style="color: #10b981;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Govt Relations</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-gavel" style="color: #10b981;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Lawsuits & Disputes</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-clipboard-check" style="color: #10b981;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Regulatory Compliance</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-user-shield" style="color: #10b981;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Consumer Protection</span>
-                        </div>
-                    </div>
-
-                    <div
-                        style="margin-top: 10px; font-size: 0.95rem; color: #064e3b; background: #ecfdf5; padding: 10px; border-radius: 6px;">
-                        <strong style="color: #065f46;">👉 Resulta:</strong> Protektahan ang kumpanya sa ugnayan nito sa
-                        labas at siguraduhing legal ang lahat ng transaksyon.
+                <!-- External Legal Management Tabs -->
+                <div class="external-tabs-container" style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        <button class="ext-tab-btn active" onclick="filterExternalDocs(this, 'supplier')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-file-contract" style="margin-right: 8px;"></i> Supplier Contracts
+                        </button>
+                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'govt')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-landmark" style="margin-right: 8px;"></i> Govt Relations
+                        </button>
+                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'lawsuits')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-gavel" style="margin-right: 8px;"></i> Lawsuits & Disputes
+                        </button>
+                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'compliance')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-clipboard-check" style="margin-right: 8px;"></i> Regulatory Compliance
+                        </button>
+                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'consumer')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i> Consumer Protection
+                        </button>
                     </div>
                 </div>
+
+                <script>
+                    function filterExternalDocs(btn, category) {
+                        // Update Tab Styles
+                        const container = btn.closest('.external-tabs-container');
+                        const buttons = container.querySelectorAll('.ext-tab-btn');
+                        buttons.forEach(b => {
+                            b.classList.remove('active');
+                            b.style.background = 'white';
+                            b.style.color = '#64748b';
+                        });
+
+                        // Set active style for clicked button
+                        btn.classList.add('active');
+                        btn.style.background = '#10b981';
+                        btn.style.color = 'white';
+
+                        // Filter Rows
+                        const rows = document.querySelectorAll('.external-doc-row');
+                        rows.forEach(row => {
+                            if (row.dataset.category === category) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // Initialize Default Tab (Supplier) on Load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const firstTab = document.querySelector('.ext-tab-btn.active');
+                        if (firstTab) {
+                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
+                            if (match && match[1]) {
+                                filterExternalDocs(firstTab, match[1]);
+                            }
+                        }
+                    });
+                </script>
                 <div style="position: relative;">
                     <div id="externalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1246,8 +1271,24 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         return (isset($c['contract_type']) && $c['contract_type'] === 'External');
                                     });
                                     if (!empty($externalDocs)):
-                                        foreach ($externalDocs as $doc): ?>
-                                            <tr>
+                                        foreach ($externalDocs as $doc):
+                                            // Auto-categorize based on name
+                                            $nameLower = strtolower($doc['name']);
+                                            $docCategory = 'supplier'; // Default
+                                    
+                                            if (strpos($nameLower, 'supplier') !== false || strpos($nameLower, 'supply') !== false || strpos($nameLower, 'partner') !== false || strpos($nameLower, 'agreement') !== false || strpos($nameLower, 'nda') !== false) {
+                                                $docCategory = 'supplier';
+                                            } elseif (strpos($nameLower, 'govt') !== false || strpos($nameLower, 'bir') !== false || strpos($nameLower, 'sec') !== false || strpos($nameLower, 'dole') !== false || strpos($nameLower, 'permit') !== false || strpos($nameLower, 'tax') !== false) {
+                                                $docCategory = 'govt';
+                                            } elseif (strpos($nameLower, 'lawsuit') !== false || strpos($nameLower, 'dispute') !== false || strpos($nameLower, 'case') !== false || strpos($nameLower, 'settlement') !== false || strpos($nameLower, 'litigation') !== false) {
+                                                $docCategory = 'lawsuits';
+                                            } elseif (strpos($nameLower, 'regulatory') !== false || strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'privacy') !== false || strpos($nameLower, 'dpa') !== false) {
+                                                $docCategory = 'compliance';
+                                            } elseif (strpos($nameLower, 'consumer') !== false || strpos($nameLower, 'customer') !== false || strpos($nameLower, 'waiver') !== false || strpos($nameLower, 'guest') !== false) {
+                                                $docCategory = 'consumer';
+                                            }
+                                            ?>
+                                            <tr class="external-doc-row" data-category="<?php echo $docCategory; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
