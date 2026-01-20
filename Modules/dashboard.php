@@ -545,7 +545,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ?>
                         <a href="../Super-admin/Dashboard.php" class="btn btn-outline"
                             style="text-decoration: none; display: flex; align-items: center; gap: 8px; border-color: #d4af37; color: #d4af37; font-weight: 600;">
-                            <i class="fas fa-arrow-left"></i> Back
+                            <i class="fas fa-shield-halved"></i> Administrative
                         </a>
                         <?php
                     }
