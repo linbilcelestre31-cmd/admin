@@ -160,28 +160,41 @@ $clusters = [
 
     <!-- HR3 Permission Modal -->
     <div id="hr3PermissionModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100001; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.6); z-index:100001; justify-content:center; align-items:center; backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px);">
         <div
-            style="background:#fff; width:90%; max-width:450px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2); overflow:hidden; animation: slideDown 0.3s ease-out;">
-            <div style="background:#f59e0b; padding:20px; text-align:center;">
+            style="background:#fff; width:90%; max-width:420px; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); overflow:hidden; animation: slideDown 0.3s ease-out; border: 1px solid rgba(255,255,255,0.5);">
+            <div style="background:#f59e0b; padding:30px 20px 20px; text-align:center; position:relative;">
                 <div
-                    style="width:60px; height:60px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">
-                    <i class="fas fa-shield-alt" style="color:white; font-size:30px;"></i>
+                    style="width:70px; height:70px; background:rgba(255,255,255,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <i class="fas fa-user-lock" style="color:white; font-size:32px;"></i>
                 </div>
-                <h2 style="color:white; margin:0; font-size:20px; font-weight:700;">System Permission</h2>
+                <h2 style="color:white; margin:0; font-size:22px; font-weight:800; letter-spacing: -0.5px;">Security
+                    Check</h2>
+                <div
+                    style="position: absolute; bottom: -10px; left: 0; width: 100%; height: 20px; background: #fff; border-radius: 20px 20px 0 0;">
+                </div>
             </div>
-            <div style="padding:25px; text-align:center;">
-                <h3 style="color:#1e293b; margin-bottom:10px; font-size:18px;">Request Access</h3>
-                <p style="color:#64748b; margin-bottom:25px; line-height:1.5;">You are about to access the <strong>HR3
-                        System</strong> with Super Admin privileges. Do you want to proceed?</p>
+            <div style="padding:10px 30px 30px; text-align:center;">
+                <p style="color:#64748b; margin-bottom:20px; font-size:15px; line-height:1.5;">Enter your security PIN
+                    to access the <strong>HR3 System</strong> with Super Admin privileges.</p>
+
+                <div style="margin-bottom: 25px; position: relative;">
+                    <input type="password" id="hr3-pin-input" maxlength="4" placeholder="• • • •"
+                        style="width: 100%; font-size: 24px; letter-spacing: 8px; text-align: center; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.2s; font-family: monospace; color: #0f172a;">
+                    <br>
+                    <span id="pin-error"
+                        style="color: #ef4444; font-size: 13px; font-weight: 600; display: none; margin-top: 8px;">Incorrect
+                        PIN</span>
+                </div>
+
                 <div style="display:flex; gap:12px; justify-content:center;">
                     <button id="cancelHR3"
-                        style="padding:10px 20px; border:1px solid #e2e8f0; background:white; color:#64748b; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s;">
+                        style="padding:12px 24px; border:1px solid #cbd5e1; background:white; color:#64748b; border-radius:12px; cursor:pointer; font-weight:600; transition:all 0.2s; flex: 1;">
                         Cancel
                     </button>
                     <button id="confirmHR3"
-                        style="padding:10px 20px; border:none; background:#f59e0b; color:white; border-radius:8px; cursor:pointer; font-weight:600; box-shadow:0 4px 6px rgba(245, 158, 11, 0.2); transition:all 0.2s;">
-                        Proceed to System
+                        style="padding:12px 24px; border:none; background: linear-gradient(135deg, #f59e0b, #d97706); color:white; border-radius:12px; cursor:pointer; font-weight:600; box-shadow:0 4px 12px rgba(245, 158, 11, 0.2); transition:all 0.2s; flex: 1;">
+                        Verify & Access
                     </button>
                 </div>
             </div>
@@ -411,27 +424,65 @@ $clusters = [
             if (event) event.preventDefault();
             const modal = document.getElementById('hr3PermissionModal');
             const targetUrl = element.getAttribute('data-target-url');
+            const pinInput = document.getElementById('hr3-pin-input');
+            const pinError = document.getElementById('pin-error');
 
+            // Reset state
+            pinInput.value = '';
+            pinInput.style.borderColor = '#e2e8f0';
+            pinError.style.display = 'none';
             modal.style.display = 'flex';
+
+            // Focus on input
+            setTimeout(() => pinInput.focus(), 100);
 
             // Setup buttons
             const confirmBtn = document.getElementById('confirmHR3');
             const cancelBtn = document.getElementById('cancelHR3');
 
-            // Clear previous listeners to avoid stacking
+            // Clone to remove old listeners
             const newConfirm = confirmBtn.cloneNode(true);
             const newCancel = cancelBtn.cloneNode(true);
 
             confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
             cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
 
-            newConfirm.addEventListener('click', function () {
-                // Show referencing loader or just go
-                newConfirm.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
-                setTimeout(() => {
-                    window.location.href = targetUrl;
-                }, 500); // Small delay for effect
-            });
+            // Verify PIN function
+            function verifyAndProceed() {
+                const pin = pinInput.value;
+                // HARDCODED PIN FOR DEMO: 1234
+                if (pin === '1234') {
+                    pinInput.style.borderColor = '#10b981'; // Green
+                    newConfirm.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+                    newConfirm.disabled = true;
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 800);
+                } else {
+                    pinInput.style.borderColor = '#ef4444'; // Red
+                    pinError.style.display = 'block';
+                    // Shake animation effect
+                    pinInput.animate([
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(10px)' },
+                        { transform: 'translateX(0)' }
+                    ], {
+                        duration: 300,
+                        iterations: 1
+                    });
+                    pinInput.value = '';
+                }
+            }
+
+            newConfirm.addEventListener('click', verifyAndProceed);
+
+            // Initialize Enter key support
+            pinInput.onkeydown = function (e) {
+                if (e.key === 'Enter') {
+                    verifyAndProceed();
+                }
+            };
 
             newCancel.addEventListener('click', function () {
                 modal.style.display = 'none';
