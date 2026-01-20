@@ -55,28 +55,7 @@
     <div
         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
 
-        <!-- Booking Card -->
-        <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                <div
-                    style="width: 45px; height: 45px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #3b82f6;">
-                    <i class="fa-solid fa-calendar-check" style="font-size: 1.2rem;"></i>
-                </div>
-            </div>
-            <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $new_bookings ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">New Booking</p>
-            </div>
-            <!-- Mini Chart Decoration (CSS) -->
-            <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
-                <div style="width: 15%; background: #3b82f6; height: 40%; border-radius: 2px;"></div>
-                <div style="width: 15%; background: #3b82f6; height: 70%; border-radius: 2px;"></div>
-                <div style="width: 15%; background: #3b82f6; height: 50%; border-radius: 2px;"></div>
-                <div style="width: 15%; background: #3b82f6; height: 90%; border-radius: 2px;"></div>
-                <div style="width: 15%; background: #3b82f6; height: 60%; border-radius: 2px;"></div>
-            </div>
-        </div>
+
 
         <!-- Available Room Card -->
         <div
@@ -239,61 +218,7 @@
             </div>
         </div>
 
-        <!-- Bookings Summary -->
-        <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Bookings</h3>
-                <button
-                    style="border: 1px solid #e2e8f0; background: white; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; color: #64748b;">
-                    <i class="fa-regular fa-calendar"></i> Monthly
-                </button>
-            </div>
 
-            <div style="margin-bottom: 25px;">
-                <h2 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0;"><?= $new_bookings ?> <span
-                        style="font-size: 1rem; font-weight: 400; color: #94a3b8;">Total Bookings</span></h2>
-            </div>
-
-            <!-- Progress Bar -->
-            <?php
-            // Simulate split 70% online, 30% offline for demo
-            $online_pct = 70;
-            $offline_pct = 30;
-            $online_count = round($new_bookings * 0.7);
-            $offline_count = $new_bookings - $online_count;
-            ?>
-            <div
-                style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; display: flex; overflow: hidden; margin-bottom: 25px;">
-                <div style="width: <?= $online_pct ?>%; background: #22c55e;"></div>
-                <div style="width: <?= $offline_pct ?>%; background: #f97316;"></div>
-            </div>
-
-            <div style="display: flex; gap: 30px;">
-                <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                        <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%;"></span>
-                        <span style="font-size: 0.85rem; color: #64748b;">Online Booking</span>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 1.1rem; padding-left: 18px;">
-                        <?= $online_count ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                        <span style="width: 10px; height: 10px; background: #f97316; border-radius: 50%;"></span>
-                        <span style="font-size: 0.85rem; color: #64748b;">Offline Booking</span>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 1.1rem; padding-left: 18px;">
-                        <?= $offline_count ?>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                style="margin-top: 30px; font-size: 0.85rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-circle-info"></i> All bookings data is synced in real-time.
-            </div>
-        </div>
 
     </div>
 
