@@ -71,7 +71,7 @@ $clusters = [
     'HR Cluster' => [
         ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => 'gateway.php?dept=HR1'],
         ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'https://hr2.atierahotelandrestaurant.com/Modules/dashboard.php'],
-        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3'],
+        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3', 'js_action' => 'openHR3Permission(this, event)'],
         ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4'],
     ],
     'Core Cluster' => [
@@ -158,6 +158,36 @@ $clusters = [
         </div>
     </div>
 
+    <!-- HR3 Permission Modal -->
+    <div id="hr3PermissionModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100001; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:#fff; width:90%; max-width:450px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2); overflow:hidden; animation: slideDown 0.3s ease-out;">
+            <div style="background:#f59e0b; padding:20px; text-align:center;">
+                <div
+                    style="width:60px; height:60px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">
+                    <i class="fas fa-shield-alt" style="color:white; font-size:30px;"></i>
+                </div>
+                <h2 style="color:white; margin:0; font-size:20px; font-weight:700;">System Permission</h2>
+            </div>
+            <div style="padding:25px; text-align:center;">
+                <h3 style="color:#1e293b; margin-bottom:10px; font-size:18px;">Request Access</h3>
+                <p style="color:#64748b; margin-bottom:25px; line-height:1.5;">You are about to access the <strong>HR3
+                        System</strong> with Super Admin privileges. Do you want to proceed?</p>
+                <div style="display:flex; gap:12px; justify-content:center;">
+                    <button id="cancelHR3"
+                        style="padding:10px 20px; border:1px solid #e2e8f0; background:white; color:#64748b; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s;">
+                        Cancel
+                    </button>
+                    <button id="confirmHR3"
+                        style="padding:10px 20px; border:none; background:#f59e0b; color:white; border-radius:8px; cursor:pointer; font-weight:600; box-shadow:0 4px 6px rgba(245, 158, 11, 0.2); transition:all 0.2s;">
+                        Proceed to System
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Sidebar -->
     <div class="sidebar">
@@ -223,9 +253,12 @@ $clusters = [
                         <?php foreach ($modules as $module):
                             $base_url = htmlspecialchars($module['url']);
                             $separator = (strpos($base_url, '?') !== false) ? '&' : '?';
-                            $final_url = isset($module['js_action']) ? '#' : $base_url . $separator . 'bypass_key=' . urlencode($api_key) . '&super_admin_session=true';
+                            // Calculate full URL with key regardless of JS action
+                            $full_url = $base_url . $separator . 'bypass_key=' . urlencode($api_key) . '&super_admin_session=true';
+                            // Determine href: if js_action is set, use #, otherwise use full URL
+                            $href = isset($module['js_action']) ? '#' : $full_url;
                             ?>
-                            <a href="<?php echo $final_url; ?>" <?php echo isset($module['js_action']) ? 'onclick="' . $module['js_action'] . '"' : ''; ?>
+                            <a href="<?php echo $href; ?>" <?php echo isset($module['js_action']) ? 'onclick="' . $module['js_action'] . '"' : ''; ?> data-target-url="<?php echo $full_url; ?>"
                                 class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
                                 id="module-<?php echo $module['id']; ?>">
                                 <?php if (isset($module['premium'])): ?>
@@ -372,6 +405,42 @@ $clusters = [
         // Immediate: If document is already complete
         if (document.readyState === 'complete') {
             hideLoader();
+        }
+        // Initialize Full System Access for HR3
+        function openHR3Permission(element, event) {
+            if (event) event.preventDefault();
+            const modal = document.getElementById('hr3PermissionModal');
+            const targetUrl = element.getAttribute('data-target-url');
+
+            modal.style.display = 'flex';
+
+            // Setup buttons
+            const confirmBtn = document.getElementById('confirmHR3');
+            const cancelBtn = document.getElementById('cancelHR3');
+
+            // Clear previous listeners to avoid stacking
+            const newConfirm = confirmBtn.cloneNode(true);
+            const newCancel = cancelBtn.cloneNode(true);
+
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+            newConfirm.addEventListener('click', function () {
+                // Show referencing loader or just go
+                newConfirm.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 500); // Small delay for effect
+            });
+
+            newCancel.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            // Close on outside click
+            modal.onclick = function (e) {
+                if (e.target === modal) modal.style.display = 'none';
+            }
         }
     </script>
 </body>
