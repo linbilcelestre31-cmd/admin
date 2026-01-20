@@ -84,7 +84,7 @@ class ReservationSystem
             ]);
 
             if ($conflictCheck->fetchColumn() > 0) {
-                throw new Exception("Time conflict: The facility is already booked for the selected time slot.");
+                throw new Exception("Time conflict: The facility is already reserved for the selected time slot.");
             }
 
             // Calculate total amount
@@ -696,7 +696,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                     <button class="btn btn-primary btn-block"
                                         onclick="openReservationModal(<?= $facility['id'] ?>)">
-                                        <span class="icon-img-placeholder">➕</span> Book This Facility
+                                        <span class="icon-img-placeholder">➕</span> Reserve This Facility
                                     </button>
                                 </div>
                             </div>
