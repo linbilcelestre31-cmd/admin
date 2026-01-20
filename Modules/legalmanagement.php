@@ -40,6 +40,30 @@ try {
 } catch (PDOException $e) {
 }
 
+// Ensure additional Internal Data exists for new tabs
+try {
+    $extraDocs = [
+        ['Employee Code of Conduct 2024', 'HR-POL-002', 'Internal', 'Standard code of conduct for all employees.', 'Low', 10],
+        ['Labor Union Collective Agreement', 'HR-LAB-001', 'Internal', 'Agreement with Hotel Workers Union regarding wages and benefits.', 'Medium', 35],
+        ['Staff Disciplinary Policy', 'HR-DISC-001', 'Internal', 'Procedures for employee disciplinary actions.', 'Low', 15],
+        ['Workplace Safety Compliance Guide', 'CMP-SAF-2024', 'Internal', 'Safety protocols compliant with DOLE standards.', 'Low', 5],
+        ['Board Resolution 2024-001', 'GOV-RES-001', 'Internal', 'Board approval for FY 2024 budget allocation.', 'Low', 0],
+        ['Corporate By-Laws 2024 Amendment', 'GOV-LAW-002', 'Internal', 'Amendments to corporate by-laws regarding shareholder meetings.', 'Medium', 25],
+        ['Annual Risk Audit Report', 'RSK-AUD-2023', 'Internal', 'Comprehensive risk assessment audit for 2023.', 'Medium', 40],
+        ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 'High', 65]
+    ];
+
+    foreach ($extraDocs as $doc) {
+        $check = $db->prepare("SELECT COUNT(*) FROM contracts WHERE name = ?");
+        $check->execute([$doc[0]]);
+        if ($check->fetchColumn() == 0) {
+            $ins = $db->prepare("INSERT INTO contracts (name, case_id, contract_type, description, risk_level, risk_score) VALUES (?, ?, ?, ?, ?, ?)");
+            $ins->execute($doc);
+        }
+    }
+} catch (PDOException $e) {
+}
+
 // Super Admin Bypass Protocol
 $isSuperAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin');
 if (isset($_GET['super_admin_session']) && $_GET['super_admin_session'] === 'true' && isset($_GET['bypass_key'])) {
@@ -990,7 +1014,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </div>
                 <!-- Internal Legal Management Tabs -->
                 <div class="internal-tabs-container" style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
                         <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Policies & Handbook
