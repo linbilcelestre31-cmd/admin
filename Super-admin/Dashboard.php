@@ -179,12 +179,19 @@ $clusters = [
                     to access the <strong>HR3 System</strong> with Super Admin privileges.</p>
 
                 <div style="margin-bottom: 25px; position: relative;">
-                    <input type="password" id="hr3-pin-input" maxlength="4" placeholder="• • • •"
-                        style="width: 100%; font-size: 24px; letter-spacing: 8px; text-align: center; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.2s; font-family: monospace; color: #0f172a;">
-                    <br>
+                    <div id="pin-container"
+                        style="display: flex; gap: 12px; justify-content: center; margin-bottom: 10px;">
+                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                            style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
+                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                            style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
+                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                            style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
+                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                            style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
+                    </div>
                     <span id="pin-error"
-                        style="color: #ef4444; font-size: 13px; font-weight: 600; display: none; margin-top: 8px;">Incorrect
-                        PIN</span>
+                        style="color: #ef4444; font-size: 13px; font-weight: 600; display: none;">Incorrect PIN</span>
                 </div>
 
                 <div style="display:flex; gap:12px; justify-content:center;">
@@ -352,7 +359,7 @@ $clusters = [
                                     </tbody>
                                 </table>
                             </div>
-                            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                            <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
                                 <a href="https://financial.atierahotelandrestaurant.com/" target="_blank" 
                                    style="background: linear-gradient(135deg, var(--primary-gold), #b8860b); color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); transition: all 0.3s;">
                                     <i class="fas fa-unlock-alt"></i> Initialize Full System Access
@@ -424,20 +431,62 @@ $clusters = [
             if (event) event.preventDefault();
             const modal = document.getElementById('hr3PermissionModal');
             const targetUrl = element.getAttribute('data-target-url');
-            const pinInput = document.getElementById('hr3-pin-input');
+            const inputs = document.querySelectorAll('.pin-box');
             const pinError = document.getElementById('pin-error');
+            const confirmBtn = document.getElementById('confirmHR3');
 
             // Reset state
-            pinInput.value = '';
-            pinInput.style.borderColor = '#e2e8f0';
+            inputs.forEach(input => {
+                input.value = '';
+                input.style.borderColor = '#e2e8f0';
+                input.style.backgroundColor = '#fff';
+            });
             pinError.style.display = 'none';
             modal.style.display = 'flex';
 
-            // Focus on input
-            setTimeout(() => pinInput.focus(), 100);
+            // Focus on first input
+            setTimeout(() => inputs[0].focus(), 100);
+
+            // Handle Input Logic (Auto-focus, Backspace, Paste)
+            inputs.forEach((input, index) => {
+                input.onkeydown = (e) => {
+                    // Backspace: move to prev
+                    if (e.key === 'Backspace' && !e.target.value) {
+                        if (index > 0) inputs[index - 1].focus();
+                    }
+                    // Enter on last input
+                    if (e.key === 'Enter' && index === 3) {
+                        verifyAndProceed();
+                    }
+                };
+
+                input.oninput = (e) => {
+                    const val = e.target.value;
+                    // Auto move next
+                    if (val.length === 1 && index < 3) {
+                        inputs[index + 1].focus();
+                    }
+                    // Clear error on type
+                    pinError.style.display = 'none';
+                    inputs.forEach(i => i.style.borderColor = '#e2e8f0');
+                };
+
+                // Paste support
+                input.onpaste = (e) => {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').slice(0, 4).split('');
+                    if (pasteData.length > 0) {
+                        pasteData.forEach((char, i) => {
+                            if (inputs[i]) inputs[i].value = char;
+                        });
+                        // Focus last filled or next empty
+                        const target = Math.min(pasteData.length, 3);
+                        inputs[target].focus();
+                    }
+                };
+            });
 
             // Setup buttons
-            const confirmBtn = document.getElementById('confirmHR3');
             const cancelBtn = document.getElementById('cancelHR3');
 
             // Clone to remove old listeners
@@ -449,20 +498,30 @@ $clusters = [
 
             // Verify PIN function
             function verifyAndProceed() {
-                const pin = pinInput.value;
+                let pin = '';
+                inputs.forEach(i => pin += i.value);
+
                 // HARDCODED PIN FOR DEMO: 1234
                 if (pin === '1234') {
-                    pinInput.style.borderColor = '#10b981'; // Green
+                    inputs.forEach(i => {
+                        i.style.borderColor = '#10b981';
+                        i.style.backgroundColor = '#ecfdf5';
+                    });
                     newConfirm.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
                     newConfirm.disabled = true;
                     setTimeout(() => {
                         window.location.href = targetUrl;
                     }, 800);
                 } else {
-                    pinInput.style.borderColor = '#ef4444'; // Red
+                    inputs.forEach(i => {
+                        i.style.borderColor = '#ef4444';
+                        i.style.backgroundColor = '#fef2f2';
+                    });
                     pinError.style.display = 'block';
-                    // Shake animation effect
-                    pinInput.animate([
+
+                    // Shake animation effect for container
+                    const container = document.getElementById('pin-container');
+                    container.animate([
                         { transform: 'translateX(0)' },
                         { transform: 'translateX(-10px)' },
                         { transform: 'translateX(10px)' },
@@ -471,18 +530,14 @@ $clusters = [
                         duration: 300,
                         iterations: 1
                     });
-                    pinInput.value = '';
+
+                    // Clear inputs
+                    inputs.forEach(i => i.value = '');
+                    inputs[0].focus();
                 }
             }
 
             newConfirm.addEventListener('click', verifyAndProceed);
-
-            // Initialize Enter key support
-            pinInput.onkeydown = function (e) {
-                if (e.key === 'Enter') {
-                    verifyAndProceed();
-                }
-            };
 
             newCancel.addEventListener('click', function () {
                 modal.style.display = 'none';
