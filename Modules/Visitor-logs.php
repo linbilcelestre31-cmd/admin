@@ -90,7 +90,7 @@ function getLastInsertId()
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Management System</title>
+    <title>Ateria Visitor Management</title>
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -171,8 +171,10 @@ function getLastInsertId()
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <img src="../assets/image/logo.png" alt="Atiera Logo" style="height: 45px; width: auto;">
+                <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+                    <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
+                    <span style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">Ateria
+                        Visitor Management</span>
                 </div>
                 <nav>
                     <ul>
