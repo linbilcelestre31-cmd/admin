@@ -988,6 +988,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add Internal Doc
                     </button>
                 </div>
+                <!-- Internal Legal Management Note -->
+                <div
+                    style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <h4
+                        style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-building-user text-blue-500"></i> Internal (Panloob) – Legal Management
+                    </h4>
+                    <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
+                        Ito ay mga legal matters sa loob ng kumpanya.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div>
+                            <strong
+                                style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 8px;">Halimbawa:</strong>
+                            <ul style="margin: 0 0 0 20px; font-size: 0.9rem; color: #475569; line-height: 1.6;">
+                                <li>Company policies at employee handbook</li>
+                                <li>Labor relations (disciplinary actions, contracts ng empleyado)</li>
+                                <li>Compliance sa internal rules at procedures</li>
+                                <li>Corporate governance (board resolutions, by-laws)</li>
+                                <li>Risk management at internal audits</li>
+                            </ul>
+                        </div>
+                        <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #dbeafe;">
+                            <strong
+                                style="font-size: 0.9rem; color: #1e40af; display: block; margin-bottom: 6px;">Focus:</strong>
+                            <p style="margin: 0; font-size: 0.9rem; color: #1e3a8a; line-height: 1.5;">
+                                Ayusin at protektahan ang kumpanya mula loob para maiwasan ang problema sa batas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <div style="position: relative;">
                     <div id="internalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1073,6 +1104,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <button class="add-btn" onclick="document.getElementById('addContractBtn').click()">
                         <i>+</i> Add External Contract
                     </button>
+                </div>
+                <!-- External Legal Management Note -->
+                <div
+                    style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <h4
+                        style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-briefcase text-emerald-500"></i> External (Panlabas) – Legal Management
+                    </h4>
+                    <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
+                        Ito ay mga legal matters na may kinalaman sa labas ng kumpanya.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div>
+                            <strong
+                                style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 8px;">Halimbawa:</strong>
+                            <ul style="margin: 0 0 0 20px; font-size: 0.9rem; color: #475569; line-height: 1.6;">
+                                <li>Contracts sa suppliers, customers, at partners</li>
+                                <li>Pakikipag-ugnayan sa government agencies (SEC, BIR, DOLE)</li>
+                                <li>Lawsuits at legal disputes</li>
+                                <li>Regulatory compliance (permits, licenses)</li>
+                                <li>Consumer protection at public relations issues</li>
+                            </ul>
+                        </div>
+                        <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px solid #d1fae5;">
+                            <strong
+                                style="font-size: 0.9rem; color: #065f46; display: block; margin-bottom: 6px;">Focus:</strong>
+                            <p style="margin: 0; font-size: 0.9rem; color: #064e3b; line-height: 1.5;">
+                                Protektahan ang kumpanya sa ugnayan nito sa labas at siguraduhing legal ang lahat ng
+                                transaksyon.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div style="position: relative;">
                     <div id="externalSectionContent" class="blurred-content">
