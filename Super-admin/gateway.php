@@ -67,7 +67,7 @@ $token = base64_encode(json_encode($tokenData));
 $sso_urls = [
     'HR1' => 'https://hr1.atierahotelandrestaurant.com/sso-login.php',
     'HR2' => 'https://hr2.atierahotelandrestaurant.com/sso-login.php',
-    'HR3' => 'https://hr3.atierahotelandrestaurant.com/hr3/sso-login.php',
+    'HR3' => 'https://hr3.atierahotelandrestaurant.com/sso-login.php',
     'HR4' => 'https://hr4.atierahotelandrestaurant.com/sso-login.php',
 ];
 
