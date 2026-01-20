@@ -34,7 +34,7 @@ $res = $stmt->get_result()->fetch_assoc();
 
 if (!$res) {
     // Auto-initialize secret if missing
-    $default_secret = hash('sha256', 'hr_secret_key_2026');
+    $default_secret = ($dept === 'HR3') ? hash('sha256', 'hr3_secret_key_2026') : hash('sha256', 'hr_secret_key_2026');
     $ins = $conn->prepare("INSERT INTO department_secrets (department, secret_key) VALUES (?, ?) ON DUPLICATE KEY UPDATE secret_key=VALUES(secret_key)");
     $ins->bind_param("ss", $dept, $default_secret);
     $ins->execute();
@@ -73,7 +73,7 @@ $token = base64_encode(json_encode($tokenData));
 $sso_urls = [
     'HR1' => 'https://hr1.atierahotelandrestaurant.com/sso-login.php',
     'HR2' => 'https://hr2.atierahotelandrestaurant.com/sso-login.php',
-    'HR3' => 'https://hr3.atierahotelandrestaurant.com/sso-login.php',
+    'HR3' => 'https://hr3.atierahotelandrestaurant.com/hr3/sso-login.php',
     'HR4' => 'https://hr4.atierahotelandrestaurant.com/sso-login.php',
     'CORE1' => 'https://core1.atierahotelandrestaurant.com/sso-login.php',
     'CORE2' => 'https://core2.atierahotelandrestaurant.com/sso-login.php'
