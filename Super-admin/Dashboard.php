@@ -69,24 +69,24 @@ $api_key = $admin['api_key'] ?? 'NO_KEY_FOUND';
 // Define Modules grouped by Department Cluster
 $clusters = [
     'HR Cluster' => [
-        ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'user-plus', 'color' => '#3b82f6', 'url' => 'gateway.php?dept=HR1', 'pin' => '1234'],
-        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'money-check-dollar', 'color' => '#10b981', 'url' => 'gateway.php?dept=HR2', 'pin' => '1234'],
-        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'graduation-cap', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3', 'pin' => '1234'],
-        ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'handshake', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4', 'pin' => '1234'],
+        ['name' => 'HR1', 'id' => 'HR1', 'icon' => 'id-card-clip', 'color' => '#3b82f6', 'url' => 'gateway.php?dept=HR1', 'pin' => '1234'],
+        ['name' => 'HR2', 'id' => 'HR2', 'icon' => 'hand-holding-dollar', 'color' => '#10b981', 'url' => 'gateway.php?dept=HR2', 'pin' => '1234'],
+        ['name' => 'HR3', 'id' => 'HR3', 'icon' => 'chalkboard-user', 'color' => '#f59e0b', 'url' => 'gateway.php?dept=HR3', 'pin' => '1234'],
+        ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'people-group', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4', 'pin' => '1234'],
     ],
     'Core Cluster' => [
-        ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'hotel', 'color' => '#6366f1', 'url' => '../CORE1/index.php', 'pin' => '1234'],
-        ['name' => 'CORE 2', 'id' => 'CORE2', 'icon' => 'utensils', 'color' => '#f97316', 'url' => '../CORE2/index.php', 'pin' => '1234'],
+        ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'bell-concierge', 'color' => '#6366f1', 'url' => '../CORE1/index.php', 'pin' => '1234'],
+        ['name' => 'CORE 2', 'id' => 'CORE2', 'icon' => 'kitchen-set', 'color' => '#f97316', 'url' => '../CORE2/index.php', 'pin' => '1234'],
     ],
     'Logistics Cluster' => [
-        ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'dolly', 'color' => '#d97706', 'url' => '../Logistics1/index.php', 'pin' => '1234'],
-        ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'warehouse', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php', 'pin' => '1234'],
+        ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'truck-fast', 'color' => '#d97706', 'url' => '../Logistics1/index.php', 'pin' => '1234'],
+        ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'box-archive', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php', 'pin' => '1234'],
     ],
     'Financial Management' => [
-        ['name' => 'Financial Management', 'id' => 'Financial Management', 'icon' => 'chart-line', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/', 'pin' => '1234'],
+        ['name' => 'Financial Management', 'id' => 'Financial Management', 'icon' => 'sack-dollar', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/', 'pin' => '1234'],
     ],
     'Administrative' => [
-        ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'shield-halved', 'color' => '#000', 'url' => '../Modules/dashboard.php', 'pin' => '1234'],
+        ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'building-user', 'color' => '#000', 'url' => '../Modules/dashboard.php', 'pin' => '1234'],
     ]
 ];
 
