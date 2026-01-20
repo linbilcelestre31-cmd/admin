@@ -173,7 +173,7 @@ function getLastInsertId()
             <div class="header-content">
                 <div class="logo" style="display: flex; align-items: center; gap: 15px;">
                     <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
-                    <span style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">Hotel &
+                    <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px;">Hotel &
                         Restaurant Visitor Management</span>
                 </div>
                 <nav>
