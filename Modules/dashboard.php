@@ -532,7 +532,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span>Key: <strong
                                         style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
                             </div>
-                        <?php endif; ?>
+                        <?php endif;
+                    }
+                    ?>
+                    <!-- Pinalitan ng button at inilagay ang logic sa JS -->
+                    <button class="btn btn-outline" onclick="openLogoutModal()">
+                        <span class="icon-img-placeholder">🚪</span> Logout
+                    </button>
+
+                    <?php
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
+                        ?>
                         <a href="../Super-admin/Dashboard.php" class="btn btn-outline"
                             style="text-decoration: none; display: flex; align-items: center; gap: 8px; border-color: #d4af37; color: #d4af37; font-weight: 600;">
                             <i class="fas fa-arrow-left"></i> Back
@@ -540,10 +550,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php
                     }
                     ?>
-                    <!-- Pinalitan ng button at inilagay ang logic sa JS -->
-                    <button class="btn btn-outline" onclick="openLogoutModal()">
-                        <span class="icon-img-placeholder">🚪</span> Logout
-                    </button>
                 </div>
             </header>
 
