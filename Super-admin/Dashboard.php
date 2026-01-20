@@ -235,7 +235,7 @@ $clusters = [
                                 data-target-url="<?php echo $full_url; ?>"
                                 data-name="<?php echo htmlspecialchars($module['name']); ?>"
                                 data-icon="fas fa-<?php echo $module['icon']; ?>" data-color="<?php echo $module['color']; ?>"
-                                            data-pin="<?php echo isset($module['pin']) ? $module['pin'] : '1234'; ?>"
+                                data-pin="<?php echo isset($module['pin']) ? $module['pin'] : '1234'; ?>"
                                 class="module-card <?php echo isset($module['premium']) ? 'premium-card' : ''; ?>"
                                 id="module-<?php echo $module['id']; ?>">
                                 <?php if (isset($module['premium'])): ?>
@@ -385,6 +385,7 @@ $clusters = [
             hideLoader();
         }
 
-</body >
+    </script>
+</body>
 
-</html >
+</html>
