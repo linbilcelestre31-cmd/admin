@@ -993,25 +993,48 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                     <h4
                         style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
-                        <i class="fa-solid fa-building-user text-blue-500"></i> Internal (Panloob) – Legal Management
+                        <i class="fa-solid fa-building-shield text-blue-500" style="color: #3b82f6;"></i> Internal
+                        (Panloob) – Legal Management
                     </h4>
                     <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
                         Ito ay mga legal matters sa loob ng kumpanya.
                     </p>
-                    <div style="margin-top: 15px;">
-                        <strong
-                            style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 8px;">Halimbawa:</strong>
-                        <ul style="margin: 0 0 15px 20px; font-size: 0.9rem; color: #475569; line-height: 1.6;">
-                            <li>Company policies at employee handbook</li>
-                            <li>Labor relations (disciplinary actions, contracts ng empleyado)</li>
-                            <li>Compliance sa internal rules at procedures</li>
-                            <li>Corporate governance (board resolutions, by-laws)</li>
-                            <li>Risk management at internal audits</li>
-                        </ul>
-                        <div style="margin-top: 10px; font-size: 0.95rem; color: #1e3a8a;">
-                            <strong style="color: #1e40af;">👉 Focus:</strong> Ayusin at protektahan ang kumpanya mula
-                            loob para maiwasan ang problema sa batas.
+
+                    <strong
+                        style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 10px;">Submodules:</strong>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-book-open" style="color: #3b82f6;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Policies & Handbook</span>
                         </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-users" style="color: #3b82f6;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Labor Relations</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-scale-balanced" style="color: #3b82f6;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Internal Compliance</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-building-columns" style="color: #3b82f6;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Corporate Governance</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Risk Management</span>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: 10px; font-size: 0.95rem; color: #1e40af; background: #eff6ff; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #1d4ed8;">👉 Resulta:</strong> Ayusin at protektahan ang kumpanya mula
+                        loob para maiwasan ang problema sa batas.
                     </div>
                 </div>
                 <div style="position: relative;">
@@ -1105,25 +1128,48 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                     <h4
                         style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
-                        <i class="fa-solid fa-briefcase text-emerald-500"></i> External (Panlabas) – Legal Management
+                        <i class="fa-solid fa-briefcase text-emerald-500" style="color: #10b981;"></i> External
+                        (Panlabas) – Legal Management
                     </h4>
                     <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
                         Ito ay mga legal matters na may kinalaman sa labas ng kumpanya.
                     </p>
-                    <div style="margin-top: 15px;">
-                        <strong
-                            style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 8px;">Halimbawa:</strong>
-                        <ul style="margin: 0 0 15px 20px; font-size: 0.9rem; color: #475569; line-height: 1.6;">
-                            <li>Contracts sa suppliers, customers, at partners</li>
-                            <li>Pakikipag-ugnayan sa government agencies (SEC, BIR, DOLE)</li>
-                            <li>Lawsuits at legal disputes</li>
-                            <li>Regulatory compliance (permits, licenses)</li>
-                            <li>Consumer protection at public relations issues</li>
-                        </ul>
-                        <div style="margin-top: 10px; font-size: 0.95rem; color: #064e3b;">
-                            <strong style="color: #065f46;">👉 Focus:</strong> Protektahan ang kumpanya sa ugnayan nito
-                            sa labas at siguraduhing legal ang lahat ng transaksyon.
+
+                    <strong
+                        style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 10px;">Submodules:</strong>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-file-contract" style="color: #10b981;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Supplier Contracts</span>
                         </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-landmark" style="color: #10b981;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Govt Relations</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-gavel" style="color: #10b981;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Lawsuits & Disputes</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-clipboard-check" style="color: #10b981;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Regulatory Compliance</span>
+                        </div>
+                        <div
+                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="fa-solid fa-user-shield" style="color: #10b981;"></i>
+                            <span style="font-size: 0.9rem; color: #1e293b;">Consumer Protection</span>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: 10px; font-size: 0.95rem; color: #064e3b; background: #ecfdf5; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #065f46;">👉 Resulta:</strong> Protektahan ang kumpanya sa ugnayan nito sa
+                        labas at siguraduhing legal ang lahat ng transaksyon.
                     </div>
                 </div>
                 <div style="position: relative;">
@@ -2623,7 +2669,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 });
             });
 
-                    // Find the back button handler and update it:
+            // Find the back button handler and update it:
             // Removed redundant JS listener for back button to prevent conflicts with <a> tag
         })();
     </script>
