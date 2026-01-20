@@ -1,28 +1,42 @@
 <?php
-session_start();
-require "../connections.php";
-
 /**
- * AUTO TOKEN GENERATOR & SSO TESTER
- * This tool allows you to manually generate valid SSO tokens for any department.
+ * ====================================================================
+ * SSO TOKEN AUTO-GENERATOR (TESTING TOOL)
+ * ====================================================================
+ * PAANO ITO GAMITIN:
+ * 1. Piliin ang Department (e.g., HR3) na gusto mong i-login.
+ * 2. I-click ang "Generate Token" button.
+ * 3. Ang tool na ito ang kukuha ng 'Secret Key' sa database mo.
+ * 4. Gagawa ito ng 'Signature' gamit ang HMAC-SHA256 para sa security.
+ * 5. Ang resultang 'Token' ay ang mahabang string na nása Base64 format.
+ * 
+ * SAAN ITO NILALAGAY?
+ * - Kung gagamit ka ng external link, ang token ay nilalagay sa URL:
+ *   Example: sso-login.php?token=[DITO_ILALAGAY_ANG_GENERATED_TOKEN]
+ * 
+ * - O kaya, i-click lang ang "Direct Login Link" sa baba para ma-test agad.
+ * ====================================================================
  */
 
-// Default dummy data if not logged in
+session_start();
+require "../connections.php"; // Kumokonekta sa database para makuha ang secret keys
+
+// Default user data para sa testing (Kinukuha sa session kung nása Dashboard ka)
 $user_email = $_SESSION['email'] ?? 'admin@atiera.com';
 $user_role = $_SESSION['role'] ?? 'super_admin';
 
 $departments = ['HR1', 'HR2', 'HR3', 'HR4', 'CORE1', 'CORE2'];
 $selected_dept = $_POST['dept'] ?? 'HR3';
 
-// 1. Fetch Secret
+// 1. KUNIN ANG SECRET KEY MULA SA DATABASE
 $stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE department=? AND is_active=1 LIMIT 1");
 $stmt->bind_param("s", $selected_dept);
 $stmt->execute();
 $res = $stmt->get_result()->fetch_assoc();
 
-// Auto-init if missing (same logic as gateway.php)
+// Kung wala pang secret sa DB, awtomatiko itong gagawa ng default secret
 if (!$res) {
-    echo "<div style='color:orange;'>Initialing secret for $selected_dept...</div>";
+    echo "<div style='color:orange;'>Initializing default secret for $selected_dept...</div>";
     $default_secret = ($selected_dept === 'HR3') ? hash('sha256', 'hr3_secret_key_2026') : hash('sha256', 'hr_secret_key_2026');
     $ins = $conn->prepare("INSERT INTO department_secrets (department, secret_key) VALUES (?, ?) ON DUPLICATE KEY UPDATE secret_key=VALUES(secret_key)");
     $ins->bind_param("ss", $selected_dept, $default_secret);
@@ -34,23 +48,28 @@ if (!$res) {
 
 $secret = $res['secret_key'];
 
-// 2. Generate Token
+// 2. PAG-GENERATE NG TOKEN PAYLOAD (Dito nakalagay ang User Info)
 $payload = [
     "email" => $user_email,
     "role" => $user_role,
     "dept" => $selected_dept,
-    "exp" => time() + 3600 // Valid for 1 hour for testing
+    "exp" => time() + 3600 // Expire pagkalipas ng 1 oras (para sa testing)
 ];
+
+// Gawing JSON string ang payload
 $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+// GUMAWA NG DIGITAL SIGNATURE (Ito ang nagpapatunay na valid at hindi tampered ang token)
 $signature = hash_hmac("sha256", $payloadJson, $secret);
 
+// I-combine ang Payload at Signature sa isang Base64 Token
 $tokenData = [
     "payload" => $payload,
     "signature" => $signature
 ];
-$token = base64_encode(json_encode($tokenData));
+$token = base64_encode(json_encode($tokenData)); // ITO ANG "GENERATED TOKEN"
 
-// 3. Define URL
+// 3. I-DEFINE ANG TARGET URL KUNG SAAN IPAPADALA ANG TOKEN
 $sso_urls = [
     'HR1' => 'https://hr1.atierahotelandrestaurant.com/sso-login.php',
     'HR2' => 'https://hr2.atierahotelandrestaurant.com/sso-login.php',
