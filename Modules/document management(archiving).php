@@ -985,8 +985,8 @@ function formatFileSize($bytes)
                         <li><a href="../include/Settings.php"><i class="fas fa-cog"></i> Settings</a></li>
                         <li><a
                                 href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>">
-                                <i class="fas <?php echo $isSuperAdmin ? 'fa-shield-halved' : 'fa-arrow-left'; ?>"></i>
-                                <?php echo $isSuperAdmin ? 'Administrative' : 'Back'; ?></a>
+                                <i class="fas fa-arrow-left"></i>
+                                Back</a>
                         </li>
                     </ul>
                 </nav>

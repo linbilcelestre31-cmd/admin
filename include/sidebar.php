@@ -28,7 +28,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     <?php if ($isSuperAdmin): ?>
                         <div
                             style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
-                            Super Admin
+                            Administrative
                         </div>
                     <?php endif; ?>
                 </div>
