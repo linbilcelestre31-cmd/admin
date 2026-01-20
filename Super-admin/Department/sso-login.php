@@ -59,11 +59,11 @@ $secret = $res['secret_key'];
 
 // verify signature
 $check = hash_hmac("sha256", $payloadJson, $secret);
-// Fallback check for raw hash if stored differently
-$check_fallback = hash_hmac("sha256", $payloadJson, hash('sha256', 'hr3_secret_key_2026'));
+// Fallback: Check if the provided signature was made with the Hashed version of the secret
+$check_hashed_secret = hash_hmac("sha256", $payloadJson, hash('sha256', $secret));
 
-if (!hash_equals($check, $signature) && !hash_equals($check_fallback, $signature)) {
-    die("Invalid or tampered token");
+if (!hash_equals($check, $signature) && !hash_equals($check_hashed_secret, $signature)) {
+    die("Invalid or tampered token. Secret key mismatch between systems.");
 }
 
 // expiry check

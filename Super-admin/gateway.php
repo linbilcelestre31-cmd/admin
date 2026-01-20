@@ -29,7 +29,7 @@ $res = $stmt->get_result()->fetch_assoc();
 if (!$res) {
     // Auto-init for HR3 if missing
     if ($dept === 'HR3') {
-        $default_secret = hash('sha256', 'hr3_secret_key_2026');
+        $default_secret = 'hr3_secret_key_2026'; // Match plain text from screenshot
         $ins = $conn->prepare("INSERT INTO department_secrets (department, secret_key) VALUES (?, ?) ON DUPLICATE KEY UPDATE secret_key=VALUES(secret_key)");
         $ins->bind_param("ss", $dept, $default_secret);
         $ins->execute();

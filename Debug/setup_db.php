@@ -1,5 +1,10 @@
 <?php
-require_once "connections.php";
+require_once "../connections.php";
+
+/**
+ * DATABASE SETUP FOR SSO
+ * This script ensures your Admin database has the correct secrets for HR3.
+ */
 
 $sql = "
 CREATE TABLE IF NOT EXISTS department_secrets (
@@ -10,20 +15,18 @@ CREATE TABLE IF NOT EXISTS department_secrets (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );";
 
-if ($conn->query($sql)) {
-    echo "Table department_secrets created successfully.<br>";
-} else {
-    echo "Error creating table: " . $conn->error . "<br>";
-}
+$conn->query($sql);
 
-// SHA2('hr3_secret_key_2026', 256)
-$secret = hash('sha256', 'hr3_secret_key_2026');
+// We use the PLAIN TEXT secret to match your current DB setup
+$secret = 'hr3_secret_key_2026';
 $stmt = $conn->prepare("INSERT INTO department_secrets (department, secret_key) VALUES ('HR3', ?) ON DUPLICATE KEY UPDATE secret_key=VALUES(secret_key)");
 $stmt->bind_param("s", $secret);
 
 if ($stmt->execute()) {
-    echo "HR3 secret key inserted/updated successfully.<br>";
+    echo "<h3>SSO Setup Successful!</h3>";
+    echo "Admin database is now using: <strong>$secret</strong> for HR3.<br>";
+    echo "Make sure your HR3 database also has this exact same key in its <code>department_secrets</code> table.";
 } else {
-    echo "Error inserting record: " . $stmt->error . "<br>";
+    echo "Error: " . $stmt->error;
 }
 ?>
