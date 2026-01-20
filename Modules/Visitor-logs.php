@@ -173,8 +173,8 @@ function getLastInsertId()
             <div class="header-content">
                 <div class="logo" style="display: flex; align-items: center; gap: 15px;">
                     <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
-                    <span style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">Ateria
-                        Visitor Management</span>
+                    <span style="font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">Hotel &
+                        Restaurant Visitor Management</span>
                 </div>
                 <nav>
                     <ul>
@@ -209,7 +209,10 @@ function getLastInsertId()
             <main class="content">
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
-                    <h1>Dashboard</h1>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 2rem;">
+                        <img src="../assets/image/logo2.png" alt="Logo" style="height: 50px; width: auto;">
+                        <h1 style="margin-bottom: 0;">Dashboard</h1>
+                    </div>
                     <div class="stats-container">
                         <div class="stat-card">
                             <i class="fas fa-concierge-bell"></i>
