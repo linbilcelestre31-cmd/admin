@@ -181,13 +181,13 @@ $clusters = [
                 <div style="margin-bottom: 25px; position: relative;">
                     <div id="pin-container"
                         style="display: flex; gap: 12px; justify-content: center; margin-bottom: 10px;">
-                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                        <input type="password" class="pin-box" maxlength="1" inputmode="numeric"
                             style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
-                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                        <input type="password" class="pin-box" maxlength="1" inputmode="numeric"
                             style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
-                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                        <input type="password" class="pin-box" maxlength="1" inputmode="numeric"
                             style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
-                        <input type="text" class="pin-box" maxlength="1" inputmode="numeric"
+                        <input type="password" class="pin-box" maxlength="1" inputmode="numeric"
                             style="width: 50px; height: 60px; font-size: 24px; text-align: center; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s;">
                     </div>
                     <span id="pin-error"
