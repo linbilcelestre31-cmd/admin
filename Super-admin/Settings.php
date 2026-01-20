@@ -414,48 +414,12 @@ $api_key = $admin['api_key'] ?? '';
                 </a>
             </li>
 
-            <div class="nav-section-label">Management & Operations</div>
-
             <li class="nav-item">
-                <a href="../Modules/legalmanagement.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="nav-link">
-                    <i class="fas fa-scale-balanced"></i> Legal Management
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="modules/document.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="nav-link">
-                    <i class="fas fa-box-archive"></i> Document Archiving
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="../Modules/Visitor-logs.php?bypass_key=<?php echo urlencode($api_key); ?>&super_admin_session=true"
-                    class="nav-link">
-                    <i class="fas fa-id-card-clip"></i> Visitor Logs
-                </a>
-            </li>
-
-            <div class="nav-section-label">Master Controls</div>
-            <li class="nav-item">
-                <a href="modules/facilities.php" class="nav-link">
-                    <i class="fas fa-building"></i> Facility Management
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="modules/reservation.php" class="nav-link">
-                    <i class="fas fa-calendar-check"></i> Master Reservations
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="modules/management.php" class="nav-link">
-                    <i class="fas fa-tasks"></i> Operational Logs
+                <a href="auth/logout.php" class="nav-link" style="color: #ef4444;">
+                    <i class="fas fa-power-off"></i> Log Out
                 </a>
             </li>
         </ul>
-
-        <a href="auth/logout.php" class="logout-btn">
-            <i class="fas fa-power-off"></i> Log Out
-        </a>
     </div>
 
     <!-- Main Content -->
