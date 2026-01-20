@@ -988,55 +988,71 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i>+</i> Add Internal Doc
                     </button>
                 </div>
-                <!-- Internal Legal Management Note -->
-                <div
-                    style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                    <h4
-                        style="margin: 0 0 12px; color: #1e293b; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;">
-                        <i class="fa-solid fa-building-shield text-blue-500" style="color: #3b82f6;"></i> Internal
-                        (Panloob) – Legal Management
-                    </h4>
-                    <p style="margin: 0 0 15px; font-size: 0.95rem; color: #475569; line-height: 1.5;">
-                        Ito ay mga legal matters sa loob ng kumpanya.
-                    </p>
-
-                    <strong
-                        style="font-size: 0.9rem; color: #334155; display: block; margin-bottom: 10px;">Submodules:</strong>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-book-open" style="color: #3b82f6;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Policies & Handbook</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-users" style="color: #3b82f6;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Labor Relations</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-scale-balanced" style="color: #3b82f6;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Internal Compliance</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-building-columns" style="color: #3b82f6;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Corporate Governance</span>
-                        </div>
-                        <div
-                            style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                            <i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i>
-                            <span style="font-size: 0.9rem; color: #1e293b;">Risk Management</span>
-                        </div>
-                    </div>
-
-                    <div
-                        style="margin-top: 10px; font-size: 0.95rem; color: #1e40af; background: #eff6ff; padding: 10px; border-radius: 6px;">
-                        <strong style="color: #1d4ed8;">👉 Resulta:</strong> Ayusin at protektahan ang kumpanya mula
-                        loob para maiwasan ang problema sa batas.
+                <!-- Internal Legal Management Tabs -->
+                <div class="internal-tabs-container" style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Policies & Handbook
+                        </button>
+                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-users" style="margin-right: 8px;"></i> Labor Relations
+                        </button>
+                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
+                        </button>
+                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'governance')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-building-columns" style="margin-right: 8px;"></i> Corporate Governance
+                        </button>
+                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
+                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
+                        </button>
                     </div>
                 </div>
+
+                <script>
+                    function filterLegalDocs(btn, category) {
+                        // Update Tab Styles
+                        const container = btn.closest('.internal-tabs-container');
+                        const buttons = container.querySelectorAll('.legal-tab-btn');
+                        buttons.forEach(b => {
+                            b.classList.remove('active');
+                            b.style.background = 'white';
+                            b.style.color = '#64748b';
+                        });
+
+                        btn.classList.add('active');
+                        btn.style.background = '#3b82f6';
+                        btn.style.color = 'white';
+
+                        // Filter Rows
+                        const rows = document.querySelectorAll('.internal-doc-row');
+                        rows.forEach(row => {
+                            if (row.dataset.category === category) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // Initialize Default Tab (Policies) on Load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const firstTab = document.querySelector('.legal-tab-btn.active');
+                        if (firstTab) {
+                            // Manually trigger the filter logic for the first tab
+                            // Extract category from onclick string 'filterLegalDocs(this, 'policies')'
+                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
+                            if (match && match[1]) {
+                                filterLegalDocs(firstTab, match[1]);
+                            }
+                        }
+                    });
+                </script>
                 <div style="position: relative;">
                     <div id="internalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1055,8 +1071,24 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
                                     });
                                     if (!empty($internalDocs)):
-                                        foreach ($internalDocs as $doc): ?>
-                                            <tr>
+                                        foreach ($internalDocs as $doc):
+                                            // Auto-categorize based on name
+                                            $nameLower = strtolower($doc['name']);
+                                            $docCategory = 'policies'; // Default
+                                    
+                                            if (strpos($nameLower, 'policy') !== false || strpos($nameLower, 'handbook') !== false) {
+                                                $docCategory = 'policies';
+                                            } elseif (strpos($nameLower, 'labor') !== false || strpos($nameLower, 'contract') !== false || strpos($nameLower, 'disciplinary') !== false || strpos($nameLower, 'employee') !== false) {
+                                                $docCategory = 'labor';
+                                            } elseif (strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'rule') !== false || strpos($nameLower, 'guide') !== false || strpos($nameLower, 'procedure') !== false) {
+                                                $docCategory = 'compliance';
+                                            } elseif (strpos($nameLower, 'governance') !== false || strpos($nameLower, 'board') !== false || strpos($nameLower, 'bylaw') !== false || strpos($nameLower, 'resolution') !== false) {
+                                                $docCategory = 'governance';
+                                            } elseif (strpos($nameLower, 'risk') !== false || strpos($nameLower, 'audit') !== false) {
+                                                $docCategory = 'risk';
+                                            }
+                                            ?>
+                                            <tr class="internal-doc-row" data-category="<?php echo $docCategory; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
