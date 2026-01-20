@@ -853,7 +853,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
                                 style="text-decoration: none;">
                                 <i class="fas fa-arrow-left"></i>
-                                Back to Portal
+                                Back
                             </a>
                         <?php else: ?>
                             <button type="button" class="logout-btn" id="backDashboardBtn"
