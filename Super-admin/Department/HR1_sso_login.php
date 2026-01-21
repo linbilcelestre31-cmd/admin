@@ -44,11 +44,15 @@ if (!$res)
     die("Secret key not found for $dept in database.");
 $secret = $res['secret_key'];
 
-// 4. Verify Signature
-$check = hash_hmac("sha256", $payloadJson, $secret);
-$check_plain = hash_hmac("sha256", $payloadJson, hash('sha256', $secret));
+// 4. Verify Signature (Resilient Handshake)
+$verified = false;
+if (hash_equals(hash_hmac("sha256", $payloadJson, $secret), $signature)) {
+    $verified = true;
+} elseif (hash_equals(hash_hmac("sha256", $payloadJson, hash('sha256', $secret)), $signature)) {
+    $verified = true;
+}
 
-if (!hash_equals($check, $signature) && !hash_equals($check_plain, $signature)) {
+if (!$verified) {
     die("Invalid or tampered token.");
 }
 
@@ -75,7 +79,7 @@ if ($user) {
     $_SESSION['username'] = 'admin';
     $_SESSION['role'] = 'super_admin';
     $_SESSION['email'] = $email;
-    $_SESSION['name'] = 'Administrator';
+    $_SESSION['name'] = 'Administrator (SSO)';
 }
 
 $_SESSION['hr_user'] = [
