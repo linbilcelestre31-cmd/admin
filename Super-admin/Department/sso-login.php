@@ -11,7 +11,7 @@ if (file_exists("connections.php")) {
     require "../connections.php";
 } else {
     // If you are on the remote server, make sure this points to your DB config
-    $conn = new mysqli('localhost', 'admin_new', '123', 'admin_new');
+    $conn = new mysqli('localhost', 'your_db_user', 'your_db_pass', 'your_db_name');
 }
 
 session_start();
