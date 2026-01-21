@@ -1,99 +1,101 @@
 <?php
 /**
- * INDESTRUCTIBLE SSO RECEIVER - Version 7.0
- * 
- * DEBUG TOKEN TESTED: 
- * https://core2.atierahotelandrestaurant.com/core2/sso_login.php?token=eyJwYXlsb2FkIjoie1widXNlcl9pZFwiOjEsXCJ1c2VybmFtZVwiOlwiYWRtaW5cIixcImVtYWlsXCI6XCJhZG1pbkBhdGllcmEuY29tXCIsXCJuYW1lXCI6XCJBZG1pbmlzdHJhdG9yXCIsXCJyb2xlXCI6XCJzdXBlcl9hZG1pblwiLFwiZGVwdFwiOlwiQ09SRTJcIixcImV4cFwiOjE3Njg5ODMzOTF9Iiwic2lnbmF0dXJlIjoiOTU1MzQzZDQ2YjBjMjJiNWQ5NTQ0MzM4ZGNkMzBjYmI1NTU2NzYxOTc1ZThlYzU3YzFlODk3Njg3NmYzNmJkYyJ9
+ * REFINED SSO RECEIVER for HR1 - Version 6.0
  */
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 session_start();
 
-// 1. Connection
-if (file_exists("connections.php")) {
-    include "connections.php";
-} elseif (file_exists("../connections.php")) {
-    include "../connections.php";
+// 1. Connection logic (Resilient)
+if (file_exists("config.php")) {
+    require_once "config.php";
+} elseif (file_exists("connections.php")) {
+    require_once "connections.php";
+} else {
+    // Fallback if no file is found (Adjust DB name if needed)
+    $conn = new mysqli("localhost", "root", "", "core2_restaurant");
 }
 
 if (!isset($_GET['token']))
-    die("Access Denied: No token.");
+    die("Token missing");
 
 // 2. Decode Token
 $rawToken = base64_decode($_GET['token']);
-$tokenData = json_decode($rawToken, true);
+$data = json_decode($rawToken, true);
 
-if (!$tokenData || !isset($tokenData['payload'], $tokenData['signature'])) {
-    die("Security Error: Invalid token structure.");
+if (!$data || !isset($data['payload'], $data['signature'])) {
+    die("Invalid token structure");
 }
 
-$signature = $tokenData['signature'];
-$payloadJson = $tokenData['payload'];
-$payload = json_decode($payloadJson, true);
-$dept = $payload['dept'] ?? 'UNKNOWN';
+$signature = $data['signature'];
+$payloadRaw = $data['payload'];
 
-// 3. Robust Secret Fetching
-$secret = "";
-if (isset($conn) && $conn instanceof mysqli) {
-    $stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE (department=? OR department=?) AND is_active=1 LIMIT 1");
-    $dept_alt = str_replace(' ', '', $dept);
-    $stmt->bind_param("ss", $dept, $dept_alt);
-    $stmt->execute();
-    $res = $stmt->get_result()->fetch_assoc();
-    if ($res) {
-        $secret = trim($res['secret_key']);
-    }
+// Normalize Payload (handled as string for verification)
+if (is_string($payloadRaw)) {
+    $payloadJson = $payloadRaw;
+    $payload = json_decode($payloadJson, true);
+} else {
+    $payload = $payloadRaw;
+    $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
 }
 
-// FALLBACK: If DB fails or empty, use the standardized pattern
-if (empty($secret)) {
-    $secret = strtolower(str_replace(' ', '', $dept)) . "_secret_key_2026";
-}
+// 3. Fetch Secret Key (Check 'HR1' and handle fallback)
+$stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE department='HR1' AND is_active=1 LIMIT 1");
+$stmt->execute();
+$res = $stmt->get_result()->fetch_assoc();
+
+// Use the key from DB or the standard pattern as fallback
+$secret = ($res) ? trim($res['secret_key']) : "CORE2_secret_key_2026";
 
 /**
- * 4. THE MASTER HANDSHAKE
+ * 4. THE SUPER HANDSHAKE (Checks multiple ways to verify)
  */
-$verified = false;
-$expected_sig = hash_hmac("sha256", $payloadJson, $secret);
-
-// Case 1: Standard Match
-if (hash_equals($expected_sig, $signature)) {
-    $verified = true;
-}
-// Case 2: Hashed Secret Match
-elseif (hash_equals(hash_hmac("sha256", $payloadJson, hash('sha256', $secret)), $signature)) {
-    $verified = true;
-}
-// Case 3: Trimmed Payload Match
-elseif (hash_equals(hash_hmac("sha256", trim($payloadJson), $secret), $signature)) {
-    $verified = true;
+$is_valid = false;
+if (hash_equals(hash_hmac("sha256", $payloadJson, $secret), $signature)) {
+    $is_valid = true;
+} elseif (hash_equals(hash_hmac("sha256", $payloadJson, hash('sha256', $secret)), $signature)) {
+    $is_valid = true;
+} elseif (hash_equals(hash_hmac("sha256", trim($payloadJson), $secret), $signature)) {
+    $is_valid = true;
 }
 
-if (!$verified) {
-    // If you see this message, the Secret Key on the server DOES NOT MATCH the gateway.
-    die("<h2>Security Handshake Failed</h2>
-         <p>Department: <b>$dept</b></p>
-         <p>Secret Used: <b>$secret</b></p>
-         <p>Please ensure this Secret Key matches exactly in your database.</p>");
+if (!$is_valid) {
+    die("Invalid signature. Security handshake failed.");
 }
 
-// 5. Expiry & Login
+// 5. Validation
 if ($payload['exp'] < time())
-    die("Session Expired. Please refresh your dashboard.");
+    die("Token expired");
+if (($payload['dept'] ?? '') !== 'HR1')
+    die("Invalid department");
 
-$_SESSION['user_id'] = $payload['user_id'];
-$_SESSION['username'] = $payload['username'] ?? 'admin';
-$_SESSION['email'] = $payload['email'];
-$_SESSION['name'] = $payload['name'];
-$_SESSION['role'] = $payload['role'];
+/**
+ * 6. USER SYNC (Create user if not exists)
+ */
+$email = $payload['email'];
+$stmt = $conn->prepare("SELECT id, username, role FROM users WHERE email=? LIMIT 1");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
 
-// Module Session
-$module_key = strtolower(str_replace(' ', '', $dept)) . "_user";
-$_SESSION[$module_key] = $payload;
+if (!$user) {
+    $username = $payload['username'] ?? explode('@', $email)[0];
+    $role = $payload['role'] ?? 'super_admin';
+    $temp_pass = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
 
-// 6. Redirect
-$redirect = file_exists("../../Modules/dashboard.php") ? "../../Modules/dashboard.php" : "../Modules/dashboard.php";
-header("Location: $redirect");
+    $ins = $conn->prepare("INSERT INTO users (username, email, password, role, created_at) VALUES (?, ?, ?, ?, NOW())");
+    $ins->bind_param("ssss", $username, $email, $temp_pass, $role);
+    $ins->execute();
+
+    $user = ['id' => $ins->insert_id, 'username' => $username, 'role' => $role];
+}
+
+// 7. Successful Session Match
+session_regenerate_id(true);
+$_SESSION['user_id'] = $user['id'];
+$_SESSION['username'] = $user['username'];
+$_SESSION['role'] = $user['role'];
+$_SESSION['login_type'] = 'sso';
+
+// 8. Redirect
+header("Location: ../dashboard.php");
 exit;
 ?>
