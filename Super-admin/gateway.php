@@ -60,7 +60,7 @@ $sso_urls = [
     'CORE1' => 'https://core1.atierahotelandrestaurant.com/core1/sso_login.php',
     'CORE2' => 'https://core2.atierahotelandrestaurant.com/core2/sso_login.php',
     'LOG1' => 'https://logistics1.atierahotelandrestaurant.com/log1/sso-login.php',
-    'LOG2' => 'https://logistics2.atierahotelandrestaurant.com/log2/sso-login.php',
+    'LOG2' => 'https://logistics2.atierahotelandrestaurant.com/log2/sso_login.php',
     'FIN1' => 'https://financial.atierahotelandrestaurant.com/superadmin/index.php',
 ];
 
