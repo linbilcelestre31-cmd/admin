@@ -1,13 +1,16 @@
 <?php
 /**
- * INDESTRUCTIBLE SSO RECEIVER - Version 6.0
- * Works even if Database tables are missing!
+ * INDESTRUCTIBLE SSO RECEIVER - Version 7.0
+ * 
+ * DEBUG TOKEN TESTED: 
+ * https://core2.atierahotelandrestaurant.com/core2/sso_login.php?token=eyJwYXlsb2FkIjoie1widXNlcl9pZFwiOjEsXCJ1c2VybmFtZVwiOlwiYWRtaW5cIixcImVtYWlsXCI6XCJhZG1pbkBhdGllcmEuY29tXCIsXCJuYW1lXCI6XCJBZG1pbmlzdHJhdG9yXCIsXCJyb2xlXCI6XCJzdXBlcl9hZG1pblwiLFwiZGVwdFwiOlwiQ09SRTJcIixcImV4cFwiOjE3Njg5ODMzOTF9Iiwic2lnbmF0dXJlIjoiOTU1MzQzZDQ2YjBjMjJiNWQ5NTQ0MzM4ZGNkMzBjYmI1NTU2NzYxOTc1ZThlYzU3YzFlODk3Njg3NmYzNmJkYyJ9
  */
 
-error_reporting(0); // Hide errors from users, handle them internally
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
-// 1. Database Connection
+// 1. Connection
 if (file_exists("connections.php")) {
     include "connections.php";
 } elseif (file_exists("../connections.php")) {
@@ -15,20 +18,22 @@ if (file_exists("connections.php")) {
 }
 
 if (!isset($_GET['token']))
-    die("Access Denied: No token provided.");
+    die("Access Denied: No token.");
 
 // 2. Decode Token
-$tokenData = json_decode(base64_decode($_GET['token']), true);
+$rawToken = base64_decode($_GET['token']);
+$tokenData = json_decode($rawToken, true);
+
 if (!$tokenData || !isset($tokenData['payload'], $tokenData['signature'])) {
     die("Security Error: Invalid token structure.");
 }
 
 $signature = $tokenData['signature'];
-$payloadJson = $tokenData['payload']; // This is the string we verify
+$payloadJson = $tokenData['payload'];
 $payload = json_decode($payloadJson, true);
 $dept = $payload['dept'] ?? 'UNKNOWN';
 
-// 3. Fetch Secret Key with FALLBACK
+// 3. Robust Secret Fetching
 $secret = "";
 if (isset($conn) && $conn instanceof mysqli) {
     $stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE (department=? OR department=?) AND is_active=1 LIMIT 1");
@@ -41,61 +46,53 @@ if (isset($conn) && $conn instanceof mysqli) {
     }
 }
 
-// FALLBACK: If DB fails, we use the standard pattern
+// FALLBACK: If DB fails or empty, use the standardized pattern
 if (empty($secret)) {
     $secret = strtolower(str_replace(' ', '', $dept)) . "_secret_key_2026";
 }
 
 /**
  * 4. THE MASTER HANDSHAKE
- * We try every possible way to verify this token.
  */
 $verified = false;
+$expected_sig = hash_hmac("sha256", $payloadJson, $secret);
 
-// Case 1: Direct Match
-if (hash_equals(hash_hmac("sha256", $payloadJson, $secret), $signature)) {
+// Case 1: Standard Match
+if (hash_equals($expected_sig, $signature)) {
     $verified = true;
 }
-// Case 2: Hashed Secret Match (Gateway SHA256)
+// Case 2: Hashed Secret Match
 elseif (hash_equals(hash_hmac("sha256", $payloadJson, hash('sha256', $secret)), $signature)) {
     $verified = true;
 }
-// Case 3: Trimmed Match
+// Case 3: Trimmed Payload Match
 elseif (hash_equals(hash_hmac("sha256", trim($payloadJson), $secret), $signature)) {
     $verified = true;
 }
 
 if (!$verified) {
-    // Final desperate check: MD5/SHA512 fallbacks
-    foreach (['md5', 'sha512'] as $algo) {
-        if (hash_equals(hash_hmac("sha256", $payloadJson, hash($algo, $secret)), $signature)) {
-            $verified = true;
-            break;
-        }
-    }
+    // If you see this message, the Secret Key on the server DOES NOT MATCH the gateway.
+    die("<h2>Security Handshake Failed</h2>
+         <p>Department: <b>$dept</b></p>
+         <p>Secret Used: <b>$secret</b></p>
+         <p>Please ensure this Secret Key matches exactly in your database.</p>");
 }
 
-if (!$verified) {
-    die("Invalid or tampered token. Security handshake failed for department: " . htmlspecialchars($dept));
-}
+// 5. Expiry & Login
+if ($payload['exp'] < time())
+    die("Session Expired. Please refresh your dashboard.");
 
-// 5. Check Expiry
-if ($payload['exp'] < time()) {
-    die("Session Expired. Please login again from Super Admin.");
-}
-
-// 6. SUCCESS - SET SESSIONS
 $_SESSION['user_id'] = $payload['user_id'];
 $_SESSION['username'] = $payload['username'] ?? 'admin';
 $_SESSION['email'] = $payload['email'];
 $_SESSION['name'] = $payload['name'];
 $_SESSION['role'] = $payload['role'];
 
-// Module Context
+// Module Session
 $module_key = strtolower(str_replace(' ', '', $dept)) . "_user";
 $_SESSION[$module_key] = $payload;
 
-// 7. Redirect to Dashboard
+// 6. Redirect
 $redirect = file_exists("../../Modules/dashboard.php") ? "../../Modules/dashboard.php" : "../Modules/dashboard.php";
 header("Location: $redirect");
 exit;
