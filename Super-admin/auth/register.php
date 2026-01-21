@@ -268,6 +268,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             transform: translateY(-50%);
             color: var(--text-gray);
             font-size: 14px;
+            pointer-events: none;
+        }
+
+        .form-group .toggle-password {
+            left: auto;
+            right: 15px;
+            cursor: pointer;
+            pointer-events: all;
+            transition: color 0.3s;
+        }
+
+        .form-group .toggle-password:hover {
+            color: var(--primary-gold);
         }
 
         .btn-login {
@@ -527,6 +540,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 }, 800);
             }, 1000);
         });
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 
     <div class="bg-container">
@@ -571,13 +597,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <i class="fas fa-fingerprint"></i>
             </div>
             <div class="form-group">
-                <input type="password" name="password" class="input-control" placeholder="Password" required>
+                <input type="password" name="password" id="password" class="input-control" placeholder="Password"
+                    required>
                 <i class="fas fa-lock"></i>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
             </div>
             <div class="form-group">
-                <input type="password" name="confirm_password" class="input-control" placeholder="Confirm Password"
-                    required>
+                <input type="password" name="confirm_password" id="confirm_password" class="input-control"
+                    placeholder="Confirm Password" required>
                 <i class="fas fa-shield-halved"></i>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirm_password', this)"></i>
             </div>
             <button type="submit" class="btn-login">
                 Create Account <i class="fas fa-user-plus" style="margin-left: 10px;"></i>

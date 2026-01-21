@@ -321,6 +321,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-gray);
+            pointer-events: none;
+        }
+
+        .form-group .toggle-password {
+            left: auto;
+            right: 20px;
+            cursor: pointer;
+            pointer-events: all;
+            transition: color 0.3s;
+        }
+
+        .form-group .toggle-password:hover {
+            color: var(--primary-gold);
         }
 
         .btn-login {
@@ -571,6 +584,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }, 800);
             }, 2500); // Give it a bit of time to show the beauty
         });
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
     <div class="bg-container">
         <div class="bg-overlay"></div>
@@ -600,8 +626,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-fingerprint"></i>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" class="input-control" placeholder="Enter: Password" required>
+                    <input type="password" name="password" id="password" class="input-control" placeholder="Enter: Password"
+                        required>
                     <i class="fas fa-shield-halved"></i>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
                 </div>
                 <button type="submit" class="btn-login">
                     Sign in <i class="fas fa-bolt" style="margin-left: 10px;"></i>
