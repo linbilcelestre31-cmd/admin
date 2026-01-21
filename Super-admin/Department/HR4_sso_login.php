@@ -11,7 +11,7 @@ if (file_exists("config.php")) {
     require_once "connections.php";
 } else {
     // Fallback if no file is found
-    $conn = new mysqli("localhost", "root", "", "hr4_db");
+    $conn = new mysqli("localhost", "root", "", "hr4_hr4_hr4db");
 }
 
 if (!isset($_GET['token']))
