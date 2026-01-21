@@ -60,7 +60,7 @@ $sso_urls = [
     'CORE1' => 'https://core1.atierahotelandrestaurant.com/core1/sso_login.php',
     'CORE2' => 'https://core2.atierahotelandrestaurant.com/core2/sso_login.php',
     'LOG1' => 'https://logistics1.atierahotelandrestaurant.com/log1/sso-login.php',
-    'LOG2' => 'https://logistic2.atierahotelandrestaurant.com/log2/sso-login.php?token=eyJwYXlsb2FkIjoie1widXNlcl9pZFwiOjEsXCJ1c2VybmFtZVwiOlwiYWRtaW5cIixcImVtYWlsXCI6XCJhZG1pbkBhdGllcmEuY29tXCIsXCJuYW1lXCI6XCJTdXBlciBBZG1pblwiLFwicm9sZVwiOlwic3VwZXJfYWRtaW5cIixcImRlcHRcIjpcIkxPRzJcIixcImV4cFwiOjE3NjkwMTEwODh9Iiwic2lnbmF0dXJlIjoiNzg4NDgyNmI1MzczZjJmMDVhYTg5NWZkZGJhYTJjMjljOWZjYjcyYjhhNTQ3MDM0Y2E0MTgxYjM1YjVlYmM3YiJ9',
+    'LOG2' => 'https://logistic2.atierahotelandrestaurant.com/log2/sso-login.php',
     'FIN1' => 'https://financial.atierahotelandrestaurant.com/superadmin/index.php',
 ];
 
