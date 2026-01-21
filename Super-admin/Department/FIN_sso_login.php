@@ -38,12 +38,12 @@ if (is_string($payloadRaw)) {
 }
 
 // 3. Fetch Secret Key (Check 'HR1' and handle fallback)
-$stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE department='HR1' AND is_active=1 LIMIT 1");
+$stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE department='FIN1' AND is_active=1 LIMIT 1");
 $stmt->execute();
 $res = $stmt->get_result()->fetch_assoc();
 
 // Use the key from DB or the standard pattern as fallback
-$secret = ($res) ? trim($res['secret_key']) : "hr1_secret_key_2026";
+$secret = ($res) ? trim($res['secret_key']) : "fin1_secret_key_2026";
 
 /**
  * 4. THE SUPER HANDSHAKE (Checks multiple ways to verify)
