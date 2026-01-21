@@ -61,7 +61,7 @@ $sso_urls = [
     'CORE2' => 'https://core2.atierahotelandrestaurant.com/core2/sso_login.php',
     'LOG1' => 'https://logistics1.atierahotelandrestaurant.com/log1/sso-login.php',
     'LOG2' => 'https://logistics2.atierahotelandrestaurant.com/logistics2/sso-login.php',
-    'FIN1' => 'https://financial.atierahotelandrestaurant.com/superadmin/index.php',
+    'FIN1' => 'https://financial.atierahotelandrestaurant.com/superadmin/sso-login.php?token=eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2F0YWxhbi5qZXJlY2tvcGF1bEBnbWFpbC5jb20iLCJkZXB0IjoiRklOMSIsInJvb',
 ];
 
 $target_url = $sso_urls[strtoupper($dept_alt)] ?? "https://" . strtolower($dept_alt) . ".atierahotelandrestaurant.com/sso-login.php";
