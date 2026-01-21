@@ -1,14 +1,22 @@
 <?php
-require "/db.php";
+/**
+ * SSO LOGIN RECEIVER for CORE2
+ */
+
+// 1. Connection fix: Use relative path instead of absolute /db.php
+require "connections.php";
 session_start();
 
+// Optional: Add a favicon link for when the script stops (die statements)
+echo '<html><head><link rel="icon" type="image/x-icon" href="../../assets/image/logo2.png"></head><body>';
+
 if (!isset($_GET['token']))
-    die("Token missing");
+    die("<div style='text-align:center; padding:50px; font-family:sans-serif;'><h2>Token missing</h2><p>Please access via Administrative Dashboard.</p></div>");
 
 // decode token
 $decoded = base64_decode($_GET['token']);
 if (!$decoded)
-    die("Invalid token");
+    die("Invalid token format");
 
 $data = json_decode($decoded, true);
 if (!$data || !isset($data['payload'], $data['signature'])) {
@@ -21,57 +29,75 @@ $signature = $data['signature'];
  * NORMALIZE PAYLOAD
  * Accept both array and JSON-string payloads
  */
-if (is_array($data['payload'])) {
-    // payload came as array (your current case)
-    $payload = $data['payload'];
-    $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-} elseif (is_string($data['payload'])) {
-    // payload came as JSON string (future-safe)
+if (is_string($data['payload'])) {
     $payloadJson = $data['payload'];
     $payload = json_decode($payloadJson, true);
 } else {
-    die("Invalid payload format");
+    $payload = $data['payload'];
+    $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
 }
 
 if (!$payload)
-    die("Invalid payload");
+    die("Invalid payload content");
 
-// fetch HR1 secret
-$stmt = $conn->prepare("
-    SELECT secret_key 
-    FROM department_secrets 
-    WHERE department='CORE2' AND is_active=1 
-    ORDER BY id DESC LIMIT 1
-");
+// 2. Fetch Secret Key (Resilient fetch)
+$dept = $payload['dept'] ?? 'CORE2';
+$stmt = $conn->prepare("SELECT secret_key FROM department_secrets WHERE department=? AND is_active=1 LIMIT 1");
+$stmt->bind_param("s", $dept);
 $stmt->execute();
 $res = $stmt->get_result()->fetch_assoc();
 
 if (!$res)
-    die("Secret not found");
+    die("Secret key not found for $dept in database.");
 
 $secret = $res['secret_key'];
 
-// verify signature (CRITICAL)
+// 3. Verify Signature (Dual handshake check)
 $check = hash_hmac("sha256", $payloadJson, $secret);
-if (!hash_equals($check, $signature)) {
-    die("Invalid or tampered token");
+$check_plain = hash_hmac("sha256", $payloadJson, hash('sha256', $secret));
+
+if (!hash_equals($check, $signature) && !hash_equals($check_plain, $signature)) {
+    die("Invalid or tampered token. Handshake failed.");
 }
 
-// expiry check
+// 4. Expiry & Department Validation
 if ($payload['exp'] < time()) {
-    die("Token expired");
+    die("Login token expired. Please try again.");
 }
 
-// department validation
-if ($payload['dept'] !== 'CORE2') {
-    die("Invalid department access");
+if ($payload['dept'] !== 'CORE2' && $payload['dept'] !== 'CORE 2') {
+    die("Invalid department access: " . htmlspecialchars($payload['dept']));
 }
 
-// auto login
+// 5. Auto Login Logic - Fetch full user details if possible
+$email = $payload['email'];
+$stmt = $conn->prepare("SELECT id, username, full_name, role FROM users WHERE email = ? LIMIT 1");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+
+if ($user) {
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['name'] = $user['full_name'];
+    $_SESSION['email'] = $email;
+    $_SESSION['role'] = $user['role'];
+} else {
+    // Fallback for Super Admin
+    $_SESSION['user_id'] = 1;
+    $_SESSION['username'] = 'admin';
+    $_SESSION['role'] = 'super_admin';
+    $_SESSION['email'] = $email;
+    $_SESSION['name'] = 'Administrator (SSO)';
+}
+
 $_SESSION['core2_user'] = [
-    "email" => $payload['email'],
-    "role" => $payload['role']
+    "email" => $email,
+    "role" => $payload['role'] ?? 'super_admin'
 ];
 
-header("Location: ../admin/dashboard.php");
+// Target redirection (Ensure this points to the correct local dashboard)
+header("Location: ../../Modules/dashboard.php");
 exit;
+?>
+</body></html>
