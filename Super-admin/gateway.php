@@ -10,6 +10,7 @@ $dept = $_GET['dept'] ?? '';
 $user_email = $_SESSION['email'] ?? 'admin@atiera.com';
 $user_role = $_SESSION['role'] ?? 'super_admin';
 $user_name = $_SESSION['name'] ?? 'Super Admin';
+$user_username = $_SESSION['username'] ?? 'admin';
 
 // 1. Ensure Table Exists
 $conn->query("CREATE TABLE IF NOT EXISTS department_secrets (
@@ -47,6 +48,7 @@ $secret = $res['secret_key'];
 // 3. Prepare Payload
 $payload = [
     "user_id" => $_SESSION['user_id'],
+    "username" => $user_username,
     "email" => $user_email,
     "name" => $user_name,
     "role" => $user_role,

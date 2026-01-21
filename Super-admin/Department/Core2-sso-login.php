@@ -1,6 +1,7 @@
 <?php
 /**
- * SSO LOGIN RECEIVER for HR1
+ * SSO LOGIN RECEIVER for CORE2
+ * Updated to match user template and login logic
  */
 
 require "connections.php";
@@ -23,11 +24,14 @@ $signature = $data['signature'];
 
 /**
  * NORMALIZE PAYLOAD
+ * Accept both array and JSON-string payloads
  */
 if (is_array($data['payload'])) {
+    // payload came as array
     $payload = $data['payload'];
     $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
 } elseif (is_string($data['payload'])) {
+    // payload came as JSON string
     $payloadJson = $data['payload'];
     $payload = json_decode($payloadJson, true);
 } else {
@@ -37,11 +41,11 @@ if (is_array($data['payload'])) {
 if (!$payload)
     die("Invalid payload");
 
-// fetch HR1 secret
+// fetch CORE2 secret
 $stmt = $conn->prepare("
     SELECT secret_key
     FROM department_secrets
-    WHERE department='HR1' AND is_active=1
+    WHERE department='CORE2' AND is_active=1
     ORDER BY id DESC LIMIT 1
 ");
 $stmt->execute();
@@ -49,34 +53,42 @@ $res = $stmt->get_result()->fetch_assoc();
 
 if (!$res)
     die("Secret not found");
+
 $secret = $res['secret_key'];
 
-// verify signature
+// verify signature (CRITICAL)
 $check = hash_hmac("sha256", $payloadJson, $secret);
+// Robust check: also try hashed secret match in case DB stores plain but signed with hash (or vice-versa)
 $check_hashed_secret = hash_hmac("sha256", $payloadJson, hash('sha256', $secret));
 
 if (!hash_equals($check, $signature) && !hash_equals($check_hashed_secret, $signature)) {
     die("Invalid or tampered token");
 }
 
-// expiry & dept validation
-if ($payload['exp'] < time())
+// expiry check
+if ($payload['exp'] < time()) {
     die("Token expired");
-if ($payload['dept'] !== 'HR1')
-    die("Invalid department access");
+}
 
-// AUTO LOGIN LOGIC
+// department validation
+if ($payload['dept'] !== 'CORE2') {
+    die("Invalid department access");
+}
+
+// AUTO LOGIN LOGIC - Sync with your main login.php session variables
 $_SESSION['user_id'] = $payload['user_id'] ?? 1;
 $_SESSION['username'] = $payload['username'] ?? ($payload['email'] ?? 'admin');
 $_SESSION['name'] = $payload['name'] ?? 'Administrator';
 $_SESSION['email'] = $payload['email'] ?? 'admin@atiera.com';
 $_SESSION['role'] = $payload['role'] ?? 'super_admin';
 
-$_SESSION['hr_user'] = [
+// Module-specific session
+$_SESSION['core2_user'] = [
     "email" => $payload['email'],
     "role" => $payload['role']
 ];
 
+// Redirect to dashboard
 header("Location: ../../Modules/dashboard.php");
 exit;
 ?>
