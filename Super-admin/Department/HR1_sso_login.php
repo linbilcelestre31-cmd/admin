@@ -1,7 +1,6 @@
 <?php
 /**
- * SSO LOGIN RECEIVER (TEMPLATE)
- * Copy this file to your module (e.g., HR3) and ensure the DB settings are correct.
+ * SSO LOGIN RECEIVER for HR1
  */
 
 require "connections.php"; // Siguraduhin na ang connections.php ay tama ang settings sa db
@@ -24,8 +23,8 @@ $signature = $data['signature'];
 $payload = $data['payload'];
 $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
 
-// 2. Fetch Secret Key (Dito kukunin ang secret na 'hr3_secret_key_2026')
-$dept = $payload['dept'] ?? 'HR3';
+// 2. Fetch Secret Key
+$dept = $payload['dept'] ?? 'HR1';
 $stmt = $conn->prepare("
     SELECT secret_key 
     FROM department_secrets 
@@ -55,9 +54,6 @@ if ($payload['exp'] < time()) {
 }
 
 // 5. AUTO LOGIN LOGIC (Session Match)
-/**
- * Dito niyo po imi-match ang session variables sa main login logic niyo.
- */
 $email = $payload['email'];
 $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
 $stmt->bind_param("s", $email);
@@ -86,6 +82,7 @@ $_SESSION['hr_user'] = [
     "role" => $payload['role']
 ];
 
+// Target redirection
 header("Location: ../../Modules/dashboard.php");
 exit;
 ?>

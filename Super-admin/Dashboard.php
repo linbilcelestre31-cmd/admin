@@ -75,12 +75,12 @@ $clusters = [
         ['name' => 'HR4', 'id' => 'HR4', 'icon' => 'people-group', 'color' => 'linear-gradient(135deg, #8b5cf6, #d946ef)', 'url' => 'gateway.php?dept=HR4', 'pin' => '1234'],
     ],
     'Core Cluster' => [
-        ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'bell-concierge', 'color' => '#6366f1', 'url' => '../CORE1/index.php', 'pin' => '1234'],
-        ['name' => 'CORE 2', 'id' => 'CORE2', 'icon' => 'kitchen-set', 'color' => '#f97316', 'url' => '../CORE2/index.php', 'pin' => '1234'],
+        ['name' => 'CORE 1', 'id' => 'CORE1', 'icon' => 'bell-concierge', 'color' => '#6366f1', 'url' => 'gateway.php?dept=CORE1', 'pin' => '1234'],
+        ['name' => 'CORE 2', 'id' => 'CORE2', 'icon' => 'kitchen-set', 'color' => '#f97316', 'url' => 'gateway.php?dept=CORE2', 'pin' => '1234'],
     ],
     'Logistics Cluster' => [
-        ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'truck-fast', 'color' => '#d97706', 'url' => '../Logistics1/index.php', 'pin' => '1234'],
-        ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'box-archive', 'color' => '#7c3aed', 'url' => '../Logistics2/index.php', 'pin' => '1234'],
+        ['name' => 'Logistics 1', 'id' => 'LOG1', 'icon' => 'truck-fast', 'color' => '#d97706', 'url' => 'gateway.php?dept=LOG1', 'pin' => '1234'],
+        ['name' => 'Logistics 2', 'id' => 'LOG2', 'icon' => 'box-archive', 'color' => '#7c3aed', 'url' => 'gateway.php?dept=LOG2', 'pin' => '1234'],
     ],
     'Financial Management' => [
         ['name' => 'Financial Management', 'id' => 'Financial Management', 'icon' => 'sack-dollar', 'color' => '#10b981', 'url' => 'https://financial.atierahotelandrestaurant.com/', 'pin' => '1234'],
