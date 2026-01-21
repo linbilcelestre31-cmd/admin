@@ -66,12 +66,12 @@ $token = base64_encode(json_encode($tokenData));
 
 // 5. Define Target URLs
 $sso_urls = [
-    'HR1' => 'Department/HR1_sso_login.php',
+    'HR1' => 'https://hr1.atierahotelandrestaurant.com/hr1/sso-login.php',
     'HR2' => 'https://hr2.atierahotelandrestaurant.com/hr2/sso-login.php',
-    'HR3' => 'Department/HR3_sso_login.php',
+    'HR3' => 'https://hr3.atierahotelandrestaurant.com/hr3/sso-login.php',
     'HR4' => 'https://hr4.atierahotelandrestaurant.com/hr4/sso-login.php',
     'CORE1' => 'https://core1.atierahotelandrestaurant.com/core1/sso-login.php',
-    'CORE2' => 'https://core2.atierahotelandrestaurant.com/core2/sso-login.php',
+    'CORE2' => 'https://core2.atierahotelandrestaurant.com/core2/Core2_sso_login.php',
     'LOG1' => 'https://logistics1.atierahotelandrestaurant.com/logistics1/sso-login.php',
     'LOG2' => 'https://logistics2.atierahotelandrestaurant.com/logistics2/sso-login.php',
     'FIN1' => 'https://finance1.atierahotelandrestaurant.com/finance1/sso-login.php',
