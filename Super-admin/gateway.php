@@ -59,7 +59,7 @@ $signature = hash_hmac("sha256", $payloadJson, $secret);
 
 // 4. Encode Token
 $tokenData = [
-    "payload" => $payload,
+    "payload" => $payloadJson, // Send exact string we signed
     "signature" => $signature
 ];
 $token = base64_encode(json_encode($tokenData));
