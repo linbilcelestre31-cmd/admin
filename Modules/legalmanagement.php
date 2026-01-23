@@ -1253,7 +1253,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Policy Name</th>
                                         <th>Case ID</th>
-                                        <th>Risk Level</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1286,12 +1285,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td>
-                                                    <span
-                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                    </span>
-                                                </td>
-                                                <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
                                                             onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
@@ -1323,7 +1316,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <?php endforeach;
                                     else: ?>
                                         <tr>
-                                            <td colspan="4">No internal documents found.</td>
+                                            <td colspan="3">No internal documents found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -1387,7 +1380,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Agreement Name</th>
                                         <th>Case ID</th>
-                                        <th>Risk Level</th>
                                         <th>Expiry Date</th>
                                         <th>Actions</th>
                                     </tr>
@@ -1420,12 +1412,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                <td>
-                                                    <span
-                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                    </span>
-                                                </td>
                                                 <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
                                                 </td>
                                                 <td>
@@ -1460,7 +1446,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <?php endforeach;
                                     else: ?>
                                         <tr>
-                                            <td colspan="5">No external agreements found.</td>
+                                            <td colspan="4">No external agreements found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
