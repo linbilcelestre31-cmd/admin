@@ -676,6 +676,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
+                <!-- Maintenance Tab -->
+                <div id="maintenance" class="tab-content">
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2><span class="icon-img-placeholder">🔧</span> Maintenance Management</h2>
+                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
+                            <span class="icon-img-placeholder">➕</span> Add Maintenance Log
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%; text-align: center;">ID</th>
+                                    <th style="width: 20%; text-align: left;">Item Name</th>
+                                    <th style="width: 25%; text-align: left;">Description</th>
+                                    <th style="width: 10%; text-align: center;">Date</th>
+                                    <th style="width: 15%; text-align: left;">Assigned Staff</th>
+                                    <th style="width: 10%; text-align: center;">Contact</th>
+                                    <th style="width: 10%; text-align: center;">Status</th>
+                                    <th style="width: 5%; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 20px;">
+                                            <div style="color: #718096; font-style: italic;">
+                                                <i class="fa-regular fa-clipboard" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                No maintenance logs found.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                        <tr>
+                                            <td style="text-align: center;"><?= $log['id'] ?></td>
+                                            <td style="text-align: left; font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?></td>
+                                            <td style="text-align: left;"><?= htmlspecialchars($log['description'] ?? 'N/A') ?></td>
+                                            <td style="text-align: center;"><?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
+                                            <td style="text-align: left;"><?= htmlspecialchars($log['assigned_staff']) ?></td>
+                                            <td style="text-align: center;"><?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
+                                            <td style="text-align: center;">
+                                                <span class="status-badge status-<?= $log['status'] ?>">
+                                                    <?= ucfirst($log['status']) ?>
+                                                </span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <div class="d-flex gap-1" style="justify-content: center;">
+                                                    <button class="btn btn-danger btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); deleteMaintenanceLog(<?= $log['id'] ?>)"
+                                                        title="Delete Log" aria-label="Delete">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Calendar Tab -->
                 <!-- Reports Tab -->
                 <div id="reports" class="tab-content">
