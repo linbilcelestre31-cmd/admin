@@ -976,7 +976,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         .action-container {
             display: flex;
             gap: 8px;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             flex-wrap: nowrap;
         }
