@@ -485,8 +485,8 @@ function formatFileSize($bytes)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-purple: #8b5cf6;
-            --secondary-pink: #d946ef;
+            --primary-purple: #D4AF37;
+            --secondary-pink: #F4E4C1;
             --dark-blue: #0f172a;
             --main-bg: #f8fafc;
             --card-bg: #ffffff;
@@ -533,7 +533,7 @@ function formatFileSize($bytes)
         }
 
         .category-link:hover {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(212, 175, 55, 0.1);
             color: var(--primary-purple) !important;
             border-radius: 12px;
         }
