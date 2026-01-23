@@ -2784,9 +2784,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     setTimeout(hideLoader, 1500);
                 });
 
+                // Add Employee Modal Functions
+                function showAddEmployeeModal() {
+                    document.getElementById('addEmployeeModal').style.display = 'flex';
+                }
+
+                function closeModal(modalId) {
+                    document.getElementById(modalId).style.display = 'none';
+                }
+
+                // Close modal when clicking outside
+                window.onclick = function(event) {
+                    if (event.target.classList.contains('modal')) {
+                        event.target.style.display = 'none';
+                    }
+                }
+
                 // Safety timeout: auto-hide after 4 seconds even if resources are slow
                 setTimeout(hideLoader, 4000);
             })();
+        </script>
+
         <!-- Add Employee Modal -->
         <div id="addEmployeeModal" class="modal">
             <div class="modal-content">
@@ -2822,23 +2840,5 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </form>
             </div>
         </div>
-
-        <script>
-            function showAddEmployeeModal() {
-                document.getElementById('addEmployeeModal').style.display = 'flex';
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).style.display = 'none';
-            }
-
-            // Close modal when clicking outside
-            window.onclick = function(event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
-                }
-            }
-        </script>
     </body>
-
-    </html>
+</html>
