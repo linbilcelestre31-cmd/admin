@@ -62,11 +62,6 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     <span class="dropdown-arrow">▼</span>
                 </a>
                 <ul id="facilities-dropdown" class="dropdown-menu">
-                    <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
-                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
-                            data-tab="facilities">
-                            <span class="icon-img-placeholder">🏢</span> All Facilities
-                        </a></li>
                     <li><a href="<?= get_nav_link('maintenance', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'maintenance') ? 'active' : '' ?>"
                             data-tab="maintenance">
@@ -102,7 +97,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li><a href="../Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">🚶</span> Visitors
+                    <span class="icon-img-placeholder">🚶</span> Visitor Management
                 </a></li>
 
 
