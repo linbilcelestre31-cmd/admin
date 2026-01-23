@@ -2253,29 +2253,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             if (modal) modal.style.display = 'none';
         }
 
-        function showAddEmployeeModal() {
-            const form = document.getElementById('employeeForm');
-            const container = document.getElementById('employeeFormContainer');
-
-            // Reset form
-            form.reset();
-            const saveBtn = document.getElementById('saveEmployeeBtn');
-            saveBtn.innerText = 'Save Employee';
-            saveBtn.name = 'save_employee';
-
-            // Remove hidden ID if exists
-            const idInput = document.querySelector('input[name="employee_id"]');
-            if (idInput) idInput.remove();
-
-            // Move form to modal if not already there
-            if (form && container && !container.contains(form)) {
-                container.appendChild(form);
-                form.style.display = 'block';
-            }
-
-            showModal('employeeFormModal');
-        }
-
         function showAddDocumentModal() {
             showModal('documentFormModal');
         }
@@ -2285,20 +2262,19 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         function showAddMaintenanceModal() {
-            // Similar to showAddEmployeeModal, but for maintenance
             showModal('maintenanceFormModal');
         }
 
         // Edit employee function
         window.editEmployee = function (emp) {
-            const form = document.getElementById('employeeForm');
-            const container = document.getElementById('employeeFormContainer');
-
+            // Show the Add Employee modal
+            showAddEmployeeModal();
+            
             // Populate form fields
-            document.getElementById('employeeName').value = emp.name || '';
-            document.getElementById('employeePosition').value = emp.position || '';
-            document.getElementById('employeeEmail').value = emp.email || '';
-            document.getElementById('employeePhone').value = emp.phone || '';
+            document.getElementById('modalEmployeeName').value = emp.name || '';
+            document.getElementById('modalEmployeePosition').value = emp.position || '';
+            document.getElementById('modalEmployeeEmail').value = emp.email || '';
+            document.getElementById('modalEmployeePhone').value = emp.phone || '';
 
             // Ensure hidden ID field exists
             let idInput = document.querySelector('input[name="employee_id"]');
@@ -2306,22 +2282,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 idInput = document.createElement('input');
                 idInput.type = 'hidden';
                 idInput.name = 'employee_id';
-                document.getElementById('employeeFormData').appendChild(idInput);
+                document.getElementById('addEmployeeForm').appendChild(idInput);
             }
             idInput.value = emp.id;
 
             // Change submit button text
-            const saveBtn = document.getElementById('saveEmployeeBtn');
-            saveBtn.innerText = 'Update Employee';
-            saveBtn.name = 'save_employee';
-
-            // Move form to modal if not already there
-            if (form && container && !container.contains(form)) {
-                container.appendChild(form);
-                form.style.display = 'block';
+            const saveBtn = document.querySelector('#addEmployeeForm button[type="submit"]');
+            if (saveBtn) {
+                saveBtn.innerText = 'Update Employee';
+                saveBtn.name = 'update_employee';
             }
 
-            showModal('employeeFormModal');
+            // Update modal title
+            const modalTitle = document.querySelector('#addEmployeeModal .modal-header h3');
+            if (modalTitle) {
+                modalTitle.innerText = 'Edit Employee';
+            }
         };
 
         // Edit legal record function - FIXED VERSION
