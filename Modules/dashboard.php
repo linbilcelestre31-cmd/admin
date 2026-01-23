@@ -708,7 +708,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div id="reservations" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
-
+                        <button class="btn btn-primary" onclick="openModal('reservation-modal')">
+                            <span class="icon-img-placeholder">➕</span> Add Reservation
+                        </button>
                     </div>
 
                     <div class="table-container">

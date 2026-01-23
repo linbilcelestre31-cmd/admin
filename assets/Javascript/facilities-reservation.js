@@ -50,6 +50,11 @@ window.switchTab = function (tabName) {
     if (pageSubtitleEl) pageSubtitleEl.textContent = subtitles[tabName] || 'Manage hotel';
 
     sessionStorage.setItem('activeTab', tabName);
+
+    // Update URL without refreshing
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.replaceState({}, '', url);
 };
 
 // --- MODAL CONTROLS ---
@@ -395,7 +400,9 @@ function initializePage() {
     console.log('Initializing Facilities Reservation Page...');
 
     // Tab wiring
-    const activeTab = sessionStorage.getItem('activeTab') || 'dashboard';
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTab = urlParams.get('tab');
+    const activeTab = urlTab || sessionStorage.getItem('activeTab') || 'dashboard';
     window.switchTab(activeTab);
 
     // Initial state for management
