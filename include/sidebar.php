@@ -71,19 +71,14 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             </li>
             <li class="has-dropdown">
                 <a href="#" onclick="event.preventDefault(); toggleDropdown('reservations-dropdown');" class="dropdown-toggle">
-                    <span class="icon-img-placeholder">📅</span> Reservations & Calendar
+                    <span class="icon-img-placeholder">📅</span> Reservations
                     <span class="dropdown-arrow">▼</span>
                 </a>
                 <ul id="reservations-dropdown" class="dropdown-menu">
                     <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                             data-tab="reservations">
-                            <span class="icon-img-placeholder">📅</span> Reservations
-                        </a></li>
-                    <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
-                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
-                            data-tab="calendar">
-                            <span class="icon-img-placeholder">📅</span> Calendar
+                            <span class="icon-img-placeholder">📅</span> All Reservations
                         </a></li>
                 </ul>
             </li>
