@@ -26,6 +26,20 @@ try {
     }
 }
 
+// Self-healing: Ensure contacts table exists
+try {
+    $db->query("SELECT 1 FROM contacts LIMIT 1");
+} catch (PDOException $e) {
+    $db->exec("CREATE TABLE IF NOT EXISTS contacts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        role VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+}
+
 // Ensure static data exists in contracts for Internal/External sections
 try {
     $checkQ = $db->query("SELECT COUNT(*) FROM contracts WHERE name LIKE '%Privacy Policy%' OR name LIKE '%Logistics Supply%'");
@@ -277,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $position = $_POST['employee_position'] ?? '';
         $email = $_POST['employee_email'] ?? '';
         $phone = $_POST['employee_phone'] ?? '';
-        
+
         if ($empId > 0) {
             $q = "UPDATE contacts SET name=?, role=?, email=?, phone=? WHERE id=?";
             $s = $db->prepare($q);
@@ -423,7 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error_message = "Failed to upload file.";
             }
         }
-        
+
         // Optional cover image upload -> saved as related document
         $image_path = '';
         if (isset($_FILES['contract_image']) && $_FILES['contract_image']['error'] === UPLOAD_ERR_OK) {
@@ -552,7 +566,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         exit;
     }
-    
+
     // Add supporting document for a contract (saves into documents table using contract's case_id)
     if (isset($_POST['add_contract_document'])) {
         $contractId = intval($_POST['contract_id'] ?? 0);
@@ -626,6 +640,23 @@ try {
     $error_message = "Error fetching contracts: " . $exception->getMessage();
 }
 
+// Fetch local employees from contacts table and merge
+try {
+    $local_emp_stmt = $db->query("SELECT * FROM contacts");
+    while ($row = $local_emp_stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Direct addition for now, simplified logic
+        $employees[] = [
+            'id' => $row['id'],
+            'employee_id' => 'LCL-' . str_pad($row['id'], 3, '0', STR_PAD_LEFT),
+            'name' => $row['name'],
+            'position' => $row['role'] ?? 'N/A',
+            'email' => $row['email'] ?? 'N/A',
+            'phone' => $row['phone'] ?? 'N/A'
+        ];
+    }
+} catch (PDOException $e) {
+}
+
 // NEW: Fetch documents and billing (with fallbacks) and build risk summary
 $documents = [];
 try {
@@ -687,6 +718,100 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             vertical-align: middle;
         }
 
+        /* Modal Base Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 22px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #ef4444;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Risk Badges */
+        .risk-badge {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .risk-high {
+            background: #fee2e2 !important;
+            color: #ef4444 !important;
+            border: 1px solid #fecaca !important;
+        }
+
+        .risk-medium {
+            background: #fef3c7 !important;
+            color: #f59e0b !important;
+            border: 1px solid #fde68a !important;
+        }
+
+        .risk-low {
+            background: #dcfce7 !important;
+            color: #22c55e !important;
+            border: 1px solid #bbf7d0 !important;
+        }
+
         /* When password modal is active, hide everything except the password modal */
         .pwd-focus *:not(#passwordModal):not(#passwordModal *) {
             opacity: 0 !important;
@@ -728,6 +853,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             margin: 0 !important;
             display: block !important;
             width: 100% !important;
+            background-color: transparent !important;
         }
 
         /* Blur Effect Styles */
@@ -818,17 +944,18 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             transform: translateY(-2px);
             opacity: 0.9;
         }
-        
+
         /* Modal Styles */
         .premium-modal {
             animation: modalSlideIn 0.3s ease-out;
         }
-        
+
         @keyframes modalSlideIn {
             from {
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -842,7 +969,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div class="login-container" id="loginScreen">
         <div class="login-form">
             <div style="text-align: center; margin-bottom: 25px;">
-                <img src="../assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
+                <img src="../assets/image/logo2.png" alt="Logo" style="width: 200px; height: auto;">
             </div>
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
@@ -1007,7 +1134,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Internal Legal Management Tabs -->
                 <div class="internal-tabs-container" style="margin-bottom: 20px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -1033,7 +1160,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-                
+
                 <div style="position: relative;">
                     <div id="internalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1134,7 +1261,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- External Legal Management Tabs -->
                 <div class="external-tabs-container" style="margin-bottom: 20px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -1160,7 +1287,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-                
+
                 <div style="position: relative;">
                     <div id="externalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1345,7 +1472,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
                                         <td><?php echo htmlspecialchars($contract['contract_type'] ?? 'External'); ?></td>
                                         <td>
-                                            <span class="risk-badge risk-<?php echo strtolower($contract['risk_level'] ?? 'low'); ?>">
+                                            <span
+                                                class="risk-badge risk-<?php echo strtolower($contract['risk_level'] ?? 'low'); ?>">
                                                 <?php echo htmlspecialchars($contract['risk_level'] ?? 'Low'); ?>
                                             </span>
                                         </td>
@@ -1362,8 +1490,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick='editLegalRecord(<?php echo json_encode($contract); ?>, "contract")'>
                                                         <i class="fa-solid fa-pen-to-square"></i> Edit
                                                     </button>
-                                                    <form method="POST"
-                                                        onsubmit="return confirm('Delete this contract?');">
+                                                    <form method="POST" onsubmit="return confirm('Delete this contract?');">
                                                         <input type="hidden" name="contract_id"
                                                             value="<?php echo $contract['id']; ?>">
                                                         <button type="submit" name="delete_contract" class="action-btn delete-btn"
@@ -1447,11 +1574,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick="editMaintenanceLog(<?php echo $log['id']; ?>)">
                                                         <i class="fa-solid fa-pen-to-square"></i> Edit
                                                     </button>
-                                                    <form method="POST"
-                                                        onsubmit="return confirm('Delete this maintenance log?');">
+                                                    <form method="POST" onsubmit="return confirm('Delete this maintenance log?');">
                                                         <input type="hidden" name="maintenance_id"
                                                             value="<?php echo $log['id']; ?>">
-                                                        <button type="submit" name="delete_maintenance" class="action-btn delete-btn"
+                                                        <button type="submit" name="delete_maintenance"
+                                                            class="action-btn delete-btn"
                                                             style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
@@ -1465,7 +1592,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <tr>
                                     <td colspan="8" style="text-align: center; padding: 20px;">
                                         <div style="color: #718096; font-style: italic;">
-                                            <i class="fa-regular fa-clipboard" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                            <i class="fa-regular fa-clipboard"
+                                                style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
                                             No maintenance logs found.
                                         </div>
                                     </td>
@@ -1585,8 +1713,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 </div>
                             <?php else: ?>
                                 <div style="text-align: center; padding: 40px; color: #64748b;">
-                                    <i class="fa-solid fa-check-circle" style="font-size: 48px; margin-bottom: 20px; color: #10b981;"></i>
-                                    <p>No high-risk contracts detected. All contracts are within acceptable risk parameters.</p>
+                                    <i class="fa-solid fa-check-circle"
+                                        style="font-size: 48px; margin-bottom: 20px; color: #10b981;"></i>
+                                    <p>No high-risk contracts detected. All contracts are within acceptable risk parameters.
+                                    </p>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -1597,7 +1727,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     </div>
 
     <!-- Modals -->
-    
+
     <!-- Contract Form Modal -->
     <div id="contractFormModal" class="modal">
         <div class="modal-content">
@@ -1633,7 +1763,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <input type="file" name="contract_image" class="form-control" accept="image/*">
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="cancel-btn" onclick="closeModal('contractFormModal')">Cancel</button>
+                        <button type="button" class="cancel-btn"
+                            onclick="closeModal('contractFormModal')">Cancel</button>
                         <button type="submit" class="save-btn" name="add_contract">Upload Contract</button>
                     </div>
                 </form>
@@ -1671,7 +1802,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <input type="file" name="doc_file" class="form-control" accept=".pdf,.doc,.docx" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="cancel-btn" onclick="closeModal('documentFormModal')">Cancel</button>
+                        <button type="button" class="cancel-btn"
+                            onclick="closeModal('documentFormModal')">Cancel</button>
                         <button type="submit" class="save-btn" name="add_document">Upload</button>
                     </div>
                 </form>
@@ -1874,41 +2006,41 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <script>
         const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
-        
+
         // Global variables
         let riskChartRef = null;
-        
+
         // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize tabs
             initTabs();
-            
+
             // Initialize chart
             initRiskChart();
-            
+
             // Initialize login functionality
             initLogin();
-            
+
             // Initialize event listeners
             initEventListeners();
-            
+
             // Initialize tab filtering
             initTabFiltering();
         });
-        
+
         // Tab functionality
         function initTabs() {
             const tabs = document.querySelectorAll('.nav-tab');
             const sections = document.querySelectorAll('.content-section');
-            
+
             tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     const targetId = this.getAttribute('data-target');
-                    
+
                     // Update active tab
                     tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     // Show target section
                     sections.forEach(section => {
                         section.style.display = 'none';
@@ -1919,21 +2051,21 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 });
             });
         }
-        
+
         // Risk Chart initialization
         function initRiskChart() {
             const canvas = document.getElementById('riskDistributionChart');
             if (!canvas || typeof Chart === 'undefined') return;
-            
+
             const chartData = [
                 <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
                 <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
                 <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
             ];
-            
+
             const ctx = canvas.getContext('2d');
             if (riskChartRef) riskChartRef.destroy();
-            
+
             riskChartRef = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1973,7 +2105,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
             });
         }
-        
+
         // Login functionality
         function initLogin() {
             const pinInputs = document.querySelectorAll('.pin-digit');
@@ -1981,36 +2113,36 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             const loginScreen = document.getElementById('loginScreen');
             const dashboard = document.getElementById('dashboard');
             const errorMessage = document.getElementById('errorMessage');
-            
+
             if (!pinInputs.length) return;
-            
+
             // Enable inputs
             pinInputs.forEach(input => input.disabled = false);
             if (loginBtn) loginBtn.disabled = false;
-            
+
             // Focus first input
             pinInputs[0].focus();
-            
+
             // Input handling
             pinInputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     if (this.value && index < pinInputs.length - 1) {
                         pinInputs[index + 1].focus();
                     }
                 });
-                
-                input.addEventListener('keydown', function(e) {
+
+                input.addEventListener('keydown', function (e) {
                     if (e.key === 'Backspace' && !this.value && index > 0) {
                         pinInputs[index - 1].focus();
                     }
                 });
             });
-            
+
             // Login button handler
             if (loginBtn) {
-                loginBtn.addEventListener('click', function() {
+                loginBtn.addEventListener('click', function () {
                     const pin = Array.from(pinInputs).map(input => input.value).join('');
-                    
+
                     if (pin === APP_CORRECT_PIN) {
                         loginScreen.style.display = 'none';
                         dashboard.style.display = 'block';
@@ -2022,37 +2154,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 });
             }
         }
-        
+
         // Event listeners
         function initEventListeners() {
             // Modal close handlers
             document.querySelectorAll('.modal-close, .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const modal = this.closest('.modal');
                     if (modal) modal.style.display = 'none';
                 });
             });
-            
+
             // Back button
             const backBtn = document.getElementById('backDashboardBtn');
             if (backBtn) {
-                backBtn.addEventListener('click', function(e) {
+                backBtn.addEventListener('click', function (e) {
                     if (!this.href) {
                         e.preventDefault();
                         window.location.replace('../Modules/dashboard.php');
                     }
                 });
             }
-            
+
             // Add employee button
             const addEmployeeBtn = document.getElementById('addEmployeeBtn');
             if (addEmployeeBtn) {
-                addEmployeeBtn.addEventListener('click', function() {
+                addEmployeeBtn.addEventListener('click', function () {
                     showAddEmployeeModal();
                 });
             }
         }
-        
+
         // Tab filtering
         function initTabFiltering() {
             // Initialize internal tab filtering
@@ -2063,7 +2195,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     filterLegalDocs(firstInternalTab, match[1]);
                 }
             }
-            
+
             // Initialize external tab filtering
             const firstExternalTab = document.querySelector('.ext-tab-btn.active');
             if (firstExternalTab) {
@@ -2073,106 +2205,106 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
             }
         }
-        
+
         // Tab filtering functions
         function filterLegalDocs(btn, category) {
             const container = btn.closest('.internal-tabs-container');
             const buttons = container.querySelectorAll('.legal-tab-btn');
-            
+
             buttons.forEach(b => {
                 b.classList.remove('active');
                 b.style.background = 'white';
                 b.style.color = '#64748b';
             });
-            
+
             btn.classList.add('active');
             btn.style.background = '#3b82f6';
             btn.style.color = 'white';
-            
+
             const rows = document.querySelectorAll('.internal-doc-row');
             rows.forEach(row => {
                 row.style.display = row.dataset.category === category ? '' : 'none';
             });
         }
-        
+
         function filterExternalDocs(btn, category) {
             const container = btn.closest('.external-tabs-container');
             const buttons = container.querySelectorAll('.ext-tab-btn');
-            
+
             buttons.forEach(b => {
                 b.classList.remove('active');
                 b.style.background = 'white';
                 b.style.color = '#64748b';
             });
-            
+
             btn.classList.add('active');
             btn.style.background = '#10b981';
             btn.style.color = 'white';
-            
+
             const rows = document.querySelectorAll('.external-doc-row');
             rows.forEach(row => {
                 row.style.display = row.dataset.category === category ? '' : 'none';
             });
         }
-        
+
         // Modal functions
         function showModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.style.display = 'flex';
         }
-        
+
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.style.display = 'none';
         }
-        
+
         function showAddEmployeeModal() {
             const form = document.getElementById('employeeForm');
             const container = document.getElementById('employeeFormContainer');
-            
+
             // Reset form
             form.reset();
             const saveBtn = document.getElementById('saveEmployeeBtn');
             saveBtn.innerText = 'Save Employee';
             saveBtn.name = 'save_employee';
-            
+
             // Remove hidden ID if exists
             const idInput = document.querySelector('input[name="employee_id"]');
             if (idInput) idInput.remove();
-            
+
             // Move form to modal if not already there
             if (form && container && !container.contains(form)) {
                 container.appendChild(form);
                 form.style.display = 'block';
             }
-            
+
             showModal('employeeFormModal');
         }
-        
+
         function showAddDocumentModal() {
             showModal('documentFormModal');
         }
-        
+
         function showAddContractModal() {
             showModal('contractFormModal');
         }
-        
+
         function showAddMaintenanceModal() {
             // Similar to showAddEmployeeModal, but for maintenance
             showModal('maintenanceFormModal');
         }
-        
+
         // Edit employee function
-        window.editEmployee = function(emp) {
+        window.editEmployee = function (emp) {
             const form = document.getElementById('employeeForm');
             const container = document.getElementById('employeeFormContainer');
-            
+
             // Populate form fields
             document.getElementById('employeeName').value = emp.name || '';
             document.getElementById('employeePosition').value = emp.position || '';
             document.getElementById('employeeEmail').value = emp.email || '';
             document.getElementById('employeePhone').value = emp.phone || '';
-            
+
             // Ensure hidden ID field exists
             let idInput = document.querySelector('input[name="employee_id"]');
             if (!idInput) {
@@ -2182,38 +2314,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 document.getElementById('employeeFormData').appendChild(idInput);
             }
             idInput.value = emp.id;
-            
+
             // Change submit button text
             const saveBtn = document.getElementById('saveEmployeeBtn');
             saveBtn.innerText = 'Update Employee';
             saveBtn.name = 'save_employee';
-            
+
             // Move form to modal if not already there
             if (form && container && !container.contains(form)) {
                 container.appendChild(form);
                 form.style.display = 'block';
             }
-            
+
             showModal('employeeFormModal');
         };
-        
+
         // Edit legal record function - FIXED VERSION
-        window.editLegalRecord = function(data, type) {
+        window.editLegalRecord = function (data, type) {
             const modal = document.getElementById('editLegalModal');
             if (!modal) {
                 console.error('Edit modal not found');
                 return;
             }
-            
+
             document.getElementById('edit_legal_id').value = data.id || '';
             document.getElementById('edit_legal_type').value = type || '';
             document.getElementById('edit_legal_name').value = data.name || data.contract_name || '';
             document.getElementById('edit_legal_case_id').value = data.case_id || '';
-            
+
             const dynamicFields = document.getElementById('dynamic_edit_fields');
             if (dynamicFields) {
                 dynamicFields.innerHTML = '';
-                
+
                 if (type === 'contract') {
                     dynamicFields.innerHTML = `
                         <div class="form-group">
@@ -2230,39 +2362,39 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     `;
                 }
             }
-            
+
             showModal('editLegalModal');
         };
-        
+
         // Legal details functions
-        window.showLegalDetails = function(name, secondary, date, type, secondaryLabel) {
+        window.showLegalDetails = function (name, secondary, date, type, secondaryLabel) {
             document.getElementById('legalDetailName').textContent = name;
             document.getElementById('legalDetailCategory').textContent = type;
             document.getElementById('legalDetailSecondary').textContent = secondary;
             document.getElementById('legalDetailDate').textContent = date;
             document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
-            
+
             // Reset Blur State
             document.getElementById('legalDetailContent').classList.add('blurred-content');
             document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
-            
+
             showModal('legalDetailModal');
         };
-        
+
         function revealLegalDetails() {
             withPasswordGate(() => {
                 document.getElementById('legalDetailContent').classList.remove('blurred-content');
                 document.getElementById('legalDetailRevealOverlay').style.display = 'none';
             });
         }
-        
-        window.showLegalAnalysis = function(name, type) {
+
+        window.showLegalAnalysis = function (name, type) {
             document.getElementById('analysisTargetName').textContent = name;
             document.getElementById('analysisTargetType').textContent = type;
-            
+
             const summaryText = document.getElementById('analysisSummaryText');
             const findingsList = document.getElementById('analysisKeyFindings');
-            
+
             if (type === 'Internal') {
                 summaryText.style.background = '#f0fdf4';
                 summaryText.style.borderLeftColor = '#22c55e';
@@ -2282,40 +2414,40 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <li>Indemnification clauses are broad.</li>
                 `;
             }
-            
+
             // Reset Blur State
             document.getElementById('legalAnalysisContent').classList.add('blurred-content');
             document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
-            
+
             showModal('legalAnalysisModal');
         };
-        
+
         function revealLegalAnalysis() {
             withPasswordGate(() => {
                 document.getElementById('legalAnalysisContent').classList.remove('blurred-content');
                 document.getElementById('legalAnalysisRevealOverlay').style.display = 'none';
             });
         }
-        
+
         // Password gate functionality
-        window.withPasswordGate = function(callback) {
+        window.withPasswordGate = function (callback) {
             const modal = document.getElementById('passwordModal');
             const form = document.getElementById('passwordForm');
             const error = document.getElementById('pwdError');
             const cancel = document.getElementById('pwdCancel');
             const digits = modal.querySelectorAll('.pin-digit');
-            
+
             if (!modal) {
                 callback();
                 return;
             }
-            
+
             // Reset modal
             digits.forEach(d => d.value = '');
             if (error) error.style.display = 'none';
             modal.style.display = 'flex';
             digits[0].focus();
-            
+
             // Focus management
             digits.forEach((digit, idx) => {
                 digit.oninput = (e) => {
@@ -2325,7 +2457,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
                 };
             });
-            
+
             // Handle submission
             form.onsubmit = (e) => {
                 e.preventDefault();
@@ -2339,22 +2471,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     digits[0].focus();
                 }
             };
-            
+
             cancel.onclick = () => {
                 modal.style.display = 'none';
             };
         };
-        
+
         // PDF generation functions
         function generateInternalPDF() {
             withPasswordGate(() => {
-                const internalDocs = <?php 
-                    $internalDocs = array_filter($contracts, function ($c) {
-                        return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
-                    });
-                    echo json_encode(array_values($internalDocs)); 
+                const internalDocs = <?php
+                $internalDocs = array_filter($contracts, function ($c) {
+                    return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
+                });
+                echo json_encode(array_values($internalDocs));
                 ?>;
-                
+
                 const contentHTML = `
                     <div style="font-family: Arial, sans-serif; padding: 20px;">
                         <h1 style="color: #8b5cf6; text-align: center; margin-bottom: 30px;">Internal Documents & Policies Report</h1>
@@ -2385,20 +2517,20 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     </div>
                 `;
-                
+
                 generatePDFFromData('Internal Documents Report', contentHTML, 'Internal_Documents_Report.pdf');
             });
         }
-        
+
         function generateExternalPDF() {
             withPasswordGate(() => {
-                const externalDocs = <?php 
-                    $externalDocs = array_filter($contracts, function ($c) {
-                        return (isset($c['contract_type']) && $c['contract_type'] === 'External');
-                    });
-                    echo json_encode(array_values($externalDocs)); 
+                const externalDocs = <?php
+                $externalDocs = array_filter($contracts, function ($c) {
+                    return (isset($c['contract_type']) && $c['contract_type'] === 'External');
+                });
+                echo json_encode(array_values($externalDocs));
                 ?>;
-                
+
                 const contentHTML = `
                     <div style="font-family: Arial, sans-serif; padding: 20px;">
                         <h1 style="color: #10b981; text-align: center; margin-bottom: 30px;">External Agreements Report</h1>
@@ -2431,11 +2563,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     </div>
                 `;
-                
+
                 generatePDFFromData('External Agreements Report', contentHTML, 'External_Agreements_Report.pdf');
             });
         }
-        
+
         // PDF generation utility
         function generatePDFFromData(title, contentHTML, filename) {
             const element = document.createElement('div');
@@ -2454,7 +2586,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     © ${new Date().getFullYear()} Hotel & Restaurant Legal Management System. All rights reserved.
                 </div>
             `;
-            
+
             const opt = {
                 margin: 15,
                 filename: filename || 'Legal_Document.pdf',
@@ -2462,13 +2594,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            
+
             html2pdf().set(opt).from(element).save();
         }
-        
+
         // Loading animation
-        window.addEventListener('load', function() {
-            setTimeout(function() {
+        window.addEventListener('load', function () {
+            setTimeout(function () {
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
                     loader.style.opacity = '0';
@@ -2481,4 +2613,5 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         });
     </script>
 </body>
+
 </html>
