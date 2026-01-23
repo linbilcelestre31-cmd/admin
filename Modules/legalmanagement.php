@@ -1115,7 +1115,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
             </div>
 
-            <div class="content-section" id="employees">
+            <div class="content-section active" id="employees">
                 <h2 class="section-title">Employee Information</h2>
                 <button class="add-btn" id="addEmployeeBtn">
                     <i>+</i> Add Employee
