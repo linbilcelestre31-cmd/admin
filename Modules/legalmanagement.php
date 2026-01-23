@@ -1111,7 +1111,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="nav-tab" data-target="external">External</div>
                 <div class="nav-tab" data-target="documents">Documents</div>
                 <div class="nav-tab" data-target="contracts">Contracts</div>
-                <div class="nav-tab" data-target="maintenance">Maintenance</div>
                 <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
             </div>
 
@@ -1605,97 +1604,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <?php else: ?>
                                 <tr>
                                     <td colspan="6">No contracts found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Maintenance Section -->
-            <div class="content-section" id="maintenance">
-                <div class="section-header">
-                    <h2 class="section-title">Maintenance Management</h2>
-                    <button class="add-btn" onclick="showAddMaintenanceModal()">
-                        <i>+</i> Add Maintenance Log
-                    </button>
-                </div>
-
-                <!-- Maintenance Table -->
-                <div class="table-scroll-container">
-                    <table class="data-table premium-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Item Name</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                                <th>Assigned Staff</th>
-                                <th>Contact</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            // Fetch maintenance logs from database
-                            try {
-                                $maintenance_query = "SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC";
-                                $maintenance_stmt = $db->query($maintenance_query);
-                                $maintenance_logs = $maintenance_stmt->fetchAll(PDO::FETCH_ASSOC);
-                            } catch (PDOException $e) {
-                                $maintenance_logs = [];
-                            }
-                            ?>
-                            <?php if (!empty($maintenance_logs)): ?>
-                                <?php foreach ($maintenance_logs as $log): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($log['id']); ?></td>
-                                        <td><?php echo htmlspecialchars($log['item_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($log['description'] ?? 'N/A'); ?></td>
-                                        <td><?php echo date('m/d/Y', strtotime($log['maintenance_date'])); ?></td>
-                                        <td><?php echo htmlspecialchars($log['assigned_staff']); ?></td>
-                                        <td><?php echo htmlspecialchars($log['contact_number'] ?? 'N/A'); ?></td>
-                                        <td>
-                                            <span class="status-badge status-<?php echo strtolower($log['status']); ?>">
-                                                <?php echo ucfirst($log['status']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="action-container">
-                                                <button class="action-btn view-btn"
-                                                    onclick="viewMaintenanceLog(<?php echo $log['id']; ?>)">
-                                                    <i class="fa-solid fa-eye"></i> View
-                                                </button>
-                                                <?php if ($isSuperAdmin): ?>
-                                                    <button class="action-btn edit-btn"
-                                                        style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                        onclick="editMaintenanceLog(<?php echo $log['id']; ?>)">
-                                                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                    </button>
-                                                    <form method="POST" onsubmit="return confirm('Delete this maintenance log?');">
-                                                        <input type="hidden" name="maintenance_id"
-                                                            value="<?php echo $log['id']; ?>">
-                                                        <button type="submit" name="delete_maintenance"
-                                                            class="action-btn delete-btn"
-                                                            style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="8" style="text-align: center; padding: 20px;">
-                                        <div style="color: #718096; font-style: italic;">
-                                            <i class="fa-regular fa-clipboard"
-                                                style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                            No maintenance logs found.
-                                        </div>
-                                    </td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
