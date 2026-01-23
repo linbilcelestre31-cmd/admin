@@ -74,6 +74,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="reservations">
                     <span class="icon-img-placeholder">📅</span> Reservations
                 </a></li>
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
+                    data-tab="calendar">
+                    <span class="icon-img-placeholder">📅</span> Calendar
+                </a></li>
             <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
                     data-tab="management">
