@@ -2782,26 +2782,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 // Hide after all resources load with a slight delay for better UX
                 window.addEventListener('load', () => {
                     setTimeout(hideLoader, 1500);
-                });
 
-                // Add Employee Modal Functions
-                function showAddEmployeeModal() {
-                    document.getElementById('addEmployeeModal').style.display = 'flex';
-                }
-
-                function closeModal(modalId) {
-                    document.getElementById(modalId).style.display = 'none';
-                }
-
-                // Close modal when clicking outside
-                window.onclick = function(event) {
-                    if (event.target.classList.contains('modal')) {
-                        event.target.style.display = 'none';
+                    // Add Employee Modal Functions
+                    function showAddEmployeeModal() {
+                        document.getElementById('addEmployeeModal').style.display = 'flex';
                     }
-                }
 
-                // Safety timeout: auto-hide after 4 seconds even if resources are slow
-                setTimeout(hideLoader, 4000);
+                    function closeModal(modalId) {
+                        document.getElementById(modalId).style.display = 'none';
+                    }
+
+                    // Close modal when clicking outside
+                    window.onclick = function(event) {
+                        if (event.target.classList.contains('modal')) {
+                            event.target.style.display = 'none';
+                        }
+                    }
+
+                    // Safety timeout: auto-hide after 4 seconds even if resources are slow
+                    setTimeout(hideLoader, 4000);
+                });
             })();
         </script>
 
