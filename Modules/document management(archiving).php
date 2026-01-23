@@ -485,13 +485,15 @@ function formatFileSize($bytes)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-purple: #D4AF37;
-            --secondary-pink: #F4E4C1;
-            --dark-blue: #0f172a;
-            --main-bg: #f8fafc;
+            --primary-blue: #2563eb;
+            --secondary-blue: #3b82f6;
+            --accent-blue: #60a5fa;
+            --light-blue: #eff6ff;
+            --dark-blue: #1e3a8a;
+            --main-bg: #ffffff;
             --card-bg: #ffffff;
             --text-dark: #1e293b;
-            --text-gray: #64748b;
+            --text-gray: #475569;
         }
 
         * {
@@ -502,14 +504,10 @@ function formatFileSize($bytes)
         }
 
         body {
-            background: 
-                linear-gradient(45deg, #3b82f6 25%, transparent 25%),
-                linear-gradient(-45deg, #3b82f6 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #3b82f6 75%),
-                linear-gradient(-45deg, transparent 75%, #3b82f6 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: #ffffff;
+            background-color: var(--main-bg);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
             color: var(--text-dark);
             min-height: 100vh;
         }
@@ -535,13 +533,14 @@ function formatFileSize($bytes)
         .category-link.active,
         .category-link.active i {
             color: white !important;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink)) !important;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)) !important;
             border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .category-link:hover {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--primary-purple) !important;
+            background: var(--light-blue);
+            color: var(--primary-blue) !important;
             border-radius: 12px;
         }
 
@@ -557,16 +556,18 @@ function formatFileSize($bytes)
             background: white;
             padding: 25px;
             border-radius: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             gap: 20px;
-            border: 1px solid #e2e8f0;
-            transition: transform 0.3s;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-blue);
         }
 
         .stat-icon {
@@ -582,7 +583,7 @@ function formatFileSize($bytes)
 
         .stat-info h4 {
             font-size: 14px;
-            color: #64748b;
+            color: var(--text-gray);
             margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -591,23 +592,23 @@ function formatFileSize($bytes)
         .stat-info p {
             font-size: 24px;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--dark-blue);
         }
 
         .bg-blue {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
         }
 
         .bg-purple {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
 
         .bg-orange {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
         }
 
         .bg-green {
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #93c5fd, #60a5fa);
         }
 
         .category-content {
@@ -631,11 +632,12 @@ function formatFileSize($bytes)
             flex-shrink: 0;
             background: white;
             border-radius: 24px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #f1f5f9;
             padding: 25px;
             height: fit-content;
             position: sticky;
             top: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .content {
@@ -705,9 +707,9 @@ function formatFileSize($bytes)
         .table-container {
             background: white;
             border-radius: 24px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #f1f5f9;
             overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
         .financial-table {
@@ -723,7 +725,7 @@ function formatFileSize($bytes)
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-gray);
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .financial-table td {
@@ -748,8 +750,8 @@ function formatFileSize($bytes)
 
         .btn-view-small:hover {
             transform: translateY(-2px);
-            background: #eff6ff;
-            color: #3b82f6;
+            background: var(--light-blue);
+            color: var(--primary-blue);
         }
 
         .blurred-content {
@@ -776,13 +778,15 @@ function formatFileSize($bytes)
             border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
         }
 
         header {
             background: white;
             padding: 15px 0;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #f1f5f9;
             margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
         .header-content {
@@ -793,9 +797,10 @@ function formatFileSize($bytes)
 
         .logo h2 {
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-pink));
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
 
         nav ul {
@@ -811,16 +816,16 @@ function formatFileSize($bytes)
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
 
         nav a:hover,
         nav a.active {
-            color: var(--primary-purple);
+            color: var(--primary-blue);
         }
 
         .btn-primary {
-            background: var(--primary-purple);
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
             color: white;
             border: none;
             padding: 10px 20px;
@@ -828,12 +833,12 @@ function formatFileSize($bytes)
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .btn-primary:hover {
-            background: #7c3aed;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
         }
 
         footer {
@@ -852,8 +857,8 @@ function formatFileSize($bytes)
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
         }
@@ -865,6 +870,7 @@ function formatFileSize($bytes)
             width: 500px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             position: relative;
+            border: 1px solid #f1f5f9;
         }
 
         .modal-header {
@@ -877,7 +883,7 @@ function formatFileSize($bytes)
         .modal-header h3 {
             font-size: 20px;
             font-weight: 700;
-            color: var(--text-dark);
+            color: var(--dark-blue);
         }
 
         .close {
@@ -900,7 +906,7 @@ function formatFileSize($bytes)
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text-gray);
+            color: var(--text-dark);
         }
 
         .form-group input,
@@ -911,11 +917,14 @@ function formatFileSize($bytes)
             border-radius: 12px;
             border: 1px solid #e2e8f0;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: #f8fafc;
         }
 
         .form-group input:focus {
-            border-color: var(--primary-purple);
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
         .form-actions {
@@ -959,13 +968,14 @@ function formatFileSize($bytes)
             max-width: 450px;
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-blue);
         }
 
         /* Table protocol redesign */
         .financial-table-container {
             background: white;
             border-radius: 24px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #f1f5f9;
             overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
@@ -1482,7 +1492,7 @@ function formatFileSize($bytes)
             if (!grid) return;
 
             // Show loading state
-            grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #8b5cf6;"></i><p style="margin-top: 10px; color: #64748b;">Loading financial records...</p></div>';
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i><p style="margin-top: 10px; color: var(--text-gray);">Loading financial records...</p></div>';
 
             fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
                 .then(response => response.json())
@@ -1617,7 +1627,7 @@ function formatFileSize($bytes)
                                 <tr style="transition: background 0.2s;">
                                     <td style="font-weight: 600; text-align: left; padding: 15px 20px; white-space: nowrap; border-bottom: 1px solid #f1f5f9;">
                                         <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 35px; height: 35px; background: #f3e8ff; color: #9333ea; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem;">
+                                            <div style="width: 35px; height: 35px; background: var(--light-blue); color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem;">
                                                 <i class="fas fa-user"></i>
                                             </div>
                                             <span style="color: #1e293b; font-size: 0.95rem;">${item.full_name || item.name}</span>
@@ -1876,9 +1886,7 @@ function formatFileSize($bytes)
             content.innerHTML = `
                 <div style="position: relative; text-align: center;">
                     <div id="fileSensitive" class="blurred-content">
-                         <div style="margin-bottom: 20px;">
-                            <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1; padding: 2px;">
-                        </div>
+                            <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-blue); padding: 2px;">
                         
                         <h2 style="margin: 0 0 5px 0; color: #1f2937;">${file.full_name || file.name || 'Unnamed'}</h2>
                         <p style="color: #6b7280; margin: 0 0 20px 0;">${file.category || 'Standard Guest'}</p>
