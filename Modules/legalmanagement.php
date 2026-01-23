@@ -2604,7 +2604,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
+            if (event && event.target && event.target.classList && event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
