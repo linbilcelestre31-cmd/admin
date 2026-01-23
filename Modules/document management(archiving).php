@@ -485,8 +485,8 @@ function formatFileSize($bytes)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-purple: #8b5cf6;
-            --secondary-pink: #d946ef;
+            --primary-purple: #D4AF37;
+            --secondary-pink: #F4E4C1;
             --dark-blue: #0f172a;
             --main-bg: #f8fafc;
             --card-bg: #ffffff;
@@ -502,7 +502,14 @@ function formatFileSize($bytes)
         }
 
         body {
-            background: var(--main-bg);
+            background: 
+                linear-gradient(45deg, #3b82f6 25%, transparent 25%),
+                linear-gradient(-45deg, #3b82f6 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #3b82f6 75%),
+                linear-gradient(-45deg, transparent 75%, #3b82f6 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #ffffff;
             color: var(--text-dark);
             min-height: 100vh;
         }
@@ -533,7 +540,7 @@ function formatFileSize($bytes)
         }
 
         .category-link:hover {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(212, 175, 55, 0.1);
             color: var(--primary-purple) !important;
             border-radius: 12px;
         }

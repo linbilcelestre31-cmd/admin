@@ -571,144 +571,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Dashboard Tab -->
                 <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
 
-                <!-- Facilities Tab -->
-                <div id="facilities" class="tab-content">
-                    <div class="d-flex justify-between align-center mb-2">
-                        <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
-                        <button class="btn btn-primary" onclick="openModal('facility-modal')">
-                            <span class="icon-img-placeholder">➕</span> Add Facility
-                        </button>
-                    </div>
-
-                    <div class="facilities-grid">
-                        <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                            <div class="facility-card">
-                                <div class="facility-image">
-                                    <?php
-                                    // 1. I-normalize ang facility name para magamit sa filename
-                                    $base_name = str_replace(' ', '', ucwords(strtolower($facility['name']))); // ExecutiveBoardroom
-                                    $base_name_underscored = str_replace(' ', '_', strtolower($facility['name'])); // executive_boardroom
-                                    $name_with_spaces_title_case = ucwords(strtolower($facility['name'])); // Executive Boardroom
-                                
-                                    $possible_files = [
-                                        // New files check (with spaces and Title Case)
-                                        $name_with_spaces_title_case . '.jpeg',
-                                        $name_with_spaces_title_case . '.jpg',
-                                        // Existing checks (underscores and no spaces)
-                                        $base_name_underscored . '.jpg',
-                                        $base_name_underscored . '.jpeg',
-                                        $base_name . '.jpg',
-                                        $base_name . '.jpeg',
-                                        // Specific file names observed in screenshot (e.g., Grand Ballroom.jpeg)
-                                        $facility['name'] . '.jpeg',
-                                        $facility['name'] . '.jpg',
-                                    ];
-
-                                    $image_url = '';
-                                    $is_placeholder = true;
-
-                                    foreach ($possible_files as $file) {
-                                        // FIX: Ensure file_exists uses the correct relative path from the server's perspective
-                                        $full_path = __DIR__ . '/../assets/image/' . $file;
-                                        if (file_exists($full_path)) {
-                                            $image_url = '../assets/image/' . $file;
-                                            $is_placeholder = false;
-                                            break;
-                                        }
-                                    }
-
-                                    // FIX: Pinalitan ang match() ng switch statement para sa compatibility
-                                    $placeholder_color = '1a365d'; // Default
-                                    switch ($facility['type']) {
-                                        case 'banquet':
-                                            $placeholder_color = '764ba2';
-                                            break; // Purple
-                                        case 'meeting':
-                                        case 'conference':
-                                            $placeholder_color = '3182ce';
-                                            break; // Blue
-                                        case 'outdoor':
-                                            $placeholder_color = '38a169';
-                                            break; // Green
-                                        case 'dining':
-                                            $placeholder_color = '00b5d8';
-                                            break; // Teal
-                                        case 'lounge':
-                                            $placeholder_color = 'd69e2e';
-                                            break; // Yellow
-                                        default:
-                                            $placeholder_color = '1a365d';
-                                            break; // Primary Dark Blue
-                                    }
-
-                                    $placeholder_text = strtoupper(htmlspecialchars($facility['name'] ?: $facility['type']));
-
-
-                                    if ($is_placeholder) {
-                                        // Gumamit ng placeholder na may kulay at text
-                                        $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . $placeholder_text;
-                                        $onerror = "this.onerror=null;this.src='{$image_url}';";
-                                    } else {
-                                        // Gumamit ng placeholder bilang fallback kung sakaling may error sa image path sa browser
-                                        $onerror = "this.onerror=null;this.src='https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=IMAGE+FAIL';";
-                                    }
-                                    ?>
-                                    <img src="<?= htmlspecialchars($image_url) ?>"
-                                        alt="<?= htmlspecialchars($facility['name']) ?>"
-                                        onerror="<?= htmlspecialchars($onerror) ?>"
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                                <div class="facility-content">
-                                    <div class="facility-header">
-                                        <div>
-                                            <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
-                                            <button class="facility-type"
-                                                onclick="filterByType('<?= htmlspecialchars($facility['type']) ?>')">
-                                                <?= strtoupper(htmlspecialchars($facility['type'])) ?>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <!-- BAGONG BUTTON: View Details -->
-                                    <button class="btn btn-outline btn-sm mb-1"
-                                        onclick="viewFacilityDetails(<?= $facility['id'] ?>)"
-                                        style="padding: 0.4rem 0.8rem;">
-                                        <span class="icon-img-placeholder" style="font-size: 0.9rem;">🔎</span> View Details
-                                    </button>
-                                    <div class="facility-details">
-                                        <?= htmlspecialchars($facility['description']) ?>
-                                    </div>
-                                    <div class="facility-meta">
-                                        <div class="meta-item"><span class="icon-img-placeholder">👤</span> Capacity:
-                                            <?= $facility['capacity'] ?>
-                                        </div>
-                                        <div class="meta-item"><span class="icon-img-placeholder">📍</span>
-                                            <?= htmlspecialchars($facility['location']) ?></div>
-                                    </div>
-                                    <?php if (!empty($facility['amenities'])): ?>
-                                        <div class="mb-1">
-                                            <strong><span class="icon-img-placeholder">🌟</span> Amenities:</strong>
-                                            <div style="font-size: 0.875rem; color: #718096; margin-top: 0.25rem;">
-                                                <?= htmlspecialchars($facility['amenities']) ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
-                                    </div>
-                                    <button class="btn btn-primary btn-block"
-                                        onclick="openReservationModal(<?= $facility['id'] ?>)">
-                                        <span class="icon-img-placeholder">➕</span> Reserve This Facility
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
                 <!-- Reservations Tab -->
                 <div id="reservations" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
-
+                        <button class="btn btn-primary" onclick="openModal('reservation-modal')">
+                            <span class="icon-img-placeholder">➕</span> Add Reservation
+                        </button>
                     </div>
 
                     <div class="table-container">
@@ -797,6 +666,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <i class="fa-solid fa-flag-checkered"></i>
                                                         </button>
                                                     <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Maintenance Tab -->
+                <div id="maintenance" class="tab-content">
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2><span class="icon-img-placeholder">🔧</span> Maintenance Management</h2>
+                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
+                            <span class="icon-img-placeholder">➕</span> Add Maintenance Log
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%; text-align: center;">ID</th>
+                                    <th style="width: 20%; text-align: left;">Item Name</th>
+                                    <th style="width: 25%; text-align: left;">Description</th>
+                                    <th style="width: 10%; text-align: center;">Date</th>
+                                    <th style="width: 15%; text-align: left;">Assigned Staff</th>
+                                    <th style="width: 10%; text-align: center;">Contact</th>
+                                    <th style="width: 10%; text-align: center;">Status</th>
+                                    <th style="width: 5%; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 20px;">
+                                            <div style="color: #718096; font-style: italic;">
+                                                <i class="fa-regular fa-clipboard" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                No maintenance logs found.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                        <tr>
+                                            <td style="text-align: center;"><?= $log['id'] ?></td>
+                                            <td style="text-align: left; font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?></td>
+                                            <td style="text-align: left;"><?= htmlspecialchars($log['description'] ?? 'N/A') ?></td>
+                                            <td style="text-align: center;"><?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
+                                            <td style="text-align: left;"><?= htmlspecialchars($log['assigned_staff']) ?></td>
+                                            <td style="text-align: center;"><?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
+                                            <td style="text-align: center;">
+                                                <span class="status-badge status-<?= $log['status'] ?>">
+                                                    <?= ucfirst($log['status']) ?>
+                                                </span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <div class="d-flex gap-1" style="justify-content: center;">
+                                                    <button class="btn btn-danger btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); deleteMaintenanceLog(<?= $log['id'] ?>)"
+                                                        title="Delete Log" aria-label="Delete">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>

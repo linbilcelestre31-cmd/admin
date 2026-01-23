@@ -88,7 +88,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 </a></li>
             <li><a href="../Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">🚶</span> Visitors Log
+                    <span class="icon-img-placeholder">🚶</span> Visitors Management
                 </a></li>
 
 

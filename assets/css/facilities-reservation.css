@@ -182,6 +182,49 @@ body {
     color: #fbbf24;
 }
 
+/* Dropdown Styles */
+.has-dropdown .dropdown-toggle {
+    justify-content: space-between;
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-menu {
+    display: none;
+    list-style: none;
+    margin: 0.25rem 0 0.25rem 1rem;
+    padding: 0;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown-menu a {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-left: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #3182ce;
+    transform: translateX(3px);
+}
+
+.dropdown-menu a.active {
+    background: rgba(49, 130, 206, 0.3);
+    border-left-color: #3182ce;
+}
+
 /* Sidebar Header with Burger & Back Button */
 .sidebar-header {
     display: flex;
