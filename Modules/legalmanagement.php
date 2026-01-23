@@ -1116,7 +1116,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             <div class="content-section active" id="employees">
               
-                <button class="add-btn" id="addEmployeeBtn">
+                <button class="add-btn" id="addEmployeeBtn" onclick="showAddEmployeeModal()">
                     <i>+</i> Add Employee
                 </button>
 
@@ -2612,12 +2612,233 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             // Hide after all resources load with a slight delay for better UX
             window.addEventListener('load', () => {
                 setTimeout(hideLoader, 1500);
-            });
 
-            // Safety timeout: auto-hide after 4 seconds even if resources are slow
-            setTimeout(hideLoader, 4000);
-        })();
-    </script>
-</body>
+                // Focus management
+                digits.forEach((digit, idx) => {
+                    digit.oninput = (e) => {
+                        if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
+                    };
+                    digit.onkeydown = (e) => {
+                        if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
+                    };
+                });
 
-</html>
+                // Handle submission
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    const pin = Array.from(digits).map(d => d.value).join('');
+                    if (pin === APP_CORRECT_PIN) {
+                        modal.style.display = 'none';
+                        callback();
+                    } else {
+                        if (error) error.style.display = 'block';
+                        digits.forEach(d => d.value = '');
+                        digits[0].focus();
+                    }
+                };
+
+                cancel.onclick = () => {
+                    modal.style.display = 'none';
+                };
+            };
+
+            // PDF generation functions
+            function generateInternalPDF() {
+                withPasswordGate(() => {
+                    const internalDocs = <?php
+                    $internalDocs = array_filter($contracts, function ($c) {
+                        return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
+                    });
+                    echo json_encode(array_values($internalDocs));
+                    ?>;
+
+                    const contentHTML = `
+                        <div style="font-family: Arial, sans-serif; padding: 20px;">
+                            <h1 style="color: #8b5cf6; text-align: center; margin-bottom: 30px;">Internal Documents & Policies Report</h1>
+                            <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on ${new Date().toLocaleDateString()}</p>
+                        
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                                <thead>
+                                    <tr style="background: #8b5cf6; color: white;">
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Policy Name</th>
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Case ID</th>
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Created Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${internalDocs.map(doc => `
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${doc.name}</td>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${doc.case_id}</td>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).toLocaleDateString()}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        
+                            <div style="text-align: center; color: #666; font-size: 12px;">
+                                <p>Confidential Internal Documents Report</p>
+                                <p>Total Documents: ${internalDocs.length}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    generatePDFFromData('Internal Documents Report', contentHTML, 'Internal_Documents_Report.pdf');
+                });
+            }
+
+            function generateExternalPDF() {
+                withPasswordGate(() => {
+                    const externalDocs = <?php
+                    $externalDocs = array_filter($contracts, function ($c) {
+                        return (isset($c['contract_type']) && $c['contract_type'] === 'External');
+                    });
+                    echo json_encode(array_values($externalDocs));
+                    ?>;
+
+                    const contentHTML = `
+                        <div style="font-family: Arial, sans-serif; padding: 20px;">
+                            <h1 style="color: #10b981; text-align: center; margin-bottom: 30px;">External Agreements Report</h1>
+                            <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on ${new Date().toLocaleDateString()}</p>
+                        
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                                <thead>
+                                    <tr style="background: #10b981; color: white;">
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Agreement Name</th>
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Case ID</th>
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Expiry Date</th>
+                                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Created Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${externalDocs.map(doc => `
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${doc.name}</td>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${doc.case_id}</td>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).setFullYear(new Date(doc.created_at).getFullYear() + 1).toLocaleDateString()}</td>
+                                            <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).toLocaleDateString()}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        
+                            <div style="text-align: center; color: #666; font-size: 12px;">
+                                <p>External Agreements & Contracts Report</p>
+                                <p>Total Agreements: ${externalDocs.length}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    generatePDFFromData('External Agreements Report', contentHTML, 'External_Agreements_Report.pdf');
+                });
+            }
+
+            // PDF generation utility
+            function generatePDFFromData(title, contentHTML, filename) {
+                const element = document.createElement('div');
+                element.style.padding = '20px';
+                element.style.fontFamily = 'Arial, sans-serif';
+                element.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                        <h1 style="color: #2c3e50; margin: 0;">Legal Management System</h1>
+                        <h2 style="color: #3498db; margin: 5px 0 0;">${title}</h2>
+                        <p style="color: #7f8c8d; font-size: 0.9rem;">Generated on: ${new Date().toLocaleString()}</p>
+                    </div>
+                    <div style="color: #334155; line-height: 1.6;">
+                        ${contentHTML}
+                    </div>
+                    <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.8rem; text-align: center; color: #94a3b8;">
+                        &copy; ${new Date().getFullYear()} Hotel & Restaurant Legal Management System. All rights reserved.
+                    </div>
+                `;
+
+                const opt = {
+                    margin: 15,
+                    filename: filename || 'Legal_Document.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save();
+            }
+
+            // Loading animation with safety timeout
+            (function () {
+                let loaderHidden = false;
+                const hideLoader = function () {
+                    if (loaderHidden) return;
+                    loaderHidden = true;
+                    const loader = document.getElementById('loadingOverlay');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                        }, 800);
+                    }
+                    document.body.classList.add('loaded');
+                };
+
+                // Hide after all resources load with a slight delay for better UX
+                window.addEventListener('load', () => {
+                    setTimeout(hideLoader, 1500);
+                });
+
+                // Safety timeout: auto-hide after 4 seconds even if resources are slow
+                setTimeout(hideLoader, 4000);
+            })();
+        <!-- Add Employee Modal -->
+        <div id="addEmployeeModal" class="modal">
+            <div class="modal-content">
+                <button type="button" class="modal-close" onclick="closeModal('addEmployeeModal')">&times;</button>
+                <div class="modal-header">
+                    <h3>Add New Employee</h3>
+                </div>
+                <form method="POST" id="addEmployeeForm">
+                    <div class="form-group">
+                        <label for="modalEmployeeName">Name</label>
+                        <input type="text" id="modalEmployeeName" name="employee_name" class="form-control"
+                            placeholder="Enter employee name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEmployeePosition">Position</label>
+                        <input type="text" id="modalEmployeePosition" name="employee_position" class="form-control"
+                            placeholder="Enter position" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEmployeeEmail">Email</label>
+                        <input type="email" id="modalEmployeeEmail" name="employee_email" class="form-control"
+                            placeholder="Enter email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEmployeePhone">Phone</label>
+                        <input type="text" id="modalEmployeePhone" name="employee_phone" class="form-control"
+                            placeholder="Enter phone number" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal('addEmployeeModal')">Cancel</button>
+                        <button type="submit" class="save-btn" name="save_employee">Save Employee</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function showAddEmployeeModal() {
+                document.getElementById('addEmployeeModal').style.display = 'flex';
+            }
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            }
+        </script>
+    </body>
+
+    </html>
