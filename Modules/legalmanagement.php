@@ -945,6 +945,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             opacity: 0.9;
         }
 
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b3e;
+            /* Matches login background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .loading-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        /* Prevent scroll during loading */
+        body:not(.loaded) {
+            overflow: hidden !important;
+        }
+
         /* Modal Styles */
         .premium-modal {
             animation: modalSlideIn 0.3s ease-out;
@@ -965,6 +994,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 </head>
 
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <iframe src="../animation/loading.html" allowtransparency="true"></iframe>
+    </div>
+
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-form">
@@ -1169,6 +1203,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Policy Name</th>
                                         <th>Case ID</th>
+                                        <th>Risk Level</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1201,6 +1236,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td>
+                                                    <span
+                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
+                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
                                                             onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
@@ -1232,7 +1273,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <?php endforeach;
                                     else: ?>
                                         <tr>
-                                            <td colspan="3">No internal documents found.</td>
+                                            <td colspan="4">No internal documents found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -1296,6 +1337,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Agreement Name</th>
                                         <th>Case ID</th>
+                                        <th>Risk Level</th>
                                         <th>Expiry Date</th>
                                         <th>Actions</th>
                                     </tr>
@@ -1328,6 +1370,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                                <td>
+                                                    <span
+                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
+                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
+                                                    </span>
+                                                </td>
                                                 <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
                                                 </td>
                                                 <td>
@@ -1362,7 +1410,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <?php endforeach;
                                     else: ?>
                                         <tr>
-                                            <td colspan="4">No external agreements found.</td>
+                                            <td colspan="5">No external agreements found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -1999,10 +2047,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <iframe src="../animation/loading.html" allowtransparency="true"></iframe>
-    </div>
+
 
     <script>
         const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
@@ -2048,6 +2093,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             section.style.display = 'block';
                         }
                     });
+
+                    // Re-initialize chart if target is risk analysis
+                    if (targetId === 'risk_analysis') {
+                        setTimeout(initRiskChart, 50);
+                    }
                 });
             });
         }
@@ -2598,19 +2648,30 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             html2pdf().set(opt).from(element).save();
         }
 
-        // Loading animation
-        window.addEventListener('load', function () {
-            setTimeout(function () {
+        // Loading animation with safety timeout
+        (function () {
+            let loaderHidden = false;
+            const hideLoader = function () {
+                if (loaderHidden) return;
+                loaderHidden = true;
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
                     loader.style.opacity = '0';
                     setTimeout(() => {
                         loader.style.display = 'none';
-                    }, 500);
+                    }, 800);
                 }
                 document.body.classList.add('loaded');
-            }, 2000);
-        });
+            };
+
+            // Hide after all resources load with a slight delay for better UX
+            window.addEventListener('load', () => {
+                setTimeout(hideLoader, 1500);
+            });
+
+            // Safety timeout: auto-hide after 4 seconds even if resources are slow
+            setTimeout(hideLoader, 4000);
+        })();
     </script>
 </body>
 
