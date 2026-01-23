@@ -502,7 +502,14 @@ function formatFileSize($bytes)
         }
 
         body {
-            background: var(--main-bg);
+            background: 
+                linear-gradient(45deg, #3b82f6 25%, transparent 25%),
+                linear-gradient(-45deg, #3b82f6 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #3b82f6 75%),
+                linear-gradient(-45deg, transparent 75%, #3b82f6 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #ffffff;
             color: var(--text-dark);
             min-height: 100vh;
         }

@@ -10,7 +10,6 @@
 // Include HR4 API for employee-contract linking
 require_once __DIR__ . '/../integ/hr4_api.php';
 
-
 if (session_status() === PHP_SESSION_NONE)
     session_start();
 require_once __DIR__ . '/../db/db.php';
@@ -109,7 +108,6 @@ try {
 } catch (PDOException $e) {
     // If table doesn't exist or other error, fallback to default
 }
-
 
 // AI Risk Assessment Class
 class ContractRiskAnalyzer
@@ -272,48 +270,14 @@ class ContractRiskAnalyzer
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = get_pdo();
 
-
-    if (isset($_POST['add_employee'])) {
-        $name = $_POST['employee_name'];
-        $position = $_POST['employee_position'];
-        $email = $_POST['employee_email'];
-        $phone = $_POST['employee_phone'];
-
-        $query = "INSERT INTO contacts (name, role, email, phone) VALUES (?, ?, ?, ?)";
-        $stmt = $db->prepare($query);
-
-        if ($stmt->execute([$name, $position, $email, $phone])) {
-            $success_message = "Employee added successfully!";
-        } else {
-            $error_message = "Failed to add employee.";
-        }
-    }
-
-    if (isset($_POST['update_employee'])) {
-        $empId = intval($_POST['employee_id'] ?? 0);
-        $name = $_POST['employee_name'] ?? '';
-        $position = $_POST['employee_position'] ?? '';
-        $email = $_POST['employee_email'] ?? '';
-        $phone = $_POST['employee_phone'] ?? '';
-        if ($empId > 0) {
-            $query = "UPDATE contacts SET name = ?, role = ?, email = ?, phone = ? WHERE id = ?";
-            $stmt = $db->prepare($query);
-            if ($stmt->execute([$name, $position, $email, $phone, $empId])) {
-                $success_message = "Employee updated successfully!";
-            } else {
-                $error_message = "Failed to update employee.";
-            }
-        } else {
-            $error_message = "Invalid employee ID.";
-        }
-    }
-    // Unified create/update handler
+    // Unified create/update handler for employees
     if (isset($_POST['save_employee'])) {
         $empId = intval($_POST['employee_id'] ?? 0);
         $name = $_POST['employee_name'] ?? '';
         $position = $_POST['employee_position'] ?? '';
         $email = $_POST['employee_email'] ?? '';
         $phone = $_POST['employee_phone'] ?? '';
+        
         if ($empId > 0) {
             $q = "UPDATE contacts SET name=?, role=?, email=?, phone=? WHERE id=?";
             $s = $db->prepare($q);
@@ -358,23 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error_message = "Failed to upload document.";
         }
     }
-    // Update Document
-    if (isset($_POST['update_document'])) {
-        $doc_id = intval($_POST['document_id'] ?? 0);
-        $doc_name = $_POST['doc_name'] ?? '';
-        $doc_case = $_POST['doc_case'] ?? '';
-        if ($doc_id > 0) {
-            $q = "UPDATE documents SET name = ?, case_id = ? WHERE id = ?";
-            $s = $db->prepare($q);
-            if ($s->execute([$doc_name, $doc_case, $doc_id])) {
-                $success_message = "Document updated successfully!";
-            } else {
-                $error_message = "Failed to update document.";
-            }
-        } else {
-            $error_message = "Invalid document ID.";
-        }
-    }
+
     // Delete Document
     if (isset($_POST['delete_document'])) {
         $doc_id = intval($_POST['document_id'] ?? 0);
@@ -389,23 +337,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Delete Contract (Super Admin Only)
     if (isset($_POST['delete_contract'])) {
         $contract_id = intval($_POST['contract_id'] ?? 0);
         if ($contract_id > 0) {
             $q = "DELETE FROM contracts WHERE id = ?";
             $s = $db->prepare($q);
             if ($s->execute([$contract_id])) {
-                $success_message = "Contract deleted.";
+                $success_message = "Contract deleted successfully.";
             } else {
                 $error_message = "Failed to delete contract.";
             }
-        }
-    }
-
-    if (isset($_POST['delete_employee'])) {
-        $emp_id = intval($_POST['employee_id'] ?? 0);
-        if ($emp_id > 0) {
-            $success_message = "Employee record removal requested.";
         }
     }
 
@@ -446,20 +388,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Delete Contract (Super Admin Only)
-    if (isset($_POST['delete_contract'])) {
-        $contract_id = intval($_POST['contract_id'] ?? 0);
-        if ($contract_id > 0) {
-            $q = "DELETE FROM contracts WHERE id = ?";
-            $s = $db->prepare($q);
-            if ($s->execute([$contract_id])) {
-                $success_message = "Contract deleted successfully.";
-            } else {
-                $error_message = "Failed to delete contract.";
-            }
-        }
-    }
-
     // Handle contract upload with AI analysis
     if (isset($_POST['add_contract'])) {
         $contract_name = $_POST['contract_name'];
@@ -495,6 +423,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error_message = "Failed to upload file.";
             }
         }
+        
         // Optional cover image upload -> saved as related document
         $image_path = '';
         if (isset($_FILES['contract_image']) && $_FILES['contract_image']['error'] === UPLOAD_ERR_OK) {
@@ -548,6 +477,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Handle Maintenance Operations
+    if (isset($_POST['add_maintenance'])) {
+        $item_name = $_POST['maintenance_item'] ?? '';
+        $description = $_POST['maintenance_description'] ?? '';
+        $maintenance_date = $_POST['maintenance_date'] ?? '';
+        $assigned_staff = $_POST['maintenance_staff'] ?? '';
+        $contact_number = $_POST['maintenance_contact'] ?? '';
+        $status = $_POST['maintenance_status'] ?? 'pending';
+
+        if ($item_name && $description && $maintenance_date && $assigned_staff) {
+            try {
+                $stmt = $db->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, status) VALUES (?, ?, ?, ?, ?, ?)");
+                if ($stmt->execute([$item_name, $description, $maintenance_date, $assigned_staff, $contact_number, $status])) {
+                    $success_message = "Maintenance log added successfully!";
+                } else {
+                    $error_message = "Failed to add maintenance log.";
+                }
+            } catch (PDOException $e) {
+                $error_message = "Database error: " . $e->getMessage();
+            }
+        } else {
+            $error_message = "Please fill in all required fields.";
+        }
+    }
+
+    if (isset($_POST['delete_maintenance'])) {
+        $maintenance_id = intval($_POST['maintenance_id'] ?? 0);
+        if ($maintenance_id > 0) {
+            try {
+                $stmt = $db->prepare("DELETE FROM maintenance_logs WHERE id = ?");
+                if ($stmt->execute([$maintenance_id])) {
+                    $success_message = "Maintenance log deleted successfully!";
+                } else {
+                    $error_message = "Failed to delete maintenance log.";
+                }
+            } catch (PDOException $e) {
+                $error_message = "Database error: " . $e->getMessage();
+            }
+        }
+    }
+
     // Handle PDF Export (Idinagdag para sa PDF Report na may Password)
     if (isset($_POST['action']) && $_POST['action'] === 'export_pdf') {
         $password = 'legal2025'; // Password para sa PDF Report (Simulasyon)
@@ -582,6 +552,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         exit;
     }
+    
     // Add supporting document for a contract (saves into documents table using contract's case_id)
     if (isset($_POST['add_contract_document'])) {
         $contractId = intval($_POST['contract_id'] ?? 0);
@@ -670,7 +641,6 @@ try {
     ];
 }
 
-
 // Risk summary with normalized casing
 $riskCounts = ['High' => 0, 'Medium' => 0, 'Low' => 0];
 foreach ($contracts as $c) {
@@ -743,7 +713,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             text-align: center;
             font-size: 10px;
             width: 80px;
-
         }
 
         /* Fixed: Remove double container effect in modals */
@@ -817,9 +786,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             margin-top: 10px;
             background: #fff;
             -ms-overflow-style: none;
-            /* Internet Explorer 10+ */
             scrollbar-width: none;
-            /* Firefox */
         }
 
         /* Ensure forms in tables don't disrupt layout */
@@ -851,6 +818,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             transform: translateY(-2px);
             opacity: 0.9;
         }
+        
+        /* Modal Styles */
+        .premium-modal {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -872,7 +855,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <button class="login-btn" id="loginBtn" disabled>Login</button>
             <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
         </div>
-    </div>
     </div>
 
     <!-- Dashboard -->
@@ -917,20 +899,18 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="nav-tab" data-target="external">External</div>
                 <div class="nav-tab" data-target="documents">Documents</div>
                 <div class="nav-tab" data-target="contracts">Contracts</div>
+                <div class="nav-tab" data-target="maintenance">Maintenance</div>
                 <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
             </div>
 
-            <!-- Employees Section -->
-            <div class="content-section active" id="employees">
-                <div class="section-header">
-                    <h2 class="section-title">Employee Information</h2>
-                    <button class="add-btn" id="addEmployeeBtn">
-                        <i>+</i> Add Employee
-                    </button>
-                </div>
+            <div class="content-section" id="employees">
+                <h2 class="section-title">Employee Information</h2>
+                <button class="add-btn" id="addEmployeeBtn">
+                    <i>+</i> Add Employee
+                </button>
 
                 <!-- Add Employee Form -->
-                <div class="form-container" id="employeeForm">
+                <div class="form-container" id="employeeForm" style="display: none;">
                     <h3>Add Employee</h3>
                     <form method="POST" id="employeeFormData">
                         <div class="form-group">
@@ -955,7 +935,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                         <div class="form-actions">
                             <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
+                            <button type="submit" class="save-btn" name="save_employee" id="saveEmployeeBtn">Save
                                 Employee</button>
                         </div>
                     </form>
@@ -1018,10 +998,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <div class="content-section" id="internal">
                 <div class="section-header">
                     <h2 class="section-title">Internal Documents & Policies</h2>
-                    <button class="add-btn" onclick="document.getElementById('addDocumentBtn').click()">
-                        <i>+</i> Add Internal Doc
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="add-btn" onclick="generateInternalPDF()" style="background: #8b5cf6;">
+                            <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
+                        </button>
+                        <button class="add-btn" onclick="showAddContractModal()">
+                            <i>+</i> Add Internal Doc
+                        </button>
+                    </div>
                 </div>
+                
                 <!-- Internal Legal Management Tabs -->
                 <div class="internal-tabs-container" style="margin-bottom: 20px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -1047,46 +1033,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-
-                <script>
-                    function filterLegalDocs(btn, category) {
-                        // Update Tab Styles
-                        const container = btn.closest('.internal-tabs-container');
-                        const buttons = container.querySelectorAll('.legal-tab-btn');
-                        buttons.forEach(b => {
-                            b.classList.remove('active');
-                            b.style.background = 'white';
-                            b.style.color = '#64748b';
-                        });
-
-                        btn.classList.add('active');
-                        btn.style.background = '#3b82f6';
-                        btn.style.color = 'white';
-
-                        // Filter Rows
-                        const rows = document.querySelectorAll('.internal-doc-row');
-                        rows.forEach(row => {
-                            if (row.dataset.category === category) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    }
-
-                    // Initialize Default Tab (Policies) on Load
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const firstTab = document.querySelector('.legal-tab-btn.active');
-                        if (firstTab) {
-                            // Manually trigger the filter logic for the first tab
-                            // Extract category from onclick string 'filterLegalDocs(this, 'policies')'
-                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
-                            if (match && match[1]) {
-                                filterLegalDocs(firstTab, match[1]);
-                            }
-                        }
-                    });
-                </script>
+                
                 <div style="position: relative;">
                     <div id="internalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1178,10 +1125,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <div class="content-section" id="external">
                 <div class="section-header">
                     <h2 class="section-title">External Agreements</h2>
-                    <button class="add-btn" onclick="document.getElementById('addContractBtn').click()">
-                        <i>+</i> Add External Contract
-                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="add-btn" onclick="generateExternalPDF()" style="background: #10b981;">
+                            <i class="fa-solid fa-file-pdf"></i> Generate PDF Report
+                        </button>
+                        <button class="add-btn" onclick="showAddContractModal()">
+                            <i>+</i> Add External Contract
+                        </button>
+                    </div>
                 </div>
+                
                 <!-- External Legal Management Tabs -->
                 <div class="external-tabs-container" style="margin-bottom: 20px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -1207,45 +1160,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </button>
                     </div>
                 </div>
-
-                <script>
-                    function filterExternalDocs(btn, category) {
-                        // Update Tab Styles
-                        const container = btn.closest('.external-tabs-container');
-                        const buttons = container.querySelectorAll('.ext-tab-btn');
-                        buttons.forEach(b => {
-                            b.classList.remove('active');
-                            b.style.background = 'white';
-                            b.style.color = '#64748b';
-                        });
-
-                        // Set active style for clicked button
-                        btn.classList.add('active');
-                        btn.style.background = '#10b981';
-                        btn.style.color = 'white';
-
-                        // Filter Rows
-                        const rows = document.querySelectorAll('.external-doc-row');
-                        rows.forEach(row => {
-                            if (row.dataset.category === category) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    }
-
-                    // Initialize Default Tab (Supplier) on Load
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const firstTab = document.querySelector('.ext-tab-btn.active');
-                        if (firstTab) {
-                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
-                            if (match && match[1]) {
-                                filterExternalDocs(firstTab, match[1]);
-                            }
-                        }
-                    });
-                </script>
+                
                 <div style="position: relative;">
                     <div id="externalSectionContent" class="blurred-content">
                         <div class="table-scroll-container">
@@ -1340,7 +1255,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <div class="content-section" id="documents">
                 <div class="section-header">
                     <h2 class="section-title">Case Documents</h2>
-                    <button class="add-btn" id="addDocumentBtn">
+                    <button class="add-btn" onclick="showAddDocumentModal()">
                         <i>+</i> Upload Document
                     </button>
                 </div>
@@ -1394,7 +1309,165 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                    <td colspan="4">No documents found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Contracts Section -->
+            <div class="content-section" id="contracts">
+                <div class="section-header">
+                    <h2 class="section-title">Contract Management</h2>
+                    <button class="add-btn" onclick="showAddContractModal()">
+                        <i>+</i> Add Contract
+                    </button>
+                </div>
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
+                            <tr>
+                                <th>Contract Name</th>
+                                <th>Case ID</th>
+                                <th>Type</th>
+                                <th>Risk Level</th>
+                                <th>Risk Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($contracts)): ?>
+                                <?php foreach ($contracts as $contract): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($contract['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($contract['contract_type'] ?? 'External'); ?></td>
+                                        <td>
+                                            <span class="risk-badge risk-<?php echo strtolower($contract['risk_level'] ?? 'low'); ?>">
+                                                <?php echo htmlspecialchars($contract['risk_level'] ?? 'Low'); ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($contract['risk_score'] ?? 0); ?>/100</td>
+                                        <td>
+                                            <div class="action-container">
+                                                <button class="action-btn view-btn"
+                                                    onclick="showContractDetails(<?php echo $contract['id']; ?>)">
+                                                    <i class="fa-solid fa-eye"></i> View
+                                                </button>
+                                                <?php if ($isSuperAdmin): ?>
+                                                    <button class="action-btn edit-btn"
+                                                        style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                        onclick='editLegalRecord(<?php echo json_encode($contract); ?>, "contract")'>
+                                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                    </button>
+                                                    <form method="POST"
+                                                        onsubmit="return confirm('Delete this contract?');">
+                                                        <input type="hidden" name="contract_id"
+                                                            value="<?php echo $contract['id']; ?>">
+                                                        <button type="submit" name="delete_contract" class="action-btn delete-btn"
+                                                            style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6">No contracts found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Maintenance Section -->
+            <div class="content-section" id="maintenance">
+                <div class="section-header">
+                    <h2 class="section-title">Maintenance Management</h2>
+                    <button class="add-btn" onclick="showAddMaintenanceModal()">
+                        <i>+</i> Add Maintenance Log
+                    </button>
+                </div>
+
+                <!-- Maintenance Table -->
+                <div class="table-scroll-container">
+                    <table class="data-table premium-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Item Name</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Assigned Staff</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Fetch maintenance logs from database
+                            try {
+                                $maintenance_query = "SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC";
+                                $maintenance_stmt = $db->query($maintenance_query);
+                                $maintenance_logs = $maintenance_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            } catch (PDOException $e) {
+                                $maintenance_logs = [];
+                            }
+                            ?>
+                            <?php if (!empty($maintenance_logs)): ?>
+                                <?php foreach ($maintenance_logs as $log): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($log['id']); ?></td>
+                                        <td><?php echo htmlspecialchars($log['item_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($log['description'] ?? 'N/A'); ?></td>
+                                        <td><?php echo date('m/d/Y', strtotime($log['maintenance_date'])); ?></td>
+                                        <td><?php echo htmlspecialchars($log['assigned_staff']); ?></td>
+                                        <td><?php echo htmlspecialchars($log['contact_number'] ?? 'N/A'); ?></td>
+                                        <td>
+                                            <span class="status-badge status-<?php echo strtolower($log['status']); ?>">
+                                                <?php echo ucfirst($log['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="action-container">
+                                                <button class="action-btn view-btn"
+                                                    onclick="viewMaintenanceLog(<?php echo $log['id']; ?>)">
+                                                    <i class="fa-solid fa-eye"></i> View
+                                                </button>
+                                                <?php if ($isSuperAdmin): ?>
+                                                    <button class="action-btn edit-btn"
+                                                        style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                        onclick="editMaintenanceLog(<?php echo $log['id']; ?>)">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                    </button>
+                                                    <form method="POST"
+                                                        onsubmit="return confirm('Delete this maintenance log?');">
+                                                        <input type="hidden" name="maintenance_id"
+                                                            value="<?php echo $log['id']; ?>">
+                                                        <button type="submit" name="delete_maintenance" class="action-btn delete-btn"
+                                                            style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 20px;">
+                                        <div style="color: #718096; font-style: italic;">
+                                            <i class="fa-regular fa-clipboard" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                            No maintenance logs found.
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -1403,165 +1476,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </div>
             </div>
 
-
-            <!-- Contracts Section -->
-            <div class="content-section" id="contracts" style="display:none;">
-                <div class="section-header">
-                    <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
-                    <div style="display: flex; gap: 10px;">
-                        <!-- Button para sa Secured PDF Report (Idinagdag) -->
-                        <button class="add-btn" id="exportPdfBtn" style="background: #e74c3c; /* Pula para sa ulat */">
-                            &#x1F4C4; Generate Secured PDF
-                        </button>
-                        <button class="add-btn" id="addContractBtn">
-                            <i>+</i> Upload Contract
-                        </button>
-                    </div>
-                </div>
-                <!-- Hidden form to trigger secured PDF generation via POST -->
-                <form id="exportPdfForm" method="POST" style="display:none">
-                    <input type="hidden" name="action" value="export_pdf">
-                </form>
-
-                <!-- Add Contract Form -->
-                <div class="form-container" id="contractForm">
-                    <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
-                    <form method="POST" enctype="multipart/form-data" id="contractFormData">
-                        <div class="form-group">
-                            <label for="contractName">Contract Name</label>
-                            <input type="text" id="contractName" name="contract_name" class="form-control"
-                                placeholder="Enter contract name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractCase">Case ID</label>
-                            <input type="text" id="contractCase" name="contract_case" class="form-control"
-                                placeholder="Enter case ID (e.g., C-001)" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractType">Contract Type</label>
-                            <select id="contractType" name="contract_type" class="form-control" required>
-                                <option value="Internal">Internal (Policies, SOPs)</option>
-                                <option value="External">External (Vendors, Clients)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractDescription">Contract Description</label>
-                            <textarea id="contractDescription" name="contract_description" class="form-control"
-                                placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
-                                rows="4"></textarea>
-                            <div class="file-info">AI will analyze this description to detect risk factors</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractFile">Contract File</label>
-                            <input type="file" id="contractFile" name="contract_file" class="form-control"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
-                            <input type="file" id="contractImage" name="contract_image" class="form-control"
-                                accept="image/*">
-                            <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
-                        </div>
-
-                        <div class="ai-analysis-section">
-                            <h4><i class="fa-solid fa-wand-magic-sparkles"
-                                    style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
-                            <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
-                                automatically analyze your contract for:</p>
-                            <ul class="ai-features-list">
-                                <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
-                                    rent
-                                    structure)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
-                                    suppliers,
-                                    staffing)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
-                                    guarantees)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
-                            </ul>
-                            <div class="ai-note">
-                                <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
-                                calculated
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
-                                <i>+</i> Upload & Analyze Contract
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Contracts Table -->
-                <table class="data-table premium-table">
-                    <thead>
-                        <tr>
-                            <th>Contract Name</th>
-                            <th>Case</th>
-                            <th>Risk Level</th>
-                            <th>Risk Score</th>
-                            <th>Upload Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="contractsTableBody">
-                        <?php foreach ($contracts as $contract):
-                            $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
-                            $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
-                            ?>
-                            <tr>
-                                <td>
-                                    <?php if (!empty($contract['file_path'])): ?>
-                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                                <td>
-                                    <div class="action-container">
-                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
-                                            <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
-                                        </button>
-                                        <button class="action-btn download-btn" data-type="contract-download"
-                                            data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                            <i class="fa-solid fa-file-pdf"></i> PDF
-                                        </button>
-                                        <?php if ($isSuperAdmin): ?>
-                                            <form method="POST"
-                                                onsubmit="return confirm('Are you sure you want to delete this contract?');">
-                                                <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
-                                                <button type="submit" name="delete_contract" class="action-btn delete-btn"
-                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                                    <i class="fa-solid fa-trash"></i> Delete
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
+            <!-- Risk Analysis Section -->
             <div class="content-section" id="risk_analysis">
                 <div class="section-header">
-                    <h2 class="section-title">Contract Risk Analysis</h2>
+                    <h2 class="section-title">Risk Analysis Dashboard</h2>
                 </div>
 
                 <!-- Stats Cards Grid -->
@@ -1666,200 +1584,153 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <?php endforeach; ?>
                                 </div>
                             <?php else: ?>
-                                <div class="no-risk-data">
-                                    <i class="fa-solid fa-shield-check"></i>
-                                    <p>No high-risk contracts detected.</p>
+                                <div style="text-align: center; padding: 40px; color: #64748b;">
+                                    <i class="fa-solid fa-check-circle" style="font-size: 48px; margin-bottom: 20px; color: #10b981;"></i>
+                                    <p>No high-risk contracts detected. All contracts are within acceptable risk parameters.</p>
                                 </div>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-
-
-    <!-- Modals Section -->
-    <!-- Details Modal -->
-    <div id="detailsModal"
-        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items:center; justify-content:center; z-index:1000;">
-        <div
-            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
-            <div
-                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); position: relative; z-index: 10;">
-                <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">Details
-                </h3>
-                <button id="closeDetails"
-                    style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="detailsBody" style="padding: 24px; overflow-y: auto;"></div>
-        </div>
-    </div>
-
-    <!-- Password Gate Modal -->
-    <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); align-items:center; justify-content:center; z-index:99999;">
-        <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.3); border:1px solid #e2e8f0; overflow: hidden; text-align: center;">
-            <div style="margin-bottom: 25px;"><img src="../assets/image/logo.png" alt="Logo"
-                    style="width: 180px; height: auto;"></div>
-            <div style="position: relative; z-index: 1;">
-                <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
-                    Security Check</h2>
-                <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
-                <form id="passwordForm">
-                    <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+    <!-- Modals -->
+    
+    <!-- Contract Form Modal -->
+    <div id="contractFormModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeModal('contractFormModal')">&times;</button>
+            <div id="contractFormContainer">
+                <h3>Add Contract</h3>
+                <form method="POST" enctype="multipart/form-data" id="contractFormData">
+                    <div class="form-group">
+                        <label>Contract Name</label>
+                        <input type="text" name="contract_name" class="form-control" required>
                     </div>
-                    <div id="pwdError"
-                        style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
-                        Incorrect PIN. Please try again.</div>
-                    <div style="display:flex; gap:12px; justify-content:center;">
-                        <button type="button" class="cancel-btn" id="pwdCancel"
-                            style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
-                        <button type="submit" class="save-btn"
-                            style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                    <div class="form-group">
+                        <label>Case ID</label>
+                        <input type="text" name="contract_case" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contract Type</label>
+                        <select name="contract_type" class="form-control" required>
+                            <option value="Internal">Internal</option>
+                            <option value="External" selected>External</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="contract_description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contract File (PDF/DOC)</label>
+                        <input type="file" name="contract_file" class="form-control" accept=".pdf,.doc,.docx" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cover Image (Optional)</label>
+                        <input type="file" name="contract_image" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal('contractFormModal')">Cancel</button>
+                        <button type="submit" class="save-btn" name="add_contract">Upload Contract</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Contract Form Modal -->
-    <div id="contractFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
-            <button type="button" id="closeContractFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="contractFormContainer"></div>
+    <!-- Employee Form Modal -->
+    <div id="employeeFormModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeModal('employeeFormModal')">&times;</button>
+            <div id="employeeFormContainer">
+                <!-- Content will be loaded dynamically -->
+            </div>
         </div>
     </div>
 
-    <!-- Employee Form Modal wrapper -->
-    <div id="employeeFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); overflow: hidden;">
-            <!-- Internal Logo Watermark -->
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
-            <button type="button" id="closeEmployeeFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="employeeFormContainer" style="position: relative; z-index: 1;"></div>
-        </div>
-    </div>
-
-    <!-- Employee Info Modal (Revamped Premium View) -->
-    <div id="employeeInfoModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:550px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-
-            <!-- Modal Header with Gradient -->
-            <div
-                style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
-                <button type="button" id="closeEmployeeInfoTop"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20;"
-                    onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='rotate(90deg)'"
-                    onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='rotate(0deg)'">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
-                        <i class="fa-solid fa-user-tie"></i>
+    <!-- Document Form Modal -->
+    <div id="documentFormModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeModal('documentFormModal')">&times;</button>
+            <div id="documentFormContainer">
+                <h3>Upload Document</h3>
+                <form method="POST" enctype="multipart/form-data" id="documentFormData">
+                    <div class="form-group">
+                        <label>Document Name</label>
+                        <input type="text" name="doc_name" class="form-control" required>
                     </div>
+                    <div class="form-group">
+                        <label>Case ID</label>
+                        <input type="text" name="doc_case" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>File</label>
+                        <input type="file" name="doc_file" class="form-control" accept=".pdf,.doc,.docx" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal('documentFormModal')">Cancel</button>
+                        <button type="submit" class="save-btn" name="add_document">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Form Modal -->
+    <div id="maintenanceFormModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeModal('maintenanceFormModal')">&times;</button>
+            <div id="maintenanceFormContainer">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Info Modal -->
+    <div id="employeeInfoModal" class="modal">
+        <div class="modal-content premium-modal">
+            <div class="modal-header">
+                <button type="button" class="modal-close" onclick="closeModal('employeeInfoModal')">&times;</button>
+                <div class="header-content">
+                    <div class="avatar"><i class="fa-solid fa-user-tie"></i></div>
                     <div>
-                        <h2 id="employeeInfoTitle"
-                            style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
-                            Profile</h2>
-                        <span id="employeeRoleBadge"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(147, 197, 253, 0.2);">Legal
-                            Team</span>
+                        <h2 id="employeeInfoTitle">Employee Profile</h2>
+                        <span id="employeeRoleBadge" class="role-badge">Legal Team</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Modal Body -->
-            <div id="employeeInfoBody" style="padding: 40px; background: white; position: relative;">
+            <div class="modal-body">
                 <div id="employeeSensitiveData" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <!-- Data Row: Name -->
+                    <div class="info-grid">
                         <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
-                                Name</label>
-                            <div id="display_emp_name"
-                                style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+                            <label>Full Name</label>
+                            <div id="display_emp_name">-</div>
                         </div>
-
-                        <!-- Data Row: Position -->
                         <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
-                            <div id="display_emp_position"
-                                style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+                            <label>Position</label>
+                            <div id="display_emp_position">-</div>
                         </div>
-
-                        <!-- Data Grid: Contact Info -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
-                                    Address</label>
-                                <div id="display_emp_email"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    -</div>
-                            </div>
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
-                                    Number</label>
-                                <div id="display_emp_phone"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
+                        <div class="info-row">
+                            <label>Email Address</label>
+                            <div id="display_emp_email">-</div>
+                        </div>
+                        <div class="info-row">
+                            <label>Phone Number</label>
+                            <div id="display_emp_phone">-</div>
                         </div>
                     </div>
                 </div>
-
                 <div id="employeeRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
-                        Reveal</button>
-                </div>
-
-                <!-- Footer Actions -->
-                <div style="margin-top: 30px; display: flex; gap: 12px;">
-                    <button type="button" id="closeEmployeeInfoBottom"
-                        style="flex: 1; padding: 14px; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                        Close
+                    <button class="reveal-btn" id="employeeRevealBtn">
+                        <i class="fa-solid fa-lock"></i> Enter PIN to Reveal
                     </button>
-                    <button type="button" class="save-btn" id="modalDownloadEmpPdf"
-                        style="flex: 2; border-radius: 16px; padding: 14px; font-weight: 700; background: #3b82f6; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" onclick="closeModal('employeeInfoModal')">Close</button>
+                    <button type="button" class="save-btn" id="modalDownloadEmpPdf">
                         <i class="fa-solid fa-file-pdf"></i> Download Official Profile
                     </button>
                 </div>
@@ -1867,128 +1738,38 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- Document Form Modal -->
-    <div id="documentFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
-            <button type="button" id="closeDocumentFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="documentFormContainer">
-                <h3>Upload Document</h3>
-                <form method="POST" enctype="multipart/form-data" id="documentFormData">
-                    <input type="hidden" name="add_document" value="1">
-                    <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
-                            class="form-control" required></div>
-                    <div class="form-group"><label>Case ID</label><input type="text" name="doc_case"
-                            class="form-control" required></div>
-                    <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
-                            accept=".pdf,.doc,.docx" required></div>
-                    <div class="form-actions"><button type="button" class="cancel-btn"
-                            id="cancelDocumentBtn">Cancel</button><button type="submit" class="save-btn">Upload</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Supporting Document Modal -->
-    <div id="contractDocsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1500;">
-        <div
-            style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1);">
-            <button type="button" id="closeContractDocsModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 style="margin-top:0;">Upload Contract Document</h3>
-            <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
-                <input type="hidden" name="add_contract_document" value="1">
-                <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
-                <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
-                        class="form-control" placeholder="e.g., Annex A" required></div>
-                <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required></div>
-                <div class="form-actions"><button type="button" class="cancel-btn"
-                        id="cancelContractDocsBtn">Cancel</button><button type="submit" class="save-btn">Upload
-                        Document</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Internal/External Info Modal -->
-    <div id="legalDetailModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:600px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-            <div
-                style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
-                <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 20;">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div
-                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; backdrop-filter: blur(5px);">
-                        <i class="fa-solid fa-file-contract"></i>
-                    </div>
+    <!-- Legal Detail Modal -->
+    <div id="legalDetailModal" class="modal">
+        <div class="modal-content premium-modal">
+            <div class="modal-header">
+                <button type="button" class="modal-close" onclick="closeModal('legalDetailModal')">&times;</button>
+                <div class="header-content">
+                    <div class="avatar"><i class="fa-solid fa-file-contract"></i></div>
                     <div>
-                        <h2 id="legalDetailTitle" style="margin:0; font-size: 1.3rem; font-weight: 800;">Document
-                            Details</h2>
-                        <span id="legalDetailCategory"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">CATEGORY</span>
+                        <h2 id="legalDetailTitle">Document Details</h2>
+                        <span id="legalDetailCategory" class="role-badge">CATEGORY</span>
                     </div>
                 </div>
             </div>
-            <div style="padding: 40px; background: white; position: relative;">
+            <div class="modal-body">
                 <div id="legalDetailContent" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="info-grid">
                         <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
-                                Name</label>
-                            <div id="legalDetailName"
-                                style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                -</div>
+                            <label>Document Name</label>
+                            <div id="legalDetailName">-</div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label
-                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
-                                    id="legalDetailSecondaryLabel">Secondary</label>
-                                <div id="legalDetailSecondary"
-                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
-                            <div>
-                                <label
-                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
-                                    Date</label>
-                                <div id="legalDetailDate"
-                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
+                        <div class="info-row">
+                            <label id="legalDetailSecondaryLabel">Secondary</label>
+                            <div id="legalDetailSecondary">-</div>
                         </div>
-                        <div style="margin-top: 20px;">
-                            <button type="button"
-                                onclick="document.getElementById('legalDetailModal').style.display='none'"
-                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
-                                Close Window
-                            </button>
+                        <div class="info-row">
+                            <label>Effective/Expiry Date</label>
+                            <div id="legalDetailDate">-</div>
                         </div>
                     </div>
                 </div>
-                <!-- Reveal Overlay for Modal -->
                 <div id="legalDetailRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn"
-                        onclick="withPasswordGate(() => { document.getElementById('legalDetailContent').classList.remove('blurred-content'); document.getElementById('legalDetailRevealOverlay').style.display='none'; })">
+                    <button class="reveal-btn" onclick="revealLegalDetails()">
                         <i class="fa-solid fa-lock"></i> Enter PIN to View Details
                     </button>
                 </div>
@@ -1996,74 +1777,44 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- legalAnalysisModal -->
-    <div id="legalAnalysisModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:650px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-            <div
-                style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 30px 40px; color: white; position: relative;">
-                <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s;">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div
-                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem;">
-                        <i class="fa-solid fa-robot"></i>
-                    </div>
+    <!-- Legal Analysis Modal -->
+    <div id="legalAnalysisModal" class="modal">
+        <div class="modal-content premium-modal">
+            <div class="modal-header">
+                <button type="button" class="modal-close" onclick="closeModal('legalAnalysisModal')">&times;</button>
+                <div class="header-content">
+                    <div class="avatar"><i class="fa-solid fa-robot"></i></div>
                     <div>
-                        <h2 style="margin:0; font-size: 1.3rem; font-weight: 800;">AI Risk Analysis Report</h2>
-                        <span id="analysisTargetType"
-                            style="display: inline-block; margin-top: 5px; background: rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">TYPE</span>
+                        <h2>AI Risk Analysis Report</h2>
+                        <span id="analysisTargetType" class="role-badge">TYPE</span>
                     </div>
                 </div>
             </div>
-            <div style="padding: 40px; background: white; max-height: 70vh; overflow-y: auto;position: relative;">
+            <div class="modal-body">
                 <div id="legalAnalysisContent" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 25px;">
-                        <div
-                            style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
-                            <div
-                                style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">
-                                Confidence Score</div>
-                            <div style="font-size: 2.5rem; font-weight: 900; color: #4338ca;">94%</div>
+                    <div class="info-grid">
+                        <div class="info-row text-center">
+                            <label>Confidence Score</label>
+                            <div class="confidence-score">94%</div>
                         </div>
-                        <div>
-                            <h4 id="analysisTargetName"
-                                style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
-                            <div id="analysisSummaryText"
-                                style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
-                                <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis
-                                    suggests this document is highly compliant with standard legal framework. Minimal
-                                    risk
-                                    exposure detected.</p>
+                        <div class="info-row">
+                            <h4 id="analysisTargetName">-</h4>
+                            <div id="analysisSummaryText" class="summary-box">
+                                AI analysis suggests this document is highly compliant with standard legal framework.
                             </div>
                         </div>
                         <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key
-                                Findings</label>
-                            <ul id="analysisKeyFindings"
-                                style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
+                            <label>Key Findings</label>
+                            <ul id="analysisKeyFindings">
                                 <li>No restrictive clauses detected.</li>
                                 <li>Liability terms are clearly defined and balanced.</li>
                                 <li>Renewal and termination policies are standard.</li>
                             </ul>
                         </div>
-                        <div style="margin-top: 10px;">
-                            <button type="button"
-                                onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
-                                Close Report
-                            </button>
-                        </div>
                     </div>
                 </div>
-                <!-- Reveal Overlay for Analysis -->
                 <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn"
-                        onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
+                    <button class="reveal-btn" onclick="revealLegalAnalysis()">
                         <i class="fa-solid fa-lock"></i> Enter PIN to View Analysis
                     </button>
                 </div>
@@ -2071,243 +1822,626 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
+    <!-- Edit Legal Modal -->
+    <div id="editLegalModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeModal('editLegalModal')">&times;</button>
+            <h2>Edit Legal Record</h2>
+            <form method="POST" id="editLegalForm">
+                <input type="hidden" name="edit_id" id="edit_legal_id">
+                <input type="hidden" name="edit_type" id="edit_legal_type">
+                <div class="form-group">
+                    <label>Record Name</label>
+                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Case ID Reference</label>
+                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control" required>
+                </div>
+                <div id="dynamic_edit_fields"></div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal('editLegalModal')">Cancel</button>
+                    <button type="submit" name="update_legal_record" class="save-btn">Update Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3>Enter Security PIN</h3>
+            <form id="passwordForm">
+                <div class="pin-input">
+                    <input type="password" maxlength="1" class="pin-digit">
+                    <input type="password" maxlength="1" class="pin-digit">
+                    <input type="password" maxlength="1" class="pin-digit">
+                    <input type="password" maxlength="1" class="pin-digit">
+                </div>
+                <div class="error-message" id="pwdError" style="display: none;">Invalid PIN</div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="pwdCancel">Cancel</button>
+                    <button type="submit" class="save-btn">Verify</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <iframe src="../animation/loading.html" allowtransparency="true"></iframe>
+    </div>
+
     <script>
         const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
-    </script>
-    <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
-
-    <script>
-        (function () {
-            // GLOBALIZE CHART INIT FIRST (Ensures it's availab le for other scripts)
-            window.riskChartRef = null;
-            window.initRiskChart = function () {
-                const canvas = document.getElementById('riskDistributionChart');
-                if (!canvas) return;
-
-                if (typeof Chart === 'undefined') {
-                    console.warn("Chart library missing. Retrying...");
-                    setTimeout(window.initRiskChart, 800);
-                    return;
-                }
-
-                const chartData = [
-                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
-                ];
-
-                try {
-                    const ctx = canvas.getContext('2d');
-                    if (window.riskChartRef) window.riskChartRef.destroy();
-
-                    window.riskChartRef = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
-                            datasets: [{
-                                label: 'Contracts',
-                                data: chartData,
-                                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
-                                borderWidth: 2,
-                                borderRadius: 10,
-                                barPercentage: 0.55
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: '#0f172a',
-                                    padding: 12,
-                                    titleFont: { size: 14, weight: 'bold' }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                                    grid: { color: '#f1f5f9' }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#475569', font: { weight: 'bold', size: 12 } }
-                                }
-                            }
+        
+        // Global variables
+        let riskChartRef = null;
+        
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tabs
+            initTabs();
+            
+            // Initialize chart
+            initRiskChart();
+            
+            // Initialize login functionality
+            initLogin();
+            
+            // Initialize event listeners
+            initEventListeners();
+            
+            // Initialize tab filtering
+            initTabFiltering();
+        });
+        
+        // Tab functionality
+        function initTabs() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.content-section');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        if (section.id === targetId) {
+                            section.style.display = 'block';
                         }
                     });
-                    console.log("Chart Rendered:", chartData);
-                } catch (e) {
-                    console.error("Chart Error:", e);
-                }
-            };
-
-            // Force Re-check every few seconds
-            setInterval(() => {
-                if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
-                    window.initRiskChart();
-                }
-            }, 2000);
-
-            // Security Gate Implementation
-            window.withPasswordGate = function (callback) {
-                const modal = document.getElementById('passwordModal');
-                const form = document.getElementById('passwordForm');
-                const error = document.getElementById('pwdError');
-                const cancel = document.getElementById('pwdCancel');
-                const digits = modal.querySelectorAll('.pin-digit');
-
-                if (!modal) {
-                    callback(); // Fallback if modal missing
-                    return;
-                }
-
-                // Reset modal
-                digits.forEach(d => d.value = '');
-                if (error) error.style.display = 'none';
-                modal.style.display = 'flex';
-                digits[0].focus();
-
-                // Focus management
-                digits.forEach((digit, idx) => {
-                    digit.oninput = (e) => {
-                        if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
-                    };
-                    digit.onkeydown = (e) => {
-                        if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
-                    };
                 });
-
-                // Handle submission
-                form.onsubmit = (e) => {
-                    e.preventDefault();
-                    const pin = Array.from(digits).map(d => d.value).join('');
-                    if (pin === '<?php echo $archivePin; ?>') { // Default PIN for demo
-                        modal.style.display = 'none';
-                        callback();
-                    } else {
-                        if (error) error.style.display = 'block';
-                        digits.forEach(d => d.value = '');
-                        digits[0].focus();
+            });
+        }
+        
+        // Risk Chart initialization
+        function initRiskChart() {
+            const canvas = document.getElementById('riskDistributionChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            
+            const chartData = [
+                <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
+                <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
+                <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
+            ];
+            
+            const ctx = canvas.getContext('2d');
+            if (riskChartRef) riskChartRef.destroy();
+            
+            riskChartRef = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                    datasets: [{
+                        label: 'Contracts',
+                        data: chartData,
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                        borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        barPercentage: 0.55
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8', font: { size: 11 } },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#475569', font: { weight: 'bold', size: 12 } }
+                        }
                     }
-                };
-
-                cancel.onclick = () => {
-                    modal.style.display = 'none';
-                };
-            };
-
-            // Immediate Triggers
-            window.initRiskChart();
-            document.addEventListener('DOMContentLoaded', window.initRiskChart);
-            window.addEventListener('load', window.initRiskChart);
-
-            // Function to show Legal Details Modal
-            window.showLegalDetails = function (name, secondary, date, type, secondaryLabel) {
-                document.getElementById('legalDetailName').textContent = name;
-                document.getElementById('legalDetailCategory').textContent = type;
-                document.getElementById('legalDetailSecondary').textContent = secondary;
-                document.getElementById('legalDetailDate').textContent = date;
-                document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
-
-                // Reset Blur State
-                document.getElementById('legalDetailContent').classList.add('blurred-content');
-                document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
-
-                document.getElementById('legalDetailModal').style.display = 'flex';
-            };
-
-            // Function to show Legal Analysis Modal
-            window.showLegalAnalysis = function (name, type) {
-                document.getElementById('analysisTargetName').textContent = name;
-                document.getElementById('analysisTargetType').textContent = type;
-
-                const summaryText = document.getElementById('analysisSummaryText');
-                const findingsList = document.getElementById('analysisKeyFindings');
-
-                if (type === 'Internal') {
-                    summaryText.style.background = '#f0fdf4';
-                    summaryText.style.borderLeftColor = '#22c55e';
-                    summaryText.querySelector('p').textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
-                    findingsList.innerHTML = `
-                        <li>Clear definitions of employee responsibilities.</li>
-                        <li>Compliance with local labor laws verified.</li>
-                        <li>Update procedures are well-documented.</li>
-                    `;
-                } else {
-                    summaryText.style.background = '#fffbeb';
-                    summaryText.style.borderLeftColor = '#f59e0b';
-                    summaryText.querySelector('p').textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
-                    findingsList.innerHTML = `
-                        <li>Standard vendor obligations met.</li>
-                        <li>Liability cap slightly exceeds industry standard.</li>
-                        <li>Indemnification clauses are broad.</li>
+                }
+            });
+        }
+        
+        // Login functionality
+        function initLogin() {
+            const pinInputs = document.querySelectorAll('.pin-digit');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginScreen = document.getElementById('loginScreen');
+            const dashboard = document.getElementById('dashboard');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!pinInputs.length) return;
+            
+            // Enable inputs
+            pinInputs.forEach(input => input.disabled = false);
+            if (loginBtn) loginBtn.disabled = false;
+            
+            // Focus first input
+            pinInputs[0].focus();
+            
+            // Input handling
+            pinInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (this.value && index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        pinInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // Login button handler
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    const pin = Array.from(pinInputs).map(input => input.value).join('');
+                    
+                    if (pin === APP_CORRECT_PIN) {
+                        loginScreen.style.display = 'none';
+                        dashboard.style.display = 'block';
+                    } else {
+                        errorMessage.style.display = 'block';
+                        pinInputs.forEach(input => input.value = '');
+                        pinInputs[0].focus();
+                    }
+                });
+            }
+        }
+        
+        // Event listeners
+        function initEventListeners() {
+            // Modal close handlers
+            document.querySelectorAll('.modal-close, .cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (modal) modal.style.display = 'none';
+                });
+            });
+            
+            // Back button
+            const backBtn = document.getElementById('backDashboardBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function(e) {
+                    if (!this.href) {
+                        e.preventDefault();
+                        window.location.replace('../Modules/dashboard.php');
+                    }
+                });
+            }
+            
+            // Add employee button
+            const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+            if (addEmployeeBtn) {
+                addEmployeeBtn.addEventListener('click', function() {
+                    showAddEmployeeModal();
+                });
+            }
+        }
+        
+        // Tab filtering
+        function initTabFiltering() {
+            // Initialize internal tab filtering
+            const firstInternalTab = document.querySelector('.legal-tab-btn.active');
+            if (firstInternalTab) {
+                const match = firstInternalTab.getAttribute('onclick').match(/, '([^']+)'/);
+                if (match && match[1]) {
+                    filterLegalDocs(firstInternalTab, match[1]);
+                }
+            }
+            
+            // Initialize external tab filtering
+            const firstExternalTab = document.querySelector('.ext-tab-btn.active');
+            if (firstExternalTab) {
+                const match = firstExternalTab.getAttribute('onclick').match(/, '([^']+)'/);
+                if (match && match[1]) {
+                    filterExternalDocs(firstExternalTab, match[1]);
+                }
+            }
+        }
+        
+        // Tab filtering functions
+        function filterLegalDocs(btn, category) {
+            const container = btn.closest('.internal-tabs-container');
+            const buttons = container.querySelectorAll('.legal-tab-btn');
+            
+            buttons.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'white';
+                b.style.color = '#64748b';
+            });
+            
+            btn.classList.add('active');
+            btn.style.background = '#3b82f6';
+            btn.style.color = 'white';
+            
+            const rows = document.querySelectorAll('.internal-doc-row');
+            rows.forEach(row => {
+                row.style.display = row.dataset.category === category ? '' : 'none';
+            });
+        }
+        
+        function filterExternalDocs(btn, category) {
+            const container = btn.closest('.external-tabs-container');
+            const buttons = container.querySelectorAll('.ext-tab-btn');
+            
+            buttons.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'white';
+                b.style.color = '#64748b';
+            });
+            
+            btn.classList.add('active');
+            btn.style.background = '#10b981';
+            btn.style.color = 'white';
+            
+            const rows = document.querySelectorAll('.external-doc-row');
+            rows.forEach(row => {
+                row.style.display = row.dataset.category === category ? '' : 'none';
+            });
+        }
+        
+        // Modal functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+        
+        function showAddEmployeeModal() {
+            const form = document.getElementById('employeeForm');
+            const container = document.getElementById('employeeFormContainer');
+            
+            // Reset form
+            form.reset();
+            const saveBtn = document.getElementById('saveEmployeeBtn');
+            saveBtn.innerText = 'Save Employee';
+            saveBtn.name = 'save_employee';
+            
+            // Remove hidden ID if exists
+            const idInput = document.querySelector('input[name="employee_id"]');
+            if (idInput) idInput.remove();
+            
+            // Move form to modal if not already there
+            if (form && container && !container.contains(form)) {
+                container.appendChild(form);
+                form.style.display = 'block';
+            }
+            
+            showModal('employeeFormModal');
+        }
+        
+        function showAddDocumentModal() {
+            showModal('documentFormModal');
+        }
+        
+        function showAddContractModal() {
+            showModal('contractFormModal');
+        }
+        
+        function showAddMaintenanceModal() {
+            // Similar to showAddEmployeeModal, but for maintenance
+            showModal('maintenanceFormModal');
+        }
+        
+        // Edit employee function
+        window.editEmployee = function(emp) {
+            const form = document.getElementById('employeeForm');
+            const container = document.getElementById('employeeFormContainer');
+            
+            // Populate form fields
+            document.getElementById('employeeName').value = emp.name || '';
+            document.getElementById('employeePosition').value = emp.position || '';
+            document.getElementById('employeeEmail').value = emp.email || '';
+            document.getElementById('employeePhone').value = emp.phone || '';
+            
+            // Ensure hidden ID field exists
+            let idInput = document.querySelector('input[name="employee_id"]');
+            if (!idInput) {
+                idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'employee_id';
+                document.getElementById('employeeFormData').appendChild(idInput);
+            }
+            idInput.value = emp.id;
+            
+            // Change submit button text
+            const saveBtn = document.getElementById('saveEmployeeBtn');
+            saveBtn.innerText = 'Update Employee';
+            saveBtn.name = 'save_employee';
+            
+            // Move form to modal if not already there
+            if (form && container && !container.contains(form)) {
+                container.appendChild(form);
+                form.style.display = 'block';
+            }
+            
+            showModal('employeeFormModal');
+        };
+        
+        // Edit legal record function - FIXED VERSION
+        window.editLegalRecord = function(data, type) {
+            const modal = document.getElementById('editLegalModal');
+            if (!modal) {
+                console.error('Edit modal not found');
+                return;
+            }
+            
+            document.getElementById('edit_legal_id').value = data.id || '';
+            document.getElementById('edit_legal_type').value = type || '';
+            document.getElementById('edit_legal_name').value = data.name || data.contract_name || '';
+            document.getElementById('edit_legal_case_id').value = data.case_id || '';
+            
+            const dynamicFields = document.getElementById('dynamic_edit_fields');
+            if (dynamicFields) {
+                dynamicFields.innerHTML = '';
+                
+                if (type === 'contract') {
+                    dynamicFields.innerHTML = `
+                        <div class="form-group">
+                            <label>Resource Description</label>
+                            <textarea name="edit_description" class="form-control" rows="3">${data.description || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Legal Classification</label>
+                            <select name="edit_contract_type" class="form-control">
+                                <option value="Internal" ${(data.contract_type || '') === 'Internal' ? 'selected' : ''}>Internal (Policies/SOP)</option>
+                                <option value="External" ${(data.contract_type || '') === 'External' ? 'selected' : ''}>External (Agreements/NDA)</option>
+                            </select>
+                        </div>
                     `;
                 }
-
-                // Reset Blur State
-                document.getElementById('legalAnalysisContent').classList.add('blurred-content');
-                document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
-
-                document.getElementById('legalAnalysisModal').style.display = 'flex';
+            }
+            
+            showModal('editLegalModal');
+        };
+        
+        // Legal details functions
+        window.showLegalDetails = function(name, secondary, date, type, secondaryLabel) {
+            document.getElementById('legalDetailName').textContent = name;
+            document.getElementById('legalDetailCategory').textContent = type;
+            document.getElementById('legalDetailSecondary').textContent = secondary;
+            document.getElementById('legalDetailDate').textContent = date;
+            document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
+            
+            // Reset Blur State
+            document.getElementById('legalDetailContent').classList.add('blurred-content');
+            document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
+            
+            showModal('legalDetailModal');
+        };
+        
+        function revealLegalDetails() {
+            withPasswordGate(() => {
+                document.getElementById('legalDetailContent').classList.remove('blurred-content');
+                document.getElementById('legalDetailRevealOverlay').style.display = 'none';
+            });
+        }
+        
+        window.showLegalAnalysis = function(name, type) {
+            document.getElementById('analysisTargetName').textContent = name;
+            document.getElementById('analysisTargetType').textContent = type;
+            
+            const summaryText = document.getElementById('analysisSummaryText');
+            const findingsList = document.getElementById('analysisKeyFindings');
+            
+            if (type === 'Internal') {
+                summaryText.style.background = '#f0fdf4';
+                summaryText.style.borderLeftColor = '#22c55e';
+                summaryText.querySelector('p').textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
+                findingsList.innerHTML = `
+                    <li>Clear definitions of employee responsibilities.</li>
+                    <li>Compliance with local labor laws verified.</li>
+                    <li>Update procedures are well-documented.</li>
+                `;
+            } else {
+                summaryText.style.background = '#fffbeb';
+                summaryText.style.borderLeftColor = '#f59e0b';
+                summaryText.querySelector('p').textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
+                findingsList.innerHTML = `
+                    <li>Standard vendor obligations met.</li>
+                    <li>Liability cap slightly exceeds industry standard.</li>
+                    <li>Indemnification clauses are broad.</li>
+                `;
+            }
+            
+            // Reset Blur State
+            document.getElementById('legalAnalysisContent').classList.add('blurred-content');
+            document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
+            
+            showModal('legalAnalysisModal');
+        };
+        
+        function revealLegalAnalysis() {
+            withPasswordGate(() => {
+                document.getElementById('legalAnalysisContent').classList.remove('blurred-content');
+                document.getElementById('legalAnalysisRevealOverlay').style.display = 'none';
+            });
+        }
+        
+        // Password gate functionality
+        window.withPasswordGate = function(callback) {
+            const modal = document.getElementById('passwordModal');
+            const form = document.getElementById('passwordForm');
+            const error = document.getElementById('pwdError');
+            const cancel = document.getElementById('pwdCancel');
+            const digits = modal.querySelectorAll('.pin-digit');
+            
+            if (!modal) {
+                callback();
+                return;
+            }
+            
+            // Reset modal
+            digits.forEach(d => d.value = '');
+            if (error) error.style.display = 'none';
+            modal.style.display = 'flex';
+            digits[0].focus();
+            
+            // Focus management
+            digits.forEach((digit, idx) => {
+                digit.oninput = (e) => {
+                    if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
+                };
+                digit.onkeydown = (e) => {
+                    if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
+                };
+            });
+            
+            // Handle submission
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const pin = Array.from(digits).map(d => d.value).join('');
+                if (pin === APP_CORRECT_PIN) {
+                    modal.style.display = 'none';
+                    callback();
+                } else {
+                    if (error) error.style.display = 'block';
+                    digits.forEach(d => d.value = '');
+                    digits[0].focus();
+                }
             };
-
-            const employeeInfoTitle = document.getElementById('employeeInfoTitle');
-            const empInfoModal = document.getElementById('employeeInfoModal');
-            const closeEmployeeInfoTop = document.getElementById('closeEmployeeInfoTop');
-            const closeEmployeeInfoBottom = document.getElementById('closeEmployeeInfoBottom');
-            const cancelEmployeeBtn = document.getElementById('cancelEmployeeBtn');
-
-            const detailsModal = document.getElementById('detailsModal');
-            const detailsTitle = document.getElementById('detailsTitle');
-            const detailsBody = document.getElementById('detailsBody');
-            const closeDetails = document.getElementById('closeDetails');
-
-            const contractForm = document.getElementById('contractForm');
-            const contractFormModal = document.getElementById('contractFormModal');
-            const contractFormContainer = document.getElementById('contractFormContainer');
-            const addContractBtn = document.getElementById('addContractBtn');
-            const cancelContractBtn = document.getElementById('cancelContractBtn');
-            const closeContractFormModal = document.getElementById('closeContractFormModal');
-            const exportPdfBtn = document.getElementById('exportPdfBtn');
-            const exportPdfForm = document.getElementById('exportPdfForm');
-            // Employee form modal
-            const employeeForm = document.getElementById('employeeForm');
-            const employeeFormModal = document.getElementById('employeeFormModal');
-            const employeeFormContainer = document.getElementById('employeeFormContainer');
-            const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-            const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
-            // Document form modal
-            const documentFormModal = document.getElementById('documentFormModal');
-            const documentFormContainer = document.getElementById('documentFormContainer');
-            const addDocumentBtn = document.getElementById('addDocumentBtn');
-            const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
-            const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
-            // Edit document modal
-            const editDocModal = document.getElementById('editDocumentModal');
-            const closeEditDocument = document.getElementById('closeEditDocument');
-            const cancelEditDocument = document.getElementById('cancelEditDocument');
-            const editDocForm = document.getElementById('editDocumentForm');
-            const editDocId = document.getElementById('edit_doc_id');
-            const editDocName = document.getElementById('edit_doc_name');
-            const editDocCase = document.getElementById('edit_doc_case');
-            // Contract docs modal
-            const contractDocsModal = document.getElementById('contractDocsModal');
-            const closeContractDocsModal = document.getElementById('closeContractDocsModal');
-            const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
-            const contractDocsContractId = document.getElementById('contract_docs_contract_id');
-
-            function openModal(el) { el.style.display = 'flex'; }
-            function closeModal(el) { el.style.display = 'none'; }
-
-            // PDF Generation Utility
-            function generatePDFFromData(title, contentHTML, filename) {
-                const element = document.createElement('div');
-                element.style.padding = '20px';
-                element.style.fontFamily = 'Arial, sans-serif';
-                element.innerHTML = `
+            
+            cancel.onclick = () => {
+                modal.style.display = 'none';
+            };
+        };
+        
+        // PDF generation functions
+        function generateInternalPDF() {
+            withPasswordGate(() => {
+                const internalDocs = <?php 
+                    $internalDocs = array_filter($contracts, function ($c) {
+                        return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
+                    });
+                    echo json_encode(array_values($internalDocs)); 
+                ?>;
+                
+                const contentHTML = `
+                    <div style="font-family: Arial, sans-serif; padding: 20px;">
+                        <h1 style="color: #8b5cf6; text-align: center; margin-bottom: 30px;">Internal Documents & Policies Report</h1>
+                        <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on ${new Date().toLocaleDateString()}</p>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                            <thead>
+                                <tr style="background: #8b5cf6; color: white;">
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Policy Name</th>
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Case ID</th>
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${internalDocs.map(doc => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${doc.name}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${doc.case_id}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        
+                        <div style="text-align: center; color: #666; font-size: 12px;">
+                            <p>Confidential Internal Documents Report</p>
+                            <p>Total Documents: ${internalDocs.length}</p>
+                        </div>
+                    </div>
+                `;
+                
+                generatePDFFromData('Internal Documents Report', contentHTML, 'Internal_Documents_Report.pdf');
+            });
+        }
+        
+        function generateExternalPDF() {
+            withPasswordGate(() => {
+                const externalDocs = <?php 
+                    $externalDocs = array_filter($contracts, function ($c) {
+                        return (isset($c['contract_type']) && $c['contract_type'] === 'External');
+                    });
+                    echo json_encode(array_values($externalDocs)); 
+                ?>;
+                
+                const contentHTML = `
+                    <div style="font-family: Arial, sans-serif; padding: 20px;">
+                        <h1 style="color: #10b981; text-align: center; margin-bottom: 30px;">External Agreements Report</h1>
+                        <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on ${new Date().toLocaleDateString()}</p>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                            <thead>
+                                <tr style="background: #10b981; color: white;">
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Agreement Name</th>
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Case ID</th>
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Expiry Date</th>
+                                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${externalDocs.map(doc => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${doc.name}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${doc.case_id}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).setFullYear(new Date(doc.created_at).getFullYear() + 1).toLocaleDateString()}</td>
+                                        <td style="border: 1px solid #ddd; padding: 10px;">${new Date(doc.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        
+                        <div style="text-align: center; color: #666; font-size: 12px;">
+                            <p>External Agreements & Contracts Report</p>
+                            <p>Total Agreements: ${externalDocs.length}</p>
+                        </div>
+                    </div>
+                `;
+                
+                generatePDFFromData('External Agreements Report', contentHTML, 'External_Agreements_Report.pdf');
+            });
+        }
+        
+        // PDF generation utility
+        function generatePDFFromData(title, contentHTML, filename) {
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.innerHTML = `
                 <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
                     <h1 style="color: #2c3e50; margin: 0;">Legal Management System</h1>
                     <h2 style="color: #3498db; margin: 5px 0 0;">${title}</h2>
@@ -2320,598 +2454,31 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     © ${new Date().getFullYear()} Hotel & Restaurant Legal Management System. All rights reserved.
                 </div>
             `;
-
-                const opt = {
-                    margin: 15,
-                    filename: filename || 'Legal_Document.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                html2pdf().set(opt).from(element).save();
-            }
-
-            // Universal PDF Download Handler for various data types
-            window.downloadRecordAsPDF = function (type, data) {
-                let title = '';
-                let contentHTML = '';
-                let filename = '';
-
-                switch (type) {
-                    case 'employee':
-                        title = 'Employee Profile';
-                        contentHTML = `
-                        <div style="margin-bottom: 20px;">
-                            <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
-                            <p><strong>Position:</strong> ${data.position || 'N/A'}</p>
-                            <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
-                            <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
-                        </div>
-                    `;
-                        filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'document':
-                        title = 'Document Details';
-                        contentHTML = `
-                        <div style="margin-bottom: 20px;">
-                            <p><strong>Document Name:</strong> ${data.name || 'N/A'}</p>
-                            <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
-                            <p><strong>Date Uploaded:</strong> ${data.uploaded_at || 'N/A'}</p>
-                        </div>
-                    `;
-                        filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'contract':
-                        title = 'Contract Risk Analysis';
-                        const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
-                        const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
-                        const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
-                        const imageHTML = isImage ? `
-                        <div style="margin-top: 30px; border-top: 2px solid #f1f5f9; pt: 20px;">
-                            <h4 style="margin-bottom: 15px; color: #1e293b;">Contract Image Attachment</h4>
-                            <div style="text-align: center; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px dashed #cbd5e1;">
-                                <img src="${data.file_path}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-                            </div>
-                        </div>
-                    ` : '';
-
-                        contentHTML = `
-                        <div style="margin-bottom: 20px;">
-                            <p><strong>Contract Name:</strong> ${data.contract_name || data.name || 'N/A'}</p>
-                            <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
-                            <p><strong>Risk Level:</strong> <span style="color: ${data.risk_level === 'High' ? '#ef4444' : (data.risk_level === 'Medium' ? '#f59e0b' : '#22c55e')}; font-weight: bold;">${data.risk_level || 'N/A'}</span></p>
-                            <p><strong>Risk Score:</strong> ${data.risk_score || 0}/100</p>
-                            <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                                <p style="margin: 0;"><strong>Summary:</strong> ${data.analysis_summary || 'N/A'}</p>
-                            </div>
-                            <div style="display: flex; gap: 20px; margin-top: 20px;">
-                                <div style="flex: 1;">
-                                    <h4 style="color: #ef4444; margin-bottom: 8px;">Risk Factors</h4>
-                                    <ul style="margin: 0; padding-left: 20px;">${rf.map(r => `<li>${r.factor || 'Unknown Factor'}</li>`).join('') || '<li>None</li>'}</ul>
-                                </div>
-                                <div style="flex: 1;">
-                                    <h4 style="color: #059669; margin-bottom: 8px;">Recommendations</h4>
-                                    <ul style="margin: 0; padding-left: 20px;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>Standard review</li>'}</ul>
-                                </div>
-                            </div>
-                            ${imageHTML}
-                        </div>
-                    `;
-                        filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                }
-
-                generatePDFFromData(title, contentHTML, filename);
-            }
-
-            // Consolidated Unified Event Delegation for Table Actions & PDF handling
-            document.body.addEventListener('click', function (e) {
-                const target = e.target.closest('button, a.view-pdf-link, .download-btn');
-                if (!target) return;
-
-                const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
-                if (!type) return;
-
-                // 1. PDF DOWNLOAD HANDLING
-                if (target.classList.contains('download-btn') || type === 'download') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data);
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF generation failed:", err); }
-                    }
-                }
-
-                // 2. PDF VIEW HANDLING (Hijacked Name Links)
-                if (type === 'pdf-view') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF view failed:", err); }
-                    }
-                }
-
-                // 3. TABLE ACTION MODALS (Password Protected)
-                withPasswordGate(() => {
-                    // Employee/Member View/Edit
-                    // Employee View
-                    if (type === 'employee-view') {
-                        const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                        const modal = document.getElementById('employeeInfoModal');
-
-                        // Update Display Fields
-                        document.getElementById('employeeInfoTitle').textContent = emp.name || 'Employee Profile';
-                        document.getElementById('display_emp_name').textContent = emp.name || 'N/A';
-                        document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
-                        document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
-                        document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
-
-                        // Handle Role Badge Colors
-                        const badge = document.getElementById('employeeRoleBadge');
-                        if (badge) {
-                            badge.textContent = emp.position || 'Legal Team';
-                            if (emp.position && emp.position.toLowerCase().includes('senior')) {
-                                badge.style.background = 'rgba(16, 185, 129, 0.2)';
-                                badge.style.color = '#10b981';
-                                badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                            } else {
-                                badge.style.background = 'rgba(59, 130, 246, 0.2)';
-                                badge.style.color = '#3b82f6';
-                                badge.style.borderColor = 'rgba(59, 130, 246, 0.2)';
-                            }
-                        }
-
-                        // Reset Blur
-                        document.getElementById('employeeSensitiveData').classList.add('blurred-content');
-                        document.getElementById('employeeRevealOverlay').style.display = 'flex';
-
-                        document.getElementById('employeeRevealBtn').onclick = function () {
-                            withPasswordGate(() => {
-                                document.getElementById('employeeRevealOverlay').style.display = 'none';
-                                document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
-                            });
-                        };
-
-                        // Set up PDF download button
-                        const dlBtn = document.getElementById('modalDownloadEmpPdf');
-                        if (dlBtn) {
-                            dlBtn.onclick = () => {
-                                const originalText = dlBtn.innerHTML;
-                                dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                                window.downloadRecordAsPDF('employee', emp);
-                                setTimeout(() => { dlBtn.innerHTML = originalText; }, 2000);
-                            };
-                        }
-
-                        openModal(modal);
-
-                        // Add animation class to modal content
-                        const content = modal.querySelector('.premium-modal');
-                        if (content) {
-                            content.classList.remove('modal-animate-in');
-                            void content.offsetWidth; // Trigger reflow
-                            content.classList.add('modal-animate-in');
-                        }
-                    }
-                    // Document View
-                    else if (type === 'doc-view') {
-                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                        detailsTitle.textContent = 'Document Details';
-                        detailsBody.innerHTML = `
-                            <div style="position: relative;">
-                                <div id="docSensitive" class="blurred-content">
-                                    <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8; position: relative; z-index: 1;">
-                                        <div><strong>Name</strong></div><div>${d.name || ''}</div>
-                                        <div><strong>Case ID</strong></div><div>${d.case_id || ''}</div>
-                                        <div><strong>Uploaded At</strong></div><div>${d.uploaded_at || ''}</div>
-                                    </div>
-                                </div>
-                                <div class="reveal-overlay" id="docReveal">
-                                    <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
-                                </div>
-                            </div>`;
-                        openModal(detailsModal);
-
-                        document.getElementById('docReveal').addEventListener('click', function () {
-                            const overlay = this;
-                            withPasswordGate(() => {
-                                overlay.style.display = 'none';
-                                document.getElementById('docSensitive').classList.remove('blurred-content');
-                            });
-                        });
-
-                        injectModalPdfButton(detailsBody, 'document', d);
-                    }
-                    // Contract View
-                    else if (type === 'contract-view') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'Contract Details';
-                        detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
-                        openModal(detailsModal);
-                        const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                        const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                        detailsBody.innerHTML = `
-                        <div style="position: relative;">
-                            <div id="contractSensitive" class="blurred-content">
-                                <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
-                                    <div><strong>Contract</strong></div><div>${c.contract_name || c.name || ''}</div>
-                                    <div><strong>Case</strong></div><div>${c.case_id || ''}</div>
-                                    <div><strong>Risk</strong></div><div>${(c.risk_level || 'N/A')} — ${c.risk_score || 'N/A'}/100</div>
-                                    <div><strong>Uploaded</strong></div><div>${c.created_at || c.upload_date || ''}</div>
-                                    <div style="grid-column:1/-1"><strong>Risk Factors</strong><ul style="margin:.4rem 0 0 1rem;">${rf.map(r => `<li>${(r.factor || '')}</li>`).join('') || '<li>None</li>'}</ul></div>
-                                    <div style="grid-column:1/-1"><strong>Recommendations</strong><ul style="margin:.4rem 0 0 1rem;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>None</li>'}</ul></div>
-                                </div>
-                            </div>
-                            <div class="reveal-overlay" id="contractReveal">
-                                <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
-                            </div>
-                        </div>`;
-
-                        document.getElementById('contractReveal').addEventListener('click', function () {
-                            const overlay = this;
-                            withPasswordGate(() => {
-                                overlay.style.display = 'none';
-                                document.getElementById('contractSensitive').classList.remove('blurred-content');
-                            });
-                        });
-
-                        injectModalPdfButton(detailsBody, 'contract', c);
-                    }
-                    // Contract Analyze
-                    else if (type === 'contract-analyze') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'AI Risk Analysis';
-                        detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
-                        openModal(detailsModal);
-                        setTimeout(() => {
-                            try {
-                                const score = c.risk_score ?? 'N/A';
-                                const level = c.risk_level ?? 'Unknown';
-                                const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                                const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                                let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
-
-                                detailsBody.innerHTML = `
-                                <div style="text-align: center; margin-bottom: 20px;">
-                                    <h2 style="margin: 0; color: ${color};">${level} Risk Contract</h2>
-                                    <p>Risk Score: <strong>${score}/100</strong></p>
-                                </div>
-                                <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                                    <p><strong>Summary:</strong> ${c.analysis_summary || 'No summary available.'}</p>
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                    <div><strong>Risk Factors:</strong><ul>${rf.map(f => `<li>${f.factor}</li>`).join('') || '<li>None</li>'}</ul></div>
-                                    <div><strong>Recommendations:</strong><ul>${rec.map(r => `<li>${r}</li>`).join('') || '<li>Regular review</li>'}</ul></div>
-                                </div>
-                                <div style="text-align: center; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
-                                    <button type="button" class="save-btn" onclick='window.downloadRecordAsPDF("contract", ${JSON.stringify(c).replace(/'/g, "&apos;")})' style="background: #3b82f6; width: auto;">
-                                        <i class="fa-solid fa-file-pdf"></i> Download Risk Report (PDF)
-                                    </button>
-                                </div>
-                            `;
-                            } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
-                        }, 500);
-                    }
-                });
-            });
-
-            function injectModalPdfButton(container, pdfType, pdfData) {
-                let downloadBtn = document.getElementById('modalDownloadPdf');
-                if (downloadBtn) downloadBtn.remove();
-
-                downloadBtn = document.createElement('button');
-                downloadBtn.id = 'modalDownloadPdf';
-                downloadBtn.type = 'button';
-                downloadBtn.className = 'save-btn';
-                downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
-                downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
-                downloadBtn.onclick = () => {
-                    const originalHTML = downloadBtn.innerHTML;
-                    downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                    window.downloadRecordAsPDF(pdfType, pdfData);
-                    setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
-                };
-                container.appendChild(downloadBtn);
-            }
-
-
-            // ADDED: Contract Upload Modal Logic
-            if (addContractBtn) {
-                addContractBtn.addEventListener('click', () => {
-                    // Move the form into the modal container if not already there
-                    if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
-                        contractFormContainer.appendChild(contractForm);
-                        contractForm.style.display = 'block';
-                    }
-                    openModal(contractFormModal);
-                });
-            }
-
-            // ADDED: Edit Employee Logic
-            window.editEmployee = function (emp) {
-                // Populate form fields
-                document.getElementById('employeeName').value = emp.name || '';
-                document.getElementById('employeePosition').value = emp.position || '';
-                document.getElementById('employeeEmail').value = emp.email || '';
-                document.getElementById('employeePhone').value = emp.phone || '';
-
-                // Ensure hidden ID field exists
-                let idInput = document.querySelector('input[name="employee_id"]');
-                if (!idInput) {
-                    idInput = document.createElement('input');
-                    idInput.type = 'hidden';
-                    idInput.name = 'employee_id';
-                    document.getElementById('employeeFormData').appendChild(idInput);
-                }
-                idInput.value = emp.id;
-
-                // Change submit button text
-                const saveBtn = document.getElementById('saveEmployeeBtn');
-                saveBtn.innerText = 'Update Employee';
-                saveBtn.name = 'update_employee';
-
-                // Open modal
-                if (employeeForm && employeeFormContainer && !employeeFormContainer.contains(employeeForm)) {
-                    employeeFormContainer.appendChild(employeeForm);
-                    employeeForm.style.display = 'block';
-                }
-                openModal(employeeFormModal);
+            
+            const opt = {
+                margin: 15,
+                filename: filename || 'Legal_Document.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
-            // Enhanced Add Employee Button Logic (Reset form)
-            if (addEmployeeBtn) {
-                addEmployeeBtn.addEventListener('click', () => {
-                    document.getElementById('employeeFormData').reset();
-                    const saveBtn = document.getElementById('saveEmployeeBtn');
-                    saveBtn.innerText = 'Save Employee';
-                    saveBtn.name = 'add_employee';
-
-                    // Remove hidden ID if exists
-                    const idInput = document.querySelector('input[name="employee_id"]');
-                    if (idInput) idInput.remove();
-
-                    if (employeeForm && employeeFormContainer && !employeeFormContainer.contains(employeeForm)) {
-                        employeeFormContainer.appendChild(employeeForm);
-                        employeeForm.style.display = 'block';
-                    }
-                    openModal(employeeFormModal);
-                });
-            }
-
-            // Document Upload Button Logic
-            if (addDocumentBtn) {
-                addDocumentBtn.addEventListener('click', () => {
-                    openModal(documentFormModal);
-                });
-            }
-
-            // ADDED: Universal Close/Cancel Handlers for all Modals
-            if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
-            if (closeEmployeeInfoTop) closeEmployeeInfoTop.addEventListener('click', () => closeModal(empInfoModal));
-            if (closeEmployeeInfoBottom) closeEmployeeInfoBottom.addEventListener('click', () => closeModal(empInfoModal));
-            if (cancelEmployeeBtn) cancelEmployeeBtn.addEventListener('click', () => {
-                closeModal(empInfoModal);
-                closeModal(employeeFormModal);
-            });
-            if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
-            if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
-            if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
-            if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
-            if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
-            if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
-            if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
-            if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
-            if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
-                closeModal(contractFormModal);
-                if (contractForm) contractForm.reset();
-            });
-
-
-
-            // Generate Secured PDF (password-gated) - Real PDF Implementation
-            exportPdfBtn?.addEventListener('click', (e) => {
-                e.preventDefault();
-                withPasswordGate(() => {
-                    // Data is injected from PHP
-                    const data = <?php echo json_encode($contracts); ?>;
-
-                    let contentHTML = `
-                        <div style="margin-top: 20px;">
-                            <p>This is a secured legal report containing sensitive contract risk information.</p>
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt;">
-                                <thead>
-                                    <tr style="background-color: #f1f5f9; text-align: left;">
-                                        <th style="border: 1px solid #cbd5e1; padding: 12px;">Contract Name</th>
-                                        <th style="border: 1px solid #cbd5e1; padding: 12px;">Case ID</th>
-                                        <th style="border: 1px solid #cbd5e1; padding: 12px; text-align: center;">Risk Level</th>
-                                        <th style="border: 1px solid #cbd5e1; padding: 12px; text-align: center;">Risk Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${data.map(c => `
-                                        <tr>
-                                            <td style="border: 1px solid #cbd5e1; padding: 10px;">${c.contract_name || c.name || 'N/A'}</td>
-                                            <td style="border: 1px solid #cbd5e1; padding: 10px;">${c.case_id || 'N/A'}</td>
-                                            <td style="border: 1px solid #cbd5e1; padding: 10px; text-align: center;">
-                                                <span style="color: ${c.risk_level === 'High' ? '#ef4444' : (c.risk_level === 'Medium' ? '#f59e0b' : '#22c55e')}; font-weight: bold;">
-                                                    ${c.risk_level || 'Low'}
-                                                </span>
-                                            </td>
-                                            <td style="border: 1px solid #cbd5e1; padding: 10px; text-align: center;">${c.risk_score || 0}/100</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-
-                    generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
-                });
-            });
-
-            // Find the back button handler and update it:
-            // Removed redundant JS listener for back button to prevent conflicts with <a> tag
-        })();
-    </script>
-
-    <!-- Loading Animation Script -->
-    <script>
-        // Select all elements with 'wave-text' class
-        const waveTexts = document.querySelectorAll('.wave-text');
-
-        waveTexts.forEach(textContainer => {
-            const text = textContainer.textContent;
-            textContainer.innerHTML = ''; // Clear existing text
-
-            // Split text into letters and create spans
-            [...text].forEach((letter, index) => {
-                const span = document.createElement('span');
-                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
-                span.style.setProperty('--i', index); // Set custom property for delay
-                textContainer.appendChild(span);
-            });
-        });
-
-        // Define Global Loader Function
-        window.runLoadingAnimation = function (callback, isRedirect = false) {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) {
-                loader.style.display = 'block';
-                loader.style.opacity = '1';
-                const iframe = loader.querySelector('iframe');
-                if (iframe) iframe.src = iframe.src;
-
-                setTimeout(() => {
-                    if (callback) callback();
-                    if (!isRedirect) {
-                        // Fade out if staying on page
-                        loader.style.opacity = '0';
-                        setTimeout(() => { loader.style.display = 'none'; }, 500);
-                    }
-                }, 5000); // 5s Duration
-            } else {
-                if (callback) callback();
-            }
-        };
-
-        // Hide loading screen after page loads
-        window.addEventListener('load', function () {
-            // Initially disable login screen interactions
-            const loginScreen = document.getElementById('loginScreen');
-            if (loginScreen) loginScreen.style.pointerEvents = 'none';
-
-            setTimeout(function () {
+            
+            html2pdf().set(opt).from(element).save();
+        }
+        
+        // Loading animation
+        window.addEventListener('load', function() {
+            setTimeout(function() {
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
                     loader.style.opacity = '0';
                     setTimeout(() => {
                         loader.style.display = 'none';
-
-                        // Enable inputs and button after loader is gone
-                        const pinInputs = document.querySelectorAll('.pin-digit');
-                        const loginBtn = document.getElementById('loginBtn');
-
-                        if (pinInputs.length > 0) {
-                            pinInputs.forEach(input => input.disabled = false);
-                            pinInputs[0].focus(); // Focus after enabling
-                        }
-                        if (loginBtn) {
-                            loginBtn.disabled = false;
-                        }
-                        if (loginScreen) {
-                            loginScreen.style.pointerEvents = 'auto';
-                        }
                     }, 500);
                 }
                 document.body.classList.add('loaded');
-            }, 3000); // 3 seconds total loading time
+            }, 2000);
         });
     </script>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
-        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
-            allowtransparency="true"></iframe>
-    </div>
-    <!-- Edit Legal Modal -->
-    <div id="editLegalModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:92%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            <button onclick="closeModal(document.getElementById('editLegalModal'))"
-                style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
-            <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
-            <form method="POST" id="editLegalForm">
-                <input type="hidden" name="edit_id" id="edit_legal_id">
-                <input type="hidden" name="edit_type" id="edit_legal_type">
-
-                <div class="form-group" style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
-                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%;"
-                        required>
-                </div>
-
-                <div class="form-group" style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
-                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
-                        style="width:100%;" required>
-                </div>
-
-                <div id="dynamic_edit_fields"></div>
-
-                <div class="form-actions" style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" class="cancel-btn"
-                        style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
-                        onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
-                    <button type="submit" name="update_legal_record" class="save-btn"
-                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
-                        Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function editLegalRecord(data, type) {
-            const modal = document.getElementById('editLegalModal');
-            document.getElementById('edit_legal_id').value = data.id;
-            document.getElementById('edit_legal_type').value = type;
-            document.getElementById('edit_legal_name').value = data.name || data.contract_name || '';
-            document.getElementById('edit_legal_case_id').value = data.case_id || '';
-
-            const dynamicFields = document.getElementById('dynamic_edit_fields');
-            dynamicFields.innerHTML = '';
-
-            if (type === 'contract') {
-                dynamicFields.innerHTML = `
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600;">Resource Description</label>
-                        <textarea name="edit_description" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" rows="3">${data.description || ''}</textarea>
-                    </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600;">Legal Classification</label>
-                        <select name="edit_contract_type" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;">
-                            <option value="Internal" ${data.contract_type === 'Internal' ? 'selected' : ''}>Internal (Policies/SOP)</option>
-                            <option value="External" ${data.contract_type === 'External' ? 'selected' : ''}>External (Agreements/NDA)</option>
-                        </select>
-                    </div>
-                `;
-            }
-
-            modal.style.display = 'flex';
-        }
-    </script>
 </body>
-
 </html>
