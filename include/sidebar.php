@@ -56,11 +56,24 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="dashboard">
                     <span class="icon-img-placeholder">📊</span> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
-                    data-tab="facilities">
+            <li class="has-dropdown">
+                <a href="#" onclick="event.preventDefault(); toggleDropdown('facilities-dropdown');" class="dropdown-toggle">
                     <span class="icon-img-placeholder">🏢</span> Facilities
-                </a></li>
+                    <span class="dropdown-arrow">▼</span>
+                </a>
+                <ul id="facilities-dropdown" class="dropdown-menu">
+                    <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
+                            data-tab="facilities">
+                            <span class="icon-img-placeholder">🏢</span> All Facilities
+                        </a></li>
+                    <li><a href="<?= get_nav_link('maintenance', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'maintenance') ? 'active' : '' ?>"
+                            data-tab="maintenance">
+                            <span class="icon-img-placeholder">🔧</span> Maintenance
+                        </a></li>
+                </ul>
+            </li>
             <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                     data-tab="reservations">
@@ -87,8 +100,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     <span class="icon-img-placeholder">🗄️</span> Document Archiving
                 </a></li>
             <li><a href="../Modules/Visitor-logs.php"
-                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">🚶</span> Visitors Management
+                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <span class="icon-img-placeholder">🚶</span> Visitors
                 </a></li>
 
 
@@ -172,5 +186,27 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     window.handleSidebarNav = function (tab) {
         // Allow animation for specific tabs if needed, or just default behavior
         if (typeof switchTab === 'function') switchTab(tab);
+    };
+
+    // 5. Handle Dropdown Toggle
+    window.toggleDropdown = function (dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const arrow = dropdown.previousElementSibling.querySelector('.dropdown-arrow');
+        
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            // Close other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+            document.querySelectorAll('.dropdown-arrow').forEach(arr => {
+                arr.style.transform = 'rotate(0deg)';
+            });
+            
+            dropdown.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+        }
     };
 </script>
