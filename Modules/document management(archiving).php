@@ -1556,9 +1556,14 @@ function formatFileSize($bytes)
                                         </span>
                                     </td>
                                     <td style="text-align: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn-view-small" title="Retrieve" style="background: transparent; border: 1px solid #e2e8f0; color: #3b82f6; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 `;
@@ -1642,9 +1647,14 @@ function formatFileSize($bytes)
                                     <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #475569;">${new Date(item.entry_date).toLocaleDateString()}</td>
                                     <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b; max-width: 250px; overflow: hidden; text-overflow: ellipsis;">${item.description}</td>
                                     <td style="text-align: center; vertical-align: middle; white-space: nowrap; padding: 15px 20px; border-bottom: 1px solid #f1f5f9;">
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details" style="background: transparent; border: 1px solid #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn-view-small" title="Retrieve" style="background: transparent; border: 1px solid #e2e8f0; color: #3b82f6; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 `;
@@ -1689,8 +1699,8 @@ function formatFileSize($bytes)
                                         <button class="btn-view-small" onclick='showInventoryDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn-view-small" title="Print/Export">
-                                            <i class="fas fa-print"></i>
+                                        <button class="btn-view-small" title="Retrieve" style="color: #3b82f6;">
+                                            <i class="fas fa-undo"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1740,6 +1750,9 @@ function formatFileSize($bytes)
                                             </a>
                                             <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})' title="View Metadata">
                                                 <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn-view-small" title="Retrieve" style="color: #3b82f6;" onclick="restoreDocument(${item.id})">
+                                                <i class="fas fa-undo"></i>
                                             </button>
                                             ${isSuperAdmin ? `
                                                 <button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})" title="Wipe Permanently">

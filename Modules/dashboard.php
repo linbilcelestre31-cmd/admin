@@ -704,7 +704,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr>
                                         <td colspan="8" style="text-align: center; padding: 20px;">
                                             <div style="color: #718096; font-style: italic;">
-                                                <i class="fa-regular fa-clipboard" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                <i class="fa-regular fa-clipboard"
+                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
                                                 No maintenance logs found.
                                             </div>
                                         </td>
@@ -713,11 +714,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
                                         <tr>
                                             <td style="text-align: center;"><?= $log['id'] ?></td>
-                                            <td style="text-align: left; font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?></td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($log['description'] ?? 'N/A') ?></td>
-                                            <td style="text-align: center;"><?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
+                                            <td style="text-align: left; font-weight: 600;">
+                                                <?= htmlspecialchars($log['item_name']) ?></td>
+                                            <td style="text-align: left;"><?= htmlspecialchars($log['description'] ?? 'N/A') ?>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
                                             <td style="text-align: left;"><?= htmlspecialchars($log['assigned_staff']) ?></td>
-                                            <td style="text-align: center;"><?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
+                                            <td style="text-align: center;">
+                                                <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
                                             <td style="text-align: center;">
                                                 <span class="status-badge status-<?= $log['status'] ?>">
                                                     <?= ucfirst($log['status']) ?>
@@ -855,6 +860,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <i class="fa-solid fa-xmark"></i>
                                                         </button>
                                                     <?php endif; ?>
+                                                    <button class="btn btn-info btn-icon" name="status" value="pending"
+                                                        title="Retrieve Reservation" aria-label="Retrieve">
+                                                        <i class="fa-solid fa-rotate-left"></i>
+                                                    </button>
                                                 </form>
                                             </div>
                                         </td>
@@ -1532,6 +1541,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" title="Retrieve Employee" style="color: #3b82f6;">
+                                        <i class="fas fa-undo"></i>
                                     </button>
                                     <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="deleteEmployee(${employee.id})" title="Delete Employee">
                                         <i class="fas fa-trash"></i>

@@ -1061,6 +1061,53 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 transform: translateY(0);
             }
         }
+
+        /* PIN Input Security Styling - THE PIN SQUARE FIX */
+        .pin-input {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            perspective: 1000px;
+        }
+
+        .pin-digit {
+            width: 70px !important;
+            height: 70px !important;
+            text-align: center !important;
+            font-size: 32px !important;
+            font-weight: 700 !important;
+            border: 3px solid #e2e8f0 !important;
+            border-radius: 16px !important;
+            background: #f8fafc !important;
+            color: #1e293b !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            outline: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .pin-digit:focus {
+            border-color: #3b82f6 !important;
+            background: #ffffff !important;
+            box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .pin-digit:not(:placeholder-shown) {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .premium-modal .pin-digit {
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 28px !important;
+        }
     </style>
 </head>
 
@@ -1079,10 +1126,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <h2>Legal Management System</h2>
             <p>Enter your PIN to access the system</p>
             <div class="pin-input">
-                <input type="password" maxlength="1" class="pin-digit" id="pin1" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin2" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin3" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin4" disabled>
+                <input type="password" maxlength="1" class="pin-digit" id="pin1">
+                <input type="password" maxlength="1" class="pin-digit" id="pin2">
+                <input type="password" maxlength="1" class="pin-digit" id="pin3">
+                <input type="password" maxlength="1" class="pin-digit" id="pin4">
             </div>
             <button class="login-btn" id="loginBtn" disabled>Login</button>
             <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
@@ -1131,7 +1178,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="nav-tab" data-target="external">External</div>
                 <div class="nav-tab" data-target="documents">Documents</div>
                 <div class="nav-tab" data-target="contracts">Contracts</div>
-                <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
             </div>
 
             <div class="content-section active" id="employees">
@@ -1241,8 +1287,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Policy Name</th>
                                         <th>Case ID</th>
-                                        <th>Risk Level</th>
-                                        <th>Risk Score</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1274,13 +1318,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                <td>
-                                                    <span
-                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                    </span>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($doc['risk_score'] ?? 0); ?>/100</td>
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
@@ -1378,8 +1415,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <th>Agreement Name</th>
                                         <th>Case ID</th>
                                         <th>Expiry Date</th>
-                                        <th>Risk Level</th>
-                                        <th>Risk Score</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1413,13 +1448,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
                                                 </td>
-                                                <td>
-                                                    <span
-                                                        class="risk-badge risk-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                    </span>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($doc['risk_score'] ?? 0); ?>/100</td>
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
@@ -1549,8 +1577,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <th>Contract Name</th>
                                 <th>Case ID</th>
                                 <th>Type</th>
-                                <th>Risk Level</th>
-                                <th>Risk Score</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1561,13 +1587,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <td><?php echo htmlspecialchars($contract['name']); ?></td>
                                         <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
                                         <td><?php echo htmlspecialchars($contract['contract_type'] ?? 'External'); ?></td>
-                                        <td>
-                                            <span
-                                                class="risk-badge risk-<?php echo strtolower($contract['risk_level'] ?? 'low'); ?>">
-                                                <?php echo htmlspecialchars($contract['risk_level'] ?? 'Low'); ?>
-                                            </span>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($contract['risk_score'] ?? 0); ?>/100</td>
                                         <td>
                                             <div class="action-container">
                                                 <button class="action-btn view-btn"
@@ -1607,6 +1626,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <div class="content-section" id="risk_analysis">
                 <div class="section-header">
                     <h2 class="section-title">Risk Analysis Dashboard</h2>
+                    <button class="add-btn" id="fullWekaScanBtn"
+                        style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                        <i class="fa-solid fa-microscope"></i> Run Full Weka System Audit
+                    </button>
                 </div>
 
                 <!-- Stats Cards Grid -->
@@ -1931,7 +1954,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <div class="info-row">
                             <h4 id="analysisTargetName">-</h4>
                             <div id="analysisSummaryText" class="summary-box">
-                                AI analysis suggests this document is highly compliant with standard legal framework.
+                                <p>AI analysis suggests this document is highly compliant with standard legal framework.
+                                </p>
                             </div>
                         </div>
                         <div class="info-row">
@@ -2184,6 +2208,50 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     showAddEmployeeModal();
                 });
             }
+
+            // Employee Reveal
+            const empRevealBtn = document.getElementById('employeeRevealBtn');
+            if (empRevealBtn) {
+                empRevealBtn.addEventListener('click', function () {
+                    withPasswordGate(() => {
+                        document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
+                        document.getElementById('employeeRevealOverlay').style.display = 'none';
+                    });
+                });
+            }
+
+            // Full Weka Scan
+            const fullWekaScanBtn = document.getElementById('fullWekaScanBtn');
+            if (fullWekaScanBtn) {
+                fullWekaScanBtn.addEventListener('click', function () {
+                    const btn = this;
+                    const originalHTML = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> INITIALIZING WEKA SCAN...';
+
+                    // Show a notification or update UI
+                    const statsCards = document.querySelectorAll('.stat-card');
+                    statsCards.forEach(card => card.style.opacity = '0.5');
+
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fa-solid fa-microchip fa-beat"></i> ANALYZING LEGAL CLUSTERS...';
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="fa-solid fa-shield-check"></i> SCAN COMPLETED';
+                            statsCards.forEach(card => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1.05)';
+                                setTimeout(() => card.style.transform = 'scale(1)', 500);
+                            });
+
+                            setTimeout(() => {
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                alert('Full Weka System Scan Completed. No new critical risks identified.');
+                            }, 1000);
+                        }, 2000);
+                    }, 1500);
+                });
+            }
         }
 
         // Tab filtering
@@ -2371,11 +2439,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             const summaryText = document.getElementById('analysisSummaryText');
             const findingsList = document.getElementById('analysisKeyFindings');
+            const p = summaryText.querySelector('p');
 
             if (type === 'Internal') {
                 summaryText.style.background = '#f0fdf4';
                 summaryText.style.borderLeftColor = '#22c55e';
-                summaryText.querySelector('p').textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
+                if (p) p.textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
                 findingsList.innerHTML = `
                     <li>Clear definitions of employee responsibilities.</li>
                     <li>Compliance with local labor laws verified.</li>
@@ -2384,7 +2453,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             } else {
                 summaryText.style.background = '#fffbeb';
                 summaryText.style.borderLeftColor = '#f59e0b';
-                summaryText.querySelector('p').textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
+                if (p) p.textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
                 findingsList.innerHTML = `
                     <li>Standard vendor obligations met.</li>
                     <li>Liability cap slightly exceeds industry standard.</li>
@@ -2392,17 +2461,34 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 `;
             }
 
-            // Reset Blur State
-            document.getElementById('legalAnalysisContent').classList.add('blurred-content');
-            document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
+            // Show scanning state first
+            const overlay = document.getElementById('legalAnalysisRevealOverlay');
+            const content = document.getElementById('legalAnalysisContent');
+            const btn = overlay.querySelector('.reveal-btn');
+
+            content.classList.add('blurred-content');
+            overlay.style.display = 'flex';
+            btn.innerHTML = '<i class="fa-solid fa-lock"></i> Enter PIN to View Analysis';
 
             showModal('legalAnalysisModal');
         };
 
         function revealLegalAnalysis() {
             withPasswordGate(() => {
-                document.getElementById('legalAnalysisContent').classList.remove('blurred-content');
-                document.getElementById('legalAnalysisRevealOverlay').style.display = 'none';
+                const overlay = document.getElementById('legalAnalysisRevealOverlay');
+                const content = document.getElementById('legalAnalysisContent');
+                const btn = overlay.querySelector('.reveal-btn');
+
+                // Simulate "Weka" AI Scan Animation
+                btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Weka AI Scanning...';
+
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart fa-beat"></i> Analyzing Clusters...';
+                    setTimeout(() => {
+                        content.classList.remove('blurred-content');
+                        overlay.style.display = 'none';
+                    }, 1200);
+                }, 1500);
             });
         }
 

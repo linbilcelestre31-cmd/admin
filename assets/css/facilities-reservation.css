@@ -683,7 +683,7 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
-/* IYONG HULING PAGBABAGO: Black Border at Centering Headers */
+/* Standard Table Header Styling */
 .table th {
     background: var(--light);
     font-weight: 600;
@@ -691,12 +691,6 @@ body {
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-
-    /* Pinilit na center ang lahat ng TH */
-    text-align: center !important;
-
-    /* Black border */
-    border-bottom: 2px solid #000;
 }
 
 /* Override para sa mga TH na dapat naka-left align (kung ginamit ang class na ito sa PHP) */
