@@ -1821,65 +1821,74 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
 
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                    <div id="genderImageContainer" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden;">
+                    <div id="genderImageContainer" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
                         <img src="../assets/image/Women.png" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px); box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                        style="width: 100px; height: 100px; background: rgba(255,255,255,0.25); border-radius: 50%; display: grid; place-items: center; font-size: 2.8rem; backdrop-filter: blur(8px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.4);">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
                     <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
-                            style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
+                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Employee
                             Profile</h2>
                         <span id="employeeRoleBadge"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Legal
+                            style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
                             Team</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Body -->
-            <div id="employeeInfoBody" style="padding: 40px; background: white; position: relative;">
-                <div id="employeeSensitiveData" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <!-- Data Row: Name -->
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
-                                Name</label>
-                            <div id="display_emp_name"
-                                style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+            <!-- Modal Body with Circular Design -->
+            <div id="employeeInfoBody" style="padding: 50px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
+                <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 400px;">
+                    <!-- Circular Container -->
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 30px;">
+                        <!-- Circular Profile Section -->
+                        <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 4px solid white; position: relative;">
+                            <div style="position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);">
+                                <i class="fa-solid fa-id-card" style="color: white; font-size: 16px;"></i>
+                            </div>
+                            <div style="text-align: center; padding: 20px;">
+                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);">
+                                    <i class="fa-solid fa-user" style="color: white; font-size: 32px;"></i>
+                                </div>
+                                <h3 id="display_emp_name" style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">-</h3>
+                                <span id="display_emp_position" style="display: block; margin-top: 5px; font-size: 0.85rem; color: #64748b; font-weight: 600;">-</span>
+                            </div>
                         </div>
 
-                        <!-- Data Row: Position -->
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
-                            <div id="display_emp_position"
-                                style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+                        <!-- Contact Information Circles -->
+                        <div style="display: flex; gap: 20px; justify-content: center;">
+                            <!-- Email Circle -->
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 3px solid white;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-envelope" style="color: white; font-size: 18px;"></i>
+                                </div>
+                                <div style="text-align: center; font-size: 0.7rem; color: #64748b; font-weight: 600;">Email</div>
+                                <div id="display_emp_email" style="text-align: center; font-size: 0.75rem; color: #1e293b; font-weight: 700; max-width: 100px; word-break: break-all;">-</div>
+                            </div>
+
+                            <!-- Phone Circle -->
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 3px solid white;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-phone" style="color: white; font-size: 18px;"></i>
+                                </div>
+                                <div style="text-align: center; font-size: 0.7rem; color: #64748b; font-weight: 600;">Phone</div>
+                                <div id="display_emp_phone" style="text-align: center; font-size: 0.75rem; color: #1e293b; font-weight: 700;">-</div>
+                            </div>
                         </div>
 
-                        <!-- Data Grid: Contact Info -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
-                                    Address</label>
-                                <div id="display_emp_email"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    -</div>
-                            </div>
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
-                                    Number</label>
-                                <div id="display_emp_phone"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <button id="modalDownloadEmpPdf" 
+                                style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                            <button id="closeEmployeeInfoBottom"
+                                style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
