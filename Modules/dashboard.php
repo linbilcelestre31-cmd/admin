@@ -1311,7 +1311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td>${employee.email}</td>
                             <td>${position}</td>
                             <td>${department}</td>
-                            <td>Php${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                            <td>P${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                             <td>
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">

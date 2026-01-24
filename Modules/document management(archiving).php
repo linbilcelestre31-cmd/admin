@@ -1243,26 +1243,26 @@ function formatFileSize($bytes)
             }, 1000);
         });
 
-        window.restoreDocument = function(id) {
-    if(!confirm('Are you sure you want to  retrieve/restore this  document from the archive?')) return;
+        window.restoreDocument = function (id) {
+            if (!confirm('Are you sure you want to  retrieve/restore this  document from the archive?')) return;
             const formData = new FormData();
             formData.append('action', 'restore');
             formData.append('id', id);
-            
+
             fetch('?api=1', {
-              method: 'POST',
+                method: 'POST',
                 body: formData
             })
-            .then(r => r.json())
-            .then(res => {
-                alert(res.message);
-                loadCategoryFiles('all');
-            })
-            .catch(err => {
-                console.error('Error restoring document:', err);
-                alert('Document retrieved successfully.');
-                loadCategoryFiles('all');
-            });
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                    loadCategoryFiles('all');
+                })
+                .catch(err => {
+                    console.error('Error restoring document:', err);
+                    alert('Document retrieved successfully.');
+                    loadCategoryFiles('all');
+                });
         };
 
         function setupEventListeners() {
@@ -1560,7 +1560,7 @@ function formatFileSize($bytes)
                                 <tr>
                                     <td>ðŸ“¦ ${item.name || item.product_name}</td>
                                     <td>${item.quantity || item.stock || 0}</td>
-                                    <td>Php${parseFloat(item.price || item.unit_price || 0).toLocaleString()}</td>
+                                    <td>P${parseFloat(item.price || item.unit_price || 0).toLocaleString()}</td>
                                     <td>
                                         <button class="btn-view-small" onclick='showInventoryDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
                                         <button class="btn-view-small" onclick="alert('Retrieve initiated for: ${item.name || item.product_name}')"><i class="fas fa-undo"></i></button>
@@ -1616,7 +1616,7 @@ function formatFileSize($bytes)
             const modal = document.getElementById('fileDetailsModal');
             const content = document.getElementById('fileDetailsContent');
             let profileImage = file.name && file.name.toLowerCase().includes('ms') ? '../assets/image/Women.png' : '../assets/image/Men.png';
-            
+
             content.innerHTML = `
                 <div style="text-align: center;">
                     <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-blue);">
@@ -1645,8 +1645,8 @@ function formatFileSize($bytes)
 
         window.deletePermanent = function (id) {
             if (!confirm('Permanently delete this file?')) return;
-            fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
-            .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
+            fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+                .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
         };
 
         document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
@@ -1656,10 +1656,11 @@ function formatFileSize($bytes)
             formData.append('name', document.getElementById('fileName').value);
             formData.append('category', document.getElementById('fileCategory').value);
             fetch('?api=1', { method: 'POST', body: formData })
-            .then(r => r.json()).then(res => { alert(res.message); if(res.message.includes('success')) { document.getElementById('uploadModal').style.display='none'; loadCategoryFiles('all'); }});
+                .then(r => r.json()).then(res => { alert(res.message); if (res.message.includes('success')) { document.getElementById('uploadModal').style.display = 'none'; loadCategoryFiles('all'); } });
         });
 
         document.getElementById('cancelUpload')?.addEventListener('click', () => { document.getElementById('uploadModal').style.display = 'none'; });
     </script>
 </body>
+
 </html>
