@@ -718,6 +718,94 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             vertical-align: middle;
         }
 
+        /* Enhanced centering for all container views */
+        .container {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+        }
+
+        /* Center all modal content */
+        .modal-animate-in,
+        #detailsModal > div,
+        #passwordModal > div,
+        #contractFormModal > div,
+        #employeeFormModal > div,
+        #documentFormModal > div,
+        #contractDocsModal > div,
+        #legalDetailModal > div,
+        #legalAnalysisModal > div,
+        #editLegalModal > div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        /* Center all form containers */
+        .form-container {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100% !important;
+        }
+
+        /* Center all images within the module */
+        img {
+            display: block !important;
+            margin: 0 auto !important;
+            text-align: center !important;
+        }
+
+        /* Center specific Women.png and Men.png images */
+        img[src*="Women.png"],
+        img[src*="Men.png"] {
+            display: inline-block !important;
+            vertical-align: middle !important;
+            margin: 0 5px !important;
+        }
+
+        /* Enhanced modal header centering */
+        .modal-header,
+        .premium-modal > div:first-child {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            flex-direction: column !important;
+        }
+
+        /* Center all buttons and actions */
+        .action-container,
+        .form-actions,
+        button {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        /* Center all content sections */
+        .content-section,
+        .section-header,
+        .risk-stats-grid,
+        .chart-container-wrapper,
+        .high-risk-list-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100% !important;
+        }
+
         /* When password modal is active, hide everything except the password modal */
         .pwd-focus *:not(#passwordModal):not(#passwordModal *) {
             opacity: 0 !important;
@@ -1779,12 +1867,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <i class="fa-solid fa-xmark"></i>
                 </button>
 
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
-                        <i class="fa-solid fa-user-tie"></i>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="../assets/image/Women.png" alt="Women" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover;">
+                        <div
+                            style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <img src="../assets/image/Men.png" alt="Men" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover;">
                     </div>
-                    <div>
+                    <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
                             style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
                             Profile</h2>
