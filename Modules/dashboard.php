@@ -38,26 +38,6 @@ class ReservationSystem
     public function __construct()
     {
         $this->pdo = get_pdo();
-        $this->ensureMaintenanceTableExists();
-    }
-
-    private function ensureMaintenanceTableExists()
-    {
-        try {
-            $this->pdo->exec("CREATE TABLE IF NOT EXISTS maintenance_logs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                item_name VARCHAR(255) NOT NULL,
-                description TEXT,
-                maintenance_date DATE NOT NULL,
-                assigned_staff VARCHAR(255) NOT NULL,
-                contact_number VARCHAR(50),
-                status ENUM('pending', 'in-progress', 'completed') DEFAULT 'pending',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        } catch (PDOException $e) {
-            // Silently fail or log (app will handle missing table via try-catches in fetch methods)
-        }
     }
 
 
@@ -159,44 +139,7 @@ class ReservationSystem
         }
     }
 
-    public function addMaintenanceLog($data)
-    {
-        $pdo = $this->pdo;
-        try {
-            $stmt = $pdo->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, status) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
-                htmlspecialchars($data['item_name']),
-                htmlspecialchars($data['description'] ?? ''),
-                $data['maintenance_date'],
-                htmlspecialchars($data['assigned_staff']),
-                htmlspecialchars($data['contact_number'] ?? ''),
-                $data['status'] ?? 'pending'
-            ]);
-            return ['success' => true, 'message' => "Maintenance log added successfully!"];
-        } catch (PDOException $e) {
-            return ['success' => false, 'message' => "Error adding maintenance log: " . $e->getMessage()];
-        }
-    }
 
-    public function fetchMaintenanceLogs()
-    {
-        try {
-            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC LIMIT 5")->fetchAll();
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
-
-    public function deleteMaintenanceLog($id)
-    {
-        try {
-            $stmt = $this->pdo->prepare("DELETE FROM maintenance_logs WHERE id = ?");
-            $stmt->execute([$id]);
-            return ['success' => true, 'message' => 'Maintenance log deleted successfully.'];
-        } catch (PDOException $e) {
-            return ['success' => false, 'message' => 'Error deleting maintenance log: ' . $e->getMessage()];
-        }
-    }
 
     public function fetchDashboardData()
     {
@@ -210,15 +153,13 @@ class ReservationSystem
                     (SELECT COUNT(*) FROM facilities WHERE status = 'active') as total_facilities,
                     (SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE() AND status IN ('confirmed', 'pending')) as today_reservations,
                     (SELECT COUNT(*) FROM reservations WHERE status = 'pending') as pending_approvals,
-                    (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue,
-                    (SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed') as pending_maintenance
+                    (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue
             ")->fetch();
 
             $data['total_facilities'] = $metrics_query['total_facilities'];
             $data['today_reservations'] = $metrics_query['today_reservations'];
             $data['pending_approvals'] = $metrics_query['pending_approvals'];
             $data['monthly_revenue'] = $metrics_query['monthly_revenue'];
-            $data['pending_maintenance'] = $metrics_query['pending_maintenance'];
 
             // Fetch facilities and today's schedule in parallel (single query)
             $data['facilities'] = $pdo->query("SELECT * FROM facilities WHERE status = 'active' ORDER BY name")->fetchAll();
@@ -239,8 +180,7 @@ class ReservationSystem
                 LIMIT 10
             ")->fetchAll();
 
-            // Maintenance data (cached if possible)
-            $data['maintenance_logs'] = $this->fetchMaintenanceLogs();
+
 
         } catch (PDOException $e) {
             $data['error'] = "Error fetching data: " . $e->getMessage();
@@ -251,7 +191,6 @@ class ReservationSystem
         $data['today_reservations'] = $data['today_reservations'] ?? 0;
         $data['pending_approvals'] = $data['pending_approvals'] ?? 0;
         $data['monthly_revenue'] = $data['monthly_revenue'] ?? 0;
-        $data['pending_maintenance'] = $data['pending_maintenance'] ?? 0;
         $data['facilities'] = $data['facilities'] ?? [];
         $data['reservations'] = $data['reservations'] ?? [];
         $data['today_schedule'] = $data['today_schedule'] ?? [];
@@ -314,25 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
 
-            case 'add_maintenance':
-                $result = $reservationSystem->addMaintenanceLog($_POST);
-                if ($result['success']) {
-                    $success_message = $result['message'];
-                } else {
-                    $error_message = $result['message'];
-                }
-                break;
 
-            case 'delete_maintenance':
-                if (isset($_POST['log_id'])) {
-                    $result = $reservationSystem->deleteMaintenanceLog($_POST['log_id']);
-                    if ($result['success']) {
-                        $success_message = $result['message'];
-                    } else {
-                        $error_message = $result['message'];
-                    }
-                }
-                break;
 
             case 'check_availability':
                 if (isset($_POST['facility_id']) && isset($_POST['event_date'])) {
@@ -515,7 +436,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <header class="top-header">
                 <div class="header-title">
                     <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <span class="icon-img-placeholder">☰</span>
+                        <i class="fa-solid fa-bars"></i>
                     </button>
                     <h1 id="page-title">Dashboard</h1>
                 </div>
@@ -537,7 +458,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
                     <button class="btn btn-outline" onclick="openLogoutModal()">
-                        <span class="icon-img-placeholder">🚪</span> Logout
+                        <i class="fa-solid fa-door-open"></i> Logout
                     </button>
 
                     <?php
@@ -558,13 +479,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Alert Messages -->
                 <?php if (isset($success_message)): ?>
                     <div class="alert alert-success">
-                        <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success_message) ?>
+                        <i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($success_message) ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if (isset($error_message)): ?>
                     <div class="alert alert-error">
-                        <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error_message) ?>
+                        <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error_message) ?>
                     </div>
                 <?php endif; ?>
 
@@ -574,20 +495,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Facilities Tab -->
                 <div id="facilities" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
-                        <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
+                        <h2><i class="fa-solid fa-building"></i> Hotel Facilities</h2>
                     </div>
                     <div class="facilities-grid">
                         <?php if (empty($dashboard_data['facilities'])): ?>
-                            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
-                                <i class="fa-solid fa-hotel" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                            <div
+                                style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
+                                <i class="fa-solid fa-hotel"
+                                    style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
                                 <p style="color: #64748b;">No active facilities available at the moment.</p>
                             </div>
                         <?php else: ?>
                             <?php foreach ($dashboard_data['facilities'] as $facility): ?>
                                 <div class="facility-card">
                                     <div class="facility-image">
-                                        <?php if (!empty($facility['image_path'])): ?>
-                                            <img src="<?= htmlspecialchars($facility['image_path']) ?>" alt="<?= htmlspecialchars($facility['name']) ?>">
+                                        <?php
+                                        $fName = $facility['name'];
+                                        $imgSrc = $facility['image_path'] ?? '';
+
+                                        if (empty($imgSrc)) {
+                                            // Auto-mapping based on provided screenshot files
+                                            $possiblePathJpeg = "../assets/image/" . $fName . ".jpeg";
+                                            $possiblePathJpg = "../assets/image/" . $fName . ".jpg";
+                                            $possiblePathUnderscore = "../assets/image/" . str_replace(' ', '_', strtolower($fName)) . ".jpg";
+
+                                            if (file_exists(__DIR__ . '/' . $possiblePathJpeg)) {
+                                                $imgSrc = $possiblePathJpeg;
+                                            } elseif (file_exists(__DIR__ . '/' . $possiblePathJpg)) {
+                                                $imgSrc = $possiblePathJpg;
+                                            } elseif (file_exists(__DIR__ . '/' . $possiblePathUnderscore)) {
+                                                $imgSrc = $possiblePathUnderscore;
+                                            }
+                                        }
+
+                                        if (!empty($imgSrc)): ?>
+                                            <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($fName) ?>">
                                         <?php else: ?>
                                             <i class="fa-solid fa-building"></i>
                                         <?php endif; ?>
@@ -595,17 +537,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <div class="facility-content">
                                         <div class="facility-header">
                                             <h3 class="facility-name"><?= htmlspecialchars($facility['name']) ?></h3>
-                                            <span class="facility-type"><?= ucfirst(htmlspecialchars($facility['type'])) ?></span>
+                                            <span
+                                                class="facility-type"><?= ucfirst(htmlspecialchars($facility['type'])) ?></span>
                                         </div>
                                         <div class="facility-details">
                                             <?= htmlspecialchars($facility['description']) ?>
                                         </div>
                                         <div class="facility-meta">
-                                            <div class="meta-item"><i class="fa-solid fa-users"></i> <?= $facility['capacity'] ?> Guests</div>
-                                            <div class="meta-item"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($facility['location']) ?></div>
+                                            <div class="meta-item"><i class="fa-solid fa-users"></i>
+                                                <?= $facility['capacity'] ?> Guests</div>
+                                            <div class="meta-item"><i class="fa-solid fa-location-dot"></i>
+                                                <?= htmlspecialchars($facility['location']) ?></div>
                                         </div>
-                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour</div>
-                                        <button class="btn btn-primary btn-block" onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                        </div>
+                                        <button class="btn btn-primary btn-block"
+                                            onclick="openReservationModal(<?= $facility['id'] ?>)">
                                             <i class="fa-solid fa-calendar-check"></i> Book Now
                                         </button>
                                     </div>
@@ -618,9 +565,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Reservations Tab -->
                 <div id="reservations" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
-                        <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
+                        <h2><i class="fa-solid fa-calendar-check"></i> Reservation Management</h2>
                         <button class="btn btn-primary" onclick="openModal('reservation-modal')">
-                            <span class="icon-img-placeholder">➕</span> Add Reservation
+                            <i class="fa-solid fa-plus"></i> Add Reservation
                         </button>
                     </div>
 
@@ -720,79 +667,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Maintenance Tab -->
-                <div id="maintenance" class="tab-content">
-                    <div class="d-flex justify-between align-center mb-2">
-                        <h2><span class="icon-img-placeholder">🔧</span> Maintenance Management</h2>
-                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
-                            <span class="icon-img-placeholder">➕</span> Add Maintenance Log
-                        </button>
-                    </div>
 
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%; text-align: center;">ID</th>
-                                    <th style="width: 20%; text-align: left;">Item Name</th>
-                                    <th style="width: 25%; text-align: left;">Description</th>
-                                    <th style="width: 10%; text-align: center;">Date</th>
-                                    <th style="width: 15%; text-align: left;">Assigned Staff</th>
-                                    <th style="width: 10%; text-align: center;">Contact</th>
-                                    <th style="width: 10%; text-align: center;">Status</th>
-                                    <th style="width: 5%; text-align: center;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                    <tr>
-                                        <td colspan="8" style="text-align: center; padding: 20px;">
-                                            <div style="color: #718096; font-style: italic;">
-                                                <i class="fa-regular fa-clipboard"
-                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                No maintenance logs found.
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                        <tr>
-                                            <td style="text-align: center;"><?= $log['id'] ?></td>
-                                            <td style="text-align: left; font-weight: 600;">
-                                                <?= htmlspecialchars($log['item_name']) ?></td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($log['description'] ?? 'N/A') ?>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($log['assigned_staff']) ?></td>
-                                            <td style="text-align: center;">
-                                                <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
-                                            <td style="text-align: center;">
-                                                <span class="status-badge status-<?= $log['status'] ?>">
-                                                    <?= ucfirst($log['status']) ?>
-                                                </span>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                    <button class="btn btn-danger btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); deleteMaintenanceLog(<?= $log['id'] ?>)"
-                                                        title="Delete Log" aria-label="Delete">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
                 <!-- Calendar Tab -->
                 <!-- Reports Tab -->
                 <div id="reports" class="tab-content">
-                    <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
+                    <h2 class="mb-2"><i class="fa-solid fa-chart-line"></i> Reservations Reports</h2>
 
                     <?php
                     // Server-side: handle GET filters for reports view
@@ -918,7 +798,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <div id="calendar" class="tab-content">
-                    <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
+                    <h2 class="mb-2"><i class="fa-solid fa-calendar-days"></i> Reservation Calendar</h2>
 
                     <div class="calendar-grid">
                         <?php
@@ -949,7 +829,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endforeach; ?>
                                     <?php if (empty($day_events)): ?>
                                         <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                            <span class="icon-img-placeholder">🚫</span> No reservations
+                                            <i class="fa-solid fa-circle-xmark"></i> No reservations
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -961,16 +841,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Management Tab -->
                 <div id="management" class="tab-content">
                     <div class="management-header">
-                        <h2><span class="icon-img-placeholder">⚙️</span> Facilities Management</h2>
+                        <h2><i class="fa-solid fa-gears"></i> Facilities Management</h2>
                         <div class="management-buttons">
                             <button id="show-facilities-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('facilities')">
                                 <i class="fa-solid fa-building"></i> Facility Card
                             </button>
-                            <button id="show-maintenance-card" class="btn btn-outline management-btn"
-                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance & System
-                            </button>
+
                             <button id="show-reports-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
                                 <i class="fa-solid fa-chart-line"></i> Reports Card
@@ -986,11 +863,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- Facility Management Card -->
                         <div class="card management-card management-facilities" data-open-tab="facilities">
                             <div class="card-header">
-                                <h3><span class="icon-img-placeholder">🏢</span> Facility Management</h3>
+                                <h3><i class="fa-solid fa-building"></i> Facility Management</h3>
                             </div>
                             <div class="card-content">
                                 <button class="btn btn-primary mb-1" onclick="openModal('facility-modal')">
-                                    <span class="icon-img-placeholder">➕</span> Add New Facility
+                                    <i class="fa-solid fa-plus"></i> Add New Facility
                                 </button>
                                 <div class="table-wrapper">
                                     <table class="table management-table">
@@ -1035,90 +912,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- Maintenance & Status Card -->
-                        <div class="card management-card management-maintenance">
-                            <div class="card-header">
-                                <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
-                            </div>
-                            <div class="card-content">
-                                <div class="d-flex justify-between align-center mb-1">
-                                    <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
-                                        <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
-                                    </button>
-                                    <div
-                                        style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                                        <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
-                                        <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
-                                    </div>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="table management-table">
-                                        <thead>
-                                            <tr>
-                                                <th style="text-align: left !important;">Item/Area</th>
-                                                <th style="text-align: left !important;">Description</th>
-                                                <th>Schedule</th>
-                                                <th>Staff</th>
-                                                <th>Contact</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                                <tr>
-                                                    <td colspan="7"
-                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                        No maintenance logs found.
-                                                    </td>
-                                                </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                    <tr>
-                                                        <td style="font-weight: 600; text-align: left !important;">
-                                                            <?= htmlspecialchars($log['item_name']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
-                                                            title="<?= htmlspecialchars($log['description']) ?>">
-                                                            <?= htmlspecialchars($log['description']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem;">
-                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
-                                                        </td>
-                                                        <td style="font-weight: 500;">
-                                                            <?= htmlspecialchars($log['assigned_staff']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem;">
-                                                            <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
-                                                        </td>
-                                                        <td>
-                                                            <span class="status-badge status-<?= $log['status'] ?>">
-                                                                <?= ucfirst($log['status']) ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex gap-1" style="justify-content: center;">
-                                                                <button class="btn btn-outline btn-sm btn-icon"
-                                                                    onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
-                                                                    title="View Details">
-                                                                    <i class="fa-solid fa-eye"></i>
-                                                                </button>
 
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Employee Management Card -->
                         <div class="card management-card management-employees" data-open-tab="employees">
                             <div class="card-header d-flex justify-between align-center">
-                                <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
+                                <h3><i class="fa-solid fa-users"></i> Employee Management</h3>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
                                         <i class="fas fa-file-export"></i> Export Report
@@ -1160,7 +959,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- Reports Card -->
                         <div class="card management-card management-reports" data-open-tab="reports">
                             <div class="card-header">
-                                <h3><span class="icon-img-placeholder">📊</span> Quick Reports</h3>
+                                <h3><i class="fa-solid fa-chart-simple"></i> Quick Reports</h3>
                             </div>
                             <div class="card-content">
                                 <div class="stats-row">
@@ -1176,10 +975,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 <div class="report-actions">
                                     <button class="btn btn-outline mt-2" onclick="generateReport()">
-                                        <span class="icon-img-placeholder">📄</span> Generate Full Report
+                                        <i class="fa-solid fa-file-lines"></i> Generate Full Report
                                     </button>
                                     <button class="btn btn-outline mt-2" onclick="exportData()">
-                                        <span class="icon-img-placeholder">📥</span> Export Data
+                                        <i class="fa-solid fa-download"></i> Export Data
                                     </button>
                                 </div>
                             </div>
@@ -1217,9 +1016,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div id="facility-details"
                     style="display: none; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <div><strong><span class="icon-img-placeholder">👤</span> Capacity:</strong> <span
-                            id="capacity-display"></span> people</div>
-                    <div><strong><span class="icon-img-placeholder">₱</span> Hourly Rate:</strong> ₱<span
+                    <div><strong><i class="fa-solid fa-user"></i> Capacity:</strong> <span id="capacity-display"></span>
+                        people</div>
+                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> ₱<span
                             id="rate-display"></span></div>
                     <div id="total-cost" style="font-weight: bold; color: var(--success); margin-top: 0.5rem;"></div>
                 </div>
@@ -1273,7 +1072,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div id="availability-warning" class="alert alert-warning" style="display: none;">
-                    <span class="icon-img-placeholder">⚠️</span> <span id="availability-message"></span>
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span id="availability-message"></span>
                 </div>
 
                 <div class="form-group">
@@ -1281,7 +1080,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="number" id="guests_count" name="guests_count" class="form-control" required min="1"
                         onchange="checkCapacity()">
                     <small id="capacity-warning" style="color: var(--danger); display: none;">
-                        <span class="icon-img-placeholder">🚨</span> Exceeds facility capacity!
+                        <i class="fa-solid fa-circle-exclamation"></i> Exceeds facility capacity!
                     </small>
                 </div>
 
@@ -1292,7 +1091,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <span class="icon-img-placeholder">📩</span> Submit Reservation Request
+                    <i class="fa-solid fa-paper-plane"></i> Submit Reservation Request
                 </button>
             </form>
         </div>
@@ -1354,67 +1153,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <span class="icon-img-placeholder">➕</span> Add Facility
+                    <i class="fa-solid fa-plus"></i> Add Facility
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Maintenance Modal -->
-    <div id="maintenance-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3>Log Maintenance/Repair</h3>
-                <span class="close" onclick="closeModal('maintenance-modal')">&times;</span>
-            </div>
-            <form id="maintenance-form" method="POST">
-                <input type="hidden" name="action" value="add_maintenance">
 
-                <div class="form-group">
-                    <label for="item_name">Item or Area to Fix</label>
-                    <input type="text" id="item_name" name="item_name" class="form-control"
-                        placeholder="e.g., Aircon Unit A, Room 302, Hallway Light" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Issue/Problem Description</label>
-                    <textarea id="description" name="description" class="form-control" rows="3"
-                        placeholder="Describe what's wrong..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="maintenance_date">Target Repair Date</label>
-                    <input type="date" id="maintenance_date" name="maintenance_date" class="form-control" required
-                        min="<?= date('Y-m-d') ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="assigned_staff">Deployed Staff (Assigned To)</label>
-                    <input type="text" id="assigned_staff" name="assigned_staff" class="form-control"
-                        placeholder="Name of person to fix it" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_number">Contact Number</label>
-                    <input type="tel" id="contact_number" name="contact_number" class="form-control"
-                        placeholder="Staff contact info">
-                </div>
-
-                <div class="form-group">
-                    <label for="mnt_status">Initial Status</label>
-                    <select id="mnt_status" name="status" class="form-control">
-                        <option value="pending">Pending (Not Started)</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">
-                    <span class="icon-img-placeholder">💾</span> Save Maintenance Log
-                </button>
-            </form>
-        </div>
-    </div>
 
     <!-- Reservation Details Modal -->
     <div id="details-modal" class="modal">
@@ -1448,21 +1193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <!-- Maintenance Details Modal -->
-    <div id="maintenance-details-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Details</h3>
-                <span class="close" onclick="closeModal('maintenance-details-modal')">&times;</span>
-            </div>
-            <div id="maintenance-details-body">
-                <!-- Filled via JS -->
-            </div>
-            <div style="margin-top: 1.5rem; text-align: right; pt: 1rem; border-top: 1px solid #eee;">
-                <button class="btn btn-outline" onclick="closeModal('maintenance-details-modal')">Close Window</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Logout Confirmation Modal -->
     <div id="logout-modal" class="modal">
@@ -1480,7 +1211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     style="flex: 1; justify-content: center;">Cancel</button>
                 <button class="btn btn-danger" onclick="showLoadingAndRedirect('../auth/login.php?logout=1')"
                     style="flex: 1; justify-content: center; white-space: nowrap;">
-                    <span class="icon-img-placeholder">🚪</span> Confirm Logout
+                    <i class="fa-solid fa-door-open"></i> Confirm Logout
                 </button>
             </div>
         </div>

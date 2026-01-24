@@ -505,46 +505,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Handle Maintenance Operations
-    if (isset($_POST['add_maintenance'])) {
-        $item_name = $_POST['maintenance_item'] ?? '';
-        $description = $_POST['maintenance_description'] ?? '';
-        $maintenance_date = $_POST['maintenance_date'] ?? '';
-        $assigned_staff = $_POST['maintenance_staff'] ?? '';
-        $contact_number = $_POST['maintenance_contact'] ?? '';
-        $status = $_POST['maintenance_status'] ?? 'pending';
 
-        if ($item_name && $description && $maintenance_date && $assigned_staff) {
-            try {
-                $stmt = $db->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, status) VALUES (?, ?, ?, ?, ?, ?)");
-                if ($stmt->execute([$item_name, $description, $maintenance_date, $assigned_staff, $contact_number, $status])) {
-                    $success_message = "Maintenance log added successfully!";
-                } else {
-                    $error_message = "Failed to add maintenance log.";
-                }
-            } catch (PDOException $e) {
-                $error_message = "Database error: " . $e->getMessage();
-            }
-        } else {
-            $error_message = "Please fill in all required fields.";
-        }
-    }
-
-    if (isset($_POST['delete_maintenance'])) {
-        $maintenance_id = intval($_POST['maintenance_id'] ?? 0);
-        if ($maintenance_id > 0) {
-            try {
-                $stmt = $db->prepare("DELETE FROM maintenance_logs WHERE id = ?");
-                if ($stmt->execute([$maintenance_id])) {
-                    $success_message = "Maintenance log deleted successfully!";
-                } else {
-                    $error_message = "Failed to delete maintenance log.";
-                }
-            } catch (PDOException $e) {
-                $error_message = "Database error: " . $e->getMessage();
-            }
-        }
-    }
 
     // Handle PDF Export (Idinagdag para sa PDF Report na may Password)
     if (isset($_POST['action']) && $_POST['action'] === 'export_pdf') {
@@ -1153,7 +1114,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <?php else: ?>
                             <button type="button" class="logout-btn" id="backDashboardBtn"
                                 onclick="window.location.replace('../Modules/dashboard.php')">
-                                <span class="icon-img-placeholder">⏻</span>
+                                <i class="fas fa-power-off"></i>
                                 logout
                             </button>
                         <?php endif; ?>
@@ -1833,15 +1794,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
     </div>
 
-    <!-- Maintenance Form Modal -->
-    <div id="maintenanceFormModal" class="modal">
-        <div class="modal-content">
-            <button type="button" class="modal-close" onclick="closeModal('maintenanceFormModal')">&times;</button>
-            <div id="maintenanceFormContainer">
-                <!-- Content will be loaded dynamically -->
-            </div>
-        </div>
-    </div>
+
 
     <!-- Employee Info Modal -->
     <div id="employeeInfoModal" class="modal">
@@ -2335,9 +2288,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             showModal('contractFormModal');
         }
 
-        function showAddMaintenanceModal() {
-            showModal('maintenanceFormModal');
-        }
+
 
         // Edit employee function
         window.editEmployee = function (emp) {

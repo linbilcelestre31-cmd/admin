@@ -42,7 +42,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li>
                 <a href="<?= $isSuperAdmin ? '../Super-admin/Settings.php' : '../include/Settings.php' ?>"
                     class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">👤</span> Account
+                    <i class="fa-solid fa-circle-user"></i> Account
                 </a>
             </li>
         </ul>
@@ -54,41 +54,41 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
                     data-tab="dashboard">
-                    <span class="icon-img-placeholder">📊</span> Dashboard
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a></li>
             <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
                     data-tab="facilities">
-                    <span class="icon-img-placeholder">🏢</span> Facilities
+                    <i class="fa-solid fa-hotel"></i> Facilities
                 </a></li>
             <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                     data-tab="reservations">
-                    <span class="icon-img-placeholder">📅</span> Reservations
+                    <i class="fa-solid fa-calendar-check"></i> Reservations
                 </a></li>
             <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
                     data-tab="calendar">
-                    <span class="icon-img-placeholder">📅</span> Calendar
+                    <i class="fa-solid fa-calendar-days"></i> Calendar
                 </a></li>
             <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
                     data-tab="management">
-                    <span class="icon-img-placeholder">⚙️</span> Management
+                    <i class="fa-solid fa-gears"></i> Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
                     class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">⚖️</span> Legal Management
+                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
                 </a></li>
             <li><a href="../Modules/document management(archiving).php"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">🗄️</span> Document Archiving
+                    <i class="fa-solid fa-vault"></i> Document Archiving
                 </a></li>
             <li><a href="../Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">🚶</span> Visitors Management
+                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
                 </a></li>
 
 
@@ -101,7 +101,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li><a href="<?= get_nav_link('reports', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>"
                     data-tab="reports">
-                    <span class="icon-img-placeholder">📈</span> Reports
+                    <i class="fa-solid fa-chart-pie"></i> Reports
                 </a></li>
 
         </ul>
