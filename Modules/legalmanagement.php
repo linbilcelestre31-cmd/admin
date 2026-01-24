@@ -2942,11 +2942,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             allowtransparency="true"></iframe>
     </div>
     <!-- Edit Legal Modal -->
-    <div id="editLegalModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:92%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            <button onclick="closeModal(document.getElementById('editLegalModal'))"
+    <div id="editLegalModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
+        <div style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
+            <button type="button" onclick="closeModal(document.getElementById('editLegalModal'))"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
             <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
             <form method="POST" id="editLegalForm">
@@ -2955,14 +2953,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
-                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%;"
-                        required>
+                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
-                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
-                        style="width:100%;" required>
+                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div id="dynamic_edit_fields"></div>
@@ -2972,8 +2968,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
                         onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
                     <button type="submit" name="update_legal_record" class="save-btn"
-                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
-                        Changes</button>
+                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update Changes</button>
                 </div>
             </form>
         </div>
@@ -3007,6 +3002,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
 
             modal.style.display = 'flex';
+        }
+
+        function closeModal(modal) {
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
