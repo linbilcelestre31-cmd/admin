@@ -940,6 +940,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('employees')">
                                 <i class="fa-solid fa-users"></i> Employees Card
                             </button>
+                            <button id="show-maintenance-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
+                                <i class="fa-solid fa-tools"></i> Maintenance Card
+                            </button>
                         </div>
                     </div>
 
@@ -1033,6 +1037,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <div class="loading-spinner"></div>
                                                     Loading employee data...
                                                 </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Management Card -->
+                        <div class="card management-card management-maintenance" data-open-tab="maintenance">
+                            <div class="card-header d-flex justify-between align-center">
+                                <h3><i class="fa-solid fa-tools"></i> Maintenance Management</h3>
+                                <button class="btn btn-success btn-sm" onclick="alert('Schedule maintenance feature coming soon!')">
+                                    <i class="fa-solid fa-plus"></i> Schedule Maintenance
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ticket ID</th>
+                                                <th>Facility</th>
+                                                <th>Issue</th>
+                                                <th>Date</th>
+                                                <th>Priority</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>#MT-2024-001</td>
+                                                <td>Banquet Hall A</td>
+                                                <td>AC unit leaking</td>
+                                                <td>2024-01-15</td>
+                                                <td><span class="status-badge" style="background: #fee2e2; color: #991b1b;">High</span></td>
+                                                <td><span class="status-badge" style="background: #fef9c3; color: #854d0e;">In Progress</span></td>
+                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-001')"><i class="fas fa-eye"></i></button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>#MT-2024-002</td>
+                                                <td>Meeting Room 2</td>
+                                                <td>Projector bulb</td>
+                                                <td>2024-01-20</td>
+                                                <td><span class="status-badge" style="background: #ffedd5; color: #9a3412;">Medium</span></td>
+                                                <td><span class="status-badge" style="background: #e0f2fe; color: #075985;">Open</span></td>
+                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-002')"><i class="fas fa-eye"></i></button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>#MT-2024-003</td>
+                                                <td>Pool Side</td>
+                                                <td>Loose tiles</td>
+                                                <td>2024-01-18</td>
+                                                <td><span class="status-badge" style="background: #dcfce7; color: #166534;">Low</span></td>
+                                                <td><span class="status-badge" style="background: #d1fae5; color: #065f46;">Completed</span></td>
+                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-003')"><i class="fas fa-check"></i></button></td>
+                                            </tr>
+                                            <tr>
+                                                <td>#MT-2024-004</td>
+                                                <td>Executive Lounge</td>
+                                                <td>Coffee machine</td>
+                                                <td>2024-01-22</td>
+                                                <td><span class="status-badge" style="background: #ffedd5; color: #9a3412;">Medium</span></td>
+                                                <td><span class="status-badge" style="background: #fef9c3; color: #854d0e;">Pending</span></td>
+                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-004')"><i class="fas fa-eye"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>

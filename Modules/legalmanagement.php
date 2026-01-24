@@ -2646,8 +2646,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 const idInput = form.querySelector('input[name="employee_id"]');
                 if (idInput) idInput.remove();
 
-                const saveBtn = form.querySelector('button[type="submit"]');
-                if (saveBtn) {
+                const saveBtn = form.querySelector('button[type="submit"]');                if (saveBtn) {
                     saveBtn.innerText = 'Save Employee';
                     saveBtn.name = 'save_employee';
                 }

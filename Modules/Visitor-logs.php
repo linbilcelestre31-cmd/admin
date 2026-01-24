@@ -201,6 +201,8 @@ function getLastInsertId()
                                 style="margin-right: 12px;"></i>Restaurant Management</a></li>
                     <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice"
                                 style="margin-right: 12px;"></i>Reports</a></li>
+                    <li><a href="#" class="sidebar-link" data-page="maintenance"><i class="fas fa-tools"
+                                style="margin-right: 12px;"></i>Maintenance</a></li>
                     <li><a href="#" class="sidebar-link" data-page="settings"><i class="fas fa-cog"
                                 style="margin-right: 12px;"></i>Settings</a></li>
                 </ul>
@@ -275,9 +277,9 @@ function getLastInsertId()
                                             placeholder="Phone number">
                                     </div>
                                     <div class="form-group">
-                                        <label for="room_number">Room Number</label>
+                                        <label for="room_number">Facilities</label>
                                         <input type="text" id="room_number" name="room_number" class="form-control"
-                                            placeholder="Room number">
+                                            placeholder="Facilities">
                                     </div>
                                     <div class="form-group">
                                         <label for="host_id">Person to Visit (Host)</label>
@@ -315,7 +317,7 @@ function getLastInsertId()
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Room</th>
+                                            <th>Facilities</th>
                                             <th>Check-in</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -338,7 +340,7 @@ function getLastInsertId()
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Room</th>
+                                            <th>Facilities</th>
                                             <th>Time-in</th>
                                             <th>Check-out</th>
                                             <th>Status</th>
@@ -544,6 +546,72 @@ function getLastInsertId()
                             </div>
                             <button type="submit" class="btn-success">Save Settings</button>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Maintenance Page -->
+                <div id="maintenance" class="page">
+                    <h1>Maintenance Management</h1>
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2><i class="fas fa-tools"></i> Maintenance Logs</h2>
+                            <button class="btn btn-success" onclick="alert('Maintenance feature coming soon!')">
+                                <i class="fas fa-plus"></i> Schedule Maintenance
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Facility</th>
+                                        <th>Issue Description</th>
+                                        <th>Reported Date</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#MT-2024-001</td>
+                                        <td>Banquet Hall A</td>
+                                        <td>Air conditioning unit leaking water</td>
+                                        <td>2024-01-15</td>
+                                        <td><span class="status-badge" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span></td>
+                                        <td><span class="status-badge" style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In Progress</span></td>
+                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-001')"><i class="fas fa-eye"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-002</td>
+                                        <td>Meeting Room 2</td>
+                                        <td>Projector bulb replacement needed</td>
+                                        <td>2024-01-20</td>
+                                        <td><span class="status-badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span></td>
+                                        <td><span class="status-badge" style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span></td>
+                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-002')"><i class="fas fa-eye"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-003</td>
+                                        <td>Pool Side</td>
+                                        <td>Loose tiles near the deep end</td>
+                                        <td>2024-01-18</td>
+                                        <td><span class="status-badge" style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span></td>
+                                        <td><span class="status-badge" style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span></td>
+                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-003')"><i class="fas fa-check"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-004</td>
+                                        <td>Executive Lounge</td>
+                                        <td>Coffee machine malfunction</td>
+                                        <td>2024-01-22</td>
+                                        <td><span class="status-badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span></td>
+                                        <td><span class="status-badge" style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span></td>
+                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-004')"><i class="fas fa-eye"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </main>
