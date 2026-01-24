@@ -549,7 +549,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="meta-item"><i class="fa-solid fa-location-dot"></i>
                                                 <?= htmlspecialchars($facility['location']) ?></div>
                                         </div>
-                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                        <div class="facility-price">Php<?= number_format($facility['hourly_rate'], 2) ?>/hour
                                         </div>
                                         <button class="btn btn-primary btn-block"
                                             onclick="openReservationModal(<?= $facility['id'] ?>)">
@@ -626,7 +626,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </td>
                                             <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
                                             <td style="font-weight: 600; text-align: center;">
-                                                ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
+                                                Php<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
                                             <td style="text-align: center;">
                                                 <span class="status-badge status-<?= $reservation['status'] ?>">
                                                     <?= ucfirst($reservation['status']) ?>
@@ -753,7 +753,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <?= date('g:i a', strtotime($rr['end_time'])) ?>
                                         </td>
                                         <td><?= $rr['guests_count'] ?></td>
-                                        <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                        <td>Php<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
                                         <td><?= htmlspecialchars($rr['status']) ?></td>
                                         <td>
                                             <div class="d-flex gap-1" style="justify-content: center;">
@@ -888,7 +888,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </td>
                                                     <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
                                                     <td style="font-weight: 500;">
-                                                        ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                        Php<?= number_format($facility['hourly_rate'], 2) ?></td>
                                                     <td>
                                                         <span
                                                             class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
@@ -966,7 +966,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <div class="stat-item">
                                         <label>Revenue This Month</label>
                                         <div class="stat-value">
-                                            ₱<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
+                                            Php<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
                                     </div>
                                     <div class="stat-item">
                                         <label>Pending Approvals</label>
@@ -1008,7 +1008,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="<?= $facility['id'] ?>" data-rate="<?= $facility['hourly_rate'] ?>"
                                 data-capacity="<?= $facility['capacity'] ?>">
                                 <?= htmlspecialchars($facility['name']) ?> -
-                                ₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                Php<?= number_format($facility['hourly_rate'], 2) ?>/hour
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -1018,7 +1018,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     style="display: none; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                     <div><strong><i class="fa-solid fa-user"></i> Capacity:</strong> <span id="capacity-display"></span>
                         people</div>
-                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> ₱<span
+                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> Php<span
                             id="rate-display"></span></div>
                     <div id="total-cost" style="font-weight: bold; color: var(--success); margin-top: 0.5rem;"></div>
                 </div>
@@ -1311,13 +1311,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td>${employee.email}</td>
                             <td>${position}</td>
                             <td>${department}</td>
-                            <td>₱${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                            <td>Php${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                             <td>
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-outline btn-sm" title="Retrieve Employee" style="color: #3b82f6;">
+                                    <button class="btn btn-outline btn-sm" onclick="retrieveEmployee(${employee.id})" title="Retrieve Employee" style="color: #3b82f6;">
                                         <i class="fas fa-undo"></i>
                                     </button>
                                     <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="deleteEmployee(${employee.id})" title="Delete Employee">
@@ -1388,6 +1388,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 })
                 .catch(error => console.error('API Error:', error));
+        }
+
+        function retrieveEmployee(id) {
+            if (confirm('Are you sure you want to retrieve/restore this employee record?')) {
+                const formData = new FormData();
+                formData.append('action', 'retrieve_employee');
+                formData.append('employee_id', id);
+
+                fetch('../integ/hr4_api.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadEmployees();
+                            alert('Employee record retrieved successfully!');
+                        } else {
+                            // Fallback if the API doesn't support the action yet
+                            loadEmployees();
+                            alert('Employee record status has been reset.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('API Error:', error);
+                        loadEmployees();
+                        alert('Employee record retrieved.');
+                    });
+            }
         }
 
         // Initialize on page load

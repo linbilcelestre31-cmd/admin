@@ -129,7 +129,7 @@ window.calculateTotal = function () {
         if (hours < 0) hours += 24;
 
         const total = hours * rate;
-        totalCost.innerHTML = `<i class="fa-solid fa-calculator"></i> Estimated Total: ₱${total.toFixed(2)} (${Math.ceil(hours)} hours)`;
+        totalCost.innerHTML = `<i class="fa-solid fa-calculator"></i> Estimated Total: Php${total.toFixed(2)} (${Math.ceil(hours)} hours)`;
     }
 };
 
@@ -216,7 +216,7 @@ window.viewReservationDetails = function (data) {
         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
             <p style="margin: 4px 0;"><i class="fa-solid fa-calendar-days" style="width: 20px; color: #64748b;"></i> <strong>Date:</strong> ${res.event_date}</p>
             <p style="margin: 4px 0;"><i class="fa-solid fa-clock" style="width: 20px; color: #64748b;"></i> <strong>Time:</strong> ${res.start_time} - ${res.end_time}</p>
-            <p style="font-size: 1.25rem; color: #059669; margin-top: 12px; font-weight: 700;">₱${parseFloat(res.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+            <p style="font-size: 1.25rem; color: #059669; margin-top: 12px; font-weight: 700;">Php${parseFloat(res.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
         </div>
         <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid #3b82f6;">
             <h4 style="margin-bottom: 5px; font-size: 0.85rem; color: #475569; font-weight: 600;">Special Requirements</h4>
@@ -318,7 +318,7 @@ window.viewFacilityDetails = function (facility) {
                 </div>
                 <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7;">
                     <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Hourly Rate</h4>
-                    <p style="margin: 0; font-weight: 600; color: #059669;">₱${parseFloat(facility.hourly_rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                    <p style="margin: 0; font-weight: 600; color: #059669;">Php${parseFloat(facility.hourly_rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                 </div>
                 <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7;">
                     <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Location</h4>
