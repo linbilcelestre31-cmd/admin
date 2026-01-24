@@ -753,7 +753,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <?= date('g:i a', strtotime($rr['end_time'])) ?>
                                         </td>
                                         <td><?= $rr['guests_count'] ?></td>
-                                        <td>Php<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                        <td>P<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
                                         <td><?= htmlspecialchars($rr['status']) ?></td>
                                         <td>
                                             <div class="d-flex gap-1" style="justify-content: center;">
@@ -888,7 +888,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </td>
                                                     <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
                                                     <td style="font-weight: 500;">
-                                                        Php<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                        P<?= number_format($facility['hourly_rate'], 2) ?></td>
                                                     <td>
                                                         <span
                                                             class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
@@ -966,7 +966,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <div class="stat-item">
                                         <label>Revenue This Month</label>
                                         <div class="stat-value">
-                                            Php<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
+                                            P<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
                                     </div>
                                     <div class="stat-item">
                                         <label>Pending Approvals</label>
@@ -1008,7 +1008,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="<?= $facility['id'] ?>" data-rate="<?= $facility['hourly_rate'] ?>"
                                 data-capacity="<?= $facility['capacity'] ?>">
                                 <?= htmlspecialchars($facility['name']) ?> -
-                                Php<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                P<?= number_format($facility['hourly_rate'], 2) ?>/hour
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -1018,7 +1018,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     style="display: none; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                     <div><strong><i class="fa-solid fa-user"></i> Capacity:</strong> <span id="capacity-display"></span>
                         people</div>
-                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> Php<span
+                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> P<span
                             id="rate-display"></span></div>
                     <div id="total-cost" style="font-weight: bold; color: var(--success); margin-top: 0.5rem;"></div>
                 </div>
