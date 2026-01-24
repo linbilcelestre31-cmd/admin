@@ -941,20 +941,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             opacity: 0.9;
         }
 
-        /* Enhanced Add Employee Form Styling */
-        #employeeForm {
+        /* Enhanced Employee Form Modal Styling Only */
+        #employeeFormModal .form-container {
             background: #ffffff;
             border-radius: 16px;
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
-            margin: 20px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0;
+            max-width: 100%;
+            display: block !important;
+            align-items: initial !important;
+            justify-content: initial !important;
+            text-align: left !important;
         }
 
-        #employeeForm h3 {
+        #employeeFormModal .form-container h3 {
             color: #1e293b;
             font-size: 1.5rem;
             font-weight: 700;
@@ -964,20 +966,22 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             border-bottom: 2px solid #f1f5f9;
         }
 
-        #employeeForm .form-group {
+        #employeeFormModal .form-group {
             margin-bottom: 20px;
             width: 100%;
+            text-align: left !important;
         }
 
-        #employeeForm .form-group label {
+        #employeeFormModal .form-group label {
             display: block;
             font-weight: 600;
             color: #374151;
             margin-bottom: 8px;
             font-size: 0.95rem;
+            text-align: left !important;
         }
 
-        #employeeForm .form-control {
+        #employeeFormModal .form-control {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e5e7eb;
@@ -986,30 +990,33 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             transition: all 0.3s ease;
             background: #ffffff;
             box-sizing: border-box;
+            text-align: left !important;
         }
 
-        #employeeForm .form-control:focus {
+        #employeeFormModal .form-control:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             transform: translateY(-1px);
         }
 
-        #employeeForm .form-control::placeholder {
+        #employeeFormModal .form-control::placeholder {
             color: #9ca3af;
             font-style: italic;
         }
 
-        #employeeForm .form-actions {
+        #employeeFormModal .form-actions {
             display: flex;
             gap: 12px;
             justify-content: flex-end;
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #f1f5f9;
+            align-items: center !important;
+            justify-content: flex-end !important;
         }
 
-        #employeeForm .cancel-btn {
+        #employeeFormModal .cancel-btn {
             padding: 12px 24px;
             border: 2px solid #e5e7eb;
             background: #ffffff;
@@ -1019,15 +1026,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.95rem;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
-        #employeeForm .cancel-btn:hover {
+        #employeeFormModal .cancel-btn:hover {
             background: #f9fafb;
             border-color: #d1d5db;
             transform: translateY(-2px);
         }
 
-        #employeeForm .save-btn {
+        #employeeFormModal .save-btn {
             padding: 12px 24px;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: #ffffff;
@@ -1038,9 +1047,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             transition: all 0.3s ease;
             font-size: 0.95rem;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            align-items: center !important;
+            justify-content: center !important;
         }
 
-        #employeeForm .save-btn:hover {
+        #employeeFormModal .save-btn:hover {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
@@ -1048,18 +1059,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         /* Responsive design for smaller screens */
         @media (max-width: 768px) {
-            #employeeForm {
+            #employeeFormModal .form-container {
                 padding: 20px;
-                margin: 10px;
             }
 
-            #employeeForm .form-actions {
+            #employeeFormModal .form-actions {
                 flex-direction: column;
                 gap: 10px;
             }
 
-            #employeeForm .cancel-btn,
-            #employeeForm .save-btn {
+            #employeeFormModal .cancel-btn,
+            #employeeFormModal .save-btn {
                 width: 100%;
                 text-align: center;
             }
