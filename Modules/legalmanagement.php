@@ -986,7 +986,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <td><?php echo htmlspecialchars($employee['phone']); ?></td>
                                     <td>
                                         <div class="action-container">
-                                            <button class="action-btn view-btn" data-type="employee-view"
+                                            <button class="action-btn view-btn"
                                                 data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
                                                 <i class="fa-solid fa-eye"></i> View
                                             </button>
@@ -2107,6 +2107,113 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
 
                 const chartData = [
+                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
+                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
+                ];
+
+                try {
+                    const ctx = canvas.getContext('2d');
+                    if (window.riskChartRef) window.riskChartRef.destroy();
+
+                    window.riskChartRef = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                            datasets: [{
+                                label: 'Contracts',
+                                data: chartData,
+                                backgroundColor: [
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)', 
+                                    'rgba(16, 185, 129, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(239, 68, 68, 1)',
+                                    'rgba(245, 158, 11, 1)',
+                                    'rgba(16, 185, 129, 1)'
+                                ],
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                barThickness: 60
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 1500,
+                                easing: 'easeInOutQuart',
+                                delay: (context) => {
+                                    let delay = 0;
+                                    if (context.type === 'data' && context.mode === 'default') {
+                                        delay = context.dataIndex * 200 + context.datasetIndex * 100;
+                                    }
+                                    return delay;
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                                    titleColor: '#ffffff',
+                                    bodyColor: '#ffffff',
+                                    padding: 12,
+                                    borderRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.dataset.label || '';
+                                            const value = context.parsed.y;
+                                            const total = chartData.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(226, 232, 240, 0.5)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        font: {
+                                            weight: 600,
+                                            size: 12
+                                        },
+                                        stepSize: 1
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        font: {
+                                            weight: 700,
+                                            size: 13
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    console.log("Enhanced Chart Rendered:", chartData);
+                } catch (e) {
+                    console.error("Chart Error:", e);
+                }
+            };
+
+            // Force Re-check every few seconds
+            setInterval(() => {
                 if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
                     window.initRiskChart();
                 }
