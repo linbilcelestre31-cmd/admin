@@ -1779,12 +1779,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <i class="fa-solid fa-xmark"></i>
                 </button>
 
-                <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                    <img src="../assets/image/Women.png" alt="Women" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                     <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
+                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px); box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <div>
+                    <img src="../assets/image/Men.png" alt="Men" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
                             style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
                             Profile</h2>
