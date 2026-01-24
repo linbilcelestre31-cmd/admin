@@ -2153,55 +2153,84 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             // Add employee button
             const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-            if (addEmployeeBtn) {
-                addEmployeeBtn.addEventListener('click', function () {
-                    showAddEmployeeModal();
-                });
+        }
+
+        // Delegated event listener for dynamically loaded view buttons
+        document.addEventListener('click', function (e) {
+            const viewBtn = e.target.closest('.view-btn');
+            if (viewBtn && viewBtn.dataset.type === 'employee-view') {
+                e.preventDefault();
+
+                try {
+                    const empData = JSON.parse(viewBtn.dataset.emp);
+
+                    // Populate modal fields
+                    document.getElementById('display_emp_name').textContent = empData.name || '-';
+                    document.getElementById('display_emp_position').textContent = empData.position || '-';
+                    document.getElementById('display_emp_email').textContent = empData.email || '-';
+                    document.getElementById('display_emp_phone').textContent = empData.phone || '-';
+
+                    // Update header title
+                    document.getElementById('employeeInfoTitle').textContent = empData.name || 'Employee Profile';
+
+                    // Reset blur state
+                    const blurContent = document.getElementById('employeeSensitiveData');
+                    const revealOverlay = document.getElementById('employeeRevealOverlay');
+
+                    if (blurContent) blurContent.classList.add('blurred-content');
+                    if (revealOverlay) revealOverlay.style.display = 'flex';
+
+                    showModal('employeeInfoModal');
+                } catch (err) {
+                    console.error('Error parsing employee data:', err);
+                    alert('Error viewing employee details');
+                }
             }
+        });
 
-            // Employee Reveal
-            const empRevealBtn = document.getElementById('employeeRevealBtn');
-            if (empRevealBtn) {
-                empRevealBtn.addEventListener('click', function () {
-                    withPasswordGate(() => {
-                        document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
-                        document.getElementById('employeeRevealOverlay').style.display = 'none';
-                    });
+        // Employee Reveal
+        const empRevealBtn = document.getElementById('employeeRevealBtn');
+        if (empRevealBtn) {
+            empRevealBtn.addEventListener('click', function () {
+                withPasswordGate(() => {
+                    document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
+                    document.getElementById('employeeRevealOverlay').style.display = 'none';
                 });
-            }
+            });
+        }
 
-            // Full Weka Scan
-            const fullWekaScanBtn = document.getElementById('fullWekaScanBtn');
-            if (fullWekaScanBtn) {
-                fullWekaScanBtn.addEventListener('click', function () {
-                    const btn = this;
-                    const originalHTML = btn.innerHTML;
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> INITIALIZING WEKA SCAN...';
+        // Full Weka Scan
+        const fullWekaScanBtn = document.getElementById('fullWekaScanBtn');
+        if (fullWekaScanBtn) {
+            fullWekaScanBtn.addEventListener('click', function () {
+                const btn = this;
+                const originalHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> INITIALIZING WEKA SCAN...';
 
-                    // Show a notification or update UI
-                    const statsCards = document.querySelectorAll('.stat-card');
-                    statsCards.forEach(card => card.style.opacity = '0.5');
+                // Show a notification or update UI
+                const statsCards = document.querySelectorAll('.stat-card');
+                statsCards.forEach(card => card.style.opacity = '0.5');
 
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-microchip fa-beat"></i> ANALYZING LEGAL CLUSTERS...';
                     setTimeout(() => {
-                        btn.innerHTML = '<i class="fa-solid fa-microchip fa-beat"></i> ANALYZING LEGAL CLUSTERS...';
-                        setTimeout(() => {
-                            btn.innerHTML = '<i class="fa-solid fa-shield-check"></i> SCAN COMPLETED';
-                            statsCards.forEach(card => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'scale(1.05)';
-                                setTimeout(() => card.style.transform = 'scale(1)', 500);
-                            });
+                        btn.innerHTML = '<i class="fa-solid fa-shield-check"></i> SCAN COMPLETED';
+                        statsCards.forEach(card => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1.05)';
+                            setTimeout(() => card.style.transform = 'scale(1)', 500);
+                        });
 
-                            setTimeout(() => {
-                                btn.disabled = false;
-                                btn.innerHTML = originalHTML;
-                                alert('Full Weka System Scan Completed. No new critical risks identified.');
-                            }, 1000);
-                        }, 2000);
-                    }, 1500);
-                });
-            }
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerHTML = originalHTML;
+                            alert('Full Weka System Scan Completed. No new critical risks identified.');
+                        }, 1000);
+                    }, 2000);
+                }, 1500);
+            });
+        }
         }
 
         // Tab filtering

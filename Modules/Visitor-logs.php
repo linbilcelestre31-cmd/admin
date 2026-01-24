@@ -317,7 +317,7 @@ function getLastInsertId()
                                             <th>Name</th>
                                             <th>Room</th>
                                             <th>Check-in</th>
-                                            <th>Check-out</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>

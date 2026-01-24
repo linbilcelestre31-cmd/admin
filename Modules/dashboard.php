@@ -497,7 +497,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><i class="fa-solid fa-building"></i> Hotel Facilities</h2>
                     </div>
-                    <div class="facilities-grid">
+
+                    <!-- Facilities Grid -->
+                    <div class="facilities-grid" style="margin-bottom: 3rem;">
                         <?php if (empty($dashboard_data['facilities'])): ?>
                             <div
                                 style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
@@ -514,7 +516,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $imgSrc = $facility['image_path'] ?? '';
 
                                         if (empty($imgSrc)) {
-                                            // Auto-mapping based on provided screenshot files
                                             $possiblePathJpeg = "../assets/image/" . $fName . ".jpeg";
                                             $possiblePathJpg = "../assets/image/" . $fName . ".jpg";
                                             $possiblePathUnderscore = "../assets/image/" . str_replace(' ', '_', strtolower($fName)) . ".jpg";
@@ -559,6 +560,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
+                    </div>
+
+                    <!-- Maintenance Section -->
+                    <div class="maintenance-section">
+                        <div class="d-flex justify-between align-center mb-2">
+                            <h3><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Logs</h3>
+                            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-plus"></i> Report
+                                Issue</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Facility</th>
+                                        <th>Issue Description</th>
+                                        <th>Reported Date</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dummy Maintenance Data -->
+                                    <tr>
+                                        <td>#MT-2024-001</td>
+                                        <td>Banquet Hall A</td>
+                                        <td>Air conditioning unit leaking water</td>
+                                        <td>2024-01-15</td>
+                                        <td><span class="status-badge status-high"
+                                                style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span>
+                                        </td>
+                                        <td><span class="status-badge status-pending"
+                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In
+                                                Progress</span></td>
+                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-002</td>
+                                        <td>Meeting Room 2</td>
+                                        <td>Projector bulb replacement needed</td>
+                                        <td>2024-01-20</td>
+                                        <td><span class="status-badge status-medium"
+                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        </td>
+                                        <td><span class="status-badge status-open"
+                                                style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-003</td>
+                                        <td>Pool Side</td>
+                                        <td>Loose tiles near the deep end</td>
+                                        <td>2024-01-18</td>
+                                        <td><span class="status-badge status-low"
+                                                style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span>
+                                        </td>
+                                        <td><span class="status-badge status-completed"
+                                                style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-check"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#MT-2024-004</td>
+                                        <td>Executive Lounge</td>
+                                        <td>Coffee machine malfunction</td>
+                                        <td>2024-01-22</td>
+                                        <td><span class="status-badge status-medium"
+                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        </td>
+                                        <td><span class="status-badge status-pending"
+                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
