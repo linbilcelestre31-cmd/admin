@@ -2249,6 +2249,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0,10) + '.png';
                     link.href = url;
                     link.click();
+                } else {
+                    alert('Please generate the chart first by clicking Refresh.');
+                }
+            };
+
+            // Security Gate Implementation
+            window.withPasswordGate = function (callback) {
+                const modal = document.getElementById('passwordModal');
+                const form = document.getElementById('passwordForm');
                 const error = document.getElementById('pwdError');
                 const cancel = document.getElementById('pwdCancel');
                 const digits = modal.querySelectorAll('.pin-digit');
