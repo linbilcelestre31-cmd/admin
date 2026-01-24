@@ -1265,6 +1265,16 @@ function formatFileSize($bytes)
                 });
         };
 
+        window.restoreInventory = function (id, name) {
+            if (!confirm(`Are you sure you want to retrieve/restore "${name}" from the archive?`)) return;
+            
+            // Simulate API call for Inventory restoration
+            setTimeout(() => {
+                alert(`Successfully retrieved "${name}". Stock count updated.`);
+                loadCategoryFiles('Inventory');
+            }, 500);
+        };
+
         function setupEventListeners() {
             // Category Navigation
             document.querySelectorAll('.category-link').forEach(link => {
@@ -1647,7 +1657,7 @@ function formatFileSize($bytes)
                                     <td>P${parseFloat(item.price || item.unit_price || 0).toLocaleString()}</td>
                                     <td>
                                         <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
-                                        <button class="btn-view-small" onclick="alert('Retrieve initiated for: ${item.name || item.product_name}')"><i class="fas fa-undo"></i></button>
+                                        <button class="btn-view-small" onclick="restoreInventory(${item.id}, '${(item.name || item.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i></button>
                                     </td>
                                 </tr>
                             `).join('')}

@@ -1229,10 +1229,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
                         </button>
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'governance')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-building-columns" style="margin-right: 8px;"></i> Corporate Governance
-                        </button>
+
                         <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
