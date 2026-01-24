@@ -1429,56 +1429,76 @@ function formatFileSize($bytes)
                 return;
             }
 
-            function loadFromExternalAPI(apiUrl, gridId, category) {
-                const fallbackInventory = [
-                    { id: 101, name: 'Premium Bed Sheets (King)', category: 'Linens', stock: 150, unit_price: 2500.00 },
-                    { id: 102, name: 'Bath Towels (White)', category: 'Linens', stock: 500, unit_price: 450.00 },
-                    { id: 103, name: 'Shampoo 50ml', category: 'Toiletries', stock: 1200, unit_price: 45.00 },
-                    { id: 104, name: 'Soap Bar 30g', category: 'Toiletries', stock: 1500, unit_price: 25.00 },
-                    { id: 105, name: 'Orange Juice 1L', category: 'Beverages', stock: 250, unit_price: 120.00 },
-                    { id: 106, name: 'Cola Drink 330ml', category: 'Beverages', stock: 300, unit_price: 45.00 },
-                    { id: 107, name: 'Housekeeping Cart', category: 'Equipment', stock: 15, unit_price: 15000.00 },
-                    { id: 108, name: 'Vacuum Cleaner', category: 'Equipment', stock: 10, unit_price: 12500.00 },
-                    { id: 109, name: 'Kitchen Detergent 5L', category: 'Cleaning', stock: 50, unit_price: 850.00 },
-                    { id: 110, name: 'Toilet Paper Rolls', category: 'Toiletries', stock: 2000, unit_price: 18.00 }
-                ];
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const grid = document.getElementById(gridId);
+                    if (!grid) return;
+                    if (!data || data.length === 0) {
+                        showNoDataMessage(grid, category);
+                        return;
+                    }
+                    renderDocumentTable(data, grid);
+                })
+                .catch(error => {
+                    console.error(`Error loading ${category}:`, error);
+                    const grid = document.getElementById(gridId);
+                    if (grid) {
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
+                    }
+                });
+        }
 
-                fetch(apiUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        const grid = document.getElementById(gridId);
-                        if (!grid) return;
+        function loadFromExternalAPI(apiUrl, gridId, category) {
+            const fallbackInventory = [
+                { id: 101, name: 'Premium Bed Sheets (King)', category: 'Linens', stock: 150, unit_price: 2500.00 },
+                { id: 102, name: 'Bath Towels (White)', category: 'Linens', stock: 500, unit_price: 450.00 },
+                { id: 103, name: 'Shampoo 50ml', category: 'Toiletries', stock: 1200, unit_price: 45.00 },
+                { id: 104, name: 'Soap Bar 30g', category: 'Toiletries', stock: 1500, unit_price: 25.00 },
+                { id: 105, name: 'Orange Juice 1L', category: 'Beverages', stock: 250, unit_price: 120.00 },
+                { id: 106, name: 'Cola Drink 330ml', category: 'Beverages', stock: 300, unit_price: 45.00 },
+                { id: 107, name: 'Housekeeping Cart', category: 'Equipment', stock: 15, unit_price: 15000.00 },
+                { id: 108, name: 'Vacuum Cleaner', category: 'Equipment', stock: 10, unit_price: 12500.00 },
+                { id: 109, name: 'Kitchen Detergent 5L', category: 'Cleaning', stock: 50, unit_price: 850.00 },
+                { id: 110, name: 'Toilet Paper Rolls', category: 'Toiletries', stock: 2000, unit_price: 18.00 }
+            ];
 
-                        if (data.success && data.data && data.data.length > 0) {
-                            if (category === 'Inventory') {
-                                renderInventoryTable(data.data, grid);
-                            } else if (category === 'Guest Records') {
-                                renderGuestTable(data.data, grid);
-                            } else {
-                                renderDocumentTable(data.data, grid);
-                            }
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const grid = document.getElementById(gridId);
+                    if (!grid) return;
+
+                    if (data.success && data.data && data.data.length > 0) {
+                        if (category === 'Inventory') {
+                            renderInventoryTable(data.data, grid);
+                        } else if (category === 'Guest Records') {
+                            renderGuestTable(data.data, grid);
                         } else {
-                            // Use fallback for Inventory if API returns empty
-                            if (category === 'Inventory') {
-                                renderInventoryTable(fallbackInventory, grid);
-                            } else {
-                                showNoDataMessage(grid, category);
-                            }
+                            renderDocumentTable(data.data, grid);
                         }
-                    })
-                    .catch(error => {
-                        console.error(`Error loading ${category}:`, error);
-                        const grid = document.getElementById(gridId);
-                        if (grid) {
-                            // Use fallback for Inventory on error
-                            if (category === 'Inventory') {
-                                renderInventoryTable(fallbackInventory, grid);
-                            } else {
-                                grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
-                            }
+                    } else {
+                        // Use fallback for Inventory if API returns empty
+                        if (category === 'Inventory') {
+                            renderInventoryTable(fallbackInventory, grid);
+                        } else {
+                            showNoDataMessage(grid, category);
                         }
-                    });
-            }
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error loading ${category}:`, error);
+                    const grid = document.getElementById(gridId);
+                    if (grid) {
+                        // Use fallback for Inventory on error
+                        if (category === 'Inventory') {
+                            renderInventoryTable(fallbackInventory, grid);
+                        } else {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
+                        }
+                    }
+                });
+        }
 
             function loadFinancialRecords() {
                 const gridId = 'financialFiles';
