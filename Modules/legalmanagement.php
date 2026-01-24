@@ -1276,13 +1276,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             ?>
                                             <tr class="internal-doc-row" data-category="<?php echo $docCategory; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                        onclick="event.preventDefault(); showLegalDetails(<?= htmlspecialchars(json_encode($doc['name'])) ?>, <?= htmlspecialchars(json_encode($doc['case_id'])) ?>, '<?= date('Y-m-d', strtotime($doc['created_at'])) ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
+                                                            onclick="event.preventDefault(); showLegalDetails(<?= htmlspecialchars(json_encode($doc['name'])) ?>, <?= htmlspecialchars(json_encode($doc['case_id'])) ?>, '<?= date('Y-m-d', strtotime($doc['created_at'])) ?>', 'Internal', 'Compliance')"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
                                                         <button class="action-btn analyze-btn"
                                                             onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'Internal')"><i
@@ -1404,7 +1404,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             ?>
                                             <tr class="external-doc-row" data-category="<?php echo $docCategory; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                        onclick="event.preventDefault(); showLegalDetails(<?= htmlspecialchars(json_encode($doc['name'])) ?>, <?= htmlspecialchars(json_encode($doc['case_id'])) ?>, '<?= date('Y-m-d', strtotime($doc['created_at'])) ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
@@ -1412,7 +1412,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><i
+                                                            onclick="event.preventDefault(); showLegalDetails(<?= htmlspecialchars(json_encode($doc['name'])) ?>, <?= htmlspecialchars(json_encode($doc['case_id'])) ?>, '<?= date('Y-m-d', strtotime($doc['created_at'])) ?>', 'External', 'Vendor')"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
                                                         <button class="action-btn analyze-btn"
                                                             onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'External')"><i

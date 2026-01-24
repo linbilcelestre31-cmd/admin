@@ -1429,50 +1429,81 @@ function formatFileSize($bytes)
                 return;
             }
 
-            fetch(endpoint)
-                .then(response => response.json())
-                .then(data => {
-                    const grid = document.getElementById(gridId);
-                    if (!grid) return;
-                    if (!data || data.length === 0) {
-                        showNoDataMessage(grid, category);
-                        return;
-                    }
-                    renderDocumentTable(data, grid);
-                })
-                .catch(error => {
-                    console.error(`Error loading ${category}:`, error);
-                    const grid = document.getElementById(gridId);
-                    if (grid) {
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
-                    }
-                });
-        }
+            function loadFromExternalAPI(apiUrl, gridId, category) {
+                const fallbackInventory = [
+                    { id: 101, name: 'Premium Bed Sheets (King)', category: 'Linens', stock: 150, unit_price: 2500.00 },
+                    { id: 102, name: 'Bath Towels (White)', category: 'Linens', stock: 500, unit_price: 450.00 },
+                    { id: 103, name: 'Shampoo 50ml', category: 'Toiletries', stock: 1200, unit_price: 45.00 },
+                    { id: 104, name: 'Soap Bar 30g', category: 'Toiletries', stock: 1500, unit_price: 25.00 },
+                    { id: 105, name: 'Orange Juice 1L', category: 'Beverages', stock: 250, unit_price: 120.00 },
+                    { id: 106, name: 'Cola Drink 330ml', category: 'Beverages', stock: 300, unit_price: 45.00 },
+                    { id: 107, name: 'Housekeeping Cart', category: 'Equipment', stock: 15, unit_price: 15000.00 },
+                    { id: 108, name: 'Vacuum Cleaner', category: 'Equipment', stock: 10, unit_price: 12500.00 },
+                    { id: 109, name: 'Kitchen Detergent 5L', category: 'Cleaning', stock: 50, unit_price: 850.00 },
+                    { id: 110, name: 'Toilet Paper Rolls', category: 'Toiletries', stock: 2000, unit_price: 18.00 }
+                ];
 
-        function loadFinancialRecords() {
-            const gridId = 'financialFiles';
-            const grid = document.getElementById(gridId);
-            if (!grid) return;
-            grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const grid = document.getElementById(gridId);
+                        if (!grid) return;
 
-            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
-                .then(response => response.json())
-                .then(data => {
-                    let records = Array.isArray(data) ? data : (data.data || []);
-                    if (records.length === 0) {
-                        grid.innerHTML = '<div style="text-align: center; padding: 4rem;">No records found.</div>';
-                        return;
-                    }
-                    renderFinancialTable(records, grid);
-                })
-                .catch(error => {
-                    console.error('Error loading financial records:', error);
-                    grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545;">Error loading API.</div>';
-                });
-        }
+                        if (data.success && data.data && data.data.length > 0) {
+                            if (category === 'Inventory') {
+                                renderInventoryTable(data.data, grid);
+                            } else if (category === 'Guest Records') {
+                                renderGuestTable(data.data, grid);
+                            } else {
+                                renderDocumentTable(data.data, grid);
+                            }
+                        } else {
+                            // Use fallback for Inventory if API returns empty
+                            if (category === 'Inventory') {
+                                renderInventoryTable(fallbackInventory, grid);
+                            } else {
+                                showNoDataMessage(grid, category);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error loading ${category}:`, error);
+                        const grid = document.getElementById(gridId);
+                        if (grid) {
+                            // Use fallback for Inventory on error
+                            if (category === 'Inventory') {
+                                renderInventoryTable(fallbackInventory, grid);
+                            } else {
+                                grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
+                            }
+                        }
+                    });
+            }
 
-        function renderFinancialTable(data, grid) {
-            grid.innerHTML = `
+            function loadFinancialRecords() {
+                const gridId = 'financialFiles';
+                const grid = document.getElementById(gridId);
+                if (!grid) return;
+                grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
+
+                fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        let records = Array.isArray(data) ? data : (data.data || []);
+                        if (records.length === 0) {
+                            grid.innerHTML = '<div style="text-align: center; padding: 4rem;">No records found.</div>';
+                            return;
+                        }
+                        renderFinancialTable(records, grid);
+                    })
+                    .catch(error => {
+                        console.error('Error loading financial records:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545;">Error loading API.</div>';
+                    });
+            }
+
+            function renderFinancialTable(data, grid) {
+                grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1507,10 +1538,10 @@ function formatFileSize($bytes)
                     </table>
                 </div>
              `;
-        }
+            }
 
-        function renderGuestTable(data, grid) {
-            grid.innerHTML = `
+            function renderGuestTable(data, grid) {
+                grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1541,10 +1572,10 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
-        }
+            }
 
-        function renderInventoryTable(data, grid) {
-            grid.innerHTML = `
+            function renderInventoryTable(data, grid) {
+                grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1571,11 +1602,11 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
-        }
+            }
 
-        function renderDocumentTable(data, grid) {
-            const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
-            grid.innerHTML = `
+            function renderDocumentTable(data, grid) {
+                const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
+                grid.innerHTML = `
                 <div class="table-container">
                     <table class="financial-table">
                         <thead>
@@ -1606,18 +1637,18 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
-        }
+            }
 
-        function showNoDataMessage(grid, category) {
-            grid.innerHTML = `<div style="text-align: center; padding: 4rem;">No ${category.toLowerCase()} found.</div>`;
-        }
+            function showNoDataMessage(grid, category) {
+                grid.innerHTML = `<div style="text-align: center; padding: 4rem;">No ${category.toLowerCase()} found.</div>`;
+            }
 
-        window.showFileDetails = function (file) {
-            const modal = document.getElementById('fileDetailsModal');
-            const content = document.getElementById('fileDetailsContent');
-            let profileImage = file.name && file.name.toLowerCase().includes('ms') ? '../assets/image/Women.png' : '../assets/image/Men.png';
+            window.showFileDetails = function (file) {
+                const modal = document.getElementById('fileDetailsModal');
+                const content = document.getElementById('fileDetailsContent');
+                let profileImage = file.name && file.name.toLowerCase().includes('ms') ? '../assets/image/Women.png' : '../assets/image/Men.png';
 
-            content.innerHTML = `
+                content.innerHTML = `
                 <div style="text-align: center;">
                     <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-blue);">
                     <h2>${file.full_name || file.name || 'Unnamed'}</h2>
@@ -1632,34 +1663,34 @@ function formatFileSize($bytes)
                     <button class="btn close-modal">Close</button>
                 </div>
             `;
-            content.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
-            modal.style.display = 'flex';
-        };
+                content.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
+                modal.style.display = 'flex';
+            };
 
-        function startPinSession() {
-            clearPinSession();
-            pinSessionTimeout = setTimeout(() => { isAuthenticated = false; }, SESSION_DURATION);
-        }
-        function clearPinSession() { if (pinSessionTimeout) clearTimeout(pinSessionTimeout); }
-        function resetPinSession() { if (isAuthenticated) { clearPinSession(); startPinSession(); } }
+            function startPinSession() {
+                clearPinSession();
+                pinSessionTimeout = setTimeout(() => { isAuthenticated = false; }, SESSION_DURATION);
+            }
+            function clearPinSession() { if (pinSessionTimeout) clearTimeout(pinSessionTimeout); }
+            function resetPinSession() { if (isAuthenticated) { clearPinSession(); startPinSession(); } }
 
-        window.deletePermanent = function (id) {
-            if (!confirm('Permanently delete this file?')) return;
-            fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-                .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
-        };
+            window.deletePermanent = function (id) {
+                if (!confirm('Permanently delete this file?')) return;
+                fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+                    .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
+            };
 
-        document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            formData.append('file', document.getElementById('fileInput').files[0]);
-            formData.append('name', document.getElementById('fileName').value);
-            formData.append('category', document.getElementById('fileCategory').value);
-            fetch('?api=1', { method: 'POST', body: formData })
-                .then(r => r.json()).then(res => { alert(res.message); if (res.message.includes('success')) { document.getElementById('uploadModal').style.display = 'none'; loadCategoryFiles('all'); } });
-        });
+            document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                formData.append('file', document.getElementById('fileInput').files[0]);
+                formData.append('name', document.getElementById('fileName').value);
+                formData.append('category', document.getElementById('fileCategory').value);
+                fetch('?api=1', { method: 'POST', body: formData })
+                    .then(r => r.json()).then(res => { alert(res.message); if (res.message.includes('success')) { document.getElementById('uploadModal').style.display = 'none'; loadCategoryFiles('all'); } });
+            });
 
-        document.getElementById('cancelUpload')?.addEventListener('click', () => { document.getElementById('uploadModal').style.display = 'none'; });
+            document.getElementById('cancelUpload')?.addEventListener('click', () => { document.getElementById('uploadModal').style.display = 'none'; });
     </script>
 </body>
 

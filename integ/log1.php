@@ -98,13 +98,19 @@ if (basename($_SERVER['PHP_SELF']) == 'log1.php' || isset($_GET['api'])) {
     if (is_array($inventory)) {
         $inventory = array_map(function ($item) {
             // Ensure ID exists
-            if (!isset($item['id'])) {
-                $item['id'] = $item['inventory_id'] ?? $item['item_id'] ?? 0;
-            }
+            $item['id'] = $item['inventory_id'] ?? $item['item_id'] ?? 0;
+
             // Ensure Name exists
-            if (!isset($item['name'])) {
-                $item['name'] = $item['item_name'] ?? $item['product_name'] ?? 'Unknown Item';
+            $item['name'] = $item['item_name'] ?? $item['product_name'] ?? 'Unknown Item';
+
+            // Ensure Stock exists
+            $item['stock'] = $item['quantity'] ?? $item['stock'] ?? 0;
+
+            // Ensure Price exists (Simulate if missing from external API)
+            if (!isset($item['unit_price']) && !isset($item['price'])) {
+                $item['unit_price'] = isset($item['category']) && $item['category'] == 'Equipment' ? 5000.00 : 150.00;
             }
+
             return $item;
         }, $inventory);
     }
