@@ -1594,11 +1594,31 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="risk-analysis-layout">
                     <div class="chart-container-wrapper">
-                        <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution</h3>
+                        <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution Analysis</h3>
                         <div class="chart-area" id="chartArea"
-                            style="height: 320px; width: 100%; position: relative; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; padding: 20px; display: block; overflow: hidden;">
-                            <canvas id="riskDistributionChart" width="600" height="320"
-                                style="width: 100%; height: 100%; opacity: 1;"></canvas>
+                            style="height: 350px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 20px; border: 2px solid #e2e8f0; padding: 25px; display: block; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
+                            <canvas id="riskDistributionChart" width="600" height="350"
+                                style="width: 100%; height: 100%; opacity: 1; border-radius: 12px;"></canvas>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; gap: 15px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 3px;"></div>
+                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">High Risk</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 3px;"></div>
+                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Medium Risk</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 3px;"></div>
+                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Low Risk</span>
+                                </div>
+                            </div>
+                            <button onclick="window.initRiskChart()" 
+                                style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                                <i class="fa-solid fa-sync-alt"></i> Refresh
+                            </button>
                         </div>
                     </div>
 
@@ -1780,18 +1800,19 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
 
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                    <img src="../assets/image/Women.png" alt="Women" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <div id="genderImageContainer" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden;">
+                        <img src="../assets/image/Women.png" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                     <div
                         style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px); box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <img src="../assets/image/Men.png" alt="Men" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                     <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
                             style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
                             Profile</h2>
                         <span id="employeeRoleBadge"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(147, 197, 253, 0.2);">Legal
+                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Legal
                             Team</span>
                     </div>
                 </div>
@@ -2086,61 +2107,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
 
                 const chartData = [
-                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
-                ];
-
-                try {
-                    const ctx = canvas.getContext('2d');
-                    if (window.riskChartRef) window.riskChartRef.destroy();
-
-                    window.riskChartRef = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
-                            datasets: [{
-                                label: 'Contracts',
-                                data: chartData,
-                                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
-                                borderWidth: 2,
-                                borderRadius: 10,
-                                barPercentage: 0.55
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: '#0f172a',
-                                    padding: 12,
-                                    titleFont: { size: 14, weight: 'bold' }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                                    grid: { color: '#f1f5f9' }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#475569', font: { weight: 'bold', size: 12 } }
-                                }
-                            }
-                        }
-                    });
-                    console.log("Chart Rendered:", chartData);
-                } catch (e) {
-                    console.error("Chart Error:", e);
-                }
-            };
-
-            // Force Re-check every few seconds
-            setInterval(() => {
                 if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
                     window.initRiskChart();
                 }
@@ -2450,6 +2416,28 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
                         document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
                         document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
+
+                        // Update Gender Image Based on Name
+                        const genderImageContainer = document.getElementById('genderImageContainer');
+                        if (genderImageContainer && emp.name) {
+                            const employeeName = emp.name.toLowerCase();
+                            let genderImage = '../assets/image/Men.png'; // Default to male
+                            
+                            // Simple gender detection based on common Filipino names
+                            const femaleNames = ['maria', 'mary', 'ana', 'anna', 'juanita', 'carmela', 'rosa', 'rose', 'grace', 'joy', 'patricia', 'pat', 'christine', 'tin', 'elizabeth', 'beth', 'catherine', 'cathy', 'margarita', 'maggie', 'lourdes', 'lou', 'rebecca', 'becky', 'sophia', 'sophie', 'isabella', 'bella', 'angelica', 'angeli', 'micah', 'mika', 'sarah', 'sam', 'rachel', 'rach', 'diana', 'diane', 'hannah', 'anna', 'maria', 'mary', 'josephine', 'joyce', 'evelyn', 'lyn', 'eunice', 'cecille', 'cecil', 'charmaine', 'charm', 'kathleen', 'kath', 'maureen', 'mau', 'regina', 'reg', 'liza', 'elisa', 'victoria', 'vic', 'bianca', 'bianx', 'camille', 'cam', 'danielle', 'dan', 'frances', 'fran', 'gillian', 'gil', 'jacqueline', 'jackie', 'kristine', 'kris', 'lovelyn', 'love', 'michelle', 'mich', 'nicole', 'nic', 'pamela', 'pam', 'stephanie', 'steph', 'teresa', 'terry', 'vanessa', 'van', 'yvonne', 'von', 'alexis', 'lex', 'amber', 'brianna', 'bri', 'claudine', 'clau', 'fatima', 'faye', 'georgina', 'georg', 'helena', 'len', 'irish', 'janine', 'jan', 'katherine', 'kat', 'lilian', 'lil', 'monica', 'mon', 'natalie', 'nat', 'olivia', 'liv', 'princess', 'princ', 'queenie', 'queen', 'roxanne', 'rox', 'samantha', 'sam', 'tricia', 'trish', 'ursula', 'urs', 'valerie', 'val', 'winona', 'win', 'zara', 'zar'];
+                            
+                            // Check if name contains any female indicators
+                            const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) || 
+                                            employeeName.includes('ms.') || 
+                                            employeeName.includes('miss') ||
+                                            employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
+                            
+                            if (isFemale) {
+                                genderImage = '../assets/image/Women.png';
+                            }
+                            
+                            genderImageContainer.innerHTML = `<img src="${genderImage}" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        }
 
                         // Handle Role Badge Colors
                         const badge = document.getElementById('employeeRoleBadge');
