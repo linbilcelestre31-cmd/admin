@@ -994,7 +994,7 @@ function formatFileSize($bytes)
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h2>ATIÃ‰RA ARCHIVE</h2>
+                    <h2>ATIE`RA ARCHIVE</h2>
                 </div>
                 <nav>
                     <ul>
