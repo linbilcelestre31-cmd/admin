@@ -571,6 +571,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Dashboard Tab -->
                 <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
 
+                <!-- Facilities Tab -->
+                <div id="facilities" class="tab-content">
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
+                    </div>
+                    <div class="facilities-grid">
+                        <?php if (empty($dashboard_data['facilities'])): ?>
+                            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
+                                <i class="fa-solid fa-hotel" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                                <p style="color: #64748b;">No active facilities available at the moment.</p>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                                <div class="facility-card">
+                                    <div class="facility-image">
+                                        <?php if (!empty($facility['image_path'])): ?>
+                                            <img src="<?= htmlspecialchars($facility['image_path']) ?>" alt="<?= htmlspecialchars($facility['name']) ?>">
+                                        <?php else: ?>
+                                            <i class="fa-solid fa-building"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="facility-content">
+                                        <div class="facility-header">
+                                            <h3 class="facility-name"><?= htmlspecialchars($facility['name']) ?></h3>
+                                            <span class="facility-type"><?= ucfirst(htmlspecialchars($facility['type'])) ?></span>
+                                        </div>
+                                        <div class="facility-details">
+                                            <?= htmlspecialchars($facility['description']) ?>
+                                        </div>
+                                        <div class="facility-meta">
+                                            <div class="meta-item"><i class="fa-solid fa-users"></i> <?= $facility['capacity'] ?> Guests</div>
+                                            <div class="meta-item"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($facility['location']) ?></div>
+                                        </div>
+                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour</div>
+                                        <button class="btn btn-primary btn-block" onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                            <i class="fa-solid fa-calendar-check"></i> Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <!-- Reservations Tab -->
                 <div id="reservations" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
