@@ -940,6 +940,130 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             transform: translateY(-2px);
             opacity: 0.9;
         }
+
+        /* Enhanced Add Employee Form Styling */
+        #employeeForm {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #employeeForm h3 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        #employeeForm .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        #employeeForm .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        #employeeForm .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            box-sizing: border-box;
+        }
+
+        #employeeForm .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        #employeeForm .form-control::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        #employeeForm .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        #employeeForm .cancel-btn {
+            padding: 12px 24px;
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            color: #6b7280;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        #employeeForm .cancel-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        #employeeForm .save-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        #employeeForm .save-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            #employeeForm {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            #employeeForm .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #employeeForm .cancel-btn,
+            #employeeForm .save-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
