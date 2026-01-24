@@ -1038,10 +1038,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
                         </button>
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'governance')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-building-columns" style="margin-right: 8px;"></i> Corporate Governance
-                        </button>
+                       
                         <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
@@ -1502,7 +1499,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <tr>
                             <th>Contract Name</th>
                             <th>Case</th>
-                            <th>Risk Level</th>
+                            
                             <th>Risk Score</th>
                             <th>Upload Date</th>
                             <th>Actions</th>
@@ -1523,11 +1520,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
                                 <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
                                 <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
                                 <td>
