@@ -1500,40 +1500,40 @@ function formatFileSize($bytes)
                 });
         }
 
-            function loadFinancialRecords() {
-                const gridId = 'financialFiles';
-                const grid = document.getElementById(gridId);
-                if (!grid) return;
-                grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
+        function loadFinancialRecords() {
+            const gridId = 'financialFiles';
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
 
-                const fallbackFinancialData = [
-                    { id: 1001, full_name: 'Alicia Keys', username: 'alicia.k', role: 'Chief Accountant', department: 'Finance', status: 'Active' },
-                    { id: 1002, full_name: 'John Smith', username: 'jsmith_finance', role: 'Auditor', department: 'Internal Audit', status: 'Active' },
-                    { id: 1003, full_name: 'Maria Cruz', username: 'mcruz_payroll', role: 'Payroll Master', department: 'HR/Finance', status: 'Active' },
-                    { id: 1004, full_name: 'Robert Tan', username: 'rtan_cfo', role: 'CFO', department: 'Executive', status: 'Active' },
-                    { id: 1005, full_name: 'Emily Blunt', username: 'eblunt_cashier', role: 'Head Cashier', department: 'Treasury', status: 'On Leave' }
-                ];
+            const fallbackFinancialData = [
+                { id: 1001, full_name: 'Alicia Keys', username: 'alicia.k', role: 'Chief Accountant', department: 'Finance', status: 'Active' },
+                { id: 1002, full_name: 'John Smith', username: 'jsmith_finance', role: 'Auditor', department: 'Internal Audit', status: 'Active' },
+                { id: 1003, full_name: 'Maria Cruz', username: 'mcruz_payroll', role: 'Payroll Master', department: 'HR/Finance', status: 'Active' },
+                { id: 1004, full_name: 'Robert Tan', username: 'rtan_cfo', role: 'CFO', department: 'Executive', status: 'Active' },
+                { id: 1005, full_name: 'Emily Blunt', username: 'eblunt_cashier', role: 'Head Cashier', department: 'Treasury', status: 'On Leave' }
+            ];
 
-                fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        let records = Array.isArray(data) ? data : (data.data || []);
-                        if (records.length === 0) {
-                            // Use fallback if API returns empty
-                            renderFinancialTable(fallbackFinancialData, grid);
-                            return;
-                        }
-                        renderFinancialTable(records, grid);
-                    })
-                    .catch(error => {
-                        console.error('Error loading financial records:', error);
-                        // Use fallback on error
+            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
+                .then(response => response.json())
+                .then(data => {
+                    let records = Array.isArray(data) ? data : (data.data || []);
+                    if (records.length === 0) {
+                        // Use fallback if API returns empty
                         renderFinancialTable(fallbackFinancialData, grid);
-                    });
-            }
+                        return;
+                    }
+                    renderFinancialTable(records, grid);
+                })
+                .catch(error => {
+                    console.error('Error loading financial records:', error);
+                    // Use fallback on error
+                    renderFinancialTable(fallbackFinancialData, grid);
+                });
+        }
 
-            function renderFinancialTable(data, grid) {
-                grid.innerHTML = `
+        function renderFinancialTable(data, grid) {
+            grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1568,10 +1568,10 @@ function formatFileSize($bytes)
                     </table>
                 </div>
              `;
-            }
+        }
 
-            function renderGuestTable(data, grid) {
-                grid.innerHTML = `
+        function renderGuestTable(data, grid) {
+            grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1602,10 +1602,10 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
-            }
+        }
 
-            function renderInventoryTable(data, grid) {
-                grid.innerHTML = `
+        function renderInventoryTable(data, grid) {
+            grid.innerHTML = `
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
@@ -1623,7 +1623,7 @@ function formatFileSize($bytes)
                                     <td>${item.quantity || item.stock || 0}</td>
                                     <td>P${parseFloat(item.price || item.unit_price || 0).toLocaleString()}</td>
                                     <td>
-                                        <button class="btn-view-small" onclick='showInventoryDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
                                         <button class="btn-view-small" onclick="alert('Retrieve initiated for: ${item.name || item.product_name}')"><i class="fas fa-undo"></i></button>
                                     </td>
                                 </tr>
@@ -1632,11 +1632,11 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
-            }
+        }
 
-            function renderDocumentTable(data, grid) {
-                const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
-                grid.innerHTML = `
+        function renderDocumentTable(data, grid) {
+            const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
+            grid.innerHTML = `
                 <div class="table-container">
                     <table class="financial-table">
                         <thead>
@@ -1667,60 +1667,76 @@ function formatFileSize($bytes)
                     </table>
                 </div>
             `;
+        }
+
+        function showNoDataMessage(grid, category) {
+            grid.innerHTML = `<div style="text-align: center; padding: 4rem;">No ${category.toLowerCase()} found.</div>`;
+        }
+
+        window.showFileDetails = function (file) {
+            const modal = document.getElementById('fileDetailsModal');
+            const content = document.getElementById('fileDetailsContent');
+            let profileImage = file.name && file.name.toLowerCase().includes('ms') ? '../assets/image/Women.png' : '../assets/image/Men.png';
+
+            // Customize details based on category/type
+            let statusRow = '';
+            let detailsRow = '';
+
+            if (file.role) { // Financial/User
+                detailsRow = `<p><strong>Role:</strong> ${file.role}</p><p><strong>Department:</strong> ${file.department}</p>`;
+                statusRow = `<p><strong>Status:</strong> ${file.status}</p>`;
+            } else if (file.stock !== undefined || file.quantity !== undefined) { // Inventory
+                profileImage = '../assets/image/logo.png'; // Use logo for items
+                detailsRow = `<p><strong>Stock:</strong> ${file.stock || file.quantity}</p><p><strong>Unit Price:</strong> P${parseFloat(file.unit_price || file.price || 0).toLocaleString()}</p>`;
+                statusRow = `<p><strong>Category:</strong> ${file.category}</p>`;
+            } else { // Standard Document/Guest
+                statusRow = `<p><strong>Status:</strong> ${file.status || 'Archived'}</p>`;
+                detailsRow = `<p><strong>Date:</strong> ${new Date(file.entry_date || file.upload_date || Date.now()).toLocaleDateString()}</p>`;
             }
 
-            function showNoDataMessage(grid, category) {
-                grid.innerHTML = `<div style="text-align: center; padding: 4rem;">No ${category.toLowerCase()} found.</div>`;
-            }
-
-            window.showFileDetails = function (file) {
-                const modal = document.getElementById('fileDetailsModal');
-                const content = document.getElementById('fileDetailsContent');
-                let profileImage = file.name && file.name.toLowerCase().includes('ms') ? '../assets/image/Women.png' : '../assets/image/Men.png';
-
-                content.innerHTML = `
-                <div style="text-align: center;">
-                    <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-blue);">
-                    <h2>${file.full_name || file.name || 'Unnamed'}</h2>
-                    <p>${file.category || 'N/A'}</p>
-                    <div style="margin-top: 20px; text-align: left; background: #f9fafb; padding: 20px; border-radius: 12px;">
-                        <p><strong>Status:</strong> ${file.status || 'Archived'}</p>
-                        <p><strong>Date:</strong> ${new Date(file.entry_date || file.upload_date).toLocaleDateString()}</p>
-                        <p><strong>Description:</strong> ${file.description || 'No description provided.'}</p>
+            content.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="${profileImage}" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-blue); object-fit: cover;">
+                        <h2 style="margin-top: 15px;">${file.full_name || file.name || 'Unnamed'}</h2>
+                        <p style="color: var(--text-gray);">${file.category || 'Record'}</p>
+                        <div style="margin-top: 20px; text-align: left; background: #f9fafb; padding: 20px; border-radius: 12px;">
+                            ${statusRow}
+                            ${detailsRow}
+                            <p><strong>Description:</strong> ${file.description || 'No additional notes provided.'}</p>
+                        </div>
                     </div>
-                </div>
-                <div style="margin-top: 25px; display: flex; justify-content: center; gap: 10px;">
-                    <button class="btn close-modal">Close</button>
-                </div>
-            `;
-                content.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
-                modal.style.display = 'flex';
-            };
+                    <div style="margin-top: 25px; display: flex; justify-content: center; gap: 10px;">
+                        <button class="btn close-modal" style="background: #e2e8f0; color: #475569;">Close</button>
+                    </div>
+                `;
+            content.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
+            modal.style.display = 'flex';
+        };
 
-            function startPinSession() {
-                clearPinSession();
-                pinSessionTimeout = setTimeout(() => { isAuthenticated = false; }, SESSION_DURATION);
-            }
-            function clearPinSession() { if (pinSessionTimeout) clearTimeout(pinSessionTimeout); }
-            function resetPinSession() { if (isAuthenticated) { clearPinSession(); startPinSession(); } }
+        function startPinSession() {
+            clearPinSession();
+            pinSessionTimeout = setTimeout(() => { isAuthenticated = false; }, SESSION_DURATION);
+        }
+        function clearPinSession() { if (pinSessionTimeout) clearTimeout(pinSessionTimeout); }
+        function resetPinSession() { if (isAuthenticated) { clearPinSession(); startPinSession(); } }
 
-            window.deletePermanent = function (id) {
-                if (!confirm('Permanently delete this file?')) return;
-                fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-                    .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
-            };
+        window.deletePermanent = function (id) {
+            if (!confirm('Permanently delete this file?')) return;
+            fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+                .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
+        };
 
-            document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                formData.append('file', document.getElementById('fileInput').files[0]);
-                formData.append('name', document.getElementById('fileName').value);
-                formData.append('category', document.getElementById('fileCategory').value);
-                fetch('?api=1', { method: 'POST', body: formData })
-                    .then(r => r.json()).then(res => { alert(res.message); if (res.message.includes('success')) { document.getElementById('uploadModal').style.display = 'none'; loadCategoryFiles('all'); } });
-            });
+        document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('file', document.getElementById('fileInput').files[0]);
+            formData.append('name', document.getElementById('fileName').value);
+            formData.append('category', document.getElementById('fileCategory').value);
+            fetch('?api=1', { method: 'POST', body: formData })
+                .then(r => r.json()).then(res => { alert(res.message); if (res.message.includes('success')) { document.getElementById('uploadModal').style.display = 'none'; loadCategoryFiles('all'); } });
+        });
 
-            document.getElementById('cancelUpload')?.addEventListener('click', () => { document.getElementById('uploadModal').style.display = 'none'; });
+        document.getElementById('cancelUpload')?.addEventListener('click', () => { document.getElementById('uploadModal').style.display = 'none'; });
     </script>
 </body>
 
