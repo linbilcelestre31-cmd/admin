@@ -1595,31 +1595,51 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="risk-analysis-layout">
                     <div class="chart-container-wrapper">
-                        <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution Analysis</h3>
-                        <div class="chart-area" id="chartArea"
-                            style="height: 350px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 20px; border: 2px solid #e2e8f0; padding: 25px; display: block; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
-                            <canvas id="riskDistributionChart" width="600" height="350"
-                                style="width: 100%; height: 100%; opacity: 1; border-radius: 12px;"></canvas>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <h3 class="subsection-title" style="margin: 0; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                                    <i class="fa-solid fa-chart-simple" style="color: white; font-size: 18px;"></i>
+                                </div>
+                                <span style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk Distribution Analysis</span>
+                            </h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="window.initRiskChart()" 
+                                    style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-sync-alt"></i> Refresh
+                                </button>
+                                <button onclick="window.downloadChart()" 
+                                    style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-download"></i> Export
+                                </button>
+                            </div>
                         </div>
-                        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; gap: 15px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 3px;"></div>
-                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">High Risk</span>
+                        <div class="chart-area" id="chartArea"
+                            style="height: 400px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 24px; border: 2px solid #e2e8f0; padding: 30px; display: block; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;">
+                            <div style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                <span style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live Data</span>
+                            </div>
+                            <canvas id="riskDistributionChart" width="600" height="400"
+                                style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 20px;">
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #ef4444; font-weight: 700;">High Risk</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 3px;"></div>
-                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Medium Risk</span>
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium Risk</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 3px;"></div>
-                                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Low Risk</span>
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #10b981; font-weight: 700;">Low Risk</span>
                                 </div>
                             </div>
-                            <button onclick="window.initRiskChart()" 
-                                style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                                <i class="fa-solid fa-sync-alt"></i> Refresh
-                            </button>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Last Updated</div>
+                                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;"><?php echo date('M j, Y g:i A'); ?></div>
+                            </div>
                         </div>
                     </div>
 
@@ -2220,10 +2240,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
             }, 2000);
 
-            // Security Gate Implementation
-            window.withPasswordGate = function (callback) {
-                const modal = document.getElementById('passwordModal');
-                const form = document.getElementById('passwordForm');
+            // Download Chart Function
+            window.downloadChart = function() {
+                const canvas = document.getElementById('riskDistributionChart');
+                if (canvas && window.riskChartRef) {
+                    const url = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0,10) + '.png';
+                    link.href = url;
+                    link.click();
                 const error = document.getElementById('pwdError');
                 const cancel = document.getElementById('pwdCancel');
                 const digits = modal.querySelectorAll('.pin-digit');
