@@ -1840,53 +1840,53 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             </div>
 
             <!-- Modal Body with Circular Design -->
-            <div id="employeeInfoBody" style="padding: 50px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
-                <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 400px;">
+            <div id="employeeInfoBody" style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
+                <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 320px;">
                     <!-- Circular Container -->
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 30px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                         <!-- Circular Profile Section -->
-                        <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 4px solid white; position: relative;">
-                            <div style="position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);">
-                                <i class="fa-solid fa-id-card" style="color: white; font-size: 16px;"></i>
+                        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
+                            <div style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
+                                <i class="fa-solid fa-id-card" style="color: white; font-size: 12px;"></i>
                             </div>
-                            <div style="text-align: center; padding: 20px;">
-                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);">
-                                    <i class="fa-solid fa-user" style="color: white; font-size: 32px;"></i>
+                            <div style="text-align: center; padding: 15px;">
+                                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
+                                    <i class="fa-solid fa-user" style="color: white; font-size: 24px;"></i>
                                 </div>
-                                <h3 id="display_emp_name" style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">-</h3>
-                                <span id="display_emp_position" style="display: block; margin-top: 5px; font-size: 0.85rem; color: #64748b; font-weight: 600;">-</span>
+                                <h3 id="display_emp_name" style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
+                                <span id="display_emp_position" style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
                             </div>
                         </div>
 
                         <!-- Contact Information Circles -->
-                        <div style="display: flex; gap: 20px; justify-content: center;">
+                        <div style="display: flex; gap: 15px; justify-content: center;">
                             <!-- Email Circle -->
-                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 3px solid white;">
-                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                                    <i class="fa-solid fa-envelope" style="color: white; font-size: 18px;"></i>
+                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                    <i class="fa-solid fa-envelope" style="color: white; font-size: 14px;"></i>
                                 </div>
-                                <div style="text-align: center; font-size: 0.7rem; color: #64748b; font-weight: 600;">Email</div>
-                                <div id="display_emp_email" style="text-align: center; font-size: 0.75rem; color: #1e293b; font-weight: 700; max-width: 100px; word-break: break-all;">-</div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Email</div>
+                                <div id="display_emp_email" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">-</div>
                             </div>
 
                             <!-- Phone Circle -->
-                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 3px solid white;">
-                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                                    <i class="fa-solid fa-phone" style="color: white; font-size: 18px;"></i>
+                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                    <i class="fa-solid fa-phone" style="color: white; font-size: 14px;"></i>
                                 </div>
-                                <div style="text-align: center; font-size: 0.7rem; color: #64748b; font-weight: 600;">Phone</div>
-                                <div id="display_emp_phone" style="text-align: center; font-size: 0.75rem; color: #1e293b; font-weight: 700;">-</div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Phone</div>
+                                <div id="display_emp_phone" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-</div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div style="display: flex; gap: 15px; justify-content: center;">
+                        <div style="display: flex; gap: 10px; justify-content: center;">
                             <button id="modalDownloadEmpPdf" 
-                                style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
+                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
                                 <i class="fa-solid fa-download"></i>
                             </button>
                             <button id="closeEmployeeInfoBottom"
-                                style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
+                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                         </div>
