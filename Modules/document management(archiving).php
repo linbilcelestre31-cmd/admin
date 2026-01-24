@@ -1033,7 +1033,7 @@ function formatFileSize($bytes)
             <div class="content">
                 <div class="content-header"
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | Admin ATIÃ‰RA</h2>
+                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | Admin ATIE`RA</h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
                         <input type="text" id="documentSearch" placeholder="Search archive..."
                             style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">
