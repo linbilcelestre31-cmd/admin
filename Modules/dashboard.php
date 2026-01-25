@@ -983,7 +983,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </button>
                             <button id="show-maintenance-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance & System
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
                             </button>
                             <button id="show-reports-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
