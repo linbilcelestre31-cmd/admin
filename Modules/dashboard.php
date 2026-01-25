@@ -255,7 +255,12 @@ class ReservationSystem
             $data['pending_maintenance'] = $metrics_query['pending_maintenance'];
 
             // Fetch facilities and today's schedule in parallel (single query)
-            $data['facilities'] = $pdo->query("SELECT * FROM facilities WHERE status = 'active' ORDER BY name")->fetchAll();
+            $data['facilities'] = $pdo->query("
+                SELECT f.*, 
+                (SELECT customer_name FROM reservations r WHERE r.facility_id = f.id AND r.event_date >= CURDATE() AND r.status = 'confirmed' ORDER BY r.event_date ASC, r.start_time ASC LIMIT 1) as next_reserve_name,
+                (SELECT coordinator FROM reservations r WHERE r.facility_id = f.id AND r.event_date >= CURDATE() AND r.status = 'confirmed' ORDER BY r.event_date ASC, r.start_time ASC LIMIT 1) as next_assigned_user
+                FROM facilities f WHERE f.status = 'active' ORDER BY f.name
+            ")->fetchAll();
             $data['today_schedule'] = $pdo->query("
                 SELECT r.*, f.name as facility_name 
                 FROM reservations r 
@@ -830,6 +835,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr>
                                         <th style="text-align: center;">ID</th>
                                         <th style="text-align: left;">Facility Name</th>
+                                        <th style="text-align: left;">reserve name</th>
                                         <th>Type</th>
                                         <th style="text-align: center;">Capacity</th>
                                         <th style="text-align: left;">Location</th>
@@ -846,6 +852,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <td style="text-align: left; font-weight: 600;">
                                                 <?= htmlspecialchars($f['name']) ?>
                                             </td>
+                                            <td style="text-align: left; color: #475569;">
+                                                <?= htmlspecialchars($f['next_reserve_name'] ?? 'Available') ?>
+                                            </td>
                                             <td><span
                                                     class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
                                             </td>
@@ -859,8 +868,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 </span>
                                             </td>
                                             <td style="text-align: center; color: #64748b; font-size: 0.9rem;">
-                                                <!-- Placeholder for Assigned User as per request -->
-                                                <?= htmlspecialchars($f['assigned_user'] ?? 'Not Assigned') ?>
+                                                <?= htmlspecialchars($f['next_assigned_user'] ?? 'Unassigned') ?>
                                             </td>
                                             <td>
                                                 <div style="display: flex; gap: 8px; justify-content: center;">
