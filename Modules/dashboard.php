@@ -997,64 +997,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('employees')">
                                 <i class="fa-solid fa-users"></i> Employees Card
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
-                                <i class="fas fa-user-plus"></i> Add Employee
-                            </button>
-                            <div class="card-content">
-                                <button class="btn btn-primary mb-1" onclick="openModal('facility-modal')">
-                                    <span class="icon-img-placeholder">➕</span> Add New Facility
-                                </button>
-                                <div class="table-wrapper">
-                                    <table class="table management-table">
-                                        <thead>
-                                            <tr>
-                                                <th style="text-align: left !important;">Name</th>
-                                                <th>Type</th>
-                                                <th>Rate</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                                                <tr>
-                                                    <td style="font-weight: 600; text-align: left !important;">
-                                                        <?= htmlspecialchars($facility['name']) ?>
-                                                    </td>
-                                                    <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
-                                                    <td style="font-weight: 500;">
-                                                        ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
-                                                    <td>
-                                                        <span
-                                                            class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
-                                                            <?= ucfirst($facility['status'] ?? 'active') ?>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex gap-1" style="justify-content: center;">
-                                                            <button class="btn btn-outline btn-sm btn-icon"
-                                                                onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)"
-                                                                title="View Facility Info">
-                                                                <i class="fa-solid fa-eye"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="management-cards">
-                            <!-- Hotel Facilities Dashboard Card -->
-                            <div class="card management-card management-hotel-facilities" style="display: block;">
-                                <div class="card-header">
-                                    <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
-                                    <div class="d-flex gap-1">
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
-                                            <span class="icon-img-placeholder">➕</span> Add Facility
+                    <div class="management-cards">
+                        <!-- Hotel Facilities Dashboard Card -->
+                        <div class="card management-card management-hotel-facilities" style="display: block;">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
                                         <span class="icon-img-placeholder">➕</span> Add Facility
                                     </button>
                                     <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
