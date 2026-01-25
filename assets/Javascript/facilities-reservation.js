@@ -461,6 +461,24 @@ function initializePage() {
     });
 }
 
+window.deleteFacility = function (id) {
+    if (confirm('Are you sure you want to permanently delete this facility? All related data may be lost.')) {
+        const formData = new FormData();
+        formData.append('action', 'delete_facility');
+        formData.append('facility_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => {
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('Error deleting facility. Please try again.');
+                }
+            })
+            .catch(err => console.error('Delete error:', err));
+    }
+};
+
 // Ensure execution no matter what
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializePage);
