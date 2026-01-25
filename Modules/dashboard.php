@@ -975,7 +975,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Management Tab -->
                 <div id="management" class="tab-content">
                     <div class="management-header">
-                        <h2><span class="icon-img-placeholder">⚙️</span> System Management (Tagalog)</h2>
+                        <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
                         <div class="management-buttons">
                             <button id="show-hotel-facilities-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
