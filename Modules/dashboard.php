@@ -460,6 +460,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-transform: uppercase;
         }
 
+        /* View Switcher Enhancements */
+        .btn-group button.active {
+            color: var(--primary) !important;
+            font-weight: 700 !important;
+        }
+        
+        .btn-group button:not(.active):hover {
+            background: rgba(255,255,255,0.5) !important;
+        }
+
         /* Reports filters - improved visual and centered layout */
         #reports .filters {
             display: flex;
@@ -537,13 +547,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                         $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                         if (!empty($display_key)): ?>
-                            <div class="api-key-display"
-                                style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                <i class="fas fa-key" style="color: #d4af37;"></i>
-                                <span>Key: <strong
-                                        style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
-                            </div>
-                        <?php endif;
+                                    <div class="api-key-display"
+                                        style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                        <i class="fas fa-key" style="color: #d4af37;"></i>
+                                        <span>Key: <strong
+                                                style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
+                                    </div>
+                            <?php endif;
                     }
                     ?>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
@@ -554,11 +564,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                         ?>
-                        <a href="../Super-admin/Dashboard.php" class="btn btn-outline"
-                            style="text-decoration: none; display: flex; align-items: center; gap: 8px; border-color: #d4af37; color: #d4af37; font-weight: 600;">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
-                        <?php
+                            <a href="../Super-admin/Dashboard.php" class="btn btn-outline"
+                                style="text-decoration: none; display: flex; align-items: center; gap: 8px; border-color: #d4af37; color: #d4af37; font-weight: 600;">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <?php
                     }
                     ?>
                 </div>
@@ -568,15 +578,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="dashboard-content">
                 <!-- Alert Messages -->
                 <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success">
-                        <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success_message) ?>
-                    </div>
+                        <div class="alert alert-success">
+                            <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success_message) ?>
+                        </div>
                 <?php endif; ?>
 
                 <?php if (isset($error_message)): ?>
-                    <div class="alert alert-error">
-                        <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error_message) ?>
-                    </div>
+                        <div class="alert alert-error">
+                            <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error_message) ?>
+                        </div>
                 <?php endif; ?>
 
                 <!-- Dashboard Tab -->
@@ -586,168 +596,239 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div id="facilities" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
-                        <button class="btn btn-primary" onclick="openModal('facility-modal')">
-                            <span class="icon-img-placeholder">➕</span> Add Facility
-                        </button>
+                        <div class="d-flex gap-1 align-center">
+                            <div class="btn-group"
+                                style="display: flex; background: #edf2f7; padding: 4px; border-radius: 8px;">
+                                <button id="btn-grid-view" class="btn btn-sm active"
+                                    onclick="switchFacilityView('grid')"
+                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
+                                    <i class="fa-solid fa-grip"></i> Grid
+                                </button>
+                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')"
+                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
+                                    <i class="fa-solid fa-list"></i> List
+                                </button>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
+                                <span class="icon-img-placeholder">➕</span> Add Facility
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="facilities-grid">
-                        <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                            <div class="facility-card">
-                                <div class="facility-image">
-                                    <?php
-                                    // 1. I-normalize ang facility name para magamit sa filename
-                                    $base_name = str_replace(' ', '', ucwords(strtolower($facility['name']))); // ExecutiveBoardroom
-                                    $base_name_underscored = str_replace(' ', '_', strtolower($facility['name'])); // executive_boardroom
-                                    $name_with_spaces_title_case = ucwords(strtolower($facility['name'])); // Executive Boardroom
-                                
-                                    $possible_files = [
-                                        // New files check (with spaces and Title Case)
-                                        $name_with_spaces_title_case . '.jpeg',
-                                        $name_with_spaces_title_case . '.jpg',
-                                        $name_with_spaces_title_case . '.png',
-                                        // Existing checks (underscores and no spaces)
-                                        $base_name_underscored . '.jpg',
-                                        $base_name_underscored . '.jpeg',
-                                        $base_name_underscored . '.png',
-                                        $base_name . '.jpg',
-                                        $base_name . '.jpeg',
-                                        $base_name . '.png',
-                                        // Specific file names observed in screenshot (e.g., Grand Ballroom.jpeg)
-                                        $facility['name'] . '.jpeg',
-                                        $facility['name'] . '.jpg',
-                                        $facility['name'] . '.png',
-                                    ];
+                    <div id="facility-grid-view">
+                        <div class="facilities-grid">
+                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                                    <div class="facility-card">
+                                        <div class="facility-image">
+                                            <?php
+                                            // 1. I-normalize ang facility name para magamit sa filename
+                                            $base_name = str_replace(' ', '', ucwords(strtolower($facility['name']))); // ExecutiveBoardroom
+                                            $base_name_underscored = str_replace(' ', '_', strtolower($facility['name'])); // executive_boardroom
+                                            $name_with_spaces_title_case = ucwords(strtolower($facility['name'])); // Executive Boardroom
+                                        
+                                            $possible_files = [
+                                                // New files check (with spaces and Title Case)
+                                                $name_with_spaces_title_case . '.jpeg',
+                                                $name_with_spaces_title_case . '.jpg',
+                                                $name_with_spaces_title_case . '.png',
+                                                // Existing checks (underscores and no spaces)
+                                                $base_name_underscored . '.jpg',
+                                                $base_name_underscored . '.jpeg',
+                                                $base_name_underscored . '.png',
+                                                $base_name . '.jpg',
+                                                $base_name . '.jpeg',
+                                                $base_name . '.png',
+                                                // Specific file names observed in screenshot (e.g., Grand Ballroom.jpeg)
+                                                $facility['name'] . '.jpeg',
+                                                $facility['name'] . '.jpg',
+                                                $facility['name'] . '.png',
+                                            ];
 
-                                    $image_url = '';
-                                    $is_placeholder = true;
+                                            $image_url = '';
+                                            $is_placeholder = true;
 
-                                    // First, check if there's a stored image_url in the database
-                                    if (!empty($facility['image_url'])) {
-                                        // Check if it's a full URL or a relative path
-                                        if (filter_var($facility['image_url'], FILTER_VALIDATE_URL) || file_exists(__DIR__ . '/../' . ltrim($facility['image_url'], './'))) {
-                                            $image_url = $facility['image_url'];
-                                            $is_placeholder = false;
-                                        }
-                                    }
-
-                                    // If no stored image_url or it doesn't exist, search in assets
-                                    if ($is_placeholder) {
-                                        foreach ($possible_files as $file) {
-                                            $full_path = __DIR__ . '/../assets/image/' . $file;
-                                            if (file_exists($full_path)) {
-                                                $image_url = '../assets/image/' . $file;
-                                                $is_placeholder = false;
-                                                break;
+                                            // First, check if there's a stored image_url in the database
+                                            if (!empty($facility['image_url'])) {
+                                                // Check if it's a full URL or a relative path
+                                                if (filter_var($facility['image_url'], FILTER_VALIDATE_URL) || file_exists(__DIR__ . '/../' . ltrim($facility['image_url'], './'))) {
+                                                    $image_url = $facility['image_url'];
+                                                    $is_placeholder = false;
+                                                }
                                             }
-                                        }
-                                    }
 
-                                    // NEW: Auto-assign default premium image based on category if still no image found
-                                    if ($is_placeholder) {
-                                        $type_defaults = [
-                                            'banquet' => 'Grand Ballroom.jpeg',
-                                            'meeting' => 'executive_boardroom.jpg',
-                                            'conference' => 'Pacific Conference Hall.jpeg',
-                                            'outdoor' => 'Sky Garden.jpeg',
-                                            'dining' => 'Harbor View Dining Room.jpeg',
-                                            'lounge' => 'Sunset Lounge.jpeg'
-                                        ];
-
-                                        $type = strtolower($facility['type']);
-                                        if (isset($type_defaults[$type])) {
-                                            $default_file = $type_defaults[$type];
-                                            if (file_exists(__DIR__ . '/../assets/image/' . $default_file)) {
-                                                $image_url = '../assets/image/' . $default_file;
-                                                $is_placeholder = false;
+                                            // If no stored image_url or it doesn't exist, search in assets
+                                            if ($is_placeholder) {
+                                                foreach ($possible_files as $file) {
+                                                    $full_path = __DIR__ . '/../assets/image/' . $file;
+                                                    if (file_exists($full_path)) {
+                                                        $image_url = '../assets/image/' . $file;
+                                                        $is_placeholder = false;
+                                                        break;
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
 
-                                    // FIX: Pinalitan ang match() ng switch statement para sa compatibility
-                                    $placeholder_color = '1a365d'; // Default
-                                    switch ($facility['type']) {
-                                        case 'banquet':
-                                            $placeholder_color = '764ba2';
-                                            break; // Purple
-                                        case 'meeting':
-                                        case 'conference':
-                                            $placeholder_color = '3182ce';
-                                            break; // Blue
-                                        case 'outdoor':
-                                            $placeholder_color = '38a169';
-                                            break; // Green
-                                        case 'dining':
-                                            $placeholder_color = '00b5d8';
-                                            break; // Teal
-                                        case 'lounge':
-                                            $placeholder_color = 'd69e2e';
-                                            break; // Yellow
-                                        default:
-                                            $placeholder_color = '1a365d';
-                                            break; // Primary Dark Blue
-                                    }
+                                            // NEW: Auto-assign default premium image based on category if still no image found
+                                            if ($is_placeholder) {
+                                                $type_defaults = [
+                                                    'banquet' => 'Grand Ballroom.jpeg',
+                                                    'meeting' => 'executive_boardroom.jpg',
+                                                    'conference' => 'Pacific Conference Hall.jpeg',
+                                                    'outdoor' => 'Sky Garden.jpeg',
+                                                    'dining' => 'Harbor View Dining Room.jpeg',
+                                                    'lounge' => 'Sunset Lounge.jpeg'
+                                                ];
 
-                                    $placeholder_text = strtoupper(htmlspecialchars($facility['name'] ?: $facility['type']));
+                                                $type = strtolower($facility['type']);
+                                                if (isset($type_defaults[$type])) {
+                                                    $default_file = $type_defaults[$type];
+                                                    if (file_exists(__DIR__ . '/../assets/image/' . $default_file)) {
+                                                        $image_url = '../assets/image/' . $default_file;
+                                                        $is_placeholder = false;
+                                                    }
+                                                }
+                                            }
+
+                                            // FIX: Pinalitan ang match() ng switch statement para sa compatibility
+                                            $placeholder_color = '1a365d'; // Default
+                                            switch ($facility['type']) {
+                                                case 'banquet':
+                                                    $placeholder_color = '764ba2';
+                                                    break; // Purple
+                                                case 'meeting':
+                                                case 'conference':
+                                                    $placeholder_color = '3182ce';
+                                                    break; // Blue
+                                                case 'outdoor':
+                                                    $placeholder_color = '38a169';
+                                                    break; // Green
+                                                case 'dining':
+                                                    $placeholder_color = '00b5d8';
+                                                    break; // Teal
+                                                case 'lounge':
+                                                    $placeholder_color = 'd69e2e';
+                                                    break; // Yellow
+                                                default:
+                                                    $placeholder_color = '1a365d';
+                                                    break; // Primary Dark Blue
+                                            }
+
+                                            $placeholder_text = strtoupper(htmlspecialchars($facility['name'] ?: $facility['type']));
 
 
-                                    if ($is_placeholder) {
-                                        // Gumamit ng placeholder na may kulay at text
-                                        $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . $placeholder_text;
-                                        $onerror = "this.onerror=null;this.src='{$image_url}';";
-                                    } else {
-                                        // Gumamit ng placeholder bilang fallback kung sakaling may error sa image path sa browser
-                                        $onerror = "this.onerror=null;this.src='https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=IMAGE+FAIL';";
-                                    }
-                                    ?>
-                                    <img src="<?= htmlspecialchars($image_url) ?>"
-                                        alt="<?= htmlspecialchars($facility['name']) ?>"
-                                        onerror="<?= htmlspecialchars($onerror) ?>"
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                                <div class="facility-content">
-                                    <div class="facility-header">
-                                        <div>
-                                            <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
-                                            <button class="facility-type"
-                                                onclick="filterByType('<?= htmlspecialchars($facility['type']) ?>')">
-                                                <?= strtoupper(htmlspecialchars($facility['type'])) ?>
+                                            if ($is_placeholder) {
+                                                // Gumamit ng placeholder na may kulay at text
+                                                $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . $placeholder_text;
+                                                $onerror = "this.onerror=null;this.src='{$image_url}';";
+                                            } else {
+                                                // Gumamit ng placeholder bilang fallback kung sakaling may error sa image path sa browser
+                                                $onerror = "this.onerror=null;this.src='https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=IMAGE+FAIL';";
+                                            }
+                                            ?>
+                                            <img src="<?= htmlspecialchars($image_url) ?>"
+                                                alt="<?= htmlspecialchars($facility['name']) ?>"
+                                                onerror="<?= htmlspecialchars($onerror) ?>"
+                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div class="facility-content">
+                                            <div class="facility-header">
+                                                <div>
+                                                    <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
+                                                    <button class="facility-type"
+                                                        onclick="filterByType('<?= htmlspecialchars($facility['type']) ?>')">
+                                                        <?= strtoupper(htmlspecialchars($facility['type'])) ?>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- BAGONG BUTTON: View Details -->
+                                            <button class="btn btn-outline btn-sm mb-1"
+                                                onclick="viewFacilityDetails(<?= $facility['id'] ?>)"
+                                                style="padding: 0.4rem 0.8rem;">
+                                                <span class="icon-img-placeholder" style="font-size: 0.9rem;">🔎</span> View
+                                                Details
+                                            </button>
+                                            <div class="facility-details">
+                                                <?= htmlspecialchars($facility['description']) ?>
+                                            </div>
+                                            <div class="facility-meta">
+                                                <div class="meta-item"><span class="icon-img-placeholder">👤</span> Capacity:
+                                                    <?= $facility['capacity'] ?>
+                                                </div>
+                                                <div class="meta-item"><span class="icon-img-placeholder">📍</span>
+                                                    <?= htmlspecialchars($facility['location']) ?></div>
+                                            </div>
+                                            <?php if (!empty($facility['amenities'])): ?>
+                                                    <div class="mb-1">
+                                                        <strong><span class="icon-img-placeholder">🌟</span> Amenities:</strong>
+                                                        <div style="font-size: 0.875rem; color: #718096; margin-top: 0.25rem;">
+                                                            <?= htmlspecialchars($facility['amenities']) ?>
+                                                        </div>
+                                                    </div>
+                                            <?php endif; ?>
+                                            <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                            </div>
+                                            <button class="btn btn-primary btn-block"
+                                                onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                                <span class="icon-img-placeholder">➕</span> Reserve This Facility
                                             </button>
                                         </div>
                                     </div>
-                                    <!-- BAGONG BUTTON: View Details -->
-                                    <button class="btn btn-outline btn-sm mb-1"
-                                        onclick="viewFacilityDetails(<?= $facility['id'] ?>)"
-                                        style="padding: 0.4rem 0.8rem;">
-                                        <span class="icon-img-placeholder" style="font-size: 0.9rem;">🔎</span> View Details
-                                    </button>
-                                    <div class="facility-details">
-                                        <?= htmlspecialchars($facility['description']) ?>
-                                    </div>
-                                    <div class="facility-meta">
-                                        <div class="meta-item"><span class="icon-img-placeholder">👤</span> Capacity:
-                                            <?= $facility['capacity'] ?>
-                                        </div>
-                                        <div class="meta-item"><span class="icon-img-placeholder">📍</span>
-                                            <?= htmlspecialchars($facility['location']) ?></div>
-                                    </div>
-                                    <?php if (!empty($facility['amenities'])): ?>
-                                        <div class="mb-1">
-                                            <strong><span class="icon-img-placeholder">🌟</span> Amenities:</strong>
-                                            <div style="font-size: 0.875rem; color: #718096; margin-top: 0.25rem;">
-                                                <?= htmlspecialchars($facility['amenities']) ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
-                                    </div>
-                                    <button class="btn btn-primary btn-block"
-                                        onclick="openReservationModal(<?= $facility['id'] ?>)">
-                                        <span class="icon-img-placeholder">➕</span> Reserve This Facility
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- List View (Table) - Hidden by default -->
+                    <div id="facility-list-view" style="display: none;">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center;">ID</th>
+                                        <th style="text-align: left;">Facility Name</th>
+                                        <th>Type</th>
+                                        <th style="text-align: center;">Capacity</th>
+                                        <th style="text-align: left;">Location</th>
+                                        <th>Rate</th>
+                                        <th style="text-align: center;">Status</th>
+                                        <th style="text-align: center;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($dashboard_data['facilities'] as $f): ?>
+                                            <tr>
+                                                <td style="text-align: center;">#<?= $f['id'] ?></td>
+                                                <td style="text-align: left; font-weight: 600;">
+                                                    <?= htmlspecialchars($f['name']) ?></td>
+                                                <td><span
+                                                        class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
+                                                </td>
+                                                <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
+                                                <td style="text-align: left;"><?= htmlspecialchars($f['location']) ?></td>
+                                                <td style="font-weight: 500; color: #059669;">
+                                                    ₱<?= number_format($f['hourly_rate'], 2) ?>/hr</td>
+                                                <td style="text-align: center;">
+                                                    <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
+                                                        <?= ucfirst($f['status'] ?? 'active') ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
+                                                            title="View Details">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-primary btn-sm btn-icon"
+                                                            onclick="openReservationModal(<?= $f['id'] ?>)" title="Book Now">
+                                                            <i class="fa-solid fa-calendar-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -776,78 +857,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </thead>
                             <tbody>
                                 <?php if (empty($dashboard_data['reservations'])): ?>
-                                    <tr>
-                                        <td colspan="9" style="text-align: center; padding: 20px;">
-                                            <div style="color: #718096; font-style: italic;">
-                                                <i class="fa-regular fa-folder-open"
-                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                No reservations found in the database.
-                                                <!-- DEBUG: Count is <?= count($dashboard_data['reservations']) ?> -->
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
                                         <tr>
-                                            <td style="text-align: center;">#<?= $reservation['id'] ?></td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($reservation['facility_name']) ?>
-                                            </td>
-                                            <td style="text-align: left;">
-                                                <div style="font-size: 0.9rem; font-weight: 600;">
-                                                    <?= htmlspecialchars($reservation['customer_name']) ?>
-                                                </div>
-                                                <small
-                                                    style="color: #718096; font-size: 0.75rem;"><?= htmlspecialchars($reservation['customer_email'] ?? '') ?></small>
-                                            </td>
-                                            <td style="text-align: center;"><?= htmlspecialchars($reservation['event_type']) ?>
-                                            </td>
-                                            <!-- INAYOS NA DATE & TIME STRUCTURE -->
-                                            <td style="text-align: center;">
-                                                <div style="font-size: 0.85rem; font-weight: 500; line-height: 1.2;">
-                                                    <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
-                                                </div>
-                                                <small style="color: #718096; font-size: 0.7rem; display: block;">
-                                                    <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
-                                                    <?= date('g:i a', strtotime($reservation['end_time'])) ?>
-                                                </small>
-                                            </td>
-                                            <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
-                                            <td style="font-weight: 600; text-align: center;">
-                                                ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
-                                            <td style="text-align: center;">
-                                                <span class="status-badge status-<?= $reservation['status'] ?>">
-                                                    <?= ucfirst($reservation['status']) ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex gap-1" style="flex-wrap: nowrap; justify-content: center;">
-                                                    <button class="btn btn-outline btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
-                                                        title="View Details" aria-label="View Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                    <?php if ($reservation['status'] == 'pending'): ?>
-                                                        <button class="btn btn-success btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'confirmed')"
-                                                            title="Confirm Reservation" aria-label="Confirm">
-                                                            <i class="fa-solid fa-check"></i>
-                                                        </button>
-                                                        <button class="btn btn-danger btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'cancelled')"
-                                                            title="Cancel Reservation" aria-label="Cancel">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    <?php elseif ($reservation['status'] == 'confirmed'): ?>
-                                                        <button class="btn btn-warning btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'completed')"
-                                                            title="Mark as Completed" aria-label="Complete">
-                                                            <i class="fa-solid fa-flag-checkered"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                                            <td colspan="9" style="text-align: center; padding: 20px;">
+                                                <div style="color: #718096; font-style: italic;">
+                                                    <i class="fa-regular fa-folder-open"
+                                                        style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                    No reservations found in the database.
+                                                    <!-- DEBUG: Count is <?= count($dashboard_data['reservations']) ?> -->
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                        <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
+                                                <tr>
+                                                    <td style="text-align: center;">#<?= $reservation['id'] ?></td>
+                                                    <td style="text-align: left;"><?= htmlspecialchars($reservation['facility_name']) ?>
+                                                    </td>
+                                                    <td style="text-align: left;">
+                                                        <div style="font-size: 0.9rem; font-weight: 600;">
+                                                            <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                        </div>
+                                                        <small
+                                                            style="color: #718096; font-size: 0.75rem;"><?= htmlspecialchars($reservation['customer_email'] ?? '') ?></small>
+                                                    </td>
+                                                    <td style="text-align: center;"><?= htmlspecialchars($reservation['event_type']) ?>
+                                                    </td>
+                                                    <!-- INAYOS NA DATE & TIME STRUCTURE -->
+                                                    <td style="text-align: center;">
+                                                        <div style="font-size: 0.85rem; font-weight: 500; line-height: 1.2;">
+                                                            <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
+                                                        </div>
+                                                        <small style="color: #718096; font-size: 0.7rem; display: block;">
+                                                            <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
+                                                            <?= date('g:i a', strtotime($reservation['end_time'])) ?>
+                                                        </small>
+                                                    </td>
+                                                    <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
+                                                    <td style="font-weight: 600; text-align: center;">
+                                                        ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
+                                                    <td style="text-align: center;">
+                                                        <span class="status-badge status-<?= $reservation['status'] ?>">
+                                                            <?= ucfirst($reservation['status']) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-1" style="flex-wrap: nowrap; justify-content: center;">
+                                                            <button class="btn btn-outline btn-sm btn-icon"
+                                                                onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
+                                                                title="View Details" aria-label="View Details">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </button>
+                                                            <?php if ($reservation['status'] == 'pending'): ?>
+                                                                    <button class="btn btn-success btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'confirmed')"
+                                                                        title="Confirm Reservation" aria-label="Confirm">
+                                                                        <i class="fa-solid fa-check"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'cancelled')"
+                                                                        title="Cancel Reservation" aria-label="Cancel">
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </button>
+                                                            <?php elseif ($reservation['status'] == 'confirmed'): ?>
+                                                                    <button class="btn btn-warning btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'completed')"
+                                                                        title="Mark as Completed" aria-label="Complete">
+                                                                        <i class="fa-solid fa-flag-checkered"></i>
+                                                                    </button>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -928,51 +1009,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </thead>
                             <tbody>
                                 <?php foreach ($r_reservations as $rr): ?>
-                                    <tr>
-                                        <td><?= $rr['id'] ?></td>
-                                        <td><?= htmlspecialchars($rr['facility_name']) ?></td>
-                                        <td><?= htmlspecialchars($rr['customer_name']) ?><br><small><?= htmlspecialchars($rr['customer_email']) ?></small>
-                                        </td>
-                                        <td><?= htmlspecialchars($rr['event_date']) ?></td>
-                                        <td><?= date('g:i a', strtotime($rr['start_time'])) ?> -
-                                            <?= date('g:i a', strtotime($rr['end_time'])) ?>
-                                        </td>
-                                        <td><?= $rr['guests_count'] ?></td>
-                                        <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
-                                        <td><?= htmlspecialchars($rr['status']) ?></td>
-                                        <td>
-                                            <div class="d-flex gap-1" style="justify-content: center;">
-                                                <button type="button" class="btn btn-outline btn-sm btn-icon"
-                                                    onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                    title="View Details">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </button>
-                                                <form method="post" style="display:inline-flex; gap: 4px;">
-                                                    <input type="hidden" name="action" value="update_status">
-                                                    <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
-                                                    <?php if ($rr['status'] === 'pending'): ?>
-                                                        <button class="btn btn-success btn-icon" name="status" value="confirmed"
-                                                            title="Confirm" aria-label="Confirm">
-                                                            <i class="fa-solid fa-check"></i>
-                                                        </button>
-                                                        <button class="btn btn-danger btn-icon" name="status" value="cancelled"
-                                                            title="Cancel" aria-label="Cancel">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    <?php elseif ($rr['status'] === 'confirmed'): ?>
-                                                        <button class="btn btn-warning btn-icon" name="status" value="completed"
-                                                            title="Mark as Completed" aria-label="Complete">
-                                                            <i class="fa-solid fa-flag-checkered"></i>
-                                                        </button>
-                                                        <button class="btn btn-danger btn-icon" name="status" value="cancelled"
-                                                            title="Cancel" aria-label="Cancel">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td><?= $rr['id'] ?></td>
+                                            <td><?= htmlspecialchars($rr['facility_name']) ?></td>
+                                            <td><?= htmlspecialchars($rr['customer_name']) ?><br><small><?= htmlspecialchars($rr['customer_email']) ?></small>
+                                            </td>
+                                            <td><?= htmlspecialchars($rr['event_date']) ?></td>
+                                            <td><?= date('g:i a', strtotime($rr['start_time'])) ?> -
+                                                <?= date('g:i a', strtotime($rr['end_time'])) ?>
+                                            </td>
+                                            <td><?= $rr['guests_count'] ?></td>
+                                            <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                            <td><?= htmlspecialchars($rr['status']) ?></td>
+                                            <td>
+                                                <div class="d-flex gap-1" style="justify-content: center;">
+                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                        title="View Details">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </button>
+                                                    <form method="post" style="display:inline-flex; gap: 4px;">
+                                                        <input type="hidden" name="action" value="update_status">
+                                                        <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
+                                                        <?php if ($rr['status'] === 'pending'): ?>
+                                                                <button class="btn btn-success btn-icon" name="status" value="confirmed"
+                                                                    title="Confirm" aria-label="Confirm">
+                                                                    <i class="fa-solid fa-check"></i>
+                                                                </button>
+                                                                <button class="btn btn-danger btn-icon" name="status" value="cancelled"
+                                                                    title="Cancel" aria-label="Cancel">
+                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                </button>
+                                                        <?php elseif ($rr['status'] === 'confirmed'): ?>
+                                                                <button class="btn btn-warning btn-icon" name="status" value="completed"
+                                                                    title="Mark as Completed" aria-label="Complete">
+                                                                    <i class="fa-solid fa-flag-checkered"></i>
+                                                                </button>
+                                                                <button class="btn btn-danger btn-icon" name="status" value="cancelled"
+                                                                    title="Cancel" aria-label="Cancel">
+                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                </button>
+                                                        <?php endif; ?>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -991,30 +1072,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 return $event['event_date'] == $date && $event['status'] == 'confirmed';
                             });
                             ?>
-                            <div class="calendar-day">
-                                <div class="calendar-date"><?= $display_date ?></div>
-                                <div class="calendar-events">
-                                    <?php foreach ($day_events as $event): ?>
-                                        <div class="calendar-event">
-                                            <div class="event-time">
-                                                <?= date('g:i a', strtotime($event['start_time'])) ?> -
-                                                <?= date('g:i a', strtotime($event['end_time'])) ?>
-                                            </div>
-                                            <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?></div>
-                                            <div class="event-details">
-                                                <?= htmlspecialchars($event['customer_name']) ?> •
-                                                <?= htmlspecialchars($event['event_type']) ?> • <?= $event['guests_count'] ?>
-                                                guests
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                    <?php if (empty($day_events)): ?>
-                                        <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                            <span class="icon-img-placeholder">🚫</span> No reservations
-                                        </div>
-                                    <?php endif; ?>
+                                <div class="calendar-day">
+                                    <div class="calendar-date"><?= $display_date ?></div>
+                                    <div class="calendar-events">
+                                        <?php foreach ($day_events as $event): ?>
+                                                <div class="calendar-event">
+                                                    <div class="event-time">
+                                                        <?= date('g:i a', strtotime($event['start_time'])) ?> -
+                                                        <?= date('g:i a', strtotime($event['end_time'])) ?>
+                                                    </div>
+                                                    <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?></div>
+                                                    <div class="event-details">
+                                                        <?= htmlspecialchars($event['customer_name']) ?> •
+                                                        <?= htmlspecialchars($event['event_type']) ?> • <?= $event['guests_count'] ?>
+                                                        guests
+                                                    </div>
+                                                </div>
+                                        <?php endforeach; ?>
+                                        <?php if (empty($day_events)): ?>
+                                                <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
+                                                    <span class="icon-img-placeholder">🚫</span> No reservations
+                                                </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                            </div>
                         <?php endfor; ?>
                     </div>
                 </div>
@@ -1159,25 +1240,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         }
                                         ?>
                                         <?php foreach ($facilities_by_type as $type => $data): ?>
-                                            <div class="type-card"
-                                                style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                                                    <?= match (strtolower($type)) {
-                                                        'banquet' => '🎉',
-                                                        'meeting' => '💼',
-                                                        'conference' => '🤝',
-                                                        'outdoor' => '🌳',
-                                                        'dining' => '🍽️',
-                                                        'lounge' => '🛋️',
-                                                        default => '🏢'
-                                                    } ?>
+                                                <div class="type-card"
+                                                    style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                                                        <?= match (strtolower($type)) {
+                                                            'banquet' => '🎉',
+                                                            'meeting' => '💼',
+                                                            'conference' => '🤝',
+                                                            'outdoor' => '🌳',
+                                                            'dining' => '🍽️',
+                                                            'lounge' => '🛋️',
+                                                            default => '🏢'
+                                                        } ?>
+                                                    </div>
+                                                    <div style="font-weight: 600; color: #1e293b;"><?= $type ?></div>
+                                                    <div style="color: #64748b; font-size: 0.875rem;"><?= $data['count'] ?>
+                                                        facilities</div>
+                                                    <div style="color: #059669; font-weight: 500;">
+                                                        ₱<?= number_format($data['avg_rate'], 0) ?>/hr avg</div>
                                                 </div>
-                                                <div style="font-weight: 600; color: #1e293b;"><?= $type ?></div>
-                                                <div style="color: #64748b; font-size: 0.875rem;"><?= $data['count'] ?>
-                                                    facilities</div>
-                                                <div style="color: #059669; font-weight: 500;">
-                                                    ₱<?= number_format($data['avg_rate'], 0) ?>/hr avg</div>
-                                            </div>
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
@@ -1187,38 +1268,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <h4><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h4>
                                     <div class="activity-timeline">
                                         <?php if (empty($dashboard_data['reservations'])): ?>
-                                            <div
-                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                <span class="icon-img-placeholder">📭</span> No recent activity
-                                            </div>
-                                        <?php else: ?>
-                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
-                                                <div class="activity-item"
-                                                    style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
-                                                    <div
-                                                        style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                                                        <span class="icon-img-placeholder">📅</span>
-                                                    </div>
-                                                    <div style="flex: 1;">
-                                                        <div style="font-weight: 500; color: #1e293b;">
-                                                            <?= htmlspecialchars($reservation['customer_name']) ?>
-                                                        </div>
-                                                        <div style="color: #64748b; font-size: 0.875rem;">
-                                                            Booked <?= htmlspecialchars($reservation['facility_name']) ?> •
-                                                            <?= date('M d, Y', strtotime($reservation['event_date'])) ?> •
-                                                            <?= $reservation['guests_count'] ?> guests
-                                                        </div>
-                                                    </div>
-                                                    <div style="text-align: right;">
-                                                        <div style="font-weight: 600; color: #059669;">
-                                                            ₱<?= number_format($reservation['total_amount'], 0) ?></div>
-                                                        <span class="status-badge status-<?= $reservation['status'] ?>"
-                                                            style="font-size: 0.75rem;">
-                                                            <?= ucfirst($reservation['status']) ?>
-                                                        </span>
-                                                    </div>
+                                                <div
+                                                    style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                    <span class="icon-img-placeholder">📭</span> No recent activity
                                                 </div>
-                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                                <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
+                                                        <div class="activity-item"
+                                                            style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
+                                                            <div
+                                                                style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                                                                <span class="icon-img-placeholder">📅</span>
+                                                            </div>
+                                                            <div style="flex: 1;">
+                                                                <div style="font-weight: 500; color: #1e293b;">
+                                                                    <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                                </div>
+                                                                <div style="color: #64748b; font-size: 0.875rem;">
+                                                                    Booked <?= htmlspecialchars($reservation['facility_name']) ?> •
+                                                                    <?= date('M d, Y', strtotime($reservation['event_date'])) ?> •
+                                                                    <?= $reservation['guests_count'] ?> guests
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: right;">
+                                                                <div style="font-weight: 600; color: #059669;">
+                                                                    ₱<?= number_format($reservation['total_amount'], 0) ?></div>
+                                                                <span class="status-badge status-<?= $reservation['status'] ?>"
+                                                                    style="font-size: 0.75rem;">
+                                                                    <?= ucfirst($reservation['status']) ?>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -1280,49 +1361,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </thead>
                                         <tbody>
                                             <?php if (empty($dashboard_data['facilities'])): ?>
-                                                <tr>
-                                                    <td colspan="8"
-                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                        <div style="color: #718096; font-style: italic;">
-                                                            <i class="fa-solid fa-building-circle-exclamation"
-                                                                style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                            No facilities found in the system.
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($dashboard_data['facilities'] as $f): ?>
                                                     <tr>
-                                                        <td style="text-align: center;">#<?= $f['id'] ?></td>
-                                                        <td style="font-weight: 600;"><?= htmlspecialchars($f['name']) ?></td>
-                                                        <td><span
-                                                                class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
-                                                        </td>
-                                                        <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
-                                                        <td><?= htmlspecialchars($f['location']) ?></td>
-                                                        <td style="font-weight: 500; color: #059669;">
-                                                            ₱<?= number_format($f['hourly_rate'], 2) ?></td>
-                                                        <td style="text-align: center;">
-                                                            <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
-                                                                <?= ucfirst($f['status'] ?? 'active') ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div style="display: flex; gap: 8px; justify-content: center;">
-                                                                <button class="btn btn-outline btn-sm btn-icon"
-                                                                    onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
-                                                                    title="View Details">
-                                                                    <i class="fa-solid fa-eye"></i>
-                                                                </button>
-                                                                <button class="btn btn-outline btn-sm btn-icon"
-                                                                    onclick="alert('Edit functionality coming soon')"
-                                                                    title="Edit Facility">
-                                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                                </button>
+                                                        <td colspan="8"
+                                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                            <div style="color: #718096; font-style: italic;">
+                                                                <i class="fa-solid fa-building-circle-exclamation"
+                                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                                No facilities found in the system.
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                    <?php foreach ($dashboard_data['facilities'] as $f): ?>
+                                                            <tr>
+                                                                <td style="text-align: center;">#<?= $f['id'] ?></td>
+                                                                <td style="font-weight: 600;"><?= htmlspecialchars($f['name']) ?></td>
+                                                                <td><span
+                                                                        class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
+                                                                </td>
+                                                                <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
+                                                                <td><?= htmlspecialchars($f['location']) ?></td>
+                                                                <td style="font-weight: 500; color: #059669;">
+                                                                    ₱<?= number_format($f['hourly_rate'], 2) ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
+                                                                        <?= ucfirst($f['status'] ?? 'active') ?>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                                            onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
+                                                                            title="View Details">
+                                                                            <i class="fa-solid fa-eye"></i>
+                                                                        </button>
+                                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                                            onclick="alert('Edit functionality coming soon')"
+                                                                            title="Edit Facility">
+                                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                    <?php endforeach; ?>
                                             <?php endif; ?>
                                         </tbody>
                                     </table>
@@ -1361,48 +1442,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </thead>
                                         <tbody>
                                             <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                                <tr>
-                                                    <td colspan="7"
-                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                        No maintenance logs found.
-                                                    </td>
-                                                </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
                                                     <tr>
-                                                        <td style="font-weight: 600; text-align: left !important;">
-                                                            <?= htmlspecialchars($log['item_name']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
-                                                            title="<?= htmlspecialchars($log['description']) ?>">
-                                                            <?= htmlspecialchars($log['description']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem;">
-                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
-                                                        </td>
-                                                        <td style="font-weight: 500;">
-                                                            <?= htmlspecialchars($log['assigned_staff']) ?>
-                                                        </td>
-                                                        <td style="font-size: 0.85rem;">
-                                                            <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
-                                                        </td>
-                                                        <td>
-                                                            <span class="status-badge status-<?= $log['status'] ?>">
-                                                                <?= ucfirst($log['status']) ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex gap-1" style="justify-content: center;">
-                                                                <button class="btn btn-outline btn-sm btn-icon"
-                                                                    onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
-                                                                    title="View Details">
-                                                                    <i class="fa-solid fa-eye"></i>
-                                                                </button>
-
-                                                            </div>
+                                                        <td colspan="7"
+                                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                            No maintenance logs found.
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                            <tr>
+                                                                <td style="font-weight: 600; text-align: left !important;">
+                                                                    <?= htmlspecialchars($log['item_name']) ?>
+                                                                </td>
+                                                                <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
+                                                                    title="<?= htmlspecialchars($log['description']) ?>">
+                                                                    <?= htmlspecialchars($log['description']) ?>
+                                                                </td>
+                                                                <td style="font-size: 0.85rem;">
+                                                                    <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                                </td>
+                                                                <td style="font-weight: 500;">
+                                                                    <?= htmlspecialchars($log['assigned_staff']) ?>
+                                                                </td>
+                                                                <td style="font-size: 0.85rem;">
+                                                                    <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="status-badge status-<?= $log['status'] ?>">
+                                                                        <?= ucfirst($log['status']) ?>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="d-flex gap-1" style="justify-content: center;">
+                                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                                            onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
+                                                                            title="View Details">
+                                                                            <i class="fa-solid fa-eye"></i>
+                                                                        </button>
+
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                    <?php endforeach; ?>
                                             <?php endif; ?>
                                         </tbody>
                                     </table>
@@ -1474,11 +1555,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         onchange="updateFacilityDetails()">
                         <option value="">Choose a facility...</option>
                         <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                            <option value="<?= $facility['id'] ?>" data-rate="<?= $facility['hourly_rate'] ?>"
-                                data-capacity="<?= $facility['capacity'] ?>">
-                                <?= htmlspecialchars($facility['name']) ?> -
-                                ₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
-                            </option>
+                                <option value="<?= $facility['id'] ?>" data-rate="<?= $facility['hourly_rate'] ?>"
+                                    data-capacity="<?= $facility['capacity'] ?>">
+                                    <?= htmlspecialchars($facility['name']) ?> -
+                                    ₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                </option>
                         <?php endforeach; ?>
                     </select>
                 </div>

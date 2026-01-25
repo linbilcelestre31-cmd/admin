@@ -340,6 +340,37 @@ window.viewFacilityDetails = function (facility) {
     window.openModal('facility-details-modal');
 };
 
+window.switchFacilityView = function (view) {
+    const gridView = document.getElementById('facility-grid-view');
+    const listView = document.getElementById('facility-list-view');
+    const gridBtn = document.getElementById('btn-grid-view');
+    const listBtn = document.getElementById('btn-list-view');
+
+    if (!gridView || !listView || !gridBtn || !listBtn) return;
+
+    if (view === 'grid') {
+        gridView.style.display = 'block';
+        listView.style.display = 'none';
+        gridBtn.classList.add('active');
+        gridBtn.style.background = 'white';
+        gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        listBtn.classList.remove('active');
+        listBtn.style.background = 'transparent';
+        listBtn.style.boxShadow = 'none';
+    } else {
+        gridView.style.display = 'none';
+        listView.style.display = 'block';
+        listBtn.classList.add('active');
+        listBtn.style.background = 'white';
+        listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        gridBtn.classList.remove('active');
+        gridBtn.style.background = 'transparent';
+        gridBtn.style.boxShadow = 'none';
+    }
+};
+
 // --- MAINTENANCE ACTIONS ---
 window.viewMaintenanceDetails = function (log) {
     console.log('viewMaintenanceDetails called with:', log);
