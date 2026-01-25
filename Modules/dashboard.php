@@ -1175,7 +1175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
                             <div class="management-header">
                                 <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
-                                <div class="management-buttons">
+                                <div class="management-buttons" style="margin-left: auto;">
                                     <button id="show-maintenance-card" class="btn btn-outline management-btn active"
                                         onclick="event.preventDefault(); window.showManagementCard('maintenance')">
                                         <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
@@ -1195,14 +1195,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <!-- Maintenance & Status Card -->
                             <div class="card management-card management-maintenance" style="display: block;">
-                                <div class="card-header">
+                                <div class="card-header d-flex justify-between align-center">
                                     <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
-                                </div>
-                                <div class="card-content">
-                                    <div class="d-flex justify-between align-center mb-1">
-                                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-outline btn-sm" onclick="exportMaintenanceReport()">
+                                            <i class="fas fa-file-export"></i> Export Report
+                                        </button>
+                                        <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')">
                                             <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
                                         </button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="d-flex justify-end align-center mb-1">
                                         <div
                                             style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
                                             <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
@@ -1283,7 +1288,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                                 </span>
                                                             </td>
                                                             <td style="font-weight: 500; color: #64748b;">
-                                                                <?= htmlspecialchars($log['duration'] ?? '1 hour') ?></td>
+                                                                <?= htmlspecialchars($log['duration'] ?? '1 hour') ?>
+                                                            </td>
                                                             <td>
                                                                 <div class="d-flex gap-1" style="justify-content: center;">
                                                                     <button class="btn btn-icon btn-sm"
