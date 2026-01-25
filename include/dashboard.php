@@ -203,35 +203,40 @@
             </div>
         </div>
 
-        <!-- Recent Activity -->
+        <!-- Recent Activity (Employee Activity from HR4) -->
         <div
             style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Recent Activity</h3>
-                <a href="dashboard.php?tab=management"
+                <a href="#" onclick="openRecentActivitiesModal(event)"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View All <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <?php if (empty($recent_reservations_dash)): ?>
+                <?php if (empty($employees_data) || !is_array($employees_data)): ?>
                     <div
                         style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0;">
-                        <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No recent activity.</p>
+                        <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No recent employee activity.</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($recent_reservations_dash as $res): ?>
+                    <?php
+                    $recent_emps = array_slice($employees_data, 0, 4);
+                    foreach ($recent_emps as $emp):
+                        $gender = strtolower($emp['gender'] ?? 'male');
+                        $icon = ($gender === 'female' || $gender === 'f') ? '../assets/image/Women.png' : '../assets/image/Men.png';
+                        ?>
                         <div
                             style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #fdfdfd; border-radius: 10px; border: 1px solid #f8fafc;">
                             <div
-                                style="width: 35px; height: 35px; background: #ebf4ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3182ce;">
-                                <i class="fa-solid fa-calendar-check" style="font-size: 0.9rem;"></i>
+                                style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                                <img src="<?= $icon ?>" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div
                                     style="font-weight: 600; color: #1e293b; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    <?= htmlspecialchars($res['customer_name']) ?></div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;"><?= htmlspecialchars($res['facility_name']) ?>
-                                </div>
+                                    <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?></div>
+                                <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500;">
+                                    <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?></div>
                             </div>
                         </div>
                     <?php endforeach; ?>
