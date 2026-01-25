@@ -583,16 +583,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="icon-img-placeholder">🚪</span> Logout
                     </button>
 
-                    <?php
-                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
-                        ?>
-                        <a href="../Super-admin/Dashboard.php" class="btn btn-outline"
-                            style="text-decoration: none; display: flex; align-items: center; gap: 8px; border-color: #d4af37; color: #d4af37; font-weight: 600;">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
-                        <?php
-                    }
-                    ?>
                 </div>
             </header>
 
@@ -738,30 +728,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- System Users List Table (List View) -->
+                    <!-- Facilities Management (List of Reservations) -->
                     <div id="facility-list-view" style="display: none;">
                         <div class="d-flex justify-between align-center mb-2">
-                            <h3><span class="icon-img-placeholder">👥</span> System Users Overview</h3>
+                            <h3><span class="icon-img-placeholder">📊</span> Facilities Management</h3>
                         </div>
                         <div class="table-container">
                             <table class="table">
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">ID</th>
-                                        <th style="text-align: left;">Email</th>
-                                        <th>Position</th>
-                                        <th>Department</th>
+                                        <th style="text-align: left;">Facility</th>
+                                        <th style="text-align: left;">Customer</th>
+                                        <th style="text-align: center;">Event Type</th>
+                                        <th style="text-align: center;">Date & Time</th>
+                                        <th style="text-align: center;">Total Amount</th>
+                                        <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="facilitiesEmployeesTableBody">
-                                    <!-- Loaded via JS -->
-                                    <tr>
-                                        <td colspan="5" style="text-align: center; padding: 2rem;">
-                                            <div class="loading-spinner"></div>
-                                            Loading user data...
-                                        </td>
-                                    </tr>
+                                <tbody>
+                                    <?php if (empty($dashboard_data['reservations'])): ?>
+                                        <tr>
+                                            <td colspan="8"
+                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                No reservations found.
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($dashboard_data['reservations'] as $res): ?>
+                                            <tr>
+                                                <td style="text-align: center;">#<?= $res['id'] ?></td>
+                                                <td style="text-align: left;"><?= htmlspecialchars($res['facility_name']) ?>
+                                                </td>
+                                                <td style="text-align: left;">
+                                                    <strong><?= htmlspecialchars($res['customer_name']) ?></strong><br>
+                                                    <small
+                                                        style="color: #718096;"><?= htmlspecialchars($res['customer_email']) ?></small>
+                                                </td>
+                                                <td style="text-align: center;"><?= htmlspecialchars($res['event_type']) ?></td>
+                                                <td style="text-align: center;">
+                                                    <?= date('m/d/Y', strtotime($res['event_date'])) ?><br>
+                                                    <small
+                                                        style="color: #718096;"><?= date('g:i a', strtotime($res['start_time'])) ?></small>
+                                                </td>
+                                                <td style="text-align: center; font-weight: 600;">
+                                                    ₱<?= number_format($res['total_amount'], 2) ?></td>
+                                                <td style="text-align: center;">
+                                                    <span
+                                                        class="status-badge status-<?= $res['status'] ?>"><?= ucfirst($res['status']) ?></span>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <button class="btn btn-outline btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($res)) ?>)">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -1049,7 +1074,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="management-buttons">
                             <button id="show-hotel-facilities-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
-                                <span class="icon-img-placeholder">🏨</span> Hotel Facilities
+                                <span class="icon-img-placeholder">🕐</span> Recent Activity
                             </button>
                             <button id="show-maintenance-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('maintenance')">
@@ -1063,147 +1088,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="management-cards">
-                        <!-- Hotel Facilities Dashboard Card -->
+                        <!-- Recent Facility Activity Card -->
                         <div class="card management-card management-hotel-facilities" style="display: none;">
                             <div class="card-header">
-                                <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
-                                <div class="d-flex gap-1 align-center">
-                                    <div class="dropdown" style="position: relative;">
-                                        <button class="btn btn-outline btn-sm dropdown-toggle"
-                                            onclick="toggleDropdown('facilities-dropdown')" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            <span class="icon-img-placeholder">⚡</span> Quick Actions
-                                            <i class="fa-solid fa-chevron-down"
-                                                style="margin-left: 5px; font-size: 12px;"></i>
-                                        </button>
-                                        <div id="facilities-dropdown" class="dropdown-menu"
-                                            style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px; z-index: 1000; margin-top: 5px;">
-                                            <a href="#" class="dropdown-item"
-                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                onclick="window.showManagementCard('reports'); closeDropdown('facilities-dropdown'); return false;">
-                                                <span class="icon-img-placeholder">📋</span> View Reservations
-                                            </a>
-                                            <a href="#" class="dropdown-item"
-                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                onclick="window.showManagementCard('maintenance'); closeDropdown('facilities-dropdown'); return false;">
-                                                <span class="icon-img-placeholder">🔧</span> View Maintenance
-                                            </a>
-                                            <a href="#" class="dropdown-item"
-                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                onclick="window.location.href='#reservations'; closeDropdown('facilities-dropdown'); return false;">
-                                                <span class="icon-img-placeholder">📅</span> All Reservations
-                                            </a>
-                                            <div style="border-top: 1px solid #e2e8f0; margin: 5px 0;"></div>
-                                            <a href="#" class="dropdown-item"
-                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                onclick="exportFacilitiesReport(); closeDropdown('facilities-dropdown'); return false;">
-                                                <span class="icon-img-placeholder">📥</span> Export Report
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
-                                        <span class="icon-img-placeholder">➕</span> Add Facility
-                                    </button>
-                                    <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
-                                        <span class="icon-img-placeholder">📥</span> Export
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <!-- Facilities Overview Stats -->
-                                <div class="facilities-overview-grid"
-                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                                    <div class="stat-card"
-                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                        <div class="stat-icon">
-                                            <span class="icon-img-placeholder" style="font-size: 2rem;">🏢</span>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 style="margin: 0; font-size: 1.5rem;">
-                                                <?= $dashboard_data['total_facilities'] ?>
-                                            </h3>
-                                            <p style="margin: 0; opacity: 0.9;">Total Facilities</p>
-                                        </div>
-                                    </div>
-                                    <div class="stat-card"
-                                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                        <div class="stat-icon">
-                                            <span class="icon-img-placeholder" style="font-size: 2rem;">✅</span>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 style="margin: 0; font-size: 1.5rem;">
-                                                <?= count(array_filter($dashboard_data['facilities'], fn($f) => ($f['status'] ?? 'active') === 'active')) ?>
-                                            </h3>
-                                            <p style="margin: 0; opacity: 0.9;">Active Facilities</p>
-                                        </div>
-                                    </div>
-                                    <div class="stat-card"
-                                        style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                        <div class="stat-icon">
-                                            <span class="icon-img-placeholder" style="font-size: 2rem;">📅</span>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 style="margin: 0; font-size: 1.5rem;">
-                                                <?= $dashboard_data['today_reservations'] ?>
-                                            </h3>
-                                            <p style="margin: 0; opacity: 0.9;">Today's reservation</p>
-                                        </div>
-                                    </div>
-                                    <div class="stat-card"
-                                        style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                        <div class="stat-icon">
-                                            <span class="icon-img-placeholder" style="font-size: 2rem;">💰</span>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 style="margin: 0; font-size: 1.5rem;">
-                                                ₱<?= number_format($dashboard_data['monthly_revenue'], 0) ?></h3>
-                                            <p style="margin: 0; opacity: 0.9;">Monthly Revenue</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Facilities by Type -->
-                                <div class="facilities-by-type" style="margin-bottom: 2rem;">
-                                    <h4><span class="icon-img-placeholder">📊</span> Facilities by Type</h4>
-                                    <div class="type-grid"
-                                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                                        <?php
-                                        $facilities_by_type = [];
-                                        foreach ($dashboard_data['facilities'] as $facility) {
-                                            $type = ucfirst($facility['type']);
-                                            if (!isset($facilities_by_type[$type])) {
-                                                $facilities_by_type[$type] = ['count' => 0, 'avg_rate' => 0, 'total_rate' => 0];
-                                            }
-                                            $facilities_by_type[$type]['count']++;
-                                            $facilities_by_type[$type]['total_rate'] += $facility['hourly_rate'];
-                                        }
-                                        foreach ($facilities_by_type as $type => $data) {
-                                            $facilities_by_type[$type]['avg_rate'] = $data['total_rate'] / $data['count'];
-                                        }
-                                        ?>
-                                        <?php foreach ($facilities_by_type as $type => $data): ?>
-                                            <div class="type-card"
-                                                style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                                                    <?= match (strtolower($type)) {
-                                                        'banquet' => '🎉',
-                                                        'meeting' => '💼',
-                                                        'conference' => '🤝',
-                                                        'outdoor' => '🌳',
-                                                        'dining' => '🍽️',
-                                                        'lounge' => '🛋️',
-                                                        default => '🏢'
-                                                    } ?>
-                                                </div>
-                                                <div style="font-weight: 600; color: #1e293b;"><?= $type ?></div>
-                                                <div style="color: #64748b; font-size: 0.875rem;"><?= $data['count'] ?>
-                                                    facilities</div>
-                                                <div style="color: #059669; font-weight: 500;">
-                                                    ₱<?= number_format($data['avg_rate'], 0) ?>/hr avg</div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
+                                <h3><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h3>
+                                <!-- Pinatanggal ang stats cards at Type grid, Recent Activity lang ang natira -->
 
                                 <!-- Recent Activity -->
                                 <div class="recent-facility-activity">
