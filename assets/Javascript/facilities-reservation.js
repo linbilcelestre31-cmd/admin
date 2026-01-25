@@ -268,7 +268,7 @@ window.showManagementCard = function (type) {
 
     // Update active button styling
     const btns = {
-        'facilities': document.getElementById('show-facilities-card'),
+        'hotel-facilities': document.getElementById('show-hotel-facilities-card'),
         'maintenance': document.getElementById('show-maintenance-card'),
         'reports': document.getElementById('show-reports-card')
     };
@@ -299,12 +299,17 @@ window.viewFacilityDetails = function (facility) {
 
     body.innerHTML = `
         <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-            <div style="text-align: center; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <i class="fa-solid fa-building" style="font-size: 3rem; color: #3b82f6; margin-bottom: 10px;"></i>
-                <h2 style="margin: 0; color: #1e293b;">${facility.name}</h2>
-                <span class="status-badge status-${facility.status}" style="display: inline-block; margin-top: 10px;">
-                    ${facility.status.toUpperCase()}
-                </span>
+            <div style="text-align: center; background: #f8fafc; padding: 0; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+                ${facility.image_url ?
+            `<img src="${facility.image_url}" alt="${facility.name}" style="width: 100%; height: 200px; object-fit: cover;">` :
+            `<div style="padding: 30px;"><i class="fa-solid fa-building" style="font-size: 3rem; color: #3b82f6; margin-bottom: 10px;"></i></div>`
+        }
+                <div style="padding: 15px; border-top: 1px solid #e2e8f0; background: white;">
+                    <h2 style="margin: 0; color: #1e293b;">${facility.name}</h2>
+                    <span class="status-badge status-${facility.status || 'active'}" style="display: inline-block; margin-top: 10px; font-weight: 700;">
+                        ${(facility.status || 'ACTIVE').toUpperCase()}
+                    </span>
+                </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
