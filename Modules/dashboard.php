@@ -989,10 +989,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
                                 <i class="fa-solid fa-chart-line"></i> facility card
                             </button>
-                            <button id="show-employees-card" class="btn btn-outline management-btn"
-                                onclick="event.preventDefault(); window.showManagementCard('employees')">
-                                <i class="fa-solid fa-users"></i> Employees Card
-                            </button>
                         </div>
                     </div>
 
