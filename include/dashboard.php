@@ -9,33 +9,16 @@
     // Fetch metrics
     try {
         $db = get_pdo(); // Shared PDO
-    
-        // 1. New Bookings (Total Reservations)
-        $new_bookings = $db->query("SELECT COUNT(*) FROM reservations")->fetchColumn() ?? 0;
-
         // 2. Available Rooms (Facilities)
-        // Simple logic: Total Facilities. In a real app, check availability for *now*.
         $available_rooms = $db->query("SELECT COUNT(*) FROM facilities WHERE status = 'active'")->fetchColumn() ?? 0;
 
-        // 3. Check In (Today's Reservations)
-        $check_in = $db->query("SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE()")->fetchColumn() ?? 0;
+        // 3. Today's Visitors (Local DB only for count)
+        $today_visitors = $db->query("SELECT COUNT(*) FROM direct_checkins WHERE DATE(checkin_date) = CURDATE()")->fetchColumn() ?? 0;
 
-        // 4. Check Out (Estimating completed or ending today)
-        $check_out = $db->query("SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE() AND status = 'completed'")->fetchColumn() ?? 0;
+        // 4. Archived Documents
+        $total_documents = $db->query("SELECT COUNT(*) FROM documents")->fetchColumn() ?? 0;
 
-        // 5. Revenue
-        $revenue = $db->query("SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed'")->fetchColumn() ?? 0;
-
-        // 6. Recent Activities
-        $recent_activities = $db->query("
-            SELECT r.*, f.name as facility_name 
-            FROM reservations r 
-            JOIN facilities f ON r.facility_id = f.id 
-            ORDER BY r.created_at DESC 
-            LIMIT 4
-         ")->fetchAll(PDO::FETCH_ASSOC);
-
-        // 7. Employee Count from HR4 API
+        // 5. Employee Count from HR4 API
         require_once __DIR__ . '/../integ/hr4_api.php';
         $employees_data = fetchAllEmployees();
         $employee_count = (is_array($employees_data) && isset($employees_data)) ? count($employees_data) : 0;
@@ -63,7 +46,7 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <div
                     style="width: 45px; height: 45px; background: #fff7ed; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #f97316;">
-                    <i class="fa-solid fa-door-open" style="font-size: 1.2rem;"></i>
+                    <i class="fa-solid fa-hotel" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
             <div>
@@ -79,17 +62,17 @@
             </div>
         </div>
 
-        <!-- Check In Card -->
+        <!-- Visitors Today Card -->
         <div
             style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <div
                     style="width: 45px; height: 45px; background: #f0fdf4; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #22c55e;">
-                    <i class="fa-solid fa-arrow-right-to-bracket" style="font-size: 1.2rem;"></i>
+                    <i class="fa-solid fa-id-card-clip" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $check_in ?></h3>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $today_visitors ?></h3>
                 <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Check In (Today)</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
@@ -101,18 +84,18 @@
             </div>
         </div>
 
-        <!-- Check Out Card -->
+        <!-- Documents Card -->
         <div
             style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <div
                     style="width: 45px; height: 45px; background: #fef2f2; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ef4444;">
-                    <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 1.2rem;"></i>
+                    <i class="fa-solid fa-vault" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $check_out ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Check Out (Today)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $total_documents ?></h3>
+                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Total Archived Documents</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
                 <div style="width: 15%; background: #ef4444; height: 40%; border-radius: 2px;"></div>

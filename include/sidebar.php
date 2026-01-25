@@ -66,6 +66,20 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="reservations">
                     <i class="fa-solid fa-calendar-check"></i> Reservations
                 </a></li>
+            <li><a href="../Modules/document management(archiving).php"
+                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <i class="fa-solid fa-vault"></i> Document Archiving
+                </a></li>
+            <li><a href="../Modules/Visitor-logs.php"
+                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
+                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
+                </a></li>
+            <li><a href="../Modules/legalmanagement.php"
+                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
+                </a></li>
             <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
                     data-tab="calendar">
@@ -76,22 +90,6 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="management">
                     <i class="fa-solid fa-gears"></i> Management
                 </a></li>
-            <li><a href="../Modules/legalmanagement.php"
-                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
-                    style="white-space: nowrap;">
-                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
-                </a></li>
-            <li><a href="../Modules/document management(archiving).php"
-                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
-                    style="white-space: nowrap;">
-                    <i class="fa-solid fa-vault"></i> Document Archiving
-                </a></li>
-            <li><a href="../Modules/Visitor-logs.php"
-                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
-                </a></li>
-
-
         </ul>
     </div>
 
