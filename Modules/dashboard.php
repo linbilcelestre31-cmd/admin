@@ -977,18 +977,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="management-header">
                         <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
                         <div class="management-buttons">
-                            <button id="show-hotel-facilities-card" class="btn btn-outline management-btn active"
-                                onclick="event.preventDefault(); >
+                            <button id="show-hotel-facilities-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
                                 <span class="icon-img-placeholder">🏨</span> Hotel Facilities
-                                <span class="badge" style="background: #dc2626; color: white; margin-left: 0.5rem; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem;">Juan Dela Cruz</span>
                             </button>
                             <button id="show-maintenance-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('maintenance')">
                                 <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance & System
                             </button>
-                            <button id="show-reports-card" class="btn btn-outline management-btn"
+                            <button id="show-reports-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
-                                <i class="fa-solid fa-chart-line"></i> Reports Card
+                                <i class="fa-solid fa-chart-line"></i> facility card
                             </button>
                             <button id="show-employees-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('employees')">
@@ -999,7 +998,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="management-cards">
                         <!-- Hotel Facilities Dashboard Card -->
-                        <div class="card management-card management-hotel-facilities" style="display: block;">
+                        <div class="card management-card management-hotel-facilities" style="display: none;">
                             <div class="card-header">
                                 <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
                                 <div class="d-flex gap-1">
@@ -1095,32 +1094,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="recent-facility-activity">
                                     <h4><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h4>
                                     <div class="activity-timeline">
-                                        <!-- Juan Dela Cruz Special Case -->
-                                        <div class="activity-item" style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9; background: #fef3c7; border-left: 4px solid #f59e0b;">
-                                            <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                                                <span class="icon-img-placeholder" style="color: white;">⚠️</span>
-                                            </div>
-                                            <div style="flex: 1;">
-                                                <div style="font-weight: 600; color: #92400e;">Juan Dela Cruz</div>
-                                                <div style="color: #78350f; font-size: 0.875rem;">
-                                                    May reservation ngunit walang booking • 
-                                                    <span style="font-weight: 500;">Kailangan ng kumpirmasyon</span>
-                                                </div>
-                                            </div>
-                                            <div style="text-align: right;">
-                                                <div style="font-weight: 600; color: #dc2626;">HINDI AKTIBO</div>
-                                                <span class="status-badge status-pending" style="font-size: 0.75rem; background: #fef3c7; color: #92400e; border: 1px solid #f59e0b;">
-                                                    Nakaantala
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
                                         <?php if (empty($dashboard_data['reservations'])): ?>
                                             <div style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
                                                 <span class="icon-img-placeholder">📭</span> No recent activity
                                             </div>
                                         <?php else: ?>
-                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 4) as $reservation): ?>
+                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
                                                 <div class="activity-item" style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
                                                     <div style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
                                                         <span class="icon-img-placeholder">📅</span>
@@ -1162,6 +1141,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <span class="icon-img-placeholder">📋</span> All Reservations
                                         </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports Card -->
+                        <div class="card management-card management-reports" style="display: block;">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">📊</span> Facilities Table</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Add Facility
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
+                                        <span class="icon-img-placeholder">📥</span> Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Facility Name</th>
+                                                <th>Type</th>
+                                                <th>Capacity</th>
+                                                <th>Location</th>
+                                                <th>Hourly Rate</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['facilities'])): ?>
+                                                <tr>
+                                                    <td colspan="8" style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        <div style="color: #718096; font-style: italic;">
+                                                            <i class="fa-regular fa-building" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                            No facilities found in the database.
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                                                    <tr>
+                                                        <td style="text-align: center;"><?= $facility['id'] ?></td>
+                                                        <td style="font-weight: 600;"><?= htmlspecialchars($facility['name']) ?></td>
+                                                        <td>
+                                                            <span class="badge" style="background: #3b82f6; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
+                                                                <?= ucfirst(htmlspecialchars($facility['type'])) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td style="text-align: center;"><?= htmlspecialchars($facility['capacity']) ?></td>
+                                                        <td><?= htmlspecialchars($facility['location']) ?></td>
+                                                        <td style="font-weight: 500; color: #059669;">₱<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
+                                                                <?= ucfirst($facility['status'] ?? 'Active') ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                                                <button class="btn btn-outline btn-sm btn-icon" onclick="viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)" title="View Details">
+                                                                    <i class="fa-solid fa-eye"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline btn-sm btn-icon" onclick="editFacility(<?= $facility['id'] ?>)" title="Edit Facility">
+                                                                    <i class="fa-solid fa-edit"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
