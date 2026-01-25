@@ -1171,20 +1171,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Management Tab -->
-                <div id="management"
-                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
+                <!-- Maintenance Tab (Formerly Management) -->
+                <div id="maintenance"
+                    class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
                     <div class="management-header">
-                        <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
+                        <h2><span class="icon-img-placeholder">⚙️</span> Maintenance Management</h2>
                         <div class="management-buttons" style="margin-left: auto;">
                             <button id="show-maintenance-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                                <i class="fa-solid fa-list-check"></i> Maintenance Logs
                             </button>
 
                             <button id="show-mnt-calendar" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
-                                <i class="fa-solid fa-calendar-days"></i> Maintenance Schedule
+                                <i class="fa-solid fa-calendar-days"></i> Schedule
                             </button>
                         </div>
                     </div>
@@ -1764,11 +1764,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         // Final insurance to ensure Management functions are ready
+        // Final insurance to ensure Management functions are ready
         document.addEventListener('DOMContentLoaded', function () {
-            if (sessionStorage.getItem('activeTab') === 'management') {
+            if (sessionStorage.getItem('activeTab') === 'maintenance' || sessionStorage.getItem('activeTab') === 'management') {
                 setTimeout(function () {
                     if (typeof window.showManagementCard === 'function') {
-                        window.showManagementCard('maintenance');
+                        // Default to maintenance card
+                        const currentCard = document.querySelector('.management-card[style*="block"]') ? null : 'maintenance';
+                        if (currentCard) window.showManagementCard(currentCard);
                     }
                 }, 100);
             }

@@ -85,10 +85,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="calendar">
                     <i class="fa-solid fa-calendar-days"></i> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
-                    data-tab="management">
-                    <i class="fa-solid fa-gears"></i> Management
+            <li><a href="<?= get_nav_link('maintenance', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'maintenance' || $_GET['tab'] == 'management')) ? 'active' : '' ?>"
+                    data-tab="maintenance">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
                 </a></li>
         </ul>
     </div>
