@@ -1190,7 +1190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                     <!-- Maintenance & Status Card -->
-                    <div class="card management-card management-maintenance premium-dark-card active-card">
+                    <div class="card management-card management-maintenance active-card" style="margin-top: -20px;">
                         <div class="card-header d-flex justify-between align-center">
                             <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
                             <div class="d-flex gap-1">
@@ -1237,8 +1237,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </tr>
                                         <?php else: ?>
                                             <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                <tr style="background: rgba(255, 255, 255, 0.02);">
-                                                    <td>
+                                                <tr style="border-bottom: 1px solid #edf2f7;">
+                                                    <td style="font-size: 12px; padding: 12px 15px;">
                                                         <div
                                                             style="display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
                                                             <?php
@@ -1251,36 +1251,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <span
                                                                 style="width: 10px; height: 10px; border-radius: 50%; background: <?= $p_color ?>; box-shadow: 0 0 5px <?= $p_color ?>;"></span>
                                                             <span
-                                                                style="font-weight: 700; text-transform: uppercase; font-size: 0.8rem; color: #fff;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
+                                                                style="font-weight: 700; text-transform: uppercase; font-size: 0.7rem; color: <?= $p_color ?>;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
                                                         </div>
                                                     </td>
-                                                    <td style="font-weight: 600; text-align: left !important; color: #fff;">
+                                                    <td
+                                                        style="font-weight: 600; text-align: left !important; color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                         <?= htmlspecialchars($log['item_name']) ?>
                                                     </td>
-                                                    <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important; color: #cbd5e0;"
+                                                    <td style="font-size: 12px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important; color: #475569; padding: 12px 15px;"
                                                         title="<?= htmlspecialchars($log['description']) ?>">
                                                         <?= htmlspecialchars($log['description']) ?>
                                                     </td>
-                                                    <td style="font-weight: 500; color: #e2e8f0;">
+                                                    <td
+                                                        style="font-weight: 500; color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                         <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
                                                     </td>
-                                                    <td style="color: #e2e8f0;">
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                         <?= date('m/d/Y', strtotime($log['created_at'])) ?>
                                                     </td>
-                                                    <td style="font-size: 0.85rem; color: #e2e8f0;">
+                                                    <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
                                                         <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
                                                     </td>
-                                                    <td style="font-weight: 500; color: #e2e8f0;">
+                                                    <td
+                                                        style="font-weight: 500; color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                         <?= htmlspecialchars($log['assigned_staff']) ?>
                                                     </td>
-                                                    <td><span
-                                                            style="background: #334155; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #f8fafc;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
+                                                    <td style="padding: 12px 15px;"><span
+                                                            style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #475569;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
                                                     </td>
-                                                    <td style="font-size: 0.85rem; color: #e2e8f0;">
+                                                    <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
                                                         <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
                                                     </td>
 
-                                                    <td>
+                                                    <td style="padding: 12px 15px;">
                                                         <div class="d-flex gap-1" style="justify-content: center;">
                                                             <button class="btn btn-icon btn-sm"
                                                                 style="background: #3182ce; color: white;"
