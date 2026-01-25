@@ -1020,70 +1020,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
                     ?>
 
-                    <!-- Module Selection Cards -->
-                    <div class="module-selection"
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                        <a href="?tab=facilities" class="module-card">
-                            <i class="fa-solid fa-hotel"></i>
-                            <span>Facilities</span>
-                        </a>
-                        <a href="?tab=reservations" class="module-card">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span>Reservations</span>
-                        </a>
-                        <a href="document management(archiving).php" class="module-card">
-                            <i class="fa-solid fa-vault"></i>
-                            <span>Document Archiving</span>
-                        </a>
-                        <a href="Visitor-logs.php" class="module-card">
-                            <i class="fa-solid fa-id-card-clip"></i>
-                            <span>Visitor Management</span>
-                        </a>
-                        <a href="legalmanagement.php" class="module-card">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                            <span>Legal Management</span>
-                        </a>
-                    </div>
 
-                    <style>
-                        .module-card {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            background: white;
-                            padding: 20px;
-                            border-radius: 12px;
-                            text-decoration: none;
-                            color: #1e293b;
-                            border: 1px solid #e2e8f0;
-                            transition: all 0.3s ease;
-                            gap: 10px;
-                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                        }
-
-                        .module-card:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                            border-color: #d4af37;
-                        }
-
-                        .module-card:hover span {
-                            color: #d4af37;
-                        }
-
-                        .module-card i {
-                            font-size: 2rem;
-                            color: #d4af37;
-                            transition: all 0.3s ease;
-                        }
-
-                        .module-card span {
-                            font-weight: 600;
-                            font-size: 0.9rem;
-                            transition: all 0.3s ease;
-                        }
-                    </style>
 
                     <form method="get" class="filters">
                         From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
@@ -1097,6 +1034,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </option>
                             <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
                             </option>
+                        </select>
+                        Modules: <select name="module">
+                            <option value="reservations" selected>Reservations</option>
+                            <option value="facilities">Facilities</option>
+                            <option value="archiving">Document Archiving</option>
+                            <option value="visitors">Visitor Management</option>
+                            <option value="legal">Legal Management</option>
                         </select>
                         <button class="btn">Filter</button>
                     </form>
