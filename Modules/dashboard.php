@@ -1342,33 +1342,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- Reports Card -->
-                        <div class="card management-card management-reports" data-open-tab="reports">
-                            <div class="card-header">
-                                <h3><span class="icon-img-placeholder">📊</span> Quick Reports</h3>
-                            </div>
-                            <div class="card-content">
-                                <div class="stats-row">
-                                    <div class="stat-item">
-                                        <label>Revenue This Month</label>
-                                        <div class="stat-value">
-                                            ₱<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
-                                    </div>
-                                    <div class="stat-item">
-                                        <label>Pending Approvals</label>
-                                        <div class="stat-value"><?= $dashboard_data['pending_approvals'] ?></div>
-                                    </div>
-                                </div>
-                                <div class="report-actions">
-                                    <button class="btn btn-outline mt-2" onclick="generateReport()">
-                                        <span class="icon-img-placeholder">📄</span> Generate Full Report
-                                    </button>
-                                    <button class="btn btn-outline mt-2" onclick="exportData()">
-                                        <span class="icon-img-placeholder">📥</span> Export Data
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
