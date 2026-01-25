@@ -199,6 +199,13 @@ window.viewReservationDetails = function (data) {
             <span style="font-weight: 700; color: ${colors[res.status] || '#2d3748'};">Status: ${res.status.toUpperCase()}</span>
             <span style="font-size: 0.85rem; color: #64748b;">ID: #${res.id}</span>
         </div>
+
+        ${res.image_url ? `
+        <div style="width: 100%; height: 150px; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <img src="${res.image_url}" alt="${res.facility_name}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        ` : ''}
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
             <div>
                 <h4 style="margin-bottom: 8px; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Customer Info</h4>
@@ -213,9 +220,19 @@ window.viewReservationDetails = function (data) {
                 <p style="margin: 4px 0;"><i class="fa-solid fa-users" style="width: 20px; color: #64748b;"></i> ${res.guests_count} guests</p>
             </div>
         </div>
+        
         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7;">
+                    <h4 style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Time In</h4>
+                    <p style="margin: 0; font-weight: 600; color: #1e293b;">${res.start_time}</p>
+                </div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7;">
+                    <h4 style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Time Out</h4>
+                    <p style="margin: 0; font-weight: 600; color: #1e293b;">${res.end_time}</p>
+                </div>
+            </div>
             <p style="margin: 4px 0;"><i class="fa-solid fa-calendar-days" style="width: 20px; color: #64748b;"></i> <strong>Date:</strong> ${res.event_date}</p>
-            <p style="margin: 4px 0;"><i class="fa-solid fa-clock" style="width: 20px; color: #64748b;"></i> <strong>Time:</strong> ${res.start_time} - ${res.end_time}</p>
             <p style="font-size: 1.25rem; color: #059669; margin-top: 12px; font-weight: 700;">Php${parseFloat(res.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
         </div>
         <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid #3b82f6;">
@@ -242,7 +259,7 @@ window.showManagementCard = function (type) {
     });
 
     // Show selected card
-    const targetSelector = `.management-card.management-${type}`;
+    const targetSelector = `.management - card.management - ${type} `;
     const sel = document.querySelector(targetSelector);
 
     if (sel) {
@@ -258,7 +275,7 @@ window.showManagementCard = function (type) {
         console.error('CRITICAL ERROR: Management card not found for type:', type);
         console.log('Available cards:', Array.from(allCards).map(c => c.className));
         // Fallback: try finding by data attribute if exists
-        const fallback = document.querySelector(`[data-card-type="${type}"]`);
+        const fallback = document.querySelector(`[data - card - type= "${type}"]`);
         if (fallback) {
             console.log('Found fallback card with data attribute');
             fallback.style.setProperty('display', 'block', 'important');
@@ -286,7 +303,7 @@ window.showManagementCard = function (type) {
                 btn.style.color = '';
             }
         } else {
-            console.warn(`Button not found for: ${key}`);
+            console.warn(`Button not found for: ${key} `);
         }
     });
 };
@@ -298,7 +315,7 @@ window.viewFacilityDetails = function (facility) {
     if (!body || !facility) return;
 
     body.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+        < div style = "display: grid; grid-template-columns: 1fr; gap: 20px;" >
             <div style="text-align: center; background: #f8fafc; padding: 0; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
                 ${facility.image_url ?
             `<img src="${facility.image_url}" alt="${facility.name}" style="width: 100%; height: 200px; object-fit: cover;">` :
@@ -340,8 +357,8 @@ window.viewFacilityDetails = function (facility) {
                 <h4 style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 5px;">Amenities</h4>
                 <p style="margin: 0; color: #15803d; font-size: 0.9rem;">${facility.amenities || 'Standard hotel amenities included.'}</p>
             </div>
-        </div>
-    `;
+        </div >
+        `;
     window.openModal('facility-details-modal');
 };
 
@@ -387,10 +404,10 @@ window.viewMaintenanceDetails = function (log) {
     const bgs = { 'pending': '#fefcbf', 'in-progress': '#c6f6d5', 'completed': '#bee3f8' };
 
     body.innerHTML = `
-        <div style="background: ${bgs[log.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);">
+        < div style = "background: ${bgs[log.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);" >
             <span style="font-weight: 700; color: ${colors[log.status] || '#2d3748'}; text-transform: uppercase;">Status: ${log.status}</span>
             <span style="font-size: 0.85rem; color: #64748b;">Log ID: #${log.id}</span>
-        </div>
+        </div >
         <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
             <div>
                 <h4 style="margin-bottom: 5px; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Maintenance Item</h4>

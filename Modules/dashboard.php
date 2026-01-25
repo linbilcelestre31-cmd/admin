@@ -244,7 +244,7 @@ class ReservationSystem
 
             // Fetch only recent reservations (last 10 instead of 50) for faster loading
             $data['reservations'] = $pdo->query("
-                SELECT r.*, f.name as facility_name, f.capacity as facility_capacity 
+                SELECT r.*, f.name as facility_name, f.capacity as facility_capacity, f.image_url 
                 FROM reservations r 
                 JOIN facilities f ON r.facility_id = f.id 
                 ORDER BY r.event_date DESC, r.start_time DESC 
@@ -1102,7 +1102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <div
                                                         style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                                                         <div style="font-weight: 700; color: #1e293b; font-size: 1.05rem;">
-                                                            <?= htmlspecialchars($reservation['customer_name']) ?></div>
+                                                            <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                        </div>
                                                         <div style="font-weight: 700; color: #059669; font-size: 1.1rem;">
                                                             ₱<?= number_format($reservation['total_amount'], 0) ?></div>
                                                     </div>
