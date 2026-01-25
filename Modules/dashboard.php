@@ -1685,19 +1685,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     tbody.innerHTML += `
                         <tr>
                             <td style="text-align: center;">#${employee.id}</td>
-                            <td>${employee.first_name}</td>
-                            <td>${employee.last_name}</td>
                             <td>${employee.email}</td>
                             <td>${position}</td>
                             <td>${department}</td>
                             <td>₱${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                             <td>
                                 <div style="display: flex; gap: 8px; justify-content: center;">
-                                    <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="deleteEmployee(${employee.id})" title="Delete Employee">
-                                        <i class="fas fa-trash"></i>
+                                    <button class="btn btn-outline btn-sm btn-icon" onclick="viewEmployeeDetails(${employee.id})" title="View Employee Details">
+                                        <i class="fa-solid fa-eye"></i>
                                     </button>
                                 </div>
                             </td>
@@ -1705,6 +1700,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `;
                 });
             }
+        }
+
+        function viewEmployeeDetails(id) {
+            // Implementation for viewing employee details
+            alert('View employee details functionality for ID: ' + id);
         }
 
         function openEmployeeModal() {
