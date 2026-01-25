@@ -280,8 +280,7 @@ window.showManagementCard = function (type) {
     console.log('Found management cards:', allCards.length);
 
     allCards.forEach(el => {
-        el.style.setProperty('display', 'none', 'important');
-        el.style.visibility = 'hidden';
+        el.classList.remove('active-card');
     });
 
     // Show selected card
@@ -290,22 +289,15 @@ window.showManagementCard = function (type) {
 
     if (sel) {
         console.log('Target card found:', targetSelector);
-        sel.style.setProperty('display', 'block', 'important');
-        sel.style.visibility = 'visible';
-
-        // Ensure parent container doesn't hide it
-        if (sel.parentElement) {
-            sel.parentElement.style.display = 'block';
-        }
+        sel.classList.add('active-card');
     } else {
         console.error('CRITICAL ERROR: Management card not found for type:', type);
         console.log('Available cards:', Array.from(allCards).map(c => c.className));
         // Fallback: try finding by data attribute if exists
-        const fallback = document.querySelector(`[data - card - type= "${type}"]`);
+        const fallback = document.querySelector(`[data-card-type="${type}"]`);
         if (fallback) {
             console.log('Found fallback card with data attribute');
-            fallback.style.setProperty('display', 'block', 'important');
-            fallback.style.visibility = 'visible';
+            fallback.classList.add('active-card');
         }
     }
 

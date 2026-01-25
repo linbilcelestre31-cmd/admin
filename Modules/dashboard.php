@@ -885,29 +885,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </button>
                     </div>
 
-                    <div class="table-container">
+                    <div class="table-container premium-dark-card"
+                        style="border-radius: 12px; overflow: hidden; margin-top: 15px;">
                         <div class="table-wrapper">
                             <table class="table">
-                                <thead>
+                                <thead style="background: rgba(255,255,255,0.05);">
                                     <tr>
                                         <!-- Nag-set ng center alignment para sa karamihan ng headers -->
-                                        <th>Booking ID</th>
-                                        <th>Facility</th>
-                                        <th>Customer</th>
-                                        <th>Contact</th>
-                                        <th>Email</th>
-                                        <th>Event Type</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Guests</th>
-                                        <th>Package</th>
-                                        <th>Total Amount</th>
-                                        <th>Deposit Paid</th>
-                                        <th>Balance Due</th>
-                                        <th>Payment Method</th>
-                                        <th>Coordinator</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>BOOKING ID</th>
+                                        <th>FACILITY</th>
+                                        <th>CUSTOMER</th>
+                                        <th>CONTACT</th>
+                                        <th>EMAIL</th>
+                                        <th>EVENT TYPE</th>
+                                        <th>DATE</th>
+                                        <th>TIME</th>
+                                        <th>GUESTS</th>
+                                        <th>PACKAGE</th>
+                                        <th>TOTAL AMOUNT</th>
+                                        <th>DEPOSIT PAID</th>
+                                        <th>BALANCE DUE</th>
+                                        <th>PAYMENT METHOD</th>
+                                        <th>COORDINATOR</th>
+                                        <th>STATUS</th>
+                                        <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -980,436 +981,434 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </table>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Calendar Tab -->
-                    <!-- Reports Tab -->
-                    <div id="reports"
-                        class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>">
-                        <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
+                <!-- Calendar Tab -->
+                <!-- Reports Tab -->
+                <div id="reports"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>">
+                    <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
 
-                        <?php
-                        // Server-side: handle GET filters for reports view
-                        $r_from = $_GET['from_date'] ?? '';
-                        $r_to = $_GET['to_date'] ?? '';
-                        $r_status = $_GET['status'] ?? 'all';
+                    <?php
+                    // Server-side: handle GET filters for reports view
+                    $r_from = $_GET['from_date'] ?? '';
+                    $r_to = $_GET['to_date'] ?? '';
+                    $r_status = $_GET['status'] ?? 'all';
 
-                        $r_where = [];
-                        $r_params = [];
-                        if ($r_from) {
-                            $r_where[] = 'r.event_date >= ?';
-                            $r_params[] = $r_from;
-                        }
-                        if ($r_to) {
-                            $r_where[] = 'r.event_date <= ?';
-                            $r_params[] = $r_to;
-                        }
-                        if ($r_status !== 'all') {
-                            $r_where[] = 'r.status = ?';
-                            $r_params[] = $r_status;
-                        }
+                    $r_where = [];
+                    $r_params = [];
+                    if ($r_from) {
+                        $r_where[] = 'r.event_date >= ?';
+                        $r_params[] = $r_from;
+                    }
+                    if ($r_to) {
+                        $r_where[] = 'r.event_date <= ?';
+                        $r_params[] = $r_to;
+                    }
+                    if ($r_status !== 'all') {
+                        $r_where[] = 'r.status = ?';
+                        $r_params[] = $r_status;
+                    }
 
-                        $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
-                        if ($r_where)
-                            $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
-                        $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
+                    $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
+                    if ($r_where)
+                        $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
+                    $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
 
-                        $r_stmt = get_pdo()->prepare($r_sql);
-                        $r_stmt->execute($r_params);
-                        $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
-                        ?>
+                    $r_stmt = get_pdo()->prepare($r_sql);
+                    $r_stmt->execute($r_params);
+                    $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                    ?>
 
-                        <form method="get" class="filters">
-                            From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
-                            To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
-                            Status: <select name="status">
-                                <option value="all" <?= $r_status === 'all' ? 'selected' : '' ?>>All</option>
-                                <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed
-                                </option>
-                                <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled
-                                </option>
-                                <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
-                                </option>
-                            </select>
-                            <button class="btn">Filter</button>
-                        </form>
+                    <form method="get" class="filters">
+                        From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
+                        To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
+                        Status: <select name="status">
+                            <option value="all" <?= $r_status === 'all' ? 'selected' : '' ?>>All</option>
+                            <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed
+                            </option>
+                            <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled
+                            </option>
+                            <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
+                            </option>
+                        </select>
+                        <button class="btn">Filter</button>
+                    </form>
 
-                        <form method="post" style="margin-bottom:12px">
-                            <input type="hidden" name="action" value="export_csv">
-                            <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
-                            <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
-                            <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
-                            <button class="btn">Export CSV</button>
-                        </form>
+                    <form method="post" style="margin-bottom:12px">
+                        <input type="hidden" name="action" value="export_csv">
+                        <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
+                        <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
+                        <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
+                        <button class="btn">Export CSV</button>
+                    </form>
 
-                        <div class="table-container">
-                            <div class="table-wrapper">
-                                <table class="table">
-                                    <thead>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>BOOKING ID</th>
+                                        <th>FACILITY</th>
+                                        <th>CUSTOMER</th>
+                                        <th>CONTACT</th>
+                                        <th>EMAIL</th>
+                                        <th>EVENT TYPE</th>
+                                        <th>DATE</th>
+                                        <th>TIME</th>
+                                        <th>GUESTS</th>
+                                        <th>PACKAGE</th>
+                                        <th>TOTAL AMOUNT</th>
+                                        <th>DEPOSIT PAID</th>
+                                        <th>BALANCE DUE</th>
+                                        <th>PAYMENT METHOD</th>
+                                        <th>COORDINATOR</th>
+                                        <th>STATUS</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($r_reservations as $rr): ?>
                                         <tr>
-                                            <th>Booking ID</th>
-                                            <th>Facility</th>
-                                            <th>Customer</th>
-                                            <th>Contact</th>
-                                            <th>Email</th>
-                                            <th>Event Type</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Guests</th>
-                                            <th>Package</th>
-                                            <th>Total Amount</th>
-                                            <th>Deposit Paid</th>
-                                            <th>Balance Due</th>
-                                            <th>Payment Method</th>
-                                            <th>Coordinator</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            <td>BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
+                                            <td><?= htmlspecialchars($rr['facility_name']) ?></td>
+                                            <td><?= htmlspecialchars($rr['customer_name']) ?></td>
+                                            <td><?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
+                                            <td><?= htmlspecialchars($rr['customer_email']) ?></td>
+                                            <td><?= htmlspecialchars($rr['event_type']) ?></td>
+                                            <td><?= htmlspecialchars($rr['event_date']) ?></td>
+                                            <td><?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
+                                            <td><?= $rr['guests_count'] ?></td>
+                                            <td><?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
+                                            <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                            <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
+                                            <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
+                                            <td><?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
+                                            <td><?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
+                                            <td><?= htmlspecialchars($rr['status']) ?></td>
+                                            <td>
+                                                <div class="d-flex gap-1" style="justify-content: center;">
+                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                        title="View Details">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </button>
+                                                    <form method="post" style="display:inline-flex; gap: 4px;">
+                                                        <input type="hidden" name="action" value="update_status">
+                                                        <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
+                                                        <?php if ($rr['status'] === 'pending'): ?>
+                                                            <button class="btn btn-success btn-icon" name="status"
+                                                                value="confirmed" title="Confirm" aria-label="Confirm">
+                                                                <i class="fa-solid fa-check"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-icon" name="status"
+                                                                value="cancelled" title="Cancel" aria-label="Cancel">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        <?php elseif ($rr['status'] === 'confirmed'): ?>
+                                                            <button class="btn btn-warning btn-icon" name="status"
+                                                                value="completed" title="Mark as Completed"
+                                                                aria-label="Complete">
+                                                                <i class="fa-solid fa-flag-checkered"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-icon" name="status"
+                                                                value="cancelled" title="Cancel" aria-label="Cancel">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </form>
+                                                </div>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($r_reservations as $rr): ?>
-                                            <tr>
-                                                <td>BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
-                                                <td><?= htmlspecialchars($rr['facility_name']) ?></td>
-                                                <td><?= htmlspecialchars($rr['customer_name']) ?></td>
-                                                <td><?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
-                                                <td><?= htmlspecialchars($rr['customer_email']) ?></td>
-                                                <td><?= htmlspecialchars($rr['event_type']) ?></td>
-                                                <td><?= htmlspecialchars($rr['event_date']) ?></td>
-                                                <td><?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
-                                                <td><?= $rr['guests_count'] ?></td>
-                                                <td><?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
-                                                <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
-                                                <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
-                                                <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
-                                                <td><?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
-                                                <td><?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
-                                                <td><?= htmlspecialchars($rr['status']) ?></td>
-                                                <td>
-                                                    <div class="d-flex gap-1" style="justify-content: center;">
-                                                        <button type="button" class="btn btn-outline btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                            title="View Details">
-                                                            <i class="fa-solid fa-eye"></i>
-                                                        </button>
-                                                        <form method="post" style="display:inline-flex; gap: 4px;">
-                                                            <input type="hidden" name="action" value="update_status">
-                                                            <input type="hidden" name="reservation_id"
-                                                                value="<?= $rr['id'] ?>">
-                                                            <?php if ($rr['status'] === 'pending'): ?>
-                                                                <button class="btn btn-success btn-icon" name="status"
-                                                                    value="confirmed" title="Confirm" aria-label="Confirm">
-                                                                    <i class="fa-solid fa-check"></i>
-                                                                </button>
-                                                                <button class="btn btn-danger btn-icon" name="status"
-                                                                    value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                    <i class="fa-solid fa-xmark"></i>
-                                                                </button>
-                                                            <?php elseif ($rr['status'] === 'confirmed'): ?>
-                                                                <button class="btn btn-warning btn-icon" name="status"
-                                                                    value="completed" title="Mark as Completed"
-                                                                    aria-label="Complete">
-                                                                    <i class="fa-solid fa-flag-checkered"></i>
-                                                                </button>
-                                                                <button class="btn btn-danger btn-icon" name="status"
-                                                                    value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                    <i class="fa-solid fa-xmark"></i>
-                                                                </button>
-                                                            <?php endif; ?>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div id="calendar"
-                            class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
-                            <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
-
-                            <div class="calendar-grid">
-                                <?php
-                                // Display next 7 days
-                                for ($i = 0; $i < 7; $i++):
-                                    $date = date('Y-m-d', strtotime("+$i days"));
-                                    $display_date = date('D, M d, Y', strtotime($date));
-                                    $day_events = array_filter($dashboard_data['reservations'], function ($event) use ($date) {
-                                        return $event['event_date'] == $date && $event['status'] == 'confirmed';
-                                    });
-                                    ?>
-                                    <div class="calendar-day">
-                                        <div class="calendar-date"><?= $display_date ?></div>
-                                        <div class="calendar-events">
-                                            <?php foreach ($day_events as $event): ?>
-                                                <div class="calendar-event">
-                                                    <div class="event-time">
-                                                        <?= date('g:i a', strtotime($event['start_time'])) ?> -
-                                                        <?= date('g:i a', strtotime($event['end_time'])) ?>
-                                                    </div>
-                                                    <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?>
-                                                    </div>
-                                                    <div class="event-details">
-                                                        <?= htmlspecialchars($event['customer_name']) ?> •
-                                                        <?= htmlspecialchars($event['event_type']) ?> •
-                                                        <?= $event['guests_count'] ?>
-                                                        guests
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                            <?php if (empty($day_events)): ?>
-                                                <div
-                                                    style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                                    <span class="icon-img-placeholder">🚫</span> No reservations
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endfor; ?>
-                            </div>
-                        </div>
-
-                        <!-- Management Tab -->
-                        <div id="management"
-                            class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
-                            <div class="management-header">
-                                <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
-                                <div class="management-buttons" style="margin-left: auto;">
-                                    <button id="show-maintenance-card" class="btn btn-outline management-btn active"
-                                        onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                        <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
-                                    </button>
-                                    <button id="show-employees-card" class="btn btn-outline management-btn"
-                                        onclick="event.preventDefault(); window.showManagementCard('employees')">
-                                        <i class="fa-solid fa-users"></i> Employees
-                                    </button>
-                                    <button id="show-mnt-calendar" class="btn btn-outline management-btn"
-                                        onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
-                                        <i class="fa-solid fa-calendar-days"></i> Maintenance Schedule
-                                    </button>
-                                </div>
-                            </div>
-
-
-
-                            <!-- Maintenance & Status Card -->
-                            <div class="card management-card management-maintenance" style="display: block;">
-                                <div class="card-header d-flex justify-between align-center">
-                                    <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
-                                    <div class="d-flex gap-1">
-                                        <button class="btn btn-outline btn-sm" onclick="exportMaintenanceReport()">
-                                            <i class="fas fa-file-export"></i> Export Report
-                                        </button>
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')">
-                                            <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <div class="d-flex justify-end align-center mb-1">
-                                        <div
-                                            style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                                            <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
-                                            <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
-                                        </div>
-                                    </div>
-                                    <div class="table-wrapper">
-                                        <table class="table management-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>PRIORITY</th>
-                                                    <th>ITEM/AREA</th>
-                                                    <th style="min-width: 150px;">DESCRIPTION</th>
-                                                    <th>REPORTED BY</th>
-                                                    <th>REPORTED DATE</th>
-                                                    <th>SCHEDULE</th>
-                                                    <th>ASSIGNED STAFF</th>
-                                                    <th>DEPARTMENT</th>
-                                                    <th>CONTACT</th>
-                                                    <th>STATUS</th>
-                                                    <th>DURATION</th>
-                                                    <th>ACTIONS</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                                    <tr>
-                                                        <td colspan="12"
-                                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                            No maintenance logs found.
-                                                        </td>
-                                                    </tr>
-                                                <?php else: ?>
-                                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                        <tr style="background: rgba(255, 255, 255, 0.02);">
-                                                            <td>
-                                                                <div
-                                                                    style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                                                    <?php
-                                                                    $p_color = '#22c55e'; // low
-                                                                    if (($log['priority'] ?? '') == 'high')
-                                                                        $p_color = '#ef4444';
-                                                                    if (($log['priority'] ?? '') == 'medium')
-                                                                        $p_color = '#f59e0b';
-                                                                    ?>
-                                                                    <span
-                                                                        style="width: 10px; height: 10px; border-radius: 50%; background: <?= $p_color ?>; box-shadow: 0 0 8px <?= $p_color ?>;"></span>
-                                                                    <span
-                                                                        style="font-weight: 700; text-transform: uppercase; font-size: 0.7rem; color: <?= $p_color ?>;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
-                                                                </div>
-                                                            </td>
-                                                            <td style="font-weight: 600; text-align: left !important;">
-                                                                <?= htmlspecialchars($log['item_name']) ?>
-                                                            </td>
-                                                            <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
-                                                                title="<?= htmlspecialchars($log['description']) ?>">
-                                                                <?= htmlspecialchars($log['description']) ?>
-                                                            </td>
-                                                            <td style="font-weight: 500;">
-                                                                <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
-                                                            </td>
-                                                            <td><?= date('m/d/Y', strtotime($log['created_at'])) ?></td>
-                                                            <td style="font-size: 0.85rem;">
-                                                                <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
-                                                            </td>
-                                                            <td style="font-weight: 500;">
-                                                                <?= htmlspecialchars($log['assigned_staff']) ?>
-                                                            </td>
-                                                            <td><span
-                                                                    style="background: #f1f5f9; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #475569;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
-                                                            </td>
-                                                            <td style="font-size: 0.85rem;">
-                                                                <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
-                                                            </td>
-                                                            <td>
-                                                                <span class="status-badge status-<?= $log['status'] ?>">
-                                                                    <?= ucfirst($log['status']) ?>
-                                                                </span>
-                                                            </td>
-                                                            <td style="font-weight: 500; color: #64748b;">
-                                                                <?= htmlspecialchars($log['duration'] ?? '1 hour') ?>
-                                                            </td>
-                                                            <td>
-                                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                                    <button class="btn btn-icon btn-sm"
-                                                                        style="background: #3182ce; color: white;"
-                                                                        onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
-                                                                        title="View Details">
-                                                                        <i class="fa-solid fa-pen-to-square"></i>
-                                                                    </button>
-                                                                    <button class="btn btn-danger btn-sm btn-icon"
-                                                                        onclick="deleteMaintenanceLog(<?= $log['id'] ?>)"
-                                                                        title="Delete Log">
-                                                                        <i class="fa-solid fa-trash"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Employee Management Card -->
-                            <div class="card management-card management-employees" data-open-tab="employees"
-                                style="display: none;">
-                                <div class="card-header d-flex justify-between align-center">
-                                    <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
-                                    <div class="d-flex gap-1">
-                                        <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
-                                            <i class="fas fa-file-export"></i> Export Report
-                                        </button>
-                                        <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
-                                            <i class="fas fa-user-plus"></i> Add Employee
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <div class="table-wrapper">
-                                        <table class="table management-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>First Name</th>
-                                                    <th>Last Name</th>
-                                                    <th>Email</th>
-                                                    <th>Position</th>
-                                                    <th>Department</th>
-                                                    <th>Salary</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="employeesTableBody">
-                                                <!-- Loaded via JS -->
-                                                <tr>
-                                                    <td colspan="8" style="text-align: center; padding: 2rem;">
-                                                        <div class="loading-spinner"></div>
-                                                        Loading employee data...
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Maintenance Schedule Calendar -->
-                            <div class="card management-card management-mnt-calendar" style="display: none;">
-                                <div class="card-header">
-                                    <h3><span class="icon-img-placeholder">📅</span> Maintenance Calendar</h3>
-                                </div>
-                                <div class="card-content">
-                                    <div class="calendar-grid">
-                                        <?php
-                                        // Display next 7 days for maintenance
-                                        for ($i = 0; $i < 7; $i++):
-                                            $date = date('Y-m-d', strtotime("+$i days"));
-                                            $display_date = date('D, M d', strtotime($date));
-                                            $day_logs = array_filter($dashboard_data['maintenance_logs'], function ($log) use ($date) {
-                                                return $log['maintenance_date'] == $date;
-                                            });
-                                            ?>
-                                            <div class="calendar-day">
-                                                <div class="calendar-date"
-                                                    style="background: var(--primary); color: white; padding: 5px; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">
-                                                    <?= $display_date ?>
-                                                </div>
-                                                <div class="calendar-events">
-                                                    <?php foreach ($day_logs as $log): ?>
-                                                        <div class="calendar-event"
-                                                            style="border-left: 4px solid var(--warning);">
-                                                            <div class="event-title" style="font-weight: 700;">
-                                                                <?= htmlspecialchars($log['item_name']) ?>
-                                                            </div>
-                                                            <div class="event-details">
-                                                                <i class="fa-solid fa-user"></i>
-                                                                <?= htmlspecialchars($log['assigned_staff']) ?><br>
-                                                                <span class="status-badge status-<?= $log['status'] ?>"
-                                                                    style="font-size: 0.65rem; padding: 2px 6px;">
-                                                                    <?= ucfirst($log['status']) ?>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                    <?php if (empty($day_logs)): ?>
-                                                        <div
-                                                            style="color: #cbd5e0; font-size: 0.8rem; text-align: center; padding: 10px;">
-                                                            No Tasks</div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        <?php endfor; ?>
-                                    </div>
-                                </div>
-                            </div>
-
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                    <div id="calendar"
+                        class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
+                        <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
+
+                        <div class="calendar-grid">
+                            <?php
+                            // Display next 7 days
+                            for ($i = 0; $i < 7; $i++):
+                                $date = date('Y-m-d', strtotime("+$i days"));
+                                $display_date = date('D, M d, Y', strtotime($date));
+                                $day_events = array_filter($dashboard_data['reservations'], function ($event) use ($date) {
+                                    return $event['event_date'] == $date && $event['status'] == 'confirmed';
+                                });
+                                ?>
+                                <div class="calendar-day">
+                                    <div class="calendar-date"><?= $display_date ?></div>
+                                    <div class="calendar-events">
+                                        <?php foreach ($day_events as $event): ?>
+                                            <div class="calendar-event">
+                                                <div class="event-time">
+                                                    <?= date('g:i a', strtotime($event['start_time'])) ?> -
+                                                    <?= date('g:i a', strtotime($event['end_time'])) ?>
+                                                </div>
+                                                <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?>
+                                                </div>
+                                                <div class="event-details">
+                                                    <?= htmlspecialchars($event['customer_name']) ?> •
+                                                    <?= htmlspecialchars($event['event_type']) ?> •
+                                                    <?= $event['guests_count'] ?>
+                                                    guests
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                        <?php if (empty($day_events)): ?>
+                                            <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
+                                                <span class="icon-img-placeholder">🚫</span> No reservations
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+
+                    <!-- Management Tab -->
+                    <div id="management"
+                        class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
+                        <div class="management-header">
+                            <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
+                            <div class="management-buttons" style="margin-left: auto;">
+                                <button id="show-maintenance-card" class="btn btn-outline management-btn active"
+                                    onclick="event.preventDefault(); window.showManagementCard('maintenance')">
+                                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                                </button>
+                                <button id="show-employees-card" class="btn btn-outline management-btn"
+                                    onclick="event.preventDefault(); window.showManagementCard('employees')">
+                                    <i class="fa-solid fa-users"></i> Employees
+                                </button>
+                                <button id="show-mnt-calendar" class="btn btn-outline management-btn"
+                                    onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
+                                    <i class="fa-solid fa-calendar-days"></i> Maintenance Schedule
+                                </button>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Maintenance & Status Card -->
+                        <div class="card management-card management-maintenance premium-dark-card active-card">
+                            <div class="card-header d-flex justify-between align-center">
+                                <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline btn-sm" onclick="exportMaintenanceReport()">
+                                        <i class="fas fa-file-export"></i> Export Report
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="d-flex justify-end align-center mb-1">
+                                    <div
+                                        style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                                        <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
+                                        <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
+                                    </div>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>PRIORITY</th>
+                                                <th>ITEM/AREA</th>
+                                                <th style="min-width: 150px;">DESCRIPTION</th>
+                                                <th>REPORTED BY</th>
+                                                <th>REPORTED DATE</th>
+                                                <th>SCHEDULE</th>
+                                                <th>ASSIGNED STAFF</th>
+                                                <th>DEPARTMENT</th>
+                                                <th>CONTACT</th>
+                                                <th>STATUS</th>
+                                                <th>DURATION</th>
+                                                <th>ACTIONS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                                <tr>
+                                                    <td colspan="12"
+                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        No maintenance logs found.
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                    <tr style="background: rgba(255, 255, 255, 0.02);">
+                                                        <td>
+                                                            <div
+                                                                style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                                <?php
+                                                                $p_color = '#22c55e'; // low
+                                                                if (($log['priority'] ?? '') == 'high')
+                                                                    $p_color = '#ef4444';
+                                                                if (($log['priority'] ?? '') == 'medium')
+                                                                    $p_color = '#f59e0b';
+                                                                ?>
+                                                                <span
+                                                                    style="width: 10px; height: 10px; border-radius: 50%; background: <?= $p_color ?>; box-shadow: 0 0 8px <?= $p_color ?>;"></span>
+                                                                <span
+                                                                    style="font-weight: 700; text-transform: uppercase; font-size: 0.7rem; color: <?= $p_color ?>;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
+                                                            </div>
+                                                        </td>
+                                                        <td style="font-weight: 600; text-align: left !important;">
+                                                            <?= htmlspecialchars($log['item_name']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
+                                                            title="<?= htmlspecialchars($log['description']) ?>">
+                                                            <?= htmlspecialchars($log['description']) ?>
+                                                        </td>
+                                                        <td style="font-weight: 500;">
+                                                            <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
+                                                        </td>
+                                                        <td><?= date('m/d/Y', strtotime($log['created_at'])) ?></td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                        </td>
+                                                        <td style="font-weight: 500;">
+                                                            <?= htmlspecialchars($log['assigned_staff']) ?>
+                                                        </td>
+                                                        <td><span
+                                                                style="background: #f1f5f9; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #475569;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
+                                                        </td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $log['status'] ?>">
+                                                                <?= ucfirst($log['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td style="font-weight: 500; color: #64748b;">
+                                                            <?= htmlspecialchars($log['duration'] ?? '1 hour') ?>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex gap-1" style="justify-content: center;">
+                                                                <button class="btn btn-icon btn-sm"
+                                                                    style="background: #3182ce; color: white;"
+                                                                    onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
+                                                                    title="View Details">
+                                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                                </button>
+                                                                <button class="btn btn-danger btn-sm btn-icon"
+                                                                    onclick="deleteMaintenanceLog(<?= $log['id'] ?>)"
+                                                                    title="Delete Log">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employee Management Card -->
+                        <div class="card management-card management-employees premium-dark-card"
+                            data-open-tab="employees">
+                            <div class="card-header d-flex justify-between align-center">
+                                <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
+                                        <i class="fas fa-file-export"></i> Export Report
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
+                                        <i class="fas fa-user-plus"></i> Add Employee
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Email</th>
+                                                <th>Position</th>
+                                                <th>Department</th>
+                                                <th>Salary</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="employeesTableBody">
+                                            <!-- Loaded via JS -->
+                                            <tr>
+                                                <td colspan="8" style="text-align: center; padding: 2rem;">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading employee data...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Schedule Calendar -->
+                        <div class="card management-card management-mnt-calendar" style="display: none;">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">📅</span> Maintenance Calendar</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="calendar-grid">
+                                    <?php
+                                    // Display next 7 days for maintenance
+                                    for ($i = 0; $i < 7; $i++):
+                                        $date = date('Y-m-d', strtotime("+$i days"));
+                                        $display_date = date('D, M d', strtotime($date));
+                                        $day_logs = array_filter($dashboard_data['maintenance_logs'], function ($log) use ($date) {
+                                            return $log['maintenance_date'] == $date;
+                                        });
+                                        ?>
+                                        <div class="calendar-day">
+                                            <div class="calendar-date"
+                                                style="background: var(--primary); color: white; padding: 5px; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">
+                                                <?= $display_date ?>
+                                            </div>
+                                            <div class="calendar-events">
+                                                <?php foreach ($day_logs as $log): ?>
+                                                    <div class="calendar-event" style="border-left: 4px solid var(--warning);">
+                                                        <div class="event-title" style="font-weight: 700;">
+                                                            <?= htmlspecialchars($log['item_name']) ?>
+                                                        </div>
+                                                        <div class="event-details">
+                                                            <i class="fa-solid fa-user"></i>
+                                                            <?= htmlspecialchars($log['assigned_staff']) ?><br>
+                                                            <span class="status-badge status-<?= $log['status'] ?>"
+                                                                style="font-size: 0.65rem; padding: 2px 6px;">
+                                                                <?= ucfirst($log['status']) ?>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                                <?php if (empty($day_logs)): ?>
+                                                    <div
+                                                        style="color: #cbd5e0; font-size: 0.8rem; text-align: center; padding: 10px;">
+                                                        No Tasks</div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+            </div>
         </main>
     </div>
 
