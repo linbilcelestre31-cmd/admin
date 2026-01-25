@@ -835,6 +835,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <th style="text-align: left;">Location</th>
                                         <th>Rate</th>
                                         <th style="text-align: center;">Status</th>
+                                        <th style="text-align: center;">Assigned User</th>
                                         <th style="text-align: center;">Actions</th>
                                     </tr>
                                 </thead>
@@ -856,6 +857,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
                                                     <?= ucfirst($f['status'] ?? 'active') ?>
                                                 </span>
+                                            </td>
+                                            <td style="text-align: center; color: #64748b; font-size: 0.9rem;">
+                                                <!-- Placeholder for Assigned User as per request -->
+                                                <?= htmlspecialchars($f['assigned_user'] ?? 'Not Assigned') ?>
                                             </td>
                                             <td>
                                                 <div style="display: flex; gap: 8px; justify-content: center;">
@@ -1090,23 +1095,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 style="font-weight: 600; color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                 BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['facility_name']) ?></td>
+                                                <?= htmlspecialchars($rr['facility_name']) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_name']) ?></td>
+                                                <?= htmlspecialchars($rr['customer_name']) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
+                                                <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_email']) ?></td>
+                                                <?= htmlspecialchars($rr['customer_email']) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['event_type']) ?></td>
+                                                <?= htmlspecialchars($rr['event_type']) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['event_date']) ?></td>
+                                                <?= htmlspecialchars($rr['event_date']) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
+                                                <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= $rr['guests_count'] ?></td>
+                                                <?= $rr['guests_count'] ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
+                                                <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                 ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
@@ -1114,11 +1128,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
                                                 ₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
+                                                <?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?>
+                                            </td>
                                             <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
+                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
+                                            </td>
                                             <td style="font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['status']) ?></td>
+                                                <?= htmlspecialchars($rr['status']) ?>
+                                            </td>
                                             <td style="padding: 12px 15px;">
                                                 <div class="d-flex gap-1" style="justify-content: center;">
                                                     <button type="button" class="btn btn-outline btn-sm btn-icon"
