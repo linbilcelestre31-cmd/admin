@@ -1605,7 +1605,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (sessionStorage.getItem('activeTab') === 'management') {
                 setTimeout(function () {
                     if (typeof window.showManagementCard === 'function') {
-                        window.showManagementCard('facilities');
+                        window.showManagementCard('hotel-facilities');
                     }
                 }, 100);
             }
@@ -1765,6 +1765,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 })
                 .catch(error => console.error('API Error:', error));
         }
+
+        // Management Card Navigation Function
+        window.showManagementCard = function(cardType) {
+            // Hide all management cards
+            const allCards = document.querySelectorAll('.management-card');
+            allCards.forEach(card => {
+                card.style.display = 'none';
+            });
+
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.management-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected card
+            const selectedCard = document.querySelector(`.management-${cardType}`);
+            if (selectedCard) {
+                selectedCard.style.display = 'block';
+            }
+
+            // Add active class to selected button
+            const selectedButton = document.getElementById(`show-${cardType}-card`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+
+            // If card has data-open-tab attribute, navigate to that tab
+            const cardWithTab = document.querySelector(`.management-${cardType}[data-open-tab]`);
+            if (cardWithTab) {
+                const targetTab = cardWithTab.getAttribute('data-open-tab');
+                if (targetTab) {
+                    // Switch to the target tab
+                    const tabElement = document.getElementById(targetTab);
+                    if (tabElement) {
+                        // Hide all tabs
+                        document.querySelectorAll('.tab-content').forEach(tab => {
+                            tab.style.display = 'none';
+                        });
+                        
+                        // Show target tab
+                        tabElement.style.display = 'block';
+                        
+                        // Update active tab in navigation (if tab navigation exists)
+                        const tabButtons = document.querySelectorAll('[data-tab]');
+                        tabButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-tab') === targetTab) {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Store active tab in sessionStorage
+                        sessionStorage.setItem('activeTab', targetTab);
+                    }
+                }
+            }
+        };
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function () {
