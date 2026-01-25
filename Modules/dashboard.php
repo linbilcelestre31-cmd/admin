@@ -619,14 +619,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
                         <div class="d-flex gap-1 align-center">
+                            <div class="btn-group"
+                                style="display: flex; background: #edf2f7; padding: 4px; border-radius: 8px;">
+                                <button id="btn-grid-view" class="btn btn-sm active"
+                                    onclick="switchFacilityView('grid')"
+                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
+                                    <i class="fa-solid fa-grip"></i> Grid
+                                </button>
+                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')"
+                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
+                                    <i class="fa-solid fa-list"></i> List
+                                </button>
+                            </div>
                             <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
                                 <span class="icon-img-placeholder">➕</span> Add Facility
                             </button>
                         </div>
                     </div>
 
+                    <!-- Grid View -->
+                    <div id="facility-grid-view">
+                        <div class="facilities-grid">
+                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                                <div class="facility-card">
+                                    <div class="facility-image">
+                                        <?php
+                                        // Image Logic
+                                        $name_title_case = ucwords(strtolower($facility['name']));
+                                        $possible_files = [
+                                            $name_title_case . '.jpeg',
+                                            $name_title_case . '.jpg',
+                                            $name_title_case . '.png',
+                                            $facility['name'] . '.jpeg',
+                                            $facility['name'] . '.jpg',
+                                            $facility['name'] . '.png',
+                                        ];
+
+                                        $image_url = '';
+                                        $is_placeholder = true;
+
+                                        if (!empty($facility['image_url'])) {
+                                            $image_url = $facility['image_url'];
+                                            $is_placeholder = false;
+                                        }
+
+                                        if ($is_placeholder) {
+                                            foreach ($possible_files as $file) {
+                                                if (file_exists(__DIR__ . '/../assets/image/' . $file)) {
+                                                    $image_url = '../assets/image/' . $file;
+                                                    $is_placeholder = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if ($is_placeholder) {
+                                            $type_defaults = [
+                                                'banquet' => 'Grand Ballroom.jpeg',
+                                                'meeting' => 'executive_boardroom.jpg',
+                                                'conference' => 'Pacific Conference Hall.jpeg',
+                                                'outdoor' => 'Sky Garden.jpeg',
+                                                'dining' => 'Harbor View Dining Room.jpeg',
+                                                'lounge' => 'Sunset Lounge.jpeg'
+                                            ];
+                                            $type = strtolower($facility['type']);
+                                            if (isset($type_defaults[$type]) && file_exists(__DIR__ . '/../assets/image/' . $type_defaults[$type])) {
+                                                $image_url = '../assets/image/' . $type_defaults[$type];
+                                                $is_placeholder = false;
+                                            }
+                                        }
+
+                                        $placeholder_color = '1a365d';
+                                        switch ($facility['type']) {
+                                            case 'banquet':
+                                                $placeholder_color = '764ba2';
+                                                break;
+                                            case 'meeting':
+                                            case 'conference':
+                                                $placeholder_color = '3182ce';
+                                                break;
+                                            case 'outdoor':
+                                                $placeholder_color = '38a169';
+                                                break;
+                                        }
+
+                                        if ($is_placeholder) {
+                                            $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . urlencode($facility['name']);
+                                        }
+                                        ?>
+                                        <img src="<?= htmlspecialchars($image_url) ?>"
+                                            alt="<?= htmlspecialchars($facility['name']) ?>"
+                                            style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div class="facility-content">
+                                        <div class="facility-header">
+                                            <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
+                                            <span class="facility-type"
+                                                style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;"><?= htmlspecialchars($facility['type']) ?></span>
+                                        </div>
+                                        <button class="btn btn-outline btn-sm mb-1"
+                                            onclick="viewFacilityDetails(<?= $facility['id'] ?>)">
+                                            🔎 View Details
+                                        </button>
+                                        <div class="facility-details"><?= htmlspecialchars($facility['description']) ?>
+                                        </div>
+                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
                     <!-- Facilities List Table -->
-                    <div id="facility-list-view">
+                    <div id="facility-list-view" style="display: none;">
                         <div class="table-container">
                             <table class="table">
                                 <thead>
