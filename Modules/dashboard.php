@@ -634,12 +634,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     // If no stored image_url or it doesn't exist, search in assets
                                     if ($is_placeholder) {
                                         foreach ($possible_files as $file) {
-                                            // FIX: Ensure file_exists uses the correct relative path from the server's perspective
                                             $full_path = __DIR__ . '/../assets/image/' . $file;
                                             if (file_exists($full_path)) {
                                                 $image_url = '../assets/image/' . $file;
                                                 $is_placeholder = false;
                                                 break;
+                                            }
+                                        }
+                                    }
+
+                                    // NEW: Auto-assign default premium image based on category if still no image found
+                                    if ($is_placeholder) {
+                                        $type_defaults = [
+                                            'banquet' => 'Grand Ballroom.jpeg',
+                                            'meeting' => 'executive_boardroom.jpg',
+                                            'conference' => 'Pacific Conference Hall.jpeg',
+                                            'outdoor' => 'Sky Garden.jpeg',
+                                            'dining' => 'Harbor View Dining Room.jpeg',
+                                            'lounge' => 'Sunset Lounge.jpeg'
+                                        ];
+
+                                        $type = strtolower($facility['type']);
+                                        if (isset($type_defaults[$type])) {
+                                            $default_file = $type_defaults[$type];
+                                            if (file_exists(__DIR__ . '/../assets/image/' . $default_file)) {
+                                                $image_url = '../assets/image/' . $default_file;
+                                                $is_placeholder = false;
                                             }
                                         }
                                     }
