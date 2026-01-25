@@ -215,7 +215,7 @@ class ReservationSystem
     public function fetchMaintenanceLogs()
     {
         try {
-            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC LIMIT 5")->fetchAll();
+            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC LIMIT 50")->fetchAll();
         } catch (PDOException $e) {
             return [];
         }
@@ -1181,10 +1181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('maintenance')">
                                 <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
                             </button>
-                            <button id="show-employees-card" class="btn btn-outline management-btn"
-                                onclick="event.preventDefault(); window.showManagementCard('employees')">
-                                <i class="fa-solid fa-users"></i> Employees
-                            </button>
+
                             <button id="show-mnt-calendar" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
                                 <i class="fa-solid fa-calendar-days"></i> Maintenance Schedule
@@ -1315,47 +1312,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- Employee Management Card -->
-                    <div class="card management-card management-employees premium-dark-card" data-open-tab="employees">
-                        <div class="card-header d-flex justify-between align-center">
-                            <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
-                                    <i class="fas fa-file-export"></i> Export Report
-                                </button>
-                                <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
-                                    <i class="fas fa-user-plus"></i> Add Employee
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="table-wrapper">
-                                <table class="table management-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Email</th>
-                                            <th>Position</th>
-                                            <th>Department</th>
-                                            <th>Salary</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="employeesTableBody">
-                                        <!-- Loaded via JS -->
-                                        <tr>
-                                            <td colspan="8" style="text-align: center; padding: 2rem;">
-                                                <div class="loading-spinner"></div>
-                                                Loading employee data...
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Maintenance Schedule Calendar -->
                     <div class="card management-card management-mnt-calendar" style="display: none;">
@@ -1363,7 +1320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h3><span class="icon-img-placeholder">📅</span> Maintenance Calendar</h3>
                         </div>
                         <div class="card-content">
-                            <div class="calendar-grid">
+                            <div class="calendar-grid" style="margin-bottom: 25px;">
                                 <?php
                                 // Display next 7 days for maintenance
                                 for ($i = 0; $i < 7; $i++):
@@ -1402,6 +1359,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </div>
                                     </div>
                                 <?php endfor; ?>
+                            </div>
+
+                            <!-- List of Upcoming Schedules -->
+                            <div class="upcoming-schedules">
+                                <h4 style="margin-bottom: 15px; color: #cbd5e0;">Upcoming Scheduled Maintenance</h4>
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Task</th>
+                                                <th>Date</th>
+                                                <th>Assigned Staff</th>
+                                                <th>Priority</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            // Get future maintenance logs
+                                            $future_logs = array_filter($dashboard_data['maintenance_logs'], function ($log) {
+                                                return $log['maintenance_date'] >= date('Y-m-d');
+                                            });
+
+                                            // Sort by date
+                                            usort($future_logs, function ($a, $b) {
+                                                return strtotime($a['maintenance_date']) - strtotime($b['maintenance_date']);
+                                            });
+                                            ?>
+
+                                            <?php if (empty($future_logs)): ?>
+                                                <tr>
+                                                    <td colspan="5"
+                                                        style="text-align: center; padding: 1.5rem; color: #a0aec0;">
+                                                        No upcoming scheduled maintenance tasks found.
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($future_logs as $log): ?>
+                                                    <tr style="background: rgba(255, 255, 255, 0.02);">
+                                                        <td style="font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?>
+                                                        </td>
+                                                        <td><?= date('M d, Y', strtotime($log['maintenance_date'])) ?></td>
+                                                        <td><?= htmlspecialchars($log['assigned_staff']) ?></td>
+                                                        <td>
+                                                            <span
+                                                                style="color: <?= ($log['priority'] == 'high' ? '#ef4444' : ($log['priority'] == 'medium' ? '#f59e0b' : '#22c55e')) ?>; font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">
+                                                                <?= ucfirst($log['priority']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $log['status'] ?>">
+                                                                <?= ucfirst($log['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2031,7 +2048,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function () {
-            loadEmployees();
+            // loadEmployees(); // Removed as per request to remove employee card
         });
     </script>
     <!-- Loading Overlay -->
