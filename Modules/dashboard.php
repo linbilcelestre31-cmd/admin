@@ -1042,6 +1042,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="visitors">Visitor Management</option>
                             <option value="legal">Legal Management</option>
                         </select>
+                        Report Type: <select name="report_type">
+                            <option value="all">All Records</option>
+                            <option value="financial">Financial Records</option>
+                            <option value="access_logs">Access Logs</option>
+                            <option value="audit_trail">Audit Trail</option>
+                        </select>
                         <button class="btn">Filter</button>
                     </form>
 
@@ -1079,24 +1085,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($r_reservations as $rr): ?>
-                                        <tr>
-                                            <td>BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
-                                            <td><?= htmlspecialchars($rr['facility_name']) ?></td>
-                                            <td><?= htmlspecialchars($rr['customer_name']) ?></td>
-                                            <td><?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
-                                            <td><?= htmlspecialchars($rr['customer_email']) ?></td>
-                                            <td><?= htmlspecialchars($rr['event_type']) ?></td>
-                                            <td><?= htmlspecialchars($rr['event_date']) ?></td>
-                                            <td><?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
-                                            <td><?= $rr['guests_count'] ?></td>
-                                            <td><?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
-                                            <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
-                                            <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
-                                            <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
-                                            <td><?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
-                                            <td><?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
-                                            <td><?= htmlspecialchars($rr['status']) ?></td>
-                                            <td>
+                                        <tr style="border-bottom: 1px solid #edf2f7;">
+                                            <td
+                                                style="font-weight: 600; color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['facility_name']) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['customer_name']) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['customer_email']) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['event_type']) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['event_date']) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= $rr['guests_count'] ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                ₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                ₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
+                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
+                                            <td style="font-size: 12px; padding: 12px 15px;">
+                                                <?= htmlspecialchars($rr['status']) ?></td>
+                                            <td style="padding: 12px 15px;">
                                                 <div class="d-flex gap-1" style="justify-content: center;">
                                                     <button type="button" class="btn btn-outline btn-sm btn-icon"
                                                         onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
