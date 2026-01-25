@@ -1363,52 +1363,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-                    return $log['maintenance_date'] >= date('Y-m-d');
-                    });
-
-                    // Sort by date
-                    usort($future_logs, function ($a, $b) {
-                    return strtotime($a['maintenance_date']) - strtotime($b['maintenance_date']);
-                    });
-                    ?>
-
-                    <?php if (empty($future_logs)): ?>
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 1.5rem; color: #a0aec0;">
-                                No upcoming scheduled maintenance tasks found.
-                            </td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($future_logs as $log): ?>
-                            <tr style="background: rgba(255, 255, 255, 0.02);">
-                                <td style="font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?>
-                                </td>
-                                <td><?= date('M d, Y', strtotime($log['maintenance_date'])) ?></td>
-                                <td><?= htmlspecialchars($log['assigned_staff']) ?></td>
-                                <td>
-                                    <span
-                                        style="color: <?= ($log['priority'] == 'high' ? '#ef4444' : ($log['priority'] == 'medium' ? '#f59e0b' : '#22c55e')) ?>; font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">
-                                        <?= ucfirst($log['priority']) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-<?= $log['status'] ?>">
-                                        <?= ucfirst($log['status']) ?>
-                                    </span>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    </tbody>
-                    </table>
-                </div>
-            </div>
-    </div>
-    </div>
-
-    </div> <!-- End Management Tab -->
-    </div> <!-- End dashboard-content -->
-    </main> <!-- End main-content -->
+                </div> <!-- End Management Tab -->
+            </div> <!-- End dashboard-content -->
+        </main> <!-- End main-content -->
     </div> <!-- End container -->
 
     <!-- Modals -->
