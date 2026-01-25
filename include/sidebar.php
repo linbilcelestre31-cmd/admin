@@ -19,8 +19,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 ?>
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
-            title="Go to Dashboard">
+        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>"
+            class="logo-link" title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"

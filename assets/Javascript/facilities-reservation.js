@@ -51,11 +51,20 @@ window.switchTab = function (tabName) {
 
     sessionStorage.setItem('activeTab', tabName);
 
-    // Update URL without refreshing
+    // Update URL with pushState for back button support
     const url = new URL(window.location);
-    url.searchParams.set('tab', tabName);
-    window.history.replaceState({}, '', url);
+    if (url.searchParams.get('tab') !== tabName) {
+        url.searchParams.set('tab', tabName);
+        window.history.pushState({ tab: tabName }, '', url);
+    }
 };
+
+// Handle Browser Back/Forward buttons
+window.addEventListener('popstate', (event) => {
+    const url = new URL(window.location);
+    const tab = url.searchParams.get('tab') || 'dashboard';
+    window.switchTab(tab);
+});
 
 // --- MODAL CONTROLS ---
 window.openModal = function (modalId) {

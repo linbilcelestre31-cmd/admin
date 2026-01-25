@@ -47,6 +47,21 @@
         ];
         $module_keys = array_keys($available_modules);
 
+        // Add dummy data for visual testing if empty
+        if (empty($pending_maintenance)) {
+            $pending_maintenance = [
+                ['id' => 9991, 'item_name' => 'HVAC System - North Wing', 'description' => 'Periodic filter replacement and coolant level check', 'maintenance_date' => date('Y-m-d'), 'status' => 'pending'],
+                ['id' => 9992, 'item_name' => 'Elevator Unit 1', 'description' => 'Safety sensor calibration and lubrication', 'maintenance_date' => date('Y-m-d', strtotime('+3 days')), 'status' => 'in-progress']
+            ];
+        }
+
+        if (empty($recent_archived)) {
+            $recent_archived = [
+                ['id' => 8881, 'name' => 'Annual_Financial_Report_2025.pdf', 'uploaded_at' => date('Y-m-d H:i:s')],
+                ['id' => 8882, 'name' => 'Facility_Floor_Plans_Updated.pdf', 'uploaded_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))]
+            ];
+        }
+
     } catch (PDOException $e) {
         $available_rooms = 0;
         $today_visitors = 0;
@@ -234,9 +249,11 @@
                             <div style="flex: 1; min-width: 0;">
                                 <div
                                     style="font-weight: 600; color: #1e293b; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?></div>
+                                    <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?>
+                                </div>
                                 <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500;">
-                                    <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?></div>
+                                    <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>

@@ -450,6 +450,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .table td {
             text-align: center !important;
             vertical-align: middle;
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            white-space: nowrap;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-wrapper {
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         /* Icon-only action buttons */
