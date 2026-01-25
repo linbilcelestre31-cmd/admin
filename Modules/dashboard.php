@@ -38,6 +38,26 @@ class ReservationSystem
     public function __construct()
     {
         $this->pdo = get_pdo();
+        $this->ensureMaintenanceTableExists();
+    }
+
+    private function ensureMaintenanceTableExists()
+    {
+        try {
+            $this->pdo->exec("CREATE TABLE IF NOT EXISTS maintenance_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                item_name VARCHAR(255) NOT NULL,
+                description TEXT,
+                maintenance_date DATE NOT NULL,
+                assigned_staff VARCHAR(255) NOT NULL,
+                contact_number VARCHAR(50),
+                status ENUM('pending', 'in-progress', 'completed') DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        } catch (PDOException $e) {
+            // Silently fail or log (app will handle missing table via try-catches in fetch methods)
+        }
     }
 
 
@@ -139,7 +159,44 @@ class ReservationSystem
         }
     }
 
+    public function addMaintenanceLog($data)
+    {
+        $pdo = $this->pdo;
+        try {
+            $stmt = $pdo->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, status) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                htmlspecialchars($data['item_name']),
+                htmlspecialchars($data['description'] ?? ''),
+                $data['maintenance_date'],
+                htmlspecialchars($data['assigned_staff']),
+                htmlspecialchars($data['contact_number'] ?? ''),
+                $data['status'] ?? 'pending'
+            ]);
+            return ['success' => true, 'message' => "Maintenance log added successfully!"];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => "Error adding maintenance log: " . $e->getMessage()];
+        }
+    }
 
+    public function fetchMaintenanceLogs()
+    {
+        try {
+            return $this->pdo->query("SELECT * FROM maintenance_logs ORDER BY maintenance_date DESC, created_at DESC LIMIT 5")->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function deleteMaintenanceLog($id)
+    {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM maintenance_logs WHERE id = ?");
+            $stmt->execute([$id]);
+            return ['success' => true, 'message' => 'Maintenance log deleted successfully.'];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Error deleting maintenance log: ' . $e->getMessage()];
+        }
+    }
 
     public function fetchDashboardData()
     {
@@ -153,13 +210,15 @@ class ReservationSystem
                     (SELECT COUNT(*) FROM facilities WHERE status = 'active') as total_facilities,
                     (SELECT COUNT(*) FROM reservations WHERE event_date = CURDATE() AND status IN ('confirmed', 'pending')) as today_reservations,
                     (SELECT COUNT(*) FROM reservations WHERE status = 'pending') as pending_approvals,
-                    (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue
+                    (SELECT COALESCE(SUM(total_amount), 0) FROM reservations WHERE status = 'confirmed' AND MONTH(event_date) = MONTH(CURDATE()) AND YEAR(event_date) = YEAR(CURDATE())) as monthly_revenue,
+                    (SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed') as pending_maintenance
             ")->fetch();
 
             $data['total_facilities'] = $metrics_query['total_facilities'];
             $data['today_reservations'] = $metrics_query['today_reservations'];
             $data['pending_approvals'] = $metrics_query['pending_approvals'];
             $data['monthly_revenue'] = $metrics_query['monthly_revenue'];
+            $data['pending_maintenance'] = $metrics_query['pending_maintenance'];
 
             // Fetch facilities and today's schedule in parallel (single query)
             $data['facilities'] = $pdo->query("SELECT * FROM facilities WHERE status = 'active' ORDER BY name")->fetchAll();
@@ -180,7 +239,8 @@ class ReservationSystem
                 LIMIT 10
             ")->fetchAll();
 
-
+            // Maintenance data (cached if possible)
+            $data['maintenance_logs'] = $this->fetchMaintenanceLogs();
 
         } catch (PDOException $e) {
             $data['error'] = "Error fetching data: " . $e->getMessage();
@@ -191,6 +251,7 @@ class ReservationSystem
         $data['today_reservations'] = $data['today_reservations'] ?? 0;
         $data['pending_approvals'] = $data['pending_approvals'] ?? 0;
         $data['monthly_revenue'] = $data['monthly_revenue'] ?? 0;
+        $data['pending_maintenance'] = $data['pending_maintenance'] ?? 0;
         $data['facilities'] = $data['facilities'] ?? [];
         $data['reservations'] = $data['reservations'] ?? [];
         $data['today_schedule'] = $data['today_schedule'] ?? [];
@@ -253,7 +314,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
 
+            case 'add_maintenance':
+                $result = $reservationSystem->addMaintenanceLog($_POST);
+                if ($result['success']) {
+                    $success_message = $result['message'];
+                } else {
+                    $error_message = $result['message'];
+                }
+                break;
 
+            case 'delete_maintenance':
+                if (isset($_POST['log_id'])) {
+                    $result = $reservationSystem->deleteMaintenanceLog($_POST['log_id']);
+                    if ($result['success']) {
+                        $success_message = $result['message'];
+                    } else {
+                        $error_message = $result['message'];
+                    }
+                }
+                break;
 
             case 'check_availability':
                 if (isset($_POST['facility_id']) && isset($_POST['event_date'])) {
@@ -419,26 +498,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             color: #334155;
         }
+    </style>
+</head>
 
-        /* Dashboard Styles */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
+<body>
+    <div class="container">
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
 
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-        }
+        <!-- Sidebar -->
+        <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -446,7 +515,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <header class="top-header">
                 <div class="header-title">
                     <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="fa-solid fa-bars"></i>
+                        <span class="icon-img-placeholder">☰</span>
                     </button>
                     <h1 id="page-title">Dashboard</h1>
                 </div>
@@ -468,7 +537,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
                     <button class="btn btn-outline" onclick="openLogoutModal()">
-                        <i class="fa-solid fa-door-open"></i> Logout
+                        <span class="icon-img-placeholder">🚪</span> Logout
                     </button>
 
                     <?php
@@ -489,270 +558,157 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Alert Messages -->
                 <?php if (isset($success_message)): ?>
                     <div class="alert alert-success">
-                        <i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($success_message) ?>
+                        <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success_message) ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if (isset($error_message)): ?>
                     <div class="alert alert-error">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error_message) ?>
+                        <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error_message) ?>
                     </div>
                 <?php endif; ?>
 
-                <!-- Dashboard Tab Content -->
-                <div id="dashboard" class="tab-content">
-                    <div class="dashboard-stats">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-building"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3><?= $dashboard_data['total_facilities'] ?></h3>
-                                <p>Total Facilities</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3><?= $dashboard_data['today_reservations'] ?></h3>
-                                <p>Today's Reservations</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3><?= $dashboard_data['pending_approvals'] ?></h3>
-                                <p>Pending Approvals</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-money-bill"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>P<?= number_format($dashboard_data['monthly_revenue'], 2) ?></h3>
-                                <p>Monthly Revenue</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-content-grid">
-                        <div class="dashboard-section">
-                            <h3><i class="fa-solid fa-calendar"></i> Today's Schedule</h3>
-                            <div class="schedule-list">
-                                <?php if (empty($dashboard_data['today_schedule'])): ?>
-                                    <div class="empty-state">
-                                        <i class="fa-solid fa-calendar-xmark"></i>
-                                        <p>No reservations scheduled for today</p>
-                                    </div>
-                                <?php else: ?>
-                                    <?php foreach ($dashboard_data['today_schedule'] as $schedule): ?>
-                                        <div class="schedule-item">
-                                            <div class="schedule-time">
-                                                <?= date('g:i a', strtotime($schedule['start_time'])) ?> - 
-                                                <?= date('g:i a', strtotime($schedule['end_time'])) ?>
-                                            </div>
-                                            <div class="schedule-details">
-                                                <strong><?= htmlspecialchars($schedule['facility_name']) ?></strong>
-                                                <small><?= htmlspecialchars($schedule['customer_name']) ?></small>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="dashboard-section">
-                            <h3><i class="fa-solid fa-chart-line"></i> Recent Activity</h3>
-                            <div class="activity-list">
-                                <?php if (empty($dashboard_data['reservations'])): ?>
-                                    <div class="empty-state">
-                                        <i class="fa-solid fa-history"></i>
-                                        <p>No recent reservations</p>
-                                    </div>
-                                <?php else: ?>
-                                    <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
-                                        <div class="activity-item">
-                                            <div class="activity-icon">
-                                                <i class="fa-solid fa-calendar-plus"></i>
-                                            </div>
-                                            <div class="activity-details">
-                                                <strong><?= htmlspecialchars($reservation['customer_name']) ?></strong>
-                                                <small><?= htmlspecialchars($reservation['facility_name']) ?> - <?= date('M d, Y', strtotime($reservation['event_date'])) ?></small>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Dashboard Tab -->
+                <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
 
                 <!-- Facilities Tab -->
                 <div id="facilities" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
-                        <h2><i class="fa-solid fa-building"></i> Hotel Facilities</h2>
+                        <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
+                        <button class="btn btn-primary" onclick="openModal('facility-modal')">
+                            <span class="icon-img-placeholder">➕</span> Add Facility
+                        </button>
                     </div>
 
-                    <!-- Facilities Grid -->
-                    <div class="facilities-grid" style="margin-bottom: 3rem;">
-                        <?php if (empty($dashboard_data['facilities'])): ?>
-                            <div
-                                style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
-                                <i class="fa-solid fa-hotel"
-                                    style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                                <p style="color: #64748b;">No active facilities available at the moment.</p>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                                <div class="facility-card">
-                                    <div class="facility-image">
-                                        <?php
-                                        $fName = $facility['name'];
-                                        $imgSrc = $facility['image_path'] ?? '';
+                    <div class="facilities-grid">
+                        <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                            <div class="facility-card">
+                                <div class="facility-image">
+                                    <?php
+                                    // 1. I-normalize ang facility name para magamit sa filename
+                                    $base_name = str_replace(' ', '', ucwords(strtolower($facility['name']))); // ExecutiveBoardroom
+                                    $base_name_underscored = str_replace(' ', '_', strtolower($facility['name'])); // executive_boardroom
+                                    $name_with_spaces_title_case = ucwords(strtolower($facility['name'])); // Executive Boardroom
+                                
+                                    $possible_files = [
+                                        // New files check (with spaces and Title Case)
+                                        $name_with_spaces_title_case . '.jpeg',
+                                        $name_with_spaces_title_case . '.jpg',
+                                        // Existing checks (underscores and no spaces)
+                                        $base_name_underscored . '.jpg',
+                                        $base_name_underscored . '.jpeg',
+                                        $base_name . '.jpg',
+                                        $base_name . '.jpeg',
+                                        // Specific file names observed in screenshot (e.g., Grand Ballroom.jpeg)
+                                        $facility['name'] . '.jpeg',
+                                        $facility['name'] . '.jpg',
+                                    ];
 
-                                        if (empty($imgSrc)) {
-                                            $possiblePathJpeg = "../assets/image/" . $fName . ".jpeg";
-                                            $possiblePathJpg = "../assets/image/" . $fName . ".jpg";
-                                            $possiblePathUnderscore = "../assets/image/" . str_replace(' ', '_', strtolower($fName)) . ".jpg";
+                                    $image_url = '';
+                                    $is_placeholder = true;
 
-                                            if (file_exists(__DIR__ . '/' . $possiblePathJpeg)) {
-                                                $imgSrc = $possiblePathJpeg;
-                                            } elseif (file_exists(__DIR__ . '/' . $possiblePathJpg)) {
-                                                $imgSrc = $possiblePathJpg;
-                                            } elseif (file_exists(__DIR__ . '/' . $possiblePathUnderscore)) {
-                                                $imgSrc = $possiblePathUnderscore;
-                                            }
+                                    foreach ($possible_files as $file) {
+                                        // FIX: Ensure file_exists uses the correct relative path from the server's perspective
+                                        $full_path = __DIR__ . '/../assets/image/' . $file;
+                                        if (file_exists($full_path)) {
+                                            $image_url = '../assets/image/' . $file;
+                                            $is_placeholder = false;
+                                            break;
                                         }
+                                    }
 
-                                        if (!empty($imgSrc)): ?>
-                                            <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($fName) ?>">
-                                        <?php else: ?>
-                                            <i class="fa-solid fa-building"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="facility-content">
-                                        <div class="facility-header">
-                                            <h3 class="facility-name"><?= htmlspecialchars($facility['name']) ?></h3>
-                                            <span
-                                                class="facility-type"><?= ucfirst(htmlspecialchars($facility['type'])) ?></span>
-                                        </div>
-                                        <div class="facility-details">
-                                            <?= htmlspecialchars($facility['description']) ?>
-                                        </div>
-                                        <div class="facility-meta">
-                                            <div class="meta-item"><i class="fa-solid fa-users"></i>
-                                                <?= $facility['capacity'] ?> Guests</div>
-                                            <div class="meta-item"><i class="fa-solid fa-location-dot"></i>
-                                                <?= htmlspecialchars($facility['location']) ?></div>
-                                        </div>
-                                        <div class="facility-price">Php<?= number_format($facility['hourly_rate'], 2) ?>/hour
-                                        </div>
-                                        <button class="btn btn-primary btn-block"
-                                            onclick="openReservationModal(<?= $facility['id'] ?>)">
-                                            <i class="fa-solid fa-calendar-check"></i> Book Now
-                                        </button>
-                                    </div>
+                                    // FIX: Pinalitan ang match() ng switch statement para sa compatibility
+                                    $placeholder_color = '1a365d'; // Default
+                                    switch ($facility['type']) {
+                                        case 'banquet':
+                                            $placeholder_color = '764ba2';
+                                            break; // Purple
+                                        case 'meeting':
+                                        case 'conference':
+                                            $placeholder_color = '3182ce';
+                                            break; // Blue
+                                        case 'outdoor':
+                                            $placeholder_color = '38a169';
+                                            break; // Green
+                                        case 'dining':
+                                            $placeholder_color = '00b5d8';
+                                            break; // Teal
+                                        case 'lounge':
+                                            $placeholder_color = 'd69e2e';
+                                            break; // Yellow
+                                        default:
+                                            $placeholder_color = '1a365d';
+                                            break; // Primary Dark Blue
+                                    }
+
+                                    $placeholder_text = strtoupper(htmlspecialchars($facility['name'] ?: $facility['type']));
+
+
+                                    if ($is_placeholder) {
+                                        // Gumamit ng placeholder na may kulay at text
+                                        $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . $placeholder_text;
+                                        $onerror = "this.onerror=null;this.src='{$image_url}';";
+                                    } else {
+                                        // Gumamit ng placeholder bilang fallback kung sakaling may error sa image path sa browser
+                                        $onerror = "this.onerror=null;this.src='https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=IMAGE+FAIL';";
+                                    }
+                                    ?>
+                                    <img src="<?= htmlspecialchars($image_url) ?>"
+                                        alt="<?= htmlspecialchars($facility['name']) ?>"
+                                        onerror="<?= htmlspecialchars($onerror) ?>"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- Maintenance Section -->
-                    <div class="maintenance-section">
-                        <div class="d-flex justify-between align-center mb-2">
-                            <h3><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Logs</h3>
-                            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-plus"></i> Report
-                                Issue</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ticket ID</th>
-                                        <th>Facility</th>
-                                        <th>Issue Description</th>
-                                        <th>Reported Date</th>
-                                        <th>Priority</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Dummy Maintenance Data -->
-                                    <tr>
-                                        <td>#MT-2024-001</td>
-                                        <td>Banquet Hall A</td>
-                                        <td>Air conditioning unit leaking water</td>
-                                        <td>2024-01-15</td>
-                                        <td><span class="status-badge status-high"
-                                                style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span>
-                                        </td>
-                                        <td><span class="status-badge status-pending"
-                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In
-                                                Progress</span></td>
-                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#MT-2024-002</td>
-                                        <td>Meeting Room 2</td>
-                                        <td>Projector bulb replacement needed</td>
-                                        <td>2024-01-20</td>
-                                        <td><span class="status-badge status-medium"
-                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
-                                        </td>
-                                        <td><span class="status-badge status-open"
-                                                style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#MT-2024-003</td>
-                                        <td>Pool Side</td>
-                                        <td>Loose tiles near the deep end</td>
-                                        <td>2024-01-18</td>
-                                        <td><span class="status-badge status-low"
-                                                style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span>
-                                        </td>
-                                        <td><span class="status-badge status-completed"
-                                                style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-check"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#MT-2024-004</td>
-                                        <td>Executive Lounge</td>
-                                        <td>Coffee machine malfunction</td>
-                                        <td>2024-01-22</td>
-                                        <td><span class="status-badge status-medium"
-                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
-                                        </td>
-                                        <td><span class="status-badge status-pending"
-                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"><i class="fas fa-eye"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                <div class="facility-content">
+                                    <div class="facility-header">
+                                        <div>
+                                            <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
+                                            <button class="facility-type"
+                                                onclick="filterByType('<?= htmlspecialchars($facility['type']) ?>')">
+                                                <?= strtoupper(htmlspecialchars($facility['type'])) ?>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- BAGONG BUTTON: View Details -->
+                                    <button class="btn btn-outline btn-sm mb-1"
+                                        onclick="viewFacilityDetails(<?= $facility['id'] ?>)"
+                                        style="padding: 0.4rem 0.8rem;">
+                                        <span class="icon-img-placeholder" style="font-size: 0.9rem;">🔎</span> View Details
+                                    </button>
+                                    <div class="facility-details">
+                                        <?= htmlspecialchars($facility['description']) ?>
+                                    </div>
+                                    <div class="facility-meta">
+                                        <div class="meta-item"><span class="icon-img-placeholder">👤</span> Capacity:
+                                            <?= $facility['capacity'] ?>
+                                        </div>
+                                        <div class="meta-item"><span class="icon-img-placeholder">📍</span>
+                                            <?= htmlspecialchars($facility['location']) ?></div>
+                                    </div>
+                                    <?php if (!empty($facility['amenities'])): ?>
+                                        <div class="mb-1">
+                                            <strong><span class="icon-img-placeholder">🌟</span> Amenities:</strong>
+                                            <div style="font-size: 0.875rem; color: #718096; margin-top: 0.25rem;">
+                                                <?= htmlspecialchars($facility['amenities']) ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                    </div>
+                                    <button class="btn btn-primary btn-block"
+                                        onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                        <span class="icon-img-placeholder">➕</span> Reserve This Facility
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
                 <!-- Reservations Tab -->
                 <div id="reservations" class="tab-content">
                     <div class="d-flex justify-between align-center mb-2">
-                        <h2><i class="fa-solid fa-calendar-check"></i> Reservation Management</h2>
-                        <button class="btn btn-primary" onclick="openModal('reservation-modal')">
-                            <i class="fa-solid fa-plus"></i> Add Reservation
-                        </button>
+                        <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
+
                     </div>
 
                     <div class="table-container">
@@ -810,7 +766,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </td>
                                             <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
                                             <td style="font-weight: 600; text-align: center;">
-                                                Php<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
+                                                ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
                                             <td style="text-align: center;">
                                                 <span class="status-badge status-<?= $reservation['status'] ?>">
                                                     <?= ucfirst($reservation['status']) ?>
@@ -851,12 +807,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-
-
                 <!-- Calendar Tab -->
                 <!-- Reports Tab -->
                 <div id="reports" class="tab-content">
-                    <h2 class="mb-2"><i class="fa-solid fa-chart-line"></i> Reservations Reports</h2>
+                    <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
 
                     <?php
                     // Server-side: handle GET filters for reports view
@@ -937,7 +891,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <?= date('g:i a', strtotime($rr['end_time'])) ?>
                                         </td>
                                         <td><?= $rr['guests_count'] ?></td>
-                                        <td>P<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                        <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
                                         <td><?= htmlspecialchars($rr['status']) ?></td>
                                         <td>
                                             <div class="d-flex gap-1" style="justify-content: center;">
@@ -968,10 +922,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <i class="fa-solid fa-xmark"></i>
                                                         </button>
                                                     <?php endif; ?>
-                                                    <button class="btn btn-info btn-icon" name="status" value="pending"
-                                                        title="Retrieve Reservation" aria-label="Retrieve">
-                                                        <i class="fa-solid fa-rotate-left"></i>
-                                                    </button>
                                                 </form>
                                             </div>
                                         </td>
@@ -982,7 +932,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <div id="calendar" class="tab-content">
-                    <h2 class="mb-2"><i class="fa-solid fa-calendar-days"></i> Reservation Calendar</h2>
+                    <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
 
                     <div class="calendar-grid">
                         <?php
@@ -1013,7 +963,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endforeach; ?>
                                     <?php if (empty($day_events)): ?>
                                         <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                            <i class="fa-solid fa-circle-xmark"></i> No reservations
+                                            <span class="icon-img-placeholder">🚫</span> No reservations
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -1025,13 +975,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Management Tab -->
                 <div id="management" class="tab-content">
                     <div class="management-header">
-                        <h2><i class="fa-solid fa-gears"></i> Facilities Management</h2>
+                        <h2><span class="icon-img-placeholder">⚙️</span> Facilities Management</h2>
                         <div class="management-buttons">
                             <button id="show-facilities-card" class="btn btn-outline management-btn active"
                                 onclick="event.preventDefault(); window.showManagementCard('facilities')">
                                 <i class="fa-solid fa-building"></i> Facility Card
                             </button>
-
+                            <button id="show-maintenance-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance & System
+                            </button>
                             <button id="show-reports-card" class="btn btn-outline management-btn"
                                 onclick="event.preventDefault(); window.showManagementCard('reports')">
                                 <i class="fa-solid fa-chart-line"></i> Reports Card
@@ -1040,10 +993,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 onclick="event.preventDefault(); window.showManagementCard('employees')">
                                 <i class="fa-solid fa-users"></i> Employees Card
                             </button>
-                            <button id="show-maintenance-card" class="btn btn-outline management-btn"
-                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                <i class="fa-solid fa-tools"></i> Maintenance Card
-                            </button>
                         </div>
                     </div>
 
@@ -1051,11 +1000,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- Facility Management Card -->
                         <div class="card management-card management-facilities" data-open-tab="facilities">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-building"></i> Facility Management</h3>
+                                <h3><span class="icon-img-placeholder">🏢</span> Facility Management</h3>
                             </div>
                             <div class="card-content">
                                 <button class="btn btn-primary mb-1" onclick="openModal('facility-modal')">
-                                    <i class="fa-solid fa-plus"></i> Add New Facility
+                                    <span class="icon-img-placeholder">➕</span> Add New Facility
                                 </button>
                                 <div class="table-wrapper">
                                     <table class="table management-table">
@@ -1076,7 +1025,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </td>
                                                     <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
                                                     <td style="font-weight: 500;">
-                                                        P<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                        ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
                                                     <td>
                                                         <span
                                                             class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
@@ -1100,12 +1049,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
+                        <!-- Maintenance & Status Card -->
+                        <div class="card management-card management-maintenance">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="d-flex justify-between align-center mb-1">
+                                    <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
+                                    </button>
+                                    <div
+                                        style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                                        <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
+                                        <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
+                                    </div>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left !important;">Item/Area</th>
+                                                <th style="text-align: left !important;">Description</th>
+                                                <th>Schedule</th>
+                                                <th>Staff</th>
+                                                <th>Contact</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                                <tr>
+                                                    <td colspan="7"
+                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        No maintenance logs found.
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                    <tr>
+                                                        <td style="font-weight: 600; text-align: left !important;">
+                                                            <?= htmlspecialchars($log['item_name']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
+                                                            title="<?= htmlspecialchars($log['description']) ?>">
+                                                            <?= htmlspecialchars($log['description']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                        </td>
+                                                        <td style="font-weight: 500;">
+                                                            <?= htmlspecialchars($log['assigned_staff']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
+                                                        </td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $log['status'] ?>">
+                                                                <?= ucfirst($log['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex gap-1" style="justify-content: center;">
+                                                                <button class="btn btn-outline btn-sm btn-icon"
+                                                                    onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
+                                                                    title="View Details">
+                                                                    <i class="fa-solid fa-eye"></i>
+                                                                </button>
 
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Employee Management Card -->
                         <div class="card management-card management-employees" data-open-tab="employees">
                             <div class="card-header d-flex justify-between align-center">
-                                <h3><i class="fa-solid fa-users"></i> Employee Management</h3>
+                                <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
                                         <i class="fas fa-file-export"></i> Export Report
@@ -1144,82 +1171,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- Maintenance Management Card -->
-                        <div class="card management-card management-maintenance" data-open-tab="maintenance">
-                            <div class="card-header d-flex justify-between align-center">
-                                <h3><i class="fa-solid fa-tools"></i> Maintenance Management</h3>
-                                <button class="btn btn-success btn-sm" onclick="alert('Schedule maintenance feature coming soon!')">
-                                    <i class="fa-solid fa-plus"></i> Schedule Maintenance
-                                </button>
-                            </div>
-                            <div class="card-content">
-                                <div class="table-wrapper">
-                                    <table class="table management-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Ticket ID</th>
-                                                <th>Facility</th>
-                                                <th>Issue</th>
-                                                <th>Date</th>
-                                                <th>Priority</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>#MT-2024-001</td>
-                                                <td>Banquet Hall A</td>
-                                                <td>AC unit leaking</td>
-                                                <td>2024-01-15</td>
-                                                <td><span class="status-badge" style="background: #fee2e2; color: #991b1b;">High</span></td>
-                                                <td><span class="status-badge" style="background: #fef9c3; color: #854d0e;">In Progress</span></td>
-                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-001')"><i class="fas fa-eye"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>#MT-2024-002</td>
-                                                <td>Meeting Room 2</td>
-                                                <td>Projector bulb</td>
-                                                <td>2024-01-20</td>
-                                                <td><span class="status-badge" style="background: #ffedd5; color: #9a3412;">Medium</span></td>
-                                                <td><span class="status-badge" style="background: #e0f2fe; color: #075985;">Open</span></td>
-                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-002')"><i class="fas fa-eye"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>#MT-2024-003</td>
-                                                <td>Pool Side</td>
-                                                <td>Loose tiles</td>
-                                                <td>2024-01-18</td>
-                                                <td><span class="status-badge" style="background: #dcfce7; color: #166534;">Low</span></td>
-                                                <td><span class="status-badge" style="background: #d1fae5; color: #065f46;">Completed</span></td>
-                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-003')"><i class="fas fa-check"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>#MT-2024-004</td>
-                                                <td>Executive Lounge</td>
-                                                <td>Coffee machine</td>
-                                                <td>2024-01-22</td>
-                                                <td><span class="status-badge" style="background: #ffedd5; color: #9a3412;">Medium</span></td>
-                                                <td><span class="status-badge" style="background: #fef9c3; color: #854d0e;">Pending</span></td>
-                                                <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-004')"><i class="fas fa-eye"></i></button></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Reports Card -->
                         <div class="card management-card management-reports" data-open-tab="reports">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-chart-simple"></i> Quick Reports</h3>
+                                <h3><span class="icon-img-placeholder">📊</span> Quick Reports</h3>
                             </div>
                             <div class="card-content">
                                 <div class="stats-row">
                                     <div class="stat-item">
                                         <label>Revenue This Month</label>
                                         <div class="stat-value">
-                                            P<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
+                                            ₱<?= number_format($dashboard_data['monthly_revenue'], 2) ?></div>
                                     </div>
                                     <div class="stat-item">
                                         <label>Pending Approvals</label>
@@ -1228,10 +1190,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 <div class="report-actions">
                                     <button class="btn btn-outline mt-2" onclick="generateReport()">
-                                        <i class="fa-solid fa-file-lines"></i> Generate Full Report
+                                        <span class="icon-img-placeholder">📄</span> Generate Full Report
                                     </button>
                                     <button class="btn btn-outline mt-2" onclick="exportData()">
-                                        <i class="fa-solid fa-download"></i> Export Data
+                                        <span class="icon-img-placeholder">📥</span> Export Data
                                     </button>
                                 </div>
                             </div>
@@ -1261,7 +1223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="<?= $facility['id'] ?>" data-rate="<?= $facility['hourly_rate'] ?>"
                                 data-capacity="<?= $facility['capacity'] ?>">
                                 <?= htmlspecialchars($facility['name']) ?> -
-                                P<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                ₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -1269,9 +1231,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div id="facility-details"
                     style="display: none; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <div><strong><i class="fa-solid fa-user"></i> Capacity:</strong> <span id="capacity-display"></span>
-                        people</div>
-                    <div><strong><i class="fa-solid fa-money-bill"></i> Hourly Rate:</strong> P<span
+                    <div><strong><span class="icon-img-placeholder">👤</span> Capacity:</strong> <span
+                            id="capacity-display"></span> people</div>
+                    <div><strong><span class="icon-img-placeholder">₱</span> Hourly Rate:</strong> ₱<span
                             id="rate-display"></span></div>
                     <div id="total-cost" style="font-weight: bold; color: var(--success); margin-top: 0.5rem;"></div>
                 </div>
@@ -1325,7 +1287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div id="availability-warning" class="alert alert-warning" style="display: none;">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <span id="availability-message"></span>
+                    <span class="icon-img-placeholder">⚠️</span> <span id="availability-message"></span>
                 </div>
 
                 <div class="form-group">
@@ -1333,7 +1295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="number" id="guests_count" name="guests_count" class="form-control" required min="1"
                         onchange="checkCapacity()">
                     <small id="capacity-warning" style="color: var(--danger); display: none;">
-                        <i class="fa-solid fa-circle-exclamation"></i> Exceeds facility capacity!
+                        <span class="icon-img-placeholder">🚨</span> Exceeds facility capacity!
                     </small>
                 </div>
 
@@ -1344,7 +1306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fa-solid fa-paper-plane"></i> Submit Reservation Request
+                    <span class="icon-img-placeholder">📩</span> Submit Reservation Request
                 </button>
             </form>
         </div>
@@ -1406,13 +1368,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fa-solid fa-plus"></i> Add Facility
+                    <span class="icon-img-placeholder">➕</span> Add Facility
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Maintenance Modal -->
+    <div id="maintenance-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Log Maintenance/Repair</h3>
+                <span class="close" onclick="closeModal('maintenance-modal')">&times;</span>
+            </div>
+            <form id="maintenance-form" method="POST">
+                <input type="hidden" name="action" value="add_maintenance">
 
+                <div class="form-group">
+                    <label for="item_name">Item or Area to Fix</label>
+                    <input type="text" id="item_name" name="item_name" class="form-control"
+                        placeholder="e.g., Aircon Unit A, Room 302, Hallway Light" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Issue/Problem Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"
+                        placeholder="Describe what's wrong..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="maintenance_date">Target Repair Date</label>
+                    <input type="date" id="maintenance_date" name="maintenance_date" class="form-control" required
+                        min="<?= date('Y-m-d') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="assigned_staff">Deployed Staff (Assigned To)</label>
+                    <input type="text" id="assigned_staff" name="assigned_staff" class="form-control"
+                        placeholder="Name of person to fix it" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_number">Contact Number</label>
+                    <input type="tel" id="contact_number" name="contact_number" class="form-control"
+                        placeholder="Staff contact info">
+                </div>
+
+                <div class="form-group">
+                    <label for="mnt_status">Initial Status</label>
+                    <select id="mnt_status" name="status" class="form-control">
+                        <option value="pending">Pending (Not Started)</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span class="icon-img-placeholder">💾</span> Save Maintenance Log
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Reservation Details Modal -->
     <div id="details-modal" class="modal">
@@ -1440,13 +1456,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div id="facility-details-body">
                 <!-- Filled via JS -->
             </div>
-            <div style="margin-top: 1.5rem; text-align: right; padding-top: 1rem; border-top: 1px solid #eee;">
+            <div style="margin-top: 1.5rem; text-align: right; pt: 1rem; border-top: 1px solid #eee;">
                 <button class="btn btn-outline" onclick="closeModal('facility-details-modal')">Close Details</button>
             </div>
         </div>
     </div>
 
-
+    <!-- Maintenance Details Modal -->
+    <div id="maintenance-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Details</h3>
+                <span class="close" onclick="closeModal('maintenance-details-modal')">&times;</span>
+            </div>
+            <div id="maintenance-details-body">
+                <!-- Filled via JS -->
+            </div>
+            <div style="margin-top: 1.5rem; text-align: right; pt: 1rem; border-top: 1px solid #eee;">
+                <button class="btn btn-outline" onclick="closeModal('maintenance-details-modal')">Close Window</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Logout Confirmation Modal -->
     <div id="logout-modal" class="modal">
@@ -1464,7 +1494,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     style="flex: 1; justify-content: center;">Cancel</button>
                 <button class="btn btn-danger" onclick="showLoadingAndRedirect('../auth/login.php?logout=1')"
                     style="flex: 1; justify-content: center; white-space: nowrap;">
-                    <i class="fa-solid fa-door-open"></i> Confirm Logout
+                    <span class="icon-img-placeholder">🚪</span> Confirm Logout
                 </button>
             </div>
         </div>
@@ -1564,14 +1594,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td>${employee.email}</td>
                             <td>${position}</td>
                             <td>${department}</td>
-                            <td>P${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                            <td>₱${parseFloat(salary).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                             <td>
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <button class="btn btn-outline btn-sm" onclick="editEmployee(${employee.id})" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-sm" onclick="retrieveEmployee(${employee.id})" title="Retrieve Employee" style="color: #3b82f6;">
-                                        <i class="fas fa-undo"></i>
                                     </button>
                                     <button class="btn btn-outline btn-sm" style="color: #ef4444;" onclick="deleteEmployee(${employee.id})" title="Delete Employee">
                                         <i class="fas fa-trash"></i>
@@ -1643,153 +1670,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 .catch(error => console.error('API Error:', error));
         }
 
-        function retrieveEmployee(id) {
-            if (confirm('Are you sure you want to retrieve/restore this employee record?')) {
-                const formData = new FormData();
-                formData.append('action', 'retrieve_employee');
-                formData.append('employee_id', id);
-
-                fetch('../integ/hr4_api.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            loadEmployees();
-                            alert('Employee record retrieved successfully!');
-                        } else {
-                            // Fallback if the API doesn't support the action yet
-                            loadEmployees();
-                            alert('Employee record status has been reset.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('API Error:', error);
-                        loadEmployees();
-                        alert('Employee record retrieved.');
-                    });
-            }
-        }
-
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function () {
             loadEmployees();
         });
-
-        // Management Card Navigation Function
-        window.showManagementCard = function(cardType) {
-            // Hide all management cards
-            const allCards = document.querySelectorAll('.management-card');
-            allCards.forEach(card => {
-                card.style.display = 'none';
-            });
-
-            // Remove active class from all buttons
-            const allButtons = document.querySelectorAll('.management-btn');
-            allButtons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected card
-            const selectedCard = document.querySelector(`.management-${cardType}`);
-            if (selectedCard) {
-                selectedCard.style.display = 'block';
-            }
-
-            // Add active class to selected button
-            const selectedButton = document.getElementById(`show-${cardType}-card`);
-            if (selectedButton) {
-                selectedButton.classList.add('active');
-            }
-
-            // If card has data-open-tab attribute, navigate to that tab
-            const cardWithTab = document.querySelector(`.management-${cardType}[data-open-tab]`);
-            if (cardWithTab) {
-                const targetTab = cardWithTab.getAttribute('data-open-tab');
-                if (targetTab) {
-                    // Switch to the target tab
-                    const tabElement = document.getElementById(targetTab);
-                    if (tabElement) {
-                        // Hide all tabs
-                        document.querySelectorAll('.tab-content').forEach(tab => {
-                            tab.style.display = 'none';
-                        });
-                        
-                        // Show target tab
-                        tabElement.style.display = 'block';
-                        
-                        // Update active tab in navigation (if tab navigation exists)
-                        const tabButtons = document.querySelectorAll('[data-tab]');
-                        tabButtons.forEach(btn => {
-                            btn.classList.remove('active');
-                            if (btn.getAttribute('data-tab') === targetTab) {
-                                btn.classList.add('active');
-                            }
-                        });
-                        
-                        // Store active tab in sessionStorage
-                        sessionStorage.setItem('activeTab', targetTab);
-                    }
-                }
-            }
-        };
-
-        // Facility Details View Function
-        window.viewFacilityDetails = function(facility) {
-            const modal = document.getElementById('facility-details-modal');
-            const body = document.getElementById('facility-details-body');
-            
-            if (modal && body) {
-                body.innerHTML = `
-                    <div style="line-height: 1.8;">
-                        <div style="margin-bottom: 1rem;">
-                            <strong style="color: #1e293b; font-size: 1.1rem;">${facility.name}</strong>
-                            <span class="status-badge status-${facility.status || 'active'}" style="margin-left: 0.5rem;">
-                                ${ucfirst(facility.status || 'active')}
-                            </span>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div>
-                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Type</label>
-                                <div style="color: #1e293b; font-weight: 500;">${ucfirst(facility.type)}</div>
-                            </div>
-                            <div>
-                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Capacity</label>
-                                <div style="color: #1e293b; font-weight: 500;">${facility.capacity} Guests</div>
-                            </div>
-                            <div>
-                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Hourly Rate</label>
-                                <div style="color: #1e293b; font-weight: 500;">P${number_format(facility.hourly_rate, 2)}</div>
-                            </div>
-                            <div>
-                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Location</label>
-                                <div style="color: #1e293b; font-weight: 500;">${facility.location}</div>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Description</label>
-                            <div style="color: #1e293b; line-height: 1.6;">${facility.description}</div>
-                        </div>
-                        
-                        ${facility.amenities ? `
-                        <div>
-                            <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Amenities</label>
-                            <div style="color: #1e293b; line-height: 1.6;">${facility.amenities}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-                modal.style.display = 'flex';
-            }
-        };
-
-        // Helper function for capitalizing first letter
-        function ucfirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
