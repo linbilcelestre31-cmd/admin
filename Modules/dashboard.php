@@ -1094,12 +1094,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="recent-facility-activity">
                                     <h4><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h4>
                                     <div class="activity-timeline">
+                                        <!-- Juan Dela Cruz Special Case -->
+                                        <div class="activity-item" style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9; background: #fef3c7; border-left: 4px solid #f59e0b;">
+                                            <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                                                <span class="icon-img-placeholder" style="color: white;">⚠️</span>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: #92400e;">Juan Dela Cruz</div>
+                                                <div style="color: #78350f; font-size: 0.875rem;">
+                                                    May reservation ngunit walang booking • 
+                                                    <span style="font-weight: 500;">Kailangan ng kumpirmasyon</span>
+                                                </div>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div style="font-weight: 600; color: #dc2626;">HINDI AKTIBO</div>
+                                                <span class="status-badge status-pending" style="font-size: 0.75rem; background: #fef3c7; color: #92400e; border: 1px solid #f59e0b;">
+                                                    Nakaantala
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
                                         <?php if (empty($dashboard_data['reservations'])): ?>
                                             <div style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
                                                 <span class="icon-img-placeholder">📭</span> No recent activity
                                             </div>
                                         <?php else: ?>
-                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
+                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 4) as $reservation): ?>
                                                 <div class="activity-item" style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
                                                     <div style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
                                                         <span class="icon-img-placeholder">📅</span>
@@ -1129,7 +1149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <h4><span class="icon-img-placeholder">⚡</span> Quick Actions</h4>
                                     <div class="actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                                         <button class="btn btn-outline" onclick="window.showManagementCard('facilities')">
-                                            <span class="icon-img-placeholder">🏢</span> Manage Facilities
+                                            <span class="icon-img-placeholder">🏢</span> Pamahalaan ng Pasilidad
                                         </button>
                                         <button class="btn btn-outline" onclick="window.showManagementCard('maintenance')">
                                             <span class="icon-img-placeholder">🔧</span> View Maintenance
