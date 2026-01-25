@@ -311,9 +311,9 @@ window.showManagementCard = function (type) {
 
     // Update active button styling
     const btns = {
-        'hotel-facilities': document.getElementById('show-hotel-facilities-card'),
         'maintenance': document.getElementById('show-maintenance-card'),
-        'reports': document.getElementById('show-reports-card')
+        'employees': document.getElementById('show-employees-card'),
+        'mnt-calendar': document.getElementById('show-mnt-calendar')
     };
 
     Object.keys(btns).forEach(key => {
@@ -486,7 +486,7 @@ function initializePage() {
 
     // Initial state for management
     if (activeTab === 'management') {
-        window.showManagementCard('facilities');
+        window.showManagementCard('maintenance');
     }
 
     // Nav links listeners (for sidebar)
