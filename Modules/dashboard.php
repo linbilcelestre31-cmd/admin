@@ -717,11 +717,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <span class="facility-type"
                                                 style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;"><?= htmlspecialchars($facility['type']) ?></span>
                                         </div>
-                                        <button class="btn btn-outline btn-sm mb-1"
-                                            onclick="viewFacilityDetails(<?= $facility['id'] ?>)">
-                                            🔎 View Details
-                                        </button>
-                                        <div class="facility-details"><?= htmlspecialchars($facility['description']) ?>
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <button class="btn btn-outline btn-sm"
+                                                onclick="viewFacilityDetails(<?= $facility['id'] ?>)">
+                                                🔎 View Details
+                                            </button>
+                                            <button class="btn btn-primary btn-sm"
+                                                onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                                <i class="fa-solid fa-calendar-plus"></i> Reserve Facility
+                                            </button>
+                                        </div>
+                                        <div class="facility-details" style="margin-top: 10px;">
+                                            <?= htmlspecialchars($facility['description']) ?>
                                         </div>
                                         <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
                                         </div>
@@ -731,801 +738,743 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- Facilities List Table -->
+                    <!-- System Users List Table (List View) -->
                     <div id="facility-list-view" style="display: none;">
+                        <div class="d-flex justify-between align-center mb-2">
+                            <h3><span class="icon-img-placeholder">👥</span> System Users Overview</h3>
+                        </div>
                         <div class="table-container">
                             <table class="table">
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">ID</th>
-                                        <th style="text-align: left;">Facility Name</th>
-                                        <th>Type</th>
-                                        <th style="text-align: center;">Capacity</th>
-                                        <th style="text-align: left;">Location</th>
-                                        <th>Rate</th>
-                                        <th style="text-align: center;">Status</th>
+                                        <th style="text-align: left;">Email</th>
+                                        <th>Position</th>
+                                        <th>Department</th>
                                         <th style="text-align: center;">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php foreach ($dashboard_data['facilities'] as $f): ?>
-                                        <tr>
-                                            <td style="text-align: center;">#<?= $f['id'] ?></td>
-                                            <td style="text-align: left; font-weight: 600;">
-                                                <?= htmlspecialchars($f['name']) ?>
-                                            </td>
-                                            <td><span
-                                                    class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
-                                            </td>
-                                            <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($f['location']) ?></td>
-                                            <td style="font-weight: 500; color: #059669;">
-                                                ₱<?= number_format($f['hourly_rate'], 2) ?>/hr</td>
-                                            <td style="text-align: center;">
-                                                <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
-                                                    <?= ucfirst($f['status'] ?? 'active') ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div style="display: flex; gap: 8px; justify-content: center;">
-                                                    <button class="btn btn-outline btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
-                                                        title="View Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div style="margin-top: 3rem; border-top: 2px solid #edf2f7; padding-top: 2rem;">
-                            <div class="d-flex justify-between align-center mb-2">
-                                <h3><span class="icon-img-placeholder">👥</span> System Users / Staff Overview</h3>
-                                <button class="btn btn-outline btn-sm"
-                                    onclick="window.location.href='#management'; switchTab('management'); window.showManagementCard('employees');">
-                                    <i class="fa-solid fa-users-gear"></i> Manage Staff
-                                </button>
-                            </div>
-                            <div class="table-container">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: center;">ID</th>
-                                            <th style="text-align: left;">Email</th>
-                                            <th>Position</th>
-                                            <th>Department</th>
-                                            <th style="text-align: center;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="facilitiesEmployeesTableBody">
-                                        <!-- Loaded via JS -->
-                                        <tr>
-                                            <td colspan="5" style="text-align: center; padding: 2rem;">
-                                                <div class="loading-spinner"></div>
-                                                Loading user data...
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reservations Tab -->
-                    <div id="reservations" class="tab-content">
-                        <div class="d-flex justify-between align-center mb-2">
-                            <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
-
-                        </div>
-
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
+                                <tbody id="facilitiesEmployeesTableBody">
+                                    <!-- Loaded via JS -->
                                     <tr>
-                                        <!-- Nag-set ng center alignment para sa karamihan ng headers -->
-                                        <th style="width: 5%; text-align: center;">ID</th>
-                                        <th style="width: 15%; text-align: left;">Facility</th>
-                                        <th style="width: 15%; text-align: left;">Customer</th>
-                                        <th style="width: 10%; text-align: center;">Event Type</th>
-                                        <th style="width: 15%; text-align: center;">Date & Time</th>
-                                        <th style="width: 5%; text-align: center;">Guests</th>
-                                        <th style="width: 10%; text-align: center;">Amount</th>
-                                        <th style="width: 10%; text-align: center;">Status</th>
-                                        <th style="width: 15%; text-align: center;">Actions</th>
+                                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                                            <div class="loading-spinner"></div>
+                                            Loading user data...
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($dashboard_data['reservations'])): ?>
-                                        <tr>
-                                            <td colspan="9" style="text-align: center; padding: 20px;">
-                                                <div style="color: #718096; font-style: italic;">
-                                                    <i class="fa-regular fa-folder-open"
-                                                        style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                    No reservations found in the database.
-                                                    <!-- DEBUG: Count is <?= count($dashboard_data['reservations']) ?> -->
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
-                                            <tr>
-                                                <td style="text-align: center;">#<?= $reservation['id'] ?></td>
-                                                <td style="text-align: left;">
-                                                    <?= htmlspecialchars($reservation['facility_name']) ?>
-                                                </td>
-                                                <td style="text-align: left;">
-                                                    <div style="font-size: 0.9rem; font-weight: 600;">
-                                                        <?= htmlspecialchars($reservation['customer_name']) ?>
-                                                    </div>
-                                                    <small
-                                                        style="color: #718096; font-size: 0.75rem;"><?= htmlspecialchars($reservation['customer_email'] ?? '') ?></small>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <?= htmlspecialchars($reservation['event_type']) ?>
-                                                </td>
-                                                <!-- INAYOS NA DATE & TIME STRUCTURE -->
-                                                <td style="text-align: center;">
-                                                    <div style="font-size: 0.85rem; font-weight: 500; line-height: 1.2;">
-                                                        <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
-                                                    </div>
-                                                    <small style="color: #718096; font-size: 0.7rem; display: block;">
-                                                        <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
-                                                        <?= date('g:i a', strtotime($reservation['end_time'])) ?>
-                                                    </small>
-                                                </td>
-                                                <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
-                                                <td style="font-weight: 600; text-align: center;">
-                                                    ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
-                                                <td style="text-align: center;">
-                                                    <span class="status-badge status-<?= $reservation['status'] ?>">
-                                                        <?= ucfirst($reservation['status']) ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex gap-1"
-                                                        style="flex-wrap: nowrap; justify-content: center;">
-                                                        <button class="btn btn-outline btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
-                                                            title="View Details" aria-label="View Details">
-                                                            <i class="fa-solid fa-eye"></i>
-                                                        </button>
-                                                        <?php if ($reservation['status'] == 'pending'): ?>
-                                                            <button class="btn btn-success btn-sm btn-icon"
-                                                                onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'confirmed')"
-                                                                title="Confirm Reservation" aria-label="Confirm">
-                                                                <i class="fa-solid fa-check"></i>
-                                                            </button>
-                                                            <button class="btn btn-danger btn-sm btn-icon"
-                                                                onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'cancelled')"
-                                                                title="Cancel Reservation" aria-label="Cancel">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        <?php elseif ($reservation['status'] == 'confirmed'): ?>
-                                                            <button class="btn btn-warning btn-sm btn-icon"
-                                                                onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'completed')"
-                                                                title="Mark as Completed" aria-label="Complete">
-                                                                <i class="fa-solid fa-flag-checkered"></i>
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-
-                    <!-- Calendar Tab -->
-                    <!-- Reports Tab -->
-                    <div id="reports" class="tab-content">
-                        <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
-
-                        <?php
-                        // Server-side: handle GET filters for reports view
-                        $r_from = $_GET['from_date'] ?? '';
-                        $r_to = $_GET['to_date'] ?? '';
-                        $r_status = $_GET['status'] ?? 'all';
-
-                        $r_where = [];
-                        $r_params = [];
-                        if ($r_from) {
-                            $r_where[] = 'r.event_date >= ?';
-                            $r_params[] = $r_from;
-                        }
-                        if ($r_to) {
-                            $r_where[] = 'r.event_date <= ?';
-                            $r_params[] = $r_to;
-                        }
-                        if ($r_status !== 'all') {
-                            $r_where[] = 'r.status = ?';
-                            $r_params[] = $r_status;
-                        }
-
-                        $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
-                        if ($r_where)
-                            $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
-                        $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
-
-                        $r_stmt = get_pdo()->prepare($r_sql);
-                        $r_stmt->execute($r_params);
-                        $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
-                        ?>
-
-                        <form method="get" class="filters">
-                            From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
-                            To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
-                            Status: <select name="status">
-                                <option value="all" <?= $r_status === 'all' ? 'selected' : '' ?>>All</option>
-                                <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed
-                                </option>
-                                <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled
-                                </option>
-                                <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
-                                </option>
-                            </select>
-                            <button class="btn">Filter</button>
-                        </form>
-
-                        <form method="post" style="margin-bottom:12px">
-                            <input type="hidden" name="action" value="export_csv">
-                            <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
-                            <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
-                            <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
-                            <button class="btn">Export CSV</button>
-                        </form>
-
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Facility</th>
-                                        <th>Customer</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Guests</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($r_reservations as $rr): ?>
-                                        <tr>
-                                            <td><?= $rr['id'] ?></td>
-                                            <td><?= htmlspecialchars($rr['facility_name']) ?></td>
-                                            <td><?= htmlspecialchars($rr['customer_name']) ?><br><small><?= htmlspecialchars($rr['customer_email']) ?></small>
-                                            </td>
-                                            <td><?= htmlspecialchars($rr['event_date']) ?></td>
-                                            <td><?= date('g:i a', strtotime($rr['start_time'])) ?> -
-                                                <?= date('g:i a', strtotime($rr['end_time'])) ?>
-                                            </td>
-                                            <td><?= $rr['guests_count'] ?></td>
-                                            <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
-                                            <td><?= htmlspecialchars($rr['status']) ?></td>
-                                            <td>
-                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                        title="View Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                    <form method="post" style="display:inline-flex; gap: 4px;">
-                                                        <input type="hidden" name="action" value="update_status">
-                                                        <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
-                                                        <?php if ($rr['status'] === 'pending'): ?>
-                                                            <button class="btn btn-success btn-icon" name="status"
-                                                                value="confirmed" title="Confirm" aria-label="Confirm">
-                                                                <i class="fa-solid fa-check"></i>
-                                                            </button>
-                                                            <button class="btn btn-danger btn-icon" name="status"
-                                                                value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        <?php elseif ($rr['status'] === 'confirmed'): ?>
-                                                            <button class="btn btn-warning btn-icon" name="status"
-                                                                value="completed" title="Mark as Completed"
-                                                                aria-label="Complete">
-                                                                <i class="fa-solid fa-flag-checkered"></i>
-                                                            </button>
-                                                            <button class="btn btn-danger btn-icon" name="status"
-                                                                value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="calendar" class="tab-content">
-                        <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
-
-                        <div class="calendar-grid">
-                            <?php
-                            // Display next 7 days
-                            for ($i = 0; $i < 7; $i++):
-                                $date = date('Y-m-d', strtotime("+$i days"));
-                                $display_date = date('D, M d, Y', strtotime($date));
-                                $day_events = array_filter($dashboard_data['reservations'], function ($event) use ($date) {
-                                    return $event['event_date'] == $date && $event['status'] == 'confirmed';
-                                });
-                                ?>
-                                <div class="calendar-day">
-                                    <div class="calendar-date"><?= $display_date ?></div>
-                                    <div class="calendar-events">
-                                        <?php foreach ($day_events as $event): ?>
-                                            <div class="calendar-event">
-                                                <div class="event-time">
-                                                    <?= date('g:i a', strtotime($event['start_time'])) ?> -
-                                                    <?= date('g:i a', strtotime($event['end_time'])) ?>
-                                                </div>
-                                                <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?></div>
-                                                <div class="event-details">
-                                                    <?= htmlspecialchars($event['customer_name']) ?> •
-                                                    <?= htmlspecialchars($event['event_type']) ?> •
-                                                    <?= $event['guests_count'] ?>
-                                                    guests
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                        <?php if (empty($day_events)): ?>
-                                            <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                                <span class="icon-img-placeholder">🚫</span> No reservations
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endfor; ?>
-                        </div>
-                    </div>
-
-                    <!-- Management Tab -->
-                    <div id="management" class="tab-content">
-                        <div class="management-header">
-                            <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
-                            <div class="management-buttons">
-                                <button id="show-hotel-facilities-card" class="btn btn-outline management-btn"
-                                    onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
-                                    <span class="icon-img-placeholder">🏨</span> Hotel Facilities
-                                </button>
-                                <button id="show-maintenance-card" class="btn btn-outline management-btn"
-                                    onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
-                                </button>
-                                <button id="show-reports-card" class="btn btn-outline management-btn active"
-                                    onclick="event.preventDefault(); window.showManagementCard('reports')">
-                                    <i class="fa-solid fa-list-check"></i> Facilities Table
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="management-cards">
-                            <!-- Hotel Facilities Dashboard Card -->
-                            <div class="card management-card management-hotel-facilities" style="display: none;">
-                                <div class="card-header">
-                                    <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
-                                    <div class="d-flex gap-1 align-center">
-                                        <div class="dropdown" style="position: relative;">
-                                            <button class="btn btn-outline btn-sm dropdown-toggle"
-                                                onclick="toggleDropdown('facilities-dropdown')" aria-haspopup="true"
-                                                aria-expanded="false">
-                                                <span class="icon-img-placeholder">⚡</span> Quick Actions
-                                                <i class="fa-solid fa-chevron-down"
-                                                    style="margin-left: 5px; font-size: 12px;"></i>
-                                            </button>
-                                            <div id="facilities-dropdown" class="dropdown-menu"
-                                                style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px; z-index: 1000; margin-top: 5px;">
-                                                <a href="#" class="dropdown-item"
-                                                    style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                    onclick="window.showManagementCard('reports'); closeDropdown('facilities-dropdown'); return false;">
-                                                    <span class="icon-img-placeholder">📋</span> View Reservations
-                                                </a>
-                                                <a href="#" class="dropdown-item"
-                                                    style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                    onclick="window.showManagementCard('maintenance'); closeDropdown('facilities-dropdown'); return false;">
-                                                    <span class="icon-img-placeholder">🔧</span> View Maintenance
-                                                </a>
-                                                <a href="#" class="dropdown-item"
-                                                    style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                    onclick="window.location.href='#reservations'; closeDropdown('facilities-dropdown'); return false;">
-                                                    <span class="icon-img-placeholder">📅</span> All Reservations
-                                                </a>
-                                                <div style="border-top: 1px solid #e2e8f0; margin: 5px 0;"></div>
-                                                <a href="#" class="dropdown-item"
-                                                    style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
-                                                    onclick="exportFacilitiesReport(); closeDropdown('facilities-dropdown'); return false;">
-                                                    <span class="icon-img-placeholder">📥</span> Export Report
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
-                                            <span class="icon-img-placeholder">➕</span> Add Facility
-                                        </button>
-                                        <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
-                                            <span class="icon-img-placeholder">📥</span> Export
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <!-- Facilities Overview Stats -->
-                                    <div class="facilities-overview-grid"
-                                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                                        <div class="stat-card"
-                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                            <div class="stat-icon">
-                                                <span class="icon-img-placeholder" style="font-size: 2rem;">🏢</span>
-                                            </div>
-                                            <div class="stat-info">
-                                                <h3 style="margin: 0; font-size: 1.5rem;">
-                                                    <?= $dashboard_data['total_facilities'] ?>
-                                                </h3>
-                                                <p style="margin: 0; opacity: 0.9;">Total Facilities</p>
-                                            </div>
-                                        </div>
-                                        <div class="stat-card"
-                                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                            <div class="stat-icon">
-                                                <span class="icon-img-placeholder" style="font-size: 2rem;">✅</span>
-                                            </div>
-                                            <div class="stat-info">
-                                                <h3 style="margin: 0; font-size: 1.5rem;">
-                                                    <?= count(array_filter($dashboard_data['facilities'], fn($f) => ($f['status'] ?? 'active') === 'active')) ?>
-                                                </h3>
-                                                <p style="margin: 0; opacity: 0.9;">Active Facilities</p>
-                                            </div>
-                                        </div>
-                                        <div class="stat-card"
-                                            style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                            <div class="stat-icon">
-                                                <span class="icon-img-placeholder" style="font-size: 2rem;">📅</span>
-                                            </div>
-                                            <div class="stat-info">
-                                                <h3 style="margin: 0; font-size: 1.5rem;">
-                                                    <?= $dashboard_data['today_reservations'] ?>
-                                                </h3>
-                                                <p style="margin: 0; opacity: 0.9;">Today's reservation</p>
-                                            </div>
-                                        </div>
-                                        <div class="stat-card"
-                                            style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-                                            <div class="stat-icon">
-                                                <span class="icon-img-placeholder" style="font-size: 2rem;">💰</span>
-                                            </div>
-                                            <div class="stat-info">
-                                                <h3 style="margin: 0; font-size: 1.5rem;">
-                                                    ₱<?= number_format($dashboard_data['monthly_revenue'], 0) ?></h3>
-                                                <p style="margin: 0; opacity: 0.9;">Monthly Revenue</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Facilities by Type -->
-                                    <div class="facilities-by-type" style="margin-bottom: 2rem;">
-                                        <h4><span class="icon-img-placeholder">📊</span> Facilities by Type</h4>
-                                        <div class="type-grid"
-                                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                                            <?php
-                                            $facilities_by_type = [];
-                                            foreach ($dashboard_data['facilities'] as $facility) {
-                                                $type = ucfirst($facility['type']);
-                                                if (!isset($facilities_by_type[$type])) {
-                                                    $facilities_by_type[$type] = ['count' => 0, 'avg_rate' => 0, 'total_rate' => 0];
-                                                }
-                                                $facilities_by_type[$type]['count']++;
-                                                $facilities_by_type[$type]['total_rate'] += $facility['hourly_rate'];
-                                            }
-                                            foreach ($facilities_by_type as $type => $data) {
-                                                $facilities_by_type[$type]['avg_rate'] = $data['total_rate'] / $data['count'];
-                                            }
-                                            ?>
-                                            <?php foreach ($facilities_by_type as $type => $data): ?>
-                                                <div class="type-card"
-                                                    style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                                                        <?= match (strtolower($type)) {
-                                                            'banquet' => '🎉',
-                                                            'meeting' => '💼',
-                                                            'conference' => '🤝',
-                                                            'outdoor' => '🌳',
-                                                            'dining' => '🍽️',
-                                                            'lounge' => '🛋️',
-                                                            default => '🏢'
-                                                        } ?>
-                                                    </div>
-                                                    <div style="font-weight: 600; color: #1e293b;"><?= $type ?></div>
-                                                    <div style="color: #64748b; font-size: 0.875rem;"><?= $data['count'] ?>
-                                                        facilities</div>
-                                                    <div style="color: #059669; font-weight: 500;">
-                                                        ₱<?= number_format($data['avg_rate'], 0) ?>/hr avg</div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-
-                                    <!-- Recent Activity -->
-                                    <div class="recent-facility-activity">
-                                        <h4><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h4>
-                                        <div class="activity-timeline">
-                                            <?php if (empty($dashboard_data['reservations'])): ?>
-                                                <div
-                                                    style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                    <span class="icon-img-placeholder">📭</span> No recent activity
-                                                </div>
-                                            <?php else: ?>
-                                                <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
-                                                    <div class="activity-item"
-                                                        style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
-                                                        <div
-                                                            style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                                                            <span class="icon-img-placeholder">📅</span>
-                                                        </div>
-                                                        <div style="flex: 1;">
-                                                            <div style="font-weight: 500; color: #1e293b;">
-                                                                <?= htmlspecialchars($reservation['customer_name']) ?>
-                                                            </div>
-                                                            <div style="color: #64748b; font-size: 0.875rem;">
-                                                                Booked <?= htmlspecialchars($reservation['facility_name']) ?> •
-                                                                <?= date('M d, Y', strtotime($reservation['event_date'])) ?> •
-                                                                <?= $reservation['guests_count'] ?> guests
-                                                            </div>
-                                                        </div>
-                                                        <div style="text-align: right;">
-                                                            <div style="font-weight: 600; color: #059669;">
-                                                                ₱<?= number_format($reservation['total_amount'], 0) ?></div>
-                                                            <span class="status-badge status-<?= $reservation['status'] ?>"
-                                                                style="font-size: 0.75rem;">
-                                                                <?= ucfirst($reservation['status']) ?>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-
-                                    <!-- Quick Actions -->
-                                    <div class="quick-actions" style="margin-top: 2rem;">
-                                        <h4><span class="icon-img-placeholder">⚡</span> Quick Actions</h4>
-                                        <div class="actions-grid"
-                                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                            <button class="btn btn-outline"
-                                                onclick="window.showManagementCard('facilities')">
-                                                <span class="icon-img-placeholder">🏢</span> Pamahalaan ng Pasilidad
-                                            </button>
-                                            <button class="btn btn-outline"
-                                                onclick="window.showManagementCard('maintenance')">
-                                                <span class="icon-img-placeholder">🔧</span> View Maintenance
-                                            </button>
-                                            <button class="btn btn-outline"
-                                                onclick="window.showManagementCard('reports')">
-                                                <span class="icon-img-placeholder">📊</span> View Reports
-                                            </button>
-                                            <button class="btn btn-outline"
-                                                onclick="window.location.href='#reservations'">
-                                                <span class="icon-img-placeholder">📋</span> All Reservations
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Reports Card -->
-                            <div class="card management-card management-reports" style="display: block;">
-                                <div class="card-header">
-                                    <h3><span class="icon-img-placeholder">📊</span> Facilities Table</h3>
-                                    <div class="d-flex gap-1">
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
-                                            <span class="icon-img-placeholder">➕</span> Add Facility
-                                        </button>
-                                        <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
-                                            <span class="icon-img-placeholder">📥</span> Export
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <!-- Facilities Table -->
-                                    <div class="table-wrapper">
-                                        <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">🏢</span>
-                                            Master
-                                            List of Facilities</h4>
-                                        <table class="table management-table">
-                                            <thead>
-                                                <tr>
-                                                    <th style="text-align: center;">ID</th>
-                                                    <th>Facility Name</th>
-                                                    <th>Type</th>
-                                                    <th style="text-align: center;">Capacity</th>
-                                                    <th>Location</th>
-                                                    <th>Hourly Rate</th>
-                                                    <th style="text-align: center;">Status</th>
-                                                    <th style="text-align: center;">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($dashboard_data['facilities'])): ?>
-                                                    <tr>
-                                                        <td colspan="8"
-                                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                            <div style="color: #718096; font-style: italic;">
-                                                                <i class="fa-solid fa-building-circle-exclamation"
-                                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                                No facilities found in the system.
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php else: ?>
-                                                    <?php foreach ($dashboard_data['facilities'] as $f): ?>
-                                                        <tr>
-                                                            <td style="text-align: center;">#<?= $f['id'] ?></td>
-                                                            <td style="font-weight: 600;"><?= htmlspecialchars($f['name']) ?>
-                                                            </td>
-                                                            <td><span
-                                                                    class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
-                                                            </td>
-                                                            <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
-                                                            <td><?= htmlspecialchars($f['location']) ?></td>
-                                                            <td style="font-weight: 500; color: #059669;">
-                                                                ₱<?= number_format($f['hourly_rate'], 2) ?></td>
-                                                            <td style="text-align: center;">
-                                                                <span
-                                                                    class="status-badge status-<?= $f['status'] ?? 'active' ?>">
-                                                                    <?= ucfirst($f['status'] ?? 'active') ?>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div style="display: flex; gap: 8px; justify-content: center;">
-                                                                    <button class="btn btn-outline btn-sm btn-icon"
-                                                                        onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
-                                                                        title="View Details">
-                                                                        <i class="fa-solid fa-eye"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Maintenance & Status Card -->
-                            <div class="card management-card management-maintenance">
-                                <div class="card-header">
-                                    <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
-                                </div>
-                                <div class="card-content">
-                                    <div class="d-flex justify-between align-center mb-1">
-                                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
-                                            <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
-                                        </button>
-                                        <div
-                                            style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                                            <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
-                                            <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
-                                        </div>
-                                    </div>
-                                    <div class="table-wrapper">
-                                        <table class="table management-table">
-                                            <thead>
-                                                <tr>
-                                                    <th style="text-align: left !important;">Item/Area</th>
-                                                    <th style="text-align: left !important;">Description</th>
-                                                    <th>Schedule</th>
-                                                    <th>Staff</th>
-                                                    <th>Contact</th>
-                                                    <th>Status</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                                    <tr>
-                                                        <td colspan="7"
-                                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                            No maintenance logs found.
-                                                        </td>
-                                                    </tr>
-                                                <?php else: ?>
-                                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                        <tr>
-                                                            <td style="font-weight: 600; text-align: left !important;">
-                                                                <?= htmlspecialchars($log['item_name']) ?>
-                                                            </td>
-                                                            <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
-                                                                title="<?= htmlspecialchars($log['description']) ?>">
-                                                                <?= htmlspecialchars($log['description']) ?>
-                                                            </td>
-                                                            <td style="font-size: 0.85rem;">
-                                                                <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
-                                                            </td>
-                                                            <td style="font-weight: 500;">
-                                                                <?= htmlspecialchars($log['assigned_staff']) ?>
-                                                            </td>
-                                                            <td style="font-size: 0.85rem;">
-                                                                <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
-                                                            </td>
-                                                            <td>
-                                                                <span class="status-badge status-<?= $log['status'] ?>">
-                                                                    <?= ucfirst($log['status']) ?>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                                    <button class="btn btn-outline btn-sm btn-icon"
-                                                                        onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
-                                                                        title="View Details">
-                                                                        <i class="fa-solid fa-eye"></i>
-                                                                    </button>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Employee Management Card -->
-                            <div class="card management-card management-employees" data-open-tab="employees">
-                                <div class="card-header d-flex justify-between align-center">
-                                    <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
-                                    <div class="d-flex gap-1">
-                                        <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
-                                            <i class="fas fa-file-export"></i> Export Report
-                                        </button>
-                                        <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
-                                            <i class="fas fa-user-plus"></i> Add Employee
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <div class="table-wrapper">
-                                        <table class="table management-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>First Name</th>
-                                                    <th>Last Name</th>
-                                                    <th>Email</th>
-                                                    <th>Position</th>
-                                                    <th>Department</th>
-                                                    <th>Salary</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="employeesTableBody">
-                                                <!-- Loaded via JS -->
-                                                <tr>
-                                                    <td colspan="8" style="text-align: center; padding: 2rem;">
-                                                        <div class="loading-spinner"></div>
-                                                        Loading employee data...
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
+
+                <!-- Reservations Tab -->
+                <div id="reservations" class="tab-content">
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
+
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <!-- Nag-set ng center alignment para sa karamihan ng headers -->
+                                    <th style="width: 5%; text-align: center;">ID</th>
+                                    <th style="width: 15%; text-align: left;">Facility</th>
+                                    <th style="width: 15%; text-align: left;">Customer</th>
+                                    <th style="width: 10%; text-align: center;">Event Type</th>
+                                    <th style="width: 15%; text-align: center;">Date & Time</th>
+                                    <th style="width: 5%; text-align: center;">Guests</th>
+                                    <th style="width: 10%; text-align: center;">Amount</th>
+                                    <th style="width: 10%; text-align: center;">Status</th>
+                                    <th style="width: 15%; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_data['reservations'])): ?>
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; padding: 20px;">
+                                            <div style="color: #718096; font-style: italic;">
+                                                <i class="fa-regular fa-folder-open"
+                                                    style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                No reservations found in the database.
+                                                <!-- DEBUG: Count is <?= count($dashboard_data['reservations']) ?> -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
+                                        <tr>
+                                            <td style="text-align: center;">#<?= $reservation['id'] ?></td>
+                                            <td style="text-align: left;">
+                                                <?= htmlspecialchars($reservation['facility_name']) ?>
+                                            </td>
+                                            <td style="text-align: left;">
+                                                <div style="font-size: 0.9rem; font-weight: 600;">
+                                                    <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                </div>
+                                                <small
+                                                    style="color: #718096; font-size: 0.75rem;"><?= htmlspecialchars($reservation['customer_email'] ?? '') ?></small>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <?= htmlspecialchars($reservation['event_type']) ?>
+                                            </td>
+                                            <!-- INAYOS NA DATE & TIME STRUCTURE -->
+                                            <td style="text-align: center;">
+                                                <div style="font-size: 0.85rem; font-weight: 500; line-height: 1.2;">
+                                                    <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
+                                                </div>
+                                                <small style="color: #718096; font-size: 0.7rem; display: block;">
+                                                    <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
+                                                    <?= date('g:i a', strtotime($reservation['end_time'])) ?>
+                                                </small>
+                                            </td>
+                                            <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
+                                            <td style="font-weight: 600; text-align: center;">
+                                                ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
+                                            <td style="text-align: center;">
+                                                <span class="status-badge status-<?= $reservation['status'] ?>">
+                                                    <?= ucfirst($reservation['status']) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-1" style="flex-wrap: nowrap; justify-content: center;">
+                                                    <button class="btn btn-outline btn-sm btn-icon"
+                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
+                                                        title="View Details" aria-label="View Details">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </button>
+                                                    <?php if ($reservation['status'] == 'pending'): ?>
+                                                        <button class="btn btn-success btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'confirmed')"
+                                                            title="Confirm Reservation" aria-label="Confirm">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'cancelled')"
+                                                            title="Cancel Reservation" aria-label="Cancel">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    <?php elseif ($reservation['status'] == 'confirmed'): ?>
+                                                        <button class="btn btn-warning btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'completed')"
+                                                            title="Mark as Completed" aria-label="Complete">
+                                                            <i class="fa-solid fa-flag-checkered"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Calendar Tab -->
+                <!-- Reports Tab -->
+                <div id="reports" class="tab-content">
+                    <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
+
+                    <?php
+                    // Server-side: handle GET filters for reports view
+                    $r_from = $_GET['from_date'] ?? '';
+                    $r_to = $_GET['to_date'] ?? '';
+                    $r_status = $_GET['status'] ?? 'all';
+
+                    $r_where = [];
+                    $r_params = [];
+                    if ($r_from) {
+                        $r_where[] = 'r.event_date >= ?';
+                        $r_params[] = $r_from;
+                    }
+                    if ($r_to) {
+                        $r_where[] = 'r.event_date <= ?';
+                        $r_params[] = $r_to;
+                    }
+                    if ($r_status !== 'all') {
+                        $r_where[] = 'r.status = ?';
+                        $r_params[] = $r_status;
+                    }
+
+                    $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
+                    if ($r_where)
+                        $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
+                    $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
+
+                    $r_stmt = get_pdo()->prepare($r_sql);
+                    $r_stmt->execute($r_params);
+                    $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                    ?>
+
+                    <form method="get" class="filters">
+                        From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
+                        To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
+                        Status: <select name="status">
+                            <option value="all" <?= $r_status === 'all' ? 'selected' : '' ?>>All</option>
+                            <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed
+                            </option>
+                            <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled
+                            </option>
+                            <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
+                            </option>
+                        </select>
+                        <button class="btn">Filter</button>
+                    </form>
+
+                    <form method="post" style="margin-bottom:12px">
+                        <input type="hidden" name="action" value="export_csv">
+                        <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
+                        <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
+                        <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
+                        <button class="btn">Export CSV</button>
+                    </form>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Facility</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Guests</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($r_reservations as $rr): ?>
+                                    <tr>
+                                        <td><?= $rr['id'] ?></td>
+                                        <td><?= htmlspecialchars($rr['facility_name']) ?></td>
+                                        <td><?= htmlspecialchars($rr['customer_name']) ?><br><small><?= htmlspecialchars($rr['customer_email']) ?></small>
+                                        </td>
+                                        <td><?= htmlspecialchars($rr['event_date']) ?></td>
+                                        <td><?= date('g:i a', strtotime($rr['start_time'])) ?> -
+                                            <?= date('g:i a', strtotime($rr['end_time'])) ?>
+                                        </td>
+                                        <td><?= $rr['guests_count'] ?></td>
+                                        <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                        <td><?= htmlspecialchars($rr['status']) ?></td>
+                                        <td>
+                                            <div class="d-flex gap-1" style="justify-content: center;">
+                                                <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                    onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                    title="View Details">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                                <form method="post" style="display:inline-flex; gap: 4px;">
+                                                    <input type="hidden" name="action" value="update_status">
+                                                    <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
+                                                    <?php if ($rr['status'] === 'pending'): ?>
+                                                        <button class="btn btn-success btn-icon" name="status" value="confirmed"
+                                                            title="Confirm" aria-label="Confirm">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-icon" name="status" value="cancelled"
+                                                            title="Cancel" aria-label="Cancel">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    <?php elseif ($rr['status'] === 'confirmed'): ?>
+                                                        <button class="btn btn-warning btn-icon" name="status" value="completed"
+                                                            title="Mark as Completed" aria-label="Complete">
+                                                            <i class="fa-solid fa-flag-checkered"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-icon" name="status" value="cancelled"
+                                                            title="Cancel" aria-label="Cancel">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="calendar" class="tab-content">
+                    <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
+
+                    <div class="calendar-grid">
+                        <?php
+                        // Display next 7 days
+                        for ($i = 0; $i < 7; $i++):
+                            $date = date('Y-m-d', strtotime("+$i days"));
+                            $display_date = date('D, M d, Y', strtotime($date));
+                            $day_events = array_filter($dashboard_data['reservations'], function ($event) use ($date) {
+                                return $event['event_date'] == $date && $event['status'] == 'confirmed';
+                            });
+                            ?>
+                            <div class="calendar-day">
+                                <div class="calendar-date"><?= $display_date ?></div>
+                                <div class="calendar-events">
+                                    <?php foreach ($day_events as $event): ?>
+                                        <div class="calendar-event">
+                                            <div class="event-time">
+                                                <?= date('g:i a', strtotime($event['start_time'])) ?> -
+                                                <?= date('g:i a', strtotime($event['end_time'])) ?>
+                                            </div>
+                                            <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?></div>
+                                            <div class="event-details">
+                                                <?= htmlspecialchars($event['customer_name']) ?> •
+                                                <?= htmlspecialchars($event['event_type']) ?> •
+                                                <?= $event['guests_count'] ?>
+                                                guests
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    <?php if (empty($day_events)): ?>
+                                        <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
+                                            <span class="icon-img-placeholder">🚫</span> No reservations
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+
+                <!-- Management Tab -->
+                <div id="management" class="tab-content">
+                    <div class="management-header">
+                        <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
+                        <div class="management-buttons">
+                            <button id="show-hotel-facilities-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
+                                <span class="icon-img-placeholder">🏨</span> Hotel Facilities
+                            </button>
+                            <button id="show-maintenance-card" class="btn btn-outline management-btn"
+                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                            </button>
+                            <button id="show-reports-card" class="btn btn-outline management-btn active"
+                                onclick="event.preventDefault(); window.showManagementCard('reports')">
+                                <i class="fa-solid fa-list-check"></i> Facilities Table
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="management-cards">
+                        <!-- Hotel Facilities Dashboard Card -->
+                        <div class="card management-card management-hotel-facilities" style="display: none;">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">🏨</span> Hotel Facilities Dashboard</h3>
+                                <div class="d-flex gap-1 align-center">
+                                    <div class="dropdown" style="position: relative;">
+                                        <button class="btn btn-outline btn-sm dropdown-toggle"
+                                            onclick="toggleDropdown('facilities-dropdown')" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            <span class="icon-img-placeholder">⚡</span> Quick Actions
+                                            <i class="fa-solid fa-chevron-down"
+                                                style="margin-left: 5px; font-size: 12px;"></i>
+                                        </button>
+                                        <div id="facilities-dropdown" class="dropdown-menu"
+                                            style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px; z-index: 1000; margin-top: 5px;">
+                                            <a href="#" class="dropdown-item"
+                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
+                                                onclick="window.showManagementCard('reports'); closeDropdown('facilities-dropdown'); return false;">
+                                                <span class="icon-img-placeholder">📋</span> View Reservations
+                                            </a>
+                                            <a href="#" class="dropdown-item"
+                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
+                                                onclick="window.showManagementCard('maintenance'); closeDropdown('facilities-dropdown'); return false;">
+                                                <span class="icon-img-placeholder">🔧</span> View Maintenance
+                                            </a>
+                                            <a href="#" class="dropdown-item"
+                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
+                                                onclick="window.location.href='#reservations'; closeDropdown('facilities-dropdown'); return false;">
+                                                <span class="icon-img-placeholder">📅</span> All Reservations
+                                            </a>
+                                            <div style="border-top: 1px solid #e2e8f0; margin: 5px 0;"></div>
+                                            <a href="#" class="dropdown-item"
+                                                style="display: block; padding: 10px 15px; color: #374151; text-decoration: none; transition: background 0.2s;"
+                                                onclick="exportFacilitiesReport(); closeDropdown('facilities-dropdown'); return false;">
+                                                <span class="icon-img-placeholder">📥</span> Export Report
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Add Facility
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
+                                        <span class="icon-img-placeholder">📥</span> Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <!-- Facilities Overview Stats -->
+                                <div class="facilities-overview-grid"
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                    <div class="stat-card"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                                        <div class="stat-icon">
+                                            <span class="icon-img-placeholder" style="font-size: 2rem;">🏢</span>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h3 style="margin: 0; font-size: 1.5rem;">
+                                                <?= $dashboard_data['total_facilities'] ?>
+                                            </h3>
+                                            <p style="margin: 0; opacity: 0.9;">Total Facilities</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card"
+                                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                                        <div class="stat-icon">
+                                            <span class="icon-img-placeholder" style="font-size: 2rem;">✅</span>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h3 style="margin: 0; font-size: 1.5rem;">
+                                                <?= count(array_filter($dashboard_data['facilities'], fn($f) => ($f['status'] ?? 'active') === 'active')) ?>
+                                            </h3>
+                                            <p style="margin: 0; opacity: 0.9;">Active Facilities</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card"
+                                        style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                                        <div class="stat-icon">
+                                            <span class="icon-img-placeholder" style="font-size: 2rem;">📅</span>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h3 style="margin: 0; font-size: 1.5rem;">
+                                                <?= $dashboard_data['today_reservations'] ?>
+                                            </h3>
+                                            <p style="margin: 0; opacity: 0.9;">Today's reservation</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card"
+                                        style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                                        <div class="stat-icon">
+                                            <span class="icon-img-placeholder" style="font-size: 2rem;">💰</span>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h3 style="margin: 0; font-size: 1.5rem;">
+                                                ₱<?= number_format($dashboard_data['monthly_revenue'], 0) ?></h3>
+                                            <p style="margin: 0; opacity: 0.9;">Monthly Revenue</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Facilities by Type -->
+                                <div class="facilities-by-type" style="margin-bottom: 2rem;">
+                                    <h4><span class="icon-img-placeholder">📊</span> Facilities by Type</h4>
+                                    <div class="type-grid"
+                                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                                        <?php
+                                        $facilities_by_type = [];
+                                        foreach ($dashboard_data['facilities'] as $facility) {
+                                            $type = ucfirst($facility['type']);
+                                            if (!isset($facilities_by_type[$type])) {
+                                                $facilities_by_type[$type] = ['count' => 0, 'avg_rate' => 0, 'total_rate' => 0];
+                                            }
+                                            $facilities_by_type[$type]['count']++;
+                                            $facilities_by_type[$type]['total_rate'] += $facility['hourly_rate'];
+                                        }
+                                        foreach ($facilities_by_type as $type => $data) {
+                                            $facilities_by_type[$type]['avg_rate'] = $data['total_rate'] / $data['count'];
+                                        }
+                                        ?>
+                                        <?php foreach ($facilities_by_type as $type => $data): ?>
+                                            <div class="type-card"
+                                                style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                                                    <?= match (strtolower($type)) {
+                                                        'banquet' => '🎉',
+                                                        'meeting' => '💼',
+                                                        'conference' => '🤝',
+                                                        'outdoor' => '🌳',
+                                                        'dining' => '🍽️',
+                                                        'lounge' => '🛋️',
+                                                        default => '🏢'
+                                                    } ?>
+                                                </div>
+                                                <div style="font-weight: 600; color: #1e293b;"><?= $type ?></div>
+                                                <div style="color: #64748b; font-size: 0.875rem;"><?= $data['count'] ?>
+                                                    facilities</div>
+                                                <div style="color: #059669; font-weight: 500;">
+                                                    ₱<?= number_format($data['avg_rate'], 0) ?>/hr avg</div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Recent Activity -->
+                                <div class="recent-facility-activity">
+                                    <h4><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h4>
+                                    <div class="activity-timeline">
+                                        <?php if (empty($dashboard_data['reservations'])): ?>
+                                            <div
+                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                <span class="icon-img-placeholder">📭</span> No recent activity
+                                            </div>
+                                        <?php else: ?>
+                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
+                                                <div class="activity-item"
+                                                    style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f1f5f9;">
+                                                    <div
+                                                        style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                                                        <span class="icon-img-placeholder">📅</span>
+                                                    </div>
+                                                    <div style="flex: 1;">
+                                                        <div style="font-weight: 500; color: #1e293b;">
+                                                            <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                        </div>
+                                                        <div style="color: #64748b; font-size: 0.875rem;">
+                                                            Booked <?= htmlspecialchars($reservation['facility_name']) ?> •
+                                                            <?= date('M d, Y', strtotime($reservation['event_date'])) ?> •
+                                                            <?= $reservation['guests_count'] ?> guests
+                                                        </div>
+                                                    </div>
+                                                    <div style="text-align: right;">
+                                                        <div style="font-weight: 600; color: #059669;">
+                                                            ₱<?= number_format($reservation['total_amount'], 0) ?></div>
+                                                        <span class="status-badge status-<?= $reservation['status'] ?>"
+                                                            style="font-size: 0.75rem;">
+                                                            <?= ucfirst($reservation['status']) ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="quick-actions" style="margin-top: 2rem;">
+                                    <h4><span class="icon-img-placeholder">⚡</span> Quick Actions</h4>
+                                    <div class="actions-grid"
+                                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                        <button class="btn btn-outline"
+                                            onclick="window.showManagementCard('facilities')">
+                                            <span class="icon-img-placeholder">🏢</span> Pamahalaan ng Pasilidad
+                                        </button>
+                                        <button class="btn btn-outline"
+                                            onclick="window.showManagementCard('maintenance')">
+                                            <span class="icon-img-placeholder">🔧</span> View Maintenance
+                                        </button>
+                                        <button class="btn btn-outline" onclick="window.showManagementCard('reports')">
+                                            <span class="icon-img-placeholder">📊</span> View Reports
+                                        </button>
+                                        <button class="btn btn-outline" onclick="window.location.href='#reservations'">
+                                            <span class="icon-img-placeholder">📋</span> All Reservations
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports Card -->
+                        <div class="card management-card management-reports" style="display: block;">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">📊</span> Facilities Table</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Add Facility
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="exportFacilitiesReport()">
+                                        <span class="icon-img-placeholder">📥</span> Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <!-- Facilities Table -->
+                                <div class="table-wrapper">
+                                    <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">🏢</span>
+                                        Master
+                                        List of Facilities</h4>
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center;">ID</th>
+                                                <th>Facility Name</th>
+                                                <th>Type</th>
+                                                <th style="text-align: center;">Capacity</th>
+                                                <th>Location</th>
+                                                <th>Hourly Rate</th>
+                                                <th style="text-align: center;">Status</th>
+                                                <th style="text-align: center;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['facilities'])): ?>
+                                                <tr>
+                                                    <td colspan="8"
+                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        <div style="color: #718096; font-style: italic;">
+                                                            <i class="fa-solid fa-building-circle-exclamation"
+                                                                style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                            No facilities found in the system.
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($dashboard_data['facilities'] as $f): ?>
+                                                    <tr>
+                                                        <td style="text-align: center;">#<?= $f['id'] ?></td>
+                                                        <td style="font-weight: 600;"><?= htmlspecialchars($f['name']) ?>
+                                                        </td>
+                                                        <td><span
+                                                                class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
+                                                        </td>
+                                                        <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
+                                                        <td><?= htmlspecialchars($f['location']) ?></td>
+                                                        <td style="font-weight: 500; color: #059669;">
+                                                            ₱<?= number_format($f['hourly_rate'], 2) ?></td>
+                                                        <td style="text-align: center;">
+                                                            <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
+                                                                <?= ucfirst($f['status'] ?? 'active') ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                                                <button class="btn btn-outline btn-sm btn-icon"
+                                                                    onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
+                                                                    title="View Details">
+                                                                    <i class="fa-solid fa-eye"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance & Status Card -->
+                        <div class="card management-card management-maintenance">
+                            <div class="card-header">
+                                <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="d-flex justify-between align-center mb-1">
+                                    <button class="btn btn-primary" onclick="openModal('maintenance-modal')">
+                                        <span class="icon-img-placeholder">➕</span> Log Maintenance Issue
+                                    </button>
+                                    <div
+                                        style="background: #fff3cd; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                                        <strong><span class="icon-img-placeholder">⚠️</span> Pending Tasks:</strong>
+                                        <?= $dashboard_data['pending_maintenance'] ?? 0 ?>
+                                    </div>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left !important;">Item/Area</th>
+                                                <th style="text-align: left !important;">Description</th>
+                                                <th>Schedule</th>
+                                                <th>Staff</th>
+                                                <th>Contact</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                                <tr>
+                                                    <td colspan="7"
+                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        No maintenance logs found.
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                    <tr>
+                                                        <td style="font-weight: 600; text-align: left !important;">
+                                                            <?= htmlspecialchars($log['item_name']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
+                                                            title="<?= htmlspecialchars($log['description']) ?>">
+                                                            <?= htmlspecialchars($log['description']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                        </td>
+                                                        <td style="font-weight: 500;">
+                                                            <?= htmlspecialchars($log['assigned_staff']) ?>
+                                                        </td>
+                                                        <td style="font-size: 0.85rem;">
+                                                            <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
+                                                        </td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $log['status'] ?>">
+                                                                <?= ucfirst($log['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex gap-1" style="justify-content: center;">
+                                                                <button class="btn btn-outline btn-sm btn-icon"
+                                                                    onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
+                                                                    title="View Details">
+                                                                    <i class="fa-solid fa-eye"></i>
+                                                                </button>
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employee Management Card -->
+                        <div class="card management-card management-employees" data-open-tab="employees">
+                            <div class="card-header d-flex justify-between align-center">
+                                <h3><span class="icon-img-placeholder">👥</span> Employee Management</h3>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
+                                        <i class="fas fa-file-export"></i> Export Report
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
+                                        <i class="fas fa-user-plus"></i> Add Employee
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-wrapper">
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Email</th>
+                                                <th>Position</th>
+                                                <th>Department</th>
+                                                <th>Salary</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="employeesTableBody">
+                                            <!-- Loaded via JS -->
+                                            <tr>
+                                                <td colspan="8" style="text-align: center; padding: 2rem;">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading employee data...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
