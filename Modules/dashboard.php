@@ -978,7 +978,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
                         <div class="management-buttons">
                             <button id="show-hotel-facilities-card" class="btn btn-outline management-btn active"
-                                onclick="event.preventDefault(); window.showManagementCard('hotel-facilities')">
+                                onclick="event.preventDefault(); >
                                 <span class="icon-img-placeholder">🏨</span> Hotel Facilities
                                 <span class="badge" style="background: #dc2626; color: white; margin-left: 0.5rem; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem;">Juan Dela Cruz</span>
                             </button>
