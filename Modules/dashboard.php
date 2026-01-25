@@ -1191,6 +1191,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
+                    <!-- Module Selection Cards -->
+                    <div class="module-selection"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <a href="?tab=facilities" class="module-card">
+                            <i class="fa-solid fa-hotel"></i>
+                            <span>Facilities</span>
+                        </a>
+                        <a href="?tab=reservations" class="module-card">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>Reservations</span>
+                        </a>
+                        <a href="document management(archiving).php" class="module-card">
+                            <i class="fa-solid fa-vault"></i>
+                            <span>Document Archiving</span>
+                        </a>
+                        <a href="Visitor-logs.php" class="module-card">
+                            <i class="fa-solid fa-id-card-clip"></i>
+                            <span>Visitor Management</span>
+                        </a>
+                        <a href="legalmanagement.php" class="module-card">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <span>Legal Management</span>
+                        </a>
+                    </div>
+
+                    <style>
+                        .module-card {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            background: white;
+                            padding: 20px;
+                            border-radius: 12px;
+                            text-decoration: none;
+                            color: #1e293b;
+                            border: 1px solid #e2e8f0;
+                            transition: all 0.3s ease;
+                            gap: 10px;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                        }
+
+                        .module-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                            border-color: #d4af37;
+                        }
+
+                        .module-card:hover span {
+                            color: #d4af37;
+                        }
+
+                        .module-card i {
+                            font-size: 2rem;
+                            color: #d4af37;
+                            transition: all 0.3s ease;
+                        }
+
+                        .module-card span {
+                            font-weight: 600;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                        }
+                    </style>
+
                     <!-- Maintenance & Status Card -->
                     <div class="card management-card management-maintenance premium-dark-card active-card">
                         <div class="card-header d-flex justify-between align-center">
@@ -1225,8 +1290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <th>ASSIGNED STAFF</th>
                                             <th>DEPARTMENT</th>
                                             <th>CONTACT</th>
-                                            <th>STATUS</th>
-                                            <th>DURATION</th>
+                                            <!-- Actions kept for functionality but can be hidden if strict view-only is needed -->
                                             <th>ACTIONS</th>
                                         </tr>
                                     </thead>
@@ -1243,7 +1307,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <tr style="background: rgba(255, 255, 255, 0.02);">
                                                     <td>
                                                         <div
-                                                            style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                            style="display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
                                                             <?php
                                                             $p_color = '#22c55e'; // low
                                                             if (($log['priority'] ?? '') == 'high')
@@ -1252,42 +1316,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                                 $p_color = '#f59e0b';
                                                             ?>
                                                             <span
-                                                                style="width: 10px; height: 10px; border-radius: 50%; background: <?= $p_color ?>; box-shadow: 0 0 8px <?= $p_color ?>;"></span>
+                                                                style="width: 10px; height: 10px; border-radius: 50%; background: <?= $p_color ?>; box-shadow: 0 0 5px <?= $p_color ?>;"></span>
                                                             <span
-                                                                style="font-weight: 700; text-transform: uppercase; font-size: 0.7rem; color: <?= $p_color ?>;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
+                                                                style="font-weight: 700; text-transform: uppercase; font-size: 0.8rem; color: #fff;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
                                                         </div>
                                                     </td>
-                                                    <td style="font-weight: 600; text-align: left !important;">
+                                                    <td style="font-weight: 600; text-align: left !important; color: #fff;">
                                                         <?= htmlspecialchars($log['item_name']) ?>
                                                     </td>
-                                                    <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important;"
+                                                    <td style="font-size: 0.85rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important; color: #cbd5e0;"
                                                         title="<?= htmlspecialchars($log['description']) ?>">
                                                         <?= htmlspecialchars($log['description']) ?>
                                                     </td>
-                                                    <td style="font-weight: 500;">
+                                                    <td style="font-weight: 500; color: #e2e8f0;">
                                                         <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
                                                     </td>
-                                                    <td><?= date('m/d/Y', strtotime($log['created_at'])) ?></td>
-                                                    <td style="font-size: 0.85rem;">
+                                                    <td style="color: #e2e8f0;">
+                                                        <?= date('m/d/Y', strtotime($log['created_at'])) ?>
+                                                    </td>
+                                                    <td style="font-size: 0.85rem; color: #e2e8f0;">
                                                         <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
                                                     </td>
-                                                    <td style="font-weight: 500;">
+                                                    <td style="font-weight: 500; color: #e2e8f0;">
                                                         <?= htmlspecialchars($log['assigned_staff']) ?>
                                                     </td>
                                                     <td><span
-                                                            style="background: #f1f5f9; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #475569;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
+                                                            style="background: #334155; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #f8fafc;"><?= htmlspecialchars($log['department'] ?? 'General') ?></span>
                                                     </td>
-                                                    <td style="font-size: 0.85rem;">
+                                                    <td style="font-size: 0.85rem; color: #e2e8f0;">
                                                         <?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?>
                                                     </td>
-                                                    <td>
-                                                        <span class="status-badge status-<?= $log['status'] ?>">
-                                                            <?= ucfirst($log['status']) ?>
-                                                        </span>
-                                                    </td>
-                                                    <td style="font-weight: 500; color: #64748b;">
-                                                        <?= htmlspecialchars($log['duration'] ?? '1 hour') ?>
-                                                    </td>
+
                                                     <td>
                                                         <div class="d-flex gap-1" style="justify-content: center;">
                                                             <button class="btn btn-icon btn-sm"
