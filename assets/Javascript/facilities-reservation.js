@@ -404,10 +404,10 @@ window.viewMaintenanceDetails = function (log) {
     const bgs = { 'pending': '#fefcbf', 'in-progress': '#c6f6d5', 'completed': '#bee3f8' };
 
     body.innerHTML = `
-        < div style = "background: ${bgs[log.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);" >
+        <div style="background: ${bgs[log.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);">
             <span style="font-weight: 700; color: ${colors[log.status] || '#2d3748'}; text-transform: uppercase;">Status: ${log.status}</span>
             <span style="font-size: 0.85rem; color: #64748b;">Log ID: #${log.id}</span>
-        </div >
+        </div>
         <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
             <div>
                 <h4 style="margin-bottom: 5px; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Maintenance Item</h4>

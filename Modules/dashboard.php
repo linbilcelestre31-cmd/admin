@@ -541,6 +541,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             color: #334155;
         }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -605,7 +613,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
 
                 <!-- Facilities Tab -->
-                <div id="facilities" class="tab-content">
+                <div id="facilities"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
                         <div class="d-flex gap-1 align-center">
@@ -784,7 +793,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Reservations Tab -->
-                <div id="reservations" class="tab-content">
+                <div id="reservations"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>">
                     <div class="d-flex justify-between align-center mb-2">
                         <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
 
@@ -890,7 +900,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Calendar Tab -->
                 <!-- Reports Tab -->
-                <div id="reports" class="tab-content">
+                <div id="reports"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>">
                     <h2 class="mb-2"><span class="icon-img-placeholder">📈</span> Reservations Reports</h2>
 
                     <?php
@@ -1015,7 +1026,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </table>
                     </div>
                 </div>
-                <div id="calendar" class="tab-content">
+                <div id="calendar"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
                     <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
 
                     <div class="calendar-grid">
@@ -1058,7 +1070,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Management Tab -->
-                <div id="management" class="tab-content">
+                <div id="management"
+                    class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
                     <div class="management-header">
                         <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
                         <div class="management-buttons">
