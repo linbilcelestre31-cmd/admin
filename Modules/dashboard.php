@@ -1159,66 +1159,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                             <div class="card-content">
-                                <div class="table-wrapper" style="margin-bottom: 2rem;">
-                                    <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">🏢</span> Facilities List</h4>
-                                    <table class="table management-table">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Facility Name</th>
-                                                <th>Type</th>
-                                                <th>Capacity</th>
-                                                <th>Location</th>
-                                                <th>Hourly Rate</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (empty($dashboard_data['facilities'])): ?>
-                                                <tr>
-                                                    <td colspan="8" style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                        <div style="color: #718096; font-style: italic;">
-                                                            <i class="fa-regular fa-building" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                                            No facilities found in the database.
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                                                    <tr>
-                                                        <td style="text-align: center;"><?= $facility['id'] ?></td>
-                                                        <td style="font-weight: 600;"><?= htmlspecialchars($facility['name']) ?></td>
-                                                        <td>
-                                                            <span class="badge" style="background: #3b82f6; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
-                                                                <?= ucfirst(htmlspecialchars($facility['type'])) ?>
-                                                            </span>
-                                                        </td>
-                                                        <td style="text-align: center;"><?= htmlspecialchars($facility['capacity']) ?></td>
-                                                        <td><?= htmlspecialchars($facility['location']) ?></td>
-                                                        <td style="font-weight: 500; color: #059669;">₱<?= number_format($facility['hourly_rate'], 2) ?></td>
-                                                        <td>
-                                                            <span class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
-                                                                <?= ucfirst($facility['status'] ?? 'Active') ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div style="display: flex; gap: 8px; justify-content: center;">
-                                                                <button class="btn btn-outline btn-sm btn-icon" onclick="viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)" title="View Details">
-                                                                    <i class="fa-solid fa-eye"></i>
-                                                                </button>
-                                                                <button class="btn btn-outline btn-sm btn-icon" onclick="editFacility(<?= $facility['id'] ?>)" title="Edit Facility">
-                                                                    <i class="fa-solid fa-edit"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-
                                 <!-- Reservations Table -->
                                 <div class="table-wrapper">
                                     <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">📋</span> Recent Reservations</h4>
