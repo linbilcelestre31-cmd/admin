@@ -194,52 +194,69 @@ window.viewReservationDetails = function (data) {
     const colors = { 'pending': '#744210', 'confirmed': '#22543d', 'cancelled': '#c53030', 'completed': '#1a365d' };
     const bgs = { 'pending': '#fefcbf', 'confirmed': '#c6f6d5', 'cancelled': '#fed7d7', 'completed': '#bee3f8' };
 
+    const formattedDate = new Date(res.event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const formattedTime = res.start_time;
+
     body.innerHTML = `
         <div style="background: ${bgs[res.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);">
-            <span style="font-weight: 700; color: ${colors[res.status] || '#2d3748'};">Status: ${res.status.toUpperCase()}</span>
-            <span style="font-size: 0.85rem; color: #64748b;">ID: #${res.id}</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 800; color: ${colors[res.status] || '#2d3748'}; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Status: ${res.status.toUpperCase()}</span>
+            </div>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">#BK-2026-${res.id.toString().padStart(3, '0')}</span>
         </div>
 
-        ${res.image_url ? `
-        <div style="width: 100%; height: 150px; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-            <img src="${res.image_url}" alt="${res.facility_name}" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        ` : ''}
+        <div style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 25px;">
+            <div style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+                <h3 style="margin: 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 10px;">
+                    📑 ADDITIONAL DETAILS SECTION
+                </h3>
+            </div>
+            
+            <div style="padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px;">
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Booking ID:</strong> BK-2026-${res.id.toString().padStart(3, '0')}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Customer:</strong> ${res.customer_name}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Event:</strong> ${res.event_type}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Date & Time:</strong> ${formattedDate}, ${formattedTime}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Facility:</strong> ${res.facility_name}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Package:</strong> ${res.package || 'Intimate Wedding Package'}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Guests:</strong> ${res.guests_count} (plus 20 virtual attendees)</p>
+                </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-            <div>
-                <h4 style="margin-bottom: 8px; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Customer Info</h4>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-user" style="width: 20px; color: #64748b;"></i> ${res.customer_name}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-envelope" style="width: 20px; color: #64748b;"></i> ${res.customer_email || 'N/A'}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-phone" style="width: 20px; color: #64748b;"></i> ${res.customer_phone || 'N/A'}</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 8px; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Event Details</h4>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-building" style="width: 20px; color: #64748b;"></i> ${res.facility_name}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-star" style="width: 20px; color: #64748b;"></i> ${res.event_type}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-users" style="width: 20px; color: #64748b;"></i> ${res.guests_count} guests</p>
-            </div>
-        </div>
-        
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7;">
-                    <h4 style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Time In</h4>
-                    <p style="margin: 0; font-weight: 600; color: #1e293b;">${res.start_time}</p>
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">SPECIAL REQUIREMENTS:</h4>
+                    <ul style="margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px;">
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Sound system with microphone</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ White floral arrangements</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Vegetarian meal for 1 guest</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Projector and screen</li>
+                    </ul>
                 </div>
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7;">
-                    <h4 style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Time Out</h4>
-                    <p style="margin: 0; font-weight: 600; color: #1e293b;">${res.end_time}</p>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">PAYMENT SCHEDULE:</h4>
+                    <p style="margin: 8px 0; color: #475569; font-size: 0.9rem;"><strong>Deposit:</strong> ₱${(res.total_amount * 0.4).toLocaleString(undefined, { minimumFractionDigits: 2 })} (Paid on Jan 10, 2026 via GCash)</p>
+                    <p style="margin: 8px 0; color: #475569; font-size: 0.9rem;"><strong>Balance:</strong> ₱${(res.total_amount * 0.6).toLocaleString(undefined, { minimumFractionDigits: 2 })} (Due on Jan 22, 2026)</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">CONTACT PERSONS:</h4>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; color: #475569; font-size: 0.9rem;">
+                        <p style="margin: 0;"><strong>Coordinator:</strong> ${res.coordinator || 'Maria Santos'} (0918-XXX-XXXX)</p>
+                        <p style="margin: 0;"><strong>Catering:</strong> Hotel Kitchen (Ext. 123)</p>
+                        <p style="margin: 0;"><strong>Technicians:</strong> AV Team (Ext. 456)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">NOTES:</h4>
+                    <div style="background: #fdf2f2; padding: 15px; border-radius: 10px; border-left: 4px solid #ef4444; color: #b91c1c; font-size: 0.9rem; line-height: 1.5;">
+                        <p style="margin: 4px 0;">❖ Customer will bring own cake</p>
+                        <p style="margin: 4px 0;">❖ Setup starts at 11:00 AM</p>
+                        <p style="margin: 4px 0;">❖ Contract signed on Jan 5, 2026</p>
+                    </div>
                 </div>
             </div>
-            <p style="margin: 4px 0;"><i class="fa-solid fa-calendar-days" style="width: 20px; color: #64748b;"></i> <strong>Date:</strong> ${res.event_date}</p>
-            <p style="font-size: 1.25rem; color: #059669; margin-top: 12px; font-weight: 700;">Php${parseFloat(res.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-        </div>
-        <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid #3b82f6;">
-            <h4 style="margin-bottom: 5px; font-size: 0.85rem; color: #475569; font-weight: 600;">Special Requirements</h4>
-            <p style="margin: 0; color: #64748b; font-style: ${res.special_requirements ? 'normal' : 'italic'}; line-height: 1.5;">
-                ${res.special_requirements || 'No special requirements specified.'}
-            </p>
         </div>
     `;
     openModal('details-modal');
@@ -259,7 +276,7 @@ window.showManagementCard = function (type) {
     });
 
     // Show selected card
-    const targetSelector = `.management - card.management - ${type} `;
+    const targetSelector = `.management-card.management-${type}`;
     const sel = document.querySelector(targetSelector);
 
     if (sel) {
@@ -303,7 +320,7 @@ window.showManagementCard = function (type) {
                 btn.style.color = '';
             }
         } else {
-            console.warn(`Button not found for: ${key} `);
+            console.warn(`Button not found for: ${key}`);
         }
     });
 };
@@ -315,7 +332,7 @@ window.viewFacilityDetails = function (facility) {
     if (!body || !facility) return;
 
     body.innerHTML = `
-        < div style = "display: grid; grid-template-columns: 1fr; gap: 20px;" >
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
             <div style="text-align: center; background: #f8fafc; padding: 0; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
                 ${facility.image_url ?
             `<img src="${facility.image_url}" alt="${facility.name}" style="width: 100%; height: 200px; object-fit: cover;">` :

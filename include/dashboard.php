@@ -35,6 +35,9 @@
         // 7. Archiving Break-down (Simulated or from categories if they exist)
         $recent_archived = $db->query("SELECT * FROM documents ORDER BY uploaded_at DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
 
+        // 8. Recent Reservations for Activity Card
+        $recent_reservations_dash = $db->query("SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id ORDER BY r.id DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
+
         // Define modules for linking in the activities modal
         $available_modules = [
             'legalmanagement.php' => 'Legal Management',
@@ -151,8 +154,8 @@
         </div>
     </div>
 
-    <!-- Bottom Split Section -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+    <!-- Bottom Split Section (4 Cards Grid) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
 
         <!-- Compliance Reports (Legal) -->
         <div
@@ -200,7 +203,41 @@
             </div>
         </div>
 
-        <!-- Archiving Status -->
+        <!-- Recent Activity -->
+        <div
+            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Recent Activity</h3>
+                <a href="dashboard.php?tab=management"
+                    style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View All <i
+                        class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <?php if (empty($recent_reservations_dash)): ?>
+                    <div
+                        style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0;">
+                        <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No recent activity.</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($recent_reservations_dash as $res): ?>
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #fdfdfd; border-radius: 10px; border: 1px solid #f8fafc;">
+                            <div
+                                style="width: 35px; height: 35px; background: #ebf4ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3182ce;">
+                                <i class="fa-solid fa-calendar-check" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div
+                                    style="font-weight: 600; color: #1e293b; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <?= htmlspecialchars($res['customer_name']) ?></div>
+                                <div style="font-size: 0.75rem; color: #94a3b8;"><?= htmlspecialchars($res['facility_name']) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
         <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
@@ -209,9 +246,16 @@
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div
+                style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%; min-height: 200px;">
                 <?php if (empty($recent_archived)): ?>
-                    <p style="text-align: center; color: #94a3b8; padding: 20px;">No documents archived recently.</p>
+                    <div style="text-align: center; padding: 30px;">
+                        <div
+                            style="width: 50px; height: 50px; background: #f1f5f9; color: #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.2rem;">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <p style="color: #94a3b8; font-size: 0.95rem; margin: 0;">No documents archived recently.</p>
+                    </div>
                 <?php else: ?>
                     <?php foreach ($recent_archived as $doc): ?>
                         <div
@@ -223,7 +267,8 @@
                             <div style="flex: 1; min-width: 0;">
                                 <div
                                     style="font-weight: 600; color: #1e293b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    <?= htmlspecialchars($doc['name']) ?></div>
+                                    <?= htmlspecialchars($doc['name']) ?>
+                                </div>
                                 <div style="font-size: 0.75rem; color: #94a3b8;">
                                     <?= date('M d, Y', strtotime($doc['uploaded_at'] ?? 'now')) ?> • ID: #<?= $doc['id'] ?>
                                 </div>
@@ -249,10 +294,12 @@
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <?php if (empty($pending_maintenance)): ?>
                     <div
-                        style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0;">
-                        <i class="fa-solid fa-check-circle"
-                            style="font-size: 1.5rem; color: #22c55e; margin-bottom: 10px; display: block;"></i>
-                        <span style="color: #64748b; font-size: 0.9rem;">All systems operational</span>
+                        style="text-align: center; padding: 40px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px;">
+                        <div
+                            style="width: 60px; height: 60px; background: #22c55e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span style="color: #15803d; font-size: 1.1rem; font-weight: 700;">All systems operational</span>
                     </div>
                 <?php else: ?>
                     <?php foreach ($pending_maintenance as $job): ?>
@@ -260,12 +307,14 @@
                             <div
                                 style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
                                 <h4 style="margin: 0; font-size: 0.9rem; color: #854d0e; font-weight: 700;">
-                                    <?= htmlspecialchars($job['item_name']) ?></h4>
+                                    <?= htmlspecialchars($job['item_name']) ?>
+                                </h4>
                                 <span
                                     style="background: #ca8a04; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;"><?= $job['status'] ?></span>
                             </div>
                             <div style="font-size: 0.8rem; color: #713f12; line-height: 1.4;">
-                                <?= htmlspecialchars($job['description']) ?></div>
+                                <?= htmlspecialchars($job['description']) ?>
+                            </div>
                             <div
                                 style="margin-top: 8px; font-size: 0.75rem; color: #a16207; display: flex; align-items: center; gap: 5px;">
                                 <i class="fa-solid fa-calendar-day"></i> Due:
@@ -310,10 +359,12 @@
                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
                         <div style="flex: 1;">
                             <div style="font-weight: 600; color: #1e293b;">
-                                <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?></div>
+                                <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?>
+                            </div>
                             <div style="font-size: 0.85rem; color: #64748b;">
                                 <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?> • <span
-                                    style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span></div>
+                                    style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>

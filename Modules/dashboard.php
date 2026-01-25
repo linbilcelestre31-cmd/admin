@@ -805,15 +805,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <thead>
                                 <tr>
                                     <!-- Nag-set ng center alignment para sa karamihan ng headers -->
-                                    <th style="width: 5%; text-align: center;">ID</th>
-                                    <th style="width: 15%; text-align: left;">Facility</th>
-                                    <th style="width: 15%; text-align: left;">Customer</th>
-                                    <th style="width: 10%; text-align: center;">Event Type</th>
-                                    <th style="width: 15%; text-align: center;">Date & Time</th>
-                                    <th style="width: 5%; text-align: center;">Guests</th>
-                                    <th style="width: 10%; text-align: center;">Amount</th>
-                                    <th style="width: 10%; text-align: center;">Status</th>
-                                    <th style="width: 15%; text-align: center;">Actions</th>
+                                    <th>Booking ID</th>
+                                    <th>Facility</th>
+                                    <th>Customer</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                    <th>Event Type</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Guests</th>
+                                    <th>Package</th>
+                                    <th>Total Amount</th>
+                                    <th>Deposit Paid</th>
+                                    <th>Balance Due</th>
+                                    <th>Payment Method</th>
+                                    <th>Coordinator</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -831,35 +839,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php else: ?>
                                     <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
                                         <tr>
-                                            <td style="text-align: center;">#<?= $reservation['id'] ?></td>
-                                            <td style="text-align: left;">
-                                                <?= htmlspecialchars($reservation['facility_name']) ?>
-                                            </td>
-                                            <td style="text-align: left;">
-                                                <div style="font-size: 0.9rem; font-weight: 600;">
-                                                    <?= htmlspecialchars($reservation['customer_name']) ?>
-                                                </div>
-                                                <small
-                                                    style="color: #718096; font-size: 0.75rem;"><?= htmlspecialchars($reservation['customer_email'] ?? '') ?></small>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <?= htmlspecialchars($reservation['event_type']) ?>
-                                            </td>
-                                            <!-- INAYOS NA DATE & TIME STRUCTURE -->
-                                            <td style="text-align: center;">
-                                                <div style="font-size: 0.85rem; font-weight: 500; line-height: 1.2;">
-                                                    <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
-                                                </div>
-                                                <small style="color: #718096; font-size: 0.7rem; display: block;">
-                                                    <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
-                                                    <?= date('g:i a', strtotime($reservation['end_time'])) ?>
-                                                </small>
-                                            </td>
-                                            <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
-                                            <td style="font-weight: 600; text-align: center;">
-                                                ₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
-                                            <td style="text-align: center;">
-                                                <span class="status-badge status-<?= $reservation['status'] ?>">
+                                            <td>BK-2026-<?= str_pad($reservation['id'], 3, '0', STR_PAD_LEFT) ?></td>
+                                            <td><?= htmlspecialchars($reservation['facility_name']) ?></td>
+                                            <td><?= htmlspecialchars($reservation['customer_name']) ?></td>
+                                            <td><?= htmlspecialchars($reservation['customer_phone'] ?? '0917XXXXXXX') ?></td>
+                                            <td><?= htmlspecialchars($reservation['customer_email']) ?></td>
+                                            <td><?= htmlspecialchars($reservation['event_type']) ?></td>
+                                            <td><?= htmlspecialchars($reservation['event_date']) ?></td>
+                                            <td><?= date('g:i a', strtotime($reservation['start_time'] ?? 'now')) ?></td>
+                                            <td><?= $reservation['guests_count'] ?></td>
+                                            <td><?= htmlspecialchars($reservation['package'] ?? 'Standard Package') ?></td>
+                                            <td>₱<?= number_format($reservation['total_amount'] ?? 0, 2) ?></td>
+                                            <td>₱<?= number_format(($reservation['total_amount'] ?? 0) * 0.4, 2) ?></td>
+                                            <td>₱<?= number_format(($reservation['total_amount'] ?? 0) * 0.6, 2) ?></td>
+                                            <td><?= htmlspecialchars($reservation['payment_method'] ?? 'GCash') ?></td>
+                                            <td><?= htmlspecialchars($reservation['coordinator'] ?? 'Maria Santos') ?></td>
+                                            <td><span class="status-badge status-<?= $reservation['status'] ?>">
                                                     <?= ucfirst($reservation['status']) ?>
                                                 </span>
                                             </td>
@@ -963,13 +958,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Booking ID</th>
                                     <th>Facility</th>
                                     <th>Customer</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                    <th>Event Type</th>
                                     <th>Date</th>
                                     <th>Time</th>
                                     <th>Guests</th>
-                                    <th>Amount</th>
+                                    <th>Package</th>
+                                    <th>Total Amount</th>
+                                    <th>Deposit Paid</th>
+                                    <th>Balance Due</th>
+                                    <th>Payment Method</th>
+                                    <th>Coordinator</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -977,16 +980,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tbody>
                                 <?php foreach ($r_reservations as $rr): ?>
                                     <tr>
-                                        <td><?= $rr['id'] ?></td>
+                                        <td>BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
                                         <td><?= htmlspecialchars($rr['facility_name']) ?></td>
-                                        <td><?= htmlspecialchars($rr['customer_name']) ?><br><small><?= htmlspecialchars($rr['customer_email']) ?></small>
-                                        </td>
+                                        <td><?= htmlspecialchars($rr['customer_name']) ?></td>
+                                        <td><?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?></td>
+                                        <td><?= htmlspecialchars($rr['customer_email']) ?></td>
+                                        <td><?= htmlspecialchars($rr['event_type']) ?></td>
                                         <td><?= htmlspecialchars($rr['event_date']) ?></td>
-                                        <td><?= date('g:i a', strtotime($rr['start_time'])) ?> -
-                                            <?= date('g:i a', strtotime($rr['end_time'])) ?>
-                                        </td>
+                                        <td><?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?></td>
                                         <td><?= $rr['guests_count'] ?></td>
+                                        <td><?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?></td>
                                         <td>₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                        <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
+                                        <td>₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
+                                        <td><?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
+                                        <td><?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
                                         <td><?= htmlspecialchars($rr['status']) ?></td>
                                         <td>
                                             <div class="d-flex gap-1" style="justify-content: center;">
@@ -1090,88 +1098,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <div class="management-cards" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-                        <!-- Recent Facility Activity (Left Side) -->
-                        <div class="card management-card management-hotel-facilities" style="display: block;">
+                    <div class="management-cards" style="display: block;">
+                        <!-- Recent Facility Activity (Full Width) -->
+                        <div class="card management-card management-hotel-facilities"
+                            style="display: block; width: 100%;">
                             <div class="card-header">
                                 <h3><span class="icon-img-placeholder">🕐</span> Recent Facility Activity</h3>
                             </div>
                             <div class="card-content">
                                 <div class="activity-timeline">
                                     <?php if (empty($dashboard_data['reservations'])): ?>
-                                        <div style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                            <span class="icon-img-placeholder">📭</span> No recent activity
+                                        <div
+                                            style="text-align: center; padding: 4rem; color: #94a3b8; background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0; margin: 20px;">
+                                            <i class="fa-solid fa-clock-rotate-left"
+                                                style="font-size: 3rem; margin-bottom: 20px; display: block; opacity: 0.3;"></i>
+                                            <span style="font-size: 1.1rem; font-weight: 500;">No recent activity
+                                                recorded.</span>
                                         </div>
                                     <?php else: ?>
-                                        <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
-                                            <div class="activity-item"
-                                                style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; border-radius: 8px;">
-                                                <div
-                                                    style="width: 45px; height: 45px; background: #ebf4ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 1.25rem;">
-                                                    <i class="fa-solid fa-calendar-check"
-                                                        style="color: #3182ce; font-size: 1.25rem;"></i>
-                                                </div>
-                                                <div style="flex: 1;">
+                                        <div
+                                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                                            <?php foreach (array_slice($dashboard_data['reservations'], 0, 6) as $reservation): ?>
+                                                <div class="activity-item"
+                                                    style="display: flex; align-items: center; padding: 1.25rem; background: #fff; border: 1px solid #f1f5f9; transition: all 0.3s ease; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                                                     <div
-                                                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
-                                                        <div style="font-weight: 700; color: #1e293b; font-size: 1.05rem;">
-                                                            <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                        style="width: 50px; height: 50px; background: #ebf4ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 1.25rem; flex-shrink: 0;">
+                                                        <i class="fa-solid fa-calendar-check"
+                                                            style="color: #3182ce; font-size: 1.4rem;"></i>
+                                                    </div>
+                                                    <div style="flex: 1; min-width: 0;">
+                                                        <div
+                                                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                                            <div
+                                                                style="font-weight: 700; color: #1e293b; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                                <?= htmlspecialchars($reservation['customer_name']) ?>
+                                                            </div>
+                                                            <div
+                                                                style="font-weight: 800; color: #059669; font-size: 1.1rem; margin-left: 10px;">
+                                                                ₱<?= number_format($reservation['total_amount'], 0) ?></div>
                                                         </div>
-                                                        <div style="font-weight: 700; color: #059669; font-size: 1.1rem;">
-                                                            ₱<?= number_format($reservation['total_amount'], 0) ?></div>
-                                                    </div>
-                                                    <div style="color: #64748b; font-size: 0.9rem;">
-                                                        Booked
-                                                        <strong><?= htmlspecialchars($reservation['facility_name']) ?></strong>
-                                                        •
-                                                        <?= date('M d, Y', strtotime($reservation['event_date'])) ?> •
-                                                        <?= $reservation['guests_count'] ?> guests
-                                                    </div>
-                                                    <div style="margin-top: 8px;">
-                                                        <span class="status-badge status-<?= $reservation['status'] ?>"
-                                                            style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">
-                                                            <?= ucfirst($reservation['status']) ?>
-                                                        </span>
+                                                        <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 8px;">
+                                                            <strong><?= htmlspecialchars($reservation['facility_name']) ?></strong>
+                                                            • <?= date('M d, Y', strtotime($reservation['event_date'])) ?>
+                                                        </div>
+                                                        <div
+                                                            style="display: flex; justify-content: space-between; align-items: center;">
+                                                            <span class="status-badge status-<?= $reservation['status'] ?>"
+                                                                style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px;">
+                                                                <?= ucfirst($reservation['status']) ?>
+                                                            </span>
+                                                            <small
+                                                                style="color: #94a3b8; font-size: 0.75rem;"><?= $reservation['guests_count'] ?>
+                                                                Guests</small>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        <?php endforeach; ?>
+                                            <?php endforeach; ?>
+                                        </div>
                                     <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sidebar Quick Actions (Right Side) -->
-                        <div class="card" style="align-self: flex-start;">
-                            <div class="card-header">
-                                <h3><span class="icon-img-placeholder">⚡</span> Quick Actions</h3>
-                            </div>
-                            <div class="card-content">
-                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                    <button class="btn btn-outline"
-                                        style="justify-content: flex-start; text-align: left; padding: 12px 15px; border-radius: 10px;"
-                                        onclick="switchTab('facilities'); window.showManagementCard('facilities');">
-                                        <span class="icon-img-placeholder" style="margin-right: 10px;">🏢</span>
-                                        Pamahalaan ng Pasilidad
-                                    </button>
-                                    <button class="btn btn-outline"
-                                        style="justify-content: flex-start; text-align: left; padding: 12px 15px; border-radius: 10px;"
-                                        onclick="window.showManagementCard('maintenance')">
-                                        <span class="icon-img-placeholder" style="margin-right: 10px;">🔧</span> View
-                                        Maintenance
-                                    </button>
-                                    <button class="btn btn-outline"
-                                        style="justify-content: flex-start; text-align: left; padding: 12px 15px; border-radius: 10px;"
-                                        onclick="window.showManagementCard('reports')">
-                                        <span class="icon-img-placeholder" style="margin-right: 10px;">📊</span> View
-                                        Reports
-                                    </button>
-                                    <button class="btn btn-outline"
-                                        style="justify-content: flex-start; text-align: left; padding: 12px 15px; border-radius: 10px;"
-                                        onclick="window.location.href='#reservations'; switchTab('reservations');">
-                                        <span class="icon-img-placeholder" style="margin-right: 10px;">📅</span> All
-                                        Reservations
-                                    </button>
                                 </div>
                             </div>
                         </div>
