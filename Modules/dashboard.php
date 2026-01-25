@@ -1159,7 +1159,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                             <div class="card-content">
-                                <div class="table-wrapper">
+                                <div class="table-wrapper" style="margin-bottom: 2rem;">
+                                    <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">🏢</span> Facilities List</h4>
                                     <table class="table management-table">
                                         <thead>
                                             <tr>
@@ -1209,6 +1210,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                                 <button class="btn btn-outline btn-sm btn-icon" onclick="editFacility(<?= $facility['id'] ?>)" title="Edit Facility">
                                                                     <i class="fa-solid fa-edit"></i>
                                                                 </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Reservations Table -->
+                                <div class="table-wrapper">
+                                    <h4 style="margin-bottom: 1rem;"><span class="icon-img-placeholder">📋</span> Recent Reservations</h4>
+                                    <table class="table management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Customer</th>
+                                                <th>Facility</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Guests</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['reservations'])): ?>
+                                                <tr>
+                                                    <td colspan="9" style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                        <div style="color: #718096; font-style: italic;">
+                                                            <i class="fa-regular fa-calendar" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                            No reservations found.
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php foreach (array_slice($dashboard_data['reservations'], 0, 10) as $reservation): ?>
+                                                    <tr>
+                                                        <td style="text-align: center;"><?= $reservation['id'] ?></td>
+                                                        <td style="font-weight: 600;"><?= htmlspecialchars($reservation['customer_name']) ?></td>
+                                                        <td><?= htmlspecialchars($reservation['facility_name']) ?></td>
+                                                        <td><?= htmlspecialchars($reservation['event_date']) ?></td>
+                                                        <td>
+                                                            <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
+                                                            <?= date('g:i a', strtotime($reservation['end_time'])) ?>
+                                                        </td>
+                                                        <td style="text-align: center;"><?= $reservation['guests_count'] ?></td>
+                                                        <td style="font-weight: 500; color: #059669;">₱<?= number_format($reservation['total_amount'], 2) ?></td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= $reservation['status'] ?>">
+                                                                <?= ucfirst($reservation['status']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                                                <button class="btn btn-outline btn-sm btn-icon" 
+                                                                    onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
+                                                                    title="View Details">
+                                                                    <i class="fa-solid fa-eye"></i>
+                                                                </button>
+                                                                <?php if ($reservation['status'] == 'pending'): ?>
+                                                                    <button class="btn btn-success btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'confirmed')"
+                                                                        title="Confirm Reservation">
+                                                                        <i class="fa-solid fa-check"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'cancelled')"
+                                                                        title="Cancel Reservation">
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </button>
+                                                                <?php elseif ($reservation['status'] == 'confirmed'): ?>
+                                                                    <button class="btn btn-warning btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'completed')"
+                                                                        title="Mark as Completed">
+                                                                        <i class="fa-solid fa-flag-checkered"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </td>
                                                     </tr>
