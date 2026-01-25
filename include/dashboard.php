@@ -260,7 +260,8 @@
                 <?php endif; ?>
             </div>
         </div>
-        <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div
+            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
                 <a href="document management(archiving).php"
@@ -268,36 +269,40 @@
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
 
-            <div
-                style="display: flex; flex-direction: column; gap: 12px; justify-content: center; height: 100%; min-height: 200px;">
+            <!-- Stats Boxes (Mirroring Archiving Module) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div
+                    style="background: #eff6ff; padding: 15px; border-radius: 14px; border: 1px solid #dbeafe; text-align: center;">
+                    <div
+                        style="font-size: 0.75rem; font-weight: 700; color: #1e40af; text-transform: uppercase; margin-bottom: 4px;">
+                        Total Files</div>
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a;"><?= $total_documents ?></div>
+                </div>
+                <div
+                    style="background: #fdf2f2; padding: 15px; border-radius: 14px; border: 1px solid #fee2e2; text-align: center;">
+                    <div
+                        style="font-size: 0.75rem; font-weight: 700; color: #991b1b; text-transform: uppercase; margin-bottom: 4px;">
+                        Storage</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #7f1d1d;">0 MB</div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <h4 style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Recent Files
+                </h4>
                 <?php if (empty($recent_archived)): ?>
-                    <div style="text-align: center; padding: 30px;">
-                        <div
-                            style="width: 50px; height: 50px; background: #f1f5f9; color: #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.2rem;">
-                            <i class="fa-solid fa-folder-open"></i>
-                        </div>
-                        <p style="color: #94a3b8; font-size: 0.95rem; margin: 0;">No documents archived recently.</p>
+                    <div style="text-align: center; padding: 20px;">
+                        <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">No files found.</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($recent_archived as $doc): ?>
+                    <?php foreach (array_slice($recent_archived, 0, 3) as $doc): ?>
                         <div
-                            style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #fdfdfd; border: 1px solid #f1f5f9; border-radius: 10px;">
+                            style="display: flex; align-items: center; gap: 10px; padding: 8px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px;">
+                            <i class="fa-solid fa-file-pdf" style="color: #ef4444; font-size: 0.9rem;"></i>
                             <div
-                                style="width: 35px; height: 35px; background: #e0f2fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0284c7;">
-                                <i class="fa-solid fa-file-pdf"></i>
+                                style="flex: 1; min-width: 0; font-size: 0.8rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">
+                                <?= htmlspecialchars($doc['name']) ?>
                             </div>
-                            <div style="flex: 1; min-width: 0;">
-                                <div
-                                    style="font-weight: 600; color: #1e293b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    <?= htmlspecialchars($doc['name']) ?>
-                                </div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">
-                                    <?= date('M d, Y', strtotime($doc['uploaded_at'] ?? 'now')) ?> • ID: #<?= $doc['id'] ?>
-                                </div>
-                            </div>
-                            <div
-                                style="background: #f0fdf4; color: #15803d; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">
-                                Secured</div>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -305,50 +310,49 @@
         </div>
 
         <!-- Maintenance Tracking -->
-        <div style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div
+            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Maintenance Tracking</h3>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Maintenance Schedule</h3>
                 <a href="dashboard.php?tab=management"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">Schedules <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
                 <?php if (empty($pending_maintenance)): ?>
                     <div
-                        style="text-align: center; padding: 40px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px;">
-                        <div
-                            style="width: 60px; height: 60px; background: #22c55e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);">
-                            <i class="fa-solid fa-check"></i>
-                        </div>
-                        <span style="color: #15803d; font-size: 1.1rem; font-weight: 700;">All systems operational</span>
+                        style="text-align: center; padding: 30px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-circle-check"
+                            style="font-size: 2rem; color: #22c55e; margin-bottom: 10px;"></i>
+                        <span style="color: #15803d; font-size: 0.9rem; font-weight: 700;">All Clear</span>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($pending_maintenance as $job): ?>
-                        <div style="padding: 12px; border-radius: 10px; background: #fefce8; border: 1px solid #fef08a;">
+                    <?php foreach (array_slice($pending_maintenance, 0, 3) as $job): ?>
+                        <div
+                            style="padding: 12px; border-radius: 12px; background: #fffcf0; border: 1px solid #fef08a; display: flex; align-items: flex-start; gap: 10px;">
                             <div
-                                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                <h4 style="margin: 0; font-size: 0.9rem; color: #854d0e; font-weight: 700;">
-                                    <?= htmlspecialchars($job['item_name']) ?>
-                                </h4>
-                                <span
-                                    style="background: #ca8a04; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;"><?= $job['status'] ?></span>
+                                style="width: 30px; height: 30px; background: #fef9c3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ca8a04; flex-shrink: 0;">
+                                <i class="fa-solid fa-wrench" style="font-size: 0.8rem;"></i>
                             </div>
-                            <div style="font-size: 0.8rem; color: #713f12; line-height: 1.4;">
-                                <?= htmlspecialchars($job['description']) ?>
+                            <div style="flex: 1; min-width: 0;">
+                                <div
+                                    style="font-weight: 700; color: #854d0e; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <?= htmlspecialchars($job['item_name']) ?></div>
+                                <div style="font-size: 0.7rem; color: #a16207; margin-top: 2px;">
+                                    <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>
+                                    <?= date('M d', strtotime($job['maintenance_date'])) ?>
+                                </div>
                             </div>
-                            <div
-                                style="margin-top: 8px; font-size: 0.75rem; color: #a16207; display: flex; align-items: center; gap: 5px;">
-                                <i class="fa-solid fa-calendar-day"></i> Due:
-                                <?= date('M d, Y', strtotime($job['maintenance_date'])) ?>
-                            </div>
+                            <span
+                                style="background: #ca8a04; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase;"><?= $job['status'] ?></span>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </div>
     </div>
-
+</div>
 </div>
 
 <!-- Recent Activities Modal HTML (Kept for compatibility with JS) -->
