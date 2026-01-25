@@ -1020,6 +1020,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
                     ?>
 
+                    <!-- Module Selection Cards -->
+                    <div class="module-selection"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <a href="?tab=facilities" class="module-card">
+                            <i class="fa-solid fa-hotel"></i>
+                            <span>Facilities</span>
+                        </a>
+                        <a href="?tab=reservations" class="module-card">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>Reservations</span>
+                        </a>
+                        <a href="document management(archiving).php" class="module-card">
+                            <i class="fa-solid fa-vault"></i>
+                            <span>Document Archiving</span>
+                        </a>
+                        <a href="Visitor-logs.php" class="module-card">
+                            <i class="fa-solid fa-id-card-clip"></i>
+                            <span>Visitor Management</span>
+                        </a>
+                        <a href="legalmanagement.php" class="module-card">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <span>Legal Management</span>
+                        </a>
+                    </div>
+
+                    <style>
+                        .module-card {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            background: white;
+                            padding: 20px;
+                            border-radius: 12px;
+                            text-decoration: none;
+                            color: #1e293b;
+                            border: 1px solid #e2e8f0;
+                            transition: all 0.3s ease;
+                            gap: 10px;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                        }
+
+                        .module-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                            border-color: #d4af37;
+                        }
+
+                        .module-card:hover span {
+                            color: #d4af37;
+                        }
+
+                        .module-card i {
+                            font-size: 2rem;
+                            color: #d4af37;
+                            transition: all 0.3s ease;
+                        }
+
+                        .module-card span {
+                            font-weight: 600;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                        }
+                    </style>
+
                     <form method="get" class="filters">
                         From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
                         To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
@@ -1176,85 +1241,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
                     <div class="management-header">
                         <h2><span class="icon-img-placeholder">⚙️</span> Maintenance Management</h2>
-                        <div class="management-buttons" style="margin-left: auto;">
-                            <button id="show-maintenance-card" class="btn btn-outline management-btn active"
-                                onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                                <i class="fa-solid fa-list-check"></i> Maintenance Logs
-                            </button>
-
-                            <button id="show-mnt-calendar" class="btn btn-outline management-btn"
-                                onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
-                                <i class="fa-solid fa-calendar-days"></i> Schedule
-                            </button>
-                        </div>
                     </div>
 
 
-
-                    <!-- Module Selection Cards -->
-                    <div class="module-selection"
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                        <a href="?tab=facilities" class="module-card">
-                            <i class="fa-solid fa-hotel"></i>
-                            <span>Facilities</span>
-                        </a>
-                        <a href="?tab=reservations" class="module-card">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span>Reservations</span>
-                        </a>
-                        <a href="document management(archiving).php" class="module-card">
-                            <i class="fa-solid fa-vault"></i>
-                            <span>Document Archiving</span>
-                        </a>
-                        <a href="Visitor-logs.php" class="module-card">
-                            <i class="fa-solid fa-id-card-clip"></i>
-                            <span>Visitor Management</span>
-                        </a>
-                        <a href="legalmanagement.php" class="module-card">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                            <span>Legal Management</span>
-                        </a>
-                    </div>
-
-                    <style>
-                        .module-card {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            background: white;
-                            padding: 20px;
-                            border-radius: 12px;
-                            text-decoration: none;
-                            color: #1e293b;
-                            border: 1px solid #e2e8f0;
-                            transition: all 0.3s ease;
-                            gap: 10px;
-                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                        }
-
-                        .module-card:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                            border-color: #d4af37;
-                        }
-
-                        .module-card:hover span {
-                            color: #d4af37;
-                        }
-
-                        .module-card i {
-                            font-size: 2rem;
-                            color: #d4af37;
-                            transition: all 0.3s ease;
-                        }
-
-                        .module-card span {
-                            font-weight: 600;
-                            font-size: 0.9rem;
-                            transition: all 0.3s ease;
-                        }
-                    </style>
 
                     <!-- Maintenance & Status Card -->
                     <div class="card management-card management-maintenance premium-dark-card active-card">
@@ -1373,118 +1362,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-                    <!-- Maintenance Schedule Calendar -->
-                    <div class="card management-card management-mnt-calendar" style="display: none;">
-                        <div class="card-header">
-                            <h3><span class="icon-img-placeholder">📅</span> Maintenance Calendar</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="calendar-grid" style="margin-bottom: 25px;">
-                                <?php
-                                // Display next 7 days for maintenance
-                                for ($i = 0; $i < 7; $i++):
-                                    $date = date('Y-m-d', strtotime("+$i days"));
-                                    $display_date = date('D, M d', strtotime($date));
-                                    $day_logs = array_filter($dashboard_data['maintenance_logs'], function ($log) use ($date) {
-                                        return $log['maintenance_date'] == $date;
-                                    });
-                                    ?>
-                                    <div class="calendar-day">
-                                        <div class="calendar-date"
-                                            style="background: var(--primary); color: white; padding: 5px; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">
-                                            <?= $display_date ?>
-                                        </div>
-                                        <div class="calendar-events">
-                                            <?php foreach ($day_logs as $log): ?>
-                                                <div class="calendar-event" style="border-left: 4px solid var(--warning);">
-                                                    <div class="event-title" style="font-weight: 700;">
-                                                        <?= htmlspecialchars($log['item_name']) ?>
-                                                    </div>
-                                                    <div class="event-details">
-                                                        <i class="fa-solid fa-user"></i>
-                                                        <?= htmlspecialchars($log['assigned_staff']) ?><br>
-                                                        <span class="status-badge status-<?= $log['status'] ?>"
-                                                            style="font-size: 0.65rem; padding: 2px 6px;">
-                                                            <?= ucfirst($log['status']) ?>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                            <?php if (empty($day_logs)): ?>
-                                                <div
-                                                    style="color: #cbd5e0; font-size: 0.8rem; text-align: center; padding: 10px;">
-                                                    No Tasks</div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endfor; ?>
-                            </div>
 
-                            <!-- List of Upcoming Schedules -->
-                            <div class="upcoming-schedules">
-                                <h4 style="margin-bottom: 15px; color: #cbd5e0;">Upcoming Scheduled Maintenance</h4>
-                                <div class="table-wrapper">
-                                    <table class="table management-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Task</th>
-                                                <th>Date</th>
-                                                <th>Assigned Staff</th>
-                                                <th>Priority</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            // Get future maintenance logs
-                                            $future_logs = array_filter($dashboard_data['maintenance_logs'], function ($log) {
-                                                return $log['maintenance_date'] >= date('Y-m-d');
-                                            });
+                    return $log['maintenance_date'] >= date('Y-m-d');
+                    });
 
-                                            // Sort by date
-                                            usort($future_logs, function ($a, $b) {
-                                                return strtotime($a['maintenance_date']) - strtotime($b['maintenance_date']);
-                                            });
-                                            ?>
+                    // Sort by date
+                    usort($future_logs, function ($a, $b) {
+                    return strtotime($a['maintenance_date']) - strtotime($b['maintenance_date']);
+                    });
+                    ?>
 
-                                            <?php if (empty($future_logs)): ?>
-                                                <tr>
-                                                    <td colspan="5"
-                                                        style="text-align: center; padding: 1.5rem; color: #a0aec0;">
-                                                        No upcoming scheduled maintenance tasks found.
-                                                    </td>
-                                                </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($future_logs as $log): ?>
-                                                    <tr style="background: rgba(255, 255, 255, 0.02);">
-                                                        <td style="font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?>
-                                                        </td>
-                                                        <td><?= date('M d, Y', strtotime($log['maintenance_date'])) ?></td>
-                                                        <td><?= htmlspecialchars($log['assigned_staff']) ?></td>
-                                                        <td>
-                                                            <span
-                                                                style="color: <?= ($log['priority'] == 'high' ? '#ef4444' : ($log['priority'] == 'medium' ? '#f59e0b' : '#22c55e')) ?>; font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">
-                                                                <?= ucfirst($log['priority']) ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span class="status-badge status-<?= $log['status'] ?>">
-                                                                <?= ucfirst($log['status']) ?>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php if (empty($future_logs)): ?>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 1.5rem; color: #a0aec0;">
+                                No upcoming scheduled maintenance tasks found.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($future_logs as $log): ?>
+                            <tr style="background: rgba(255, 255, 255, 0.02);">
+                                <td style="font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?>
+                                </td>
+                                <td><?= date('M d, Y', strtotime($log['maintenance_date'])) ?></td>
+                                <td><?= htmlspecialchars($log['assigned_staff']) ?></td>
+                                <td>
+                                    <span
+                                        style="color: <?= ($log['priority'] == 'high' ? '#ef4444' : ($log['priority'] == 'medium' ? '#f59e0b' : '#22c55e')) ?>; font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">
+                                        <?= ucfirst($log['priority']) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-<?= $log['status'] ?>">
+                                        <?= ucfirst($log['status']) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+    </div>
 
-                </div> <!-- End Management Tab -->
-            </div> <!-- End dashboard-content -->
-        </main> <!-- End main-content -->
+    </div> <!-- End Management Tab -->
+    </div> <!-- End dashboard-content -->
+    </main> <!-- End main-content -->
     </div> <!-- End container -->
 
     <!-- Modals -->
