@@ -419,16 +419,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             color: #334155;
         }
-    </style>
-</head>
 
-<body>
-    <div class="container">
-        <!-- Mobile Menu Overlay -->
-        <div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
+        /* Dashboard Styles */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-        <!-- Sidebar -->
-        <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
 
         <!-- Main Content -->
         <main class="main-content">
@@ -489,8 +499,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <!-- Dashboard Tab -->
-                <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
+                <!-- Dashboard Tab Content -->
+                <div id="dashboard" class="tab-content">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-building"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3><?= $dashboard_data['total_facilities'] ?></h3>
+                                <p>Total Facilities</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3><?= $dashboard_data['today_reservations'] ?></h3>
+                                <p>Today's Reservations</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3><?= $dashboard_data['pending_approvals'] ?></h3>
+                                <p>Pending Approvals</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-money-bill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>P<?= number_format($dashboard_data['monthly_revenue'], 2) ?></h3>
+                                <p>Monthly Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-content-grid">
+                        <div class="dashboard-section">
+                            <h3><i class="fa-solid fa-calendar"></i> Today's Schedule</h3>
+                            <div class="schedule-list">
+                                <?php if (empty($dashboard_data['today_schedule'])): ?>
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-calendar-xmark"></i>
+                                        <p>No reservations scheduled for today</p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($dashboard_data['today_schedule'] as $schedule): ?>
+                                        <div class="schedule-item">
+                                            <div class="schedule-time">
+                                                <?= date('g:i a', strtotime($schedule['start_time'])) ?> - 
+                                                <?= date('g:i a', strtotime($schedule['end_time'])) ?>
+                                            </div>
+                                            <div class="schedule-details">
+                                                <strong><?= htmlspecialchars($schedule['facility_name']) ?></strong>
+                                                <small><?= htmlspecialchars($schedule['customer_name']) ?></small>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-section">
+                            <h3><i class="fa-solid fa-chart-line"></i> Recent Activity</h3>
+                            <div class="activity-list">
+                                <?php if (empty($dashboard_data['reservations'])): ?>
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-history"></i>
+                                        <p>No recent reservations</p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach (array_slice($dashboard_data['reservations'], 0, 5) as $reservation): ?>
+                                        <div class="activity-item">
+                                            <div class="activity-icon">
+                                                <i class="fa-solid fa-calendar-plus"></i>
+                                            </div>
+                                            <div class="activity-details">
+                                                <strong><?= htmlspecialchars($reservation['customer_name']) ?></strong>
+                                                <small><?= htmlspecialchars($reservation['facility_name']) ?> - <?= date('M d, Y', strtotime($reservation['event_date'])) ?></small>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Facilities Tab -->
                 <div id="facilities" class="tab-content">
@@ -1340,7 +1440,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div id="facility-details-body">
                 <!-- Filled via JS -->
             </div>
-            <div style="margin-top: 1.5rem; text-align: right; pt: 1rem; border-top: 1px solid #eee;">
+            <div style="margin-top: 1.5rem; text-align: right; padding-top: 1rem; border-top: 1px solid #eee;">
                 <button class="btn btn-outline" onclick="closeModal('facility-details-modal')">Close Details</button>
             </div>
         </div>
@@ -1576,6 +1676,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.addEventListener('DOMContentLoaded', function () {
             loadEmployees();
         });
+
+        // Management Card Navigation Function
+        window.showManagementCard = function(cardType) {
+            // Hide all management cards
+            const allCards = document.querySelectorAll('.management-card');
+            allCards.forEach(card => {
+                card.style.display = 'none';
+            });
+
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.management-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected card
+            const selectedCard = document.querySelector(`.management-${cardType}`);
+            if (selectedCard) {
+                selectedCard.style.display = 'block';
+            }
+
+            // Add active class to selected button
+            const selectedButton = document.getElementById(`show-${cardType}-card`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+
+            // If card has data-open-tab attribute, navigate to that tab
+            const cardWithTab = document.querySelector(`.management-${cardType}[data-open-tab]`);
+            if (cardWithTab) {
+                const targetTab = cardWithTab.getAttribute('data-open-tab');
+                if (targetTab) {
+                    // Switch to the target tab
+                    const tabElement = document.getElementById(targetTab);
+                    if (tabElement) {
+                        // Hide all tabs
+                        document.querySelectorAll('.tab-content').forEach(tab => {
+                            tab.style.display = 'none';
+                        });
+                        
+                        // Show target tab
+                        tabElement.style.display = 'block';
+                        
+                        // Update active tab in navigation (if tab navigation exists)
+                        const tabButtons = document.querySelectorAll('[data-tab]');
+                        tabButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-tab') === targetTab) {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Store active tab in sessionStorage
+                        sessionStorage.setItem('activeTab', targetTab);
+                    }
+                }
+            }
+        };
+
+        // Facility Details View Function
+        window.viewFacilityDetails = function(facility) {
+            const modal = document.getElementById('facility-details-modal');
+            const body = document.getElementById('facility-details-body');
+            
+            if (modal && body) {
+                body.innerHTML = `
+                    <div style="line-height: 1.8;">
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #1e293b; font-size: 1.1rem;">${facility.name}</strong>
+                            <span class="status-badge status-${facility.status || 'active'}" style="margin-left: 0.5rem;">
+                                ${ucfirst(facility.status || 'active')}
+                            </span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Type</label>
+                                <div style="color: #1e293b; font-weight: 500;">${ucfirst(facility.type)}</div>
+                            </div>
+                            <div>
+                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Capacity</label>
+                                <div style="color: #1e293b; font-weight: 500;">${facility.capacity} Guests</div>
+                            </div>
+                            <div>
+                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Hourly Rate</label>
+                                <div style="color: #1e293b; font-weight: 500;">P${number_format(facility.hourly_rate, 2)}</div>
+                            </div>
+                            <div>
+                                <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Location</label>
+                                <div style="color: #1e293b; font-weight: 500;">${facility.location}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Description</label>
+                            <div style="color: #1e293b; line-height: 1.6;">${facility.description}</div>
+                        </div>
+                        
+                        ${facility.amenities ? `
+                        <div>
+                            <label style="color: #64748b; font-size: 0.85rem; font-weight: 600;">Amenities</label>
+                            <div style="color: #1e293b; line-height: 1.6;">${facility.amenities}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            }
+        };
+
+        // Helper function for capitalizing first letter
+        function ucfirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"

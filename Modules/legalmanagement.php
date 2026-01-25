@@ -1897,18 +1897,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
                         Reveal</button>
                 </div>
-
-                <!-- Footer Actions -->
-                <div style="margin-top: 30px; display: flex; gap: 12px;">
-                    <button type="button" id="closeEmployeeInfoBottom"
-                        style="flex: 1; padding: 14px; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                        Close
-                    </button>
-                    <button type="button" class="save-btn" id="modalDownloadEmpPdf"
-                        style="flex: 2; border-radius: 16px; padding: 14px; font-weight: 700; background: #3b82f6; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <i class="fa-solid fa-file-pdf"></i> Download Official Profile
-                    </button>
-                </div>
             </div>
         </div>
     </div>
