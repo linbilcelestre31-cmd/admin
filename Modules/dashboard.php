@@ -258,7 +258,7 @@ class ReservationSystem
             $data['facilities'] = $pdo->query("
                 SELECT f.*, 
                 (SELECT customer_name FROM reservations r WHERE r.facility_id = f.id AND r.event_date >= CURDATE() AND r.status = 'confirmed' ORDER BY r.event_date ASC, r.start_time ASC LIMIT 1) as next_reserve_name,
-                (SELECT coordinator FROM reservations r WHERE r.facility_id = f.id AND r.event_date >= CURDATE() AND r.status = 'confirmed' ORDER BY r.event_date ASC, r.start_time ASC LIMIT 1) as next_assigned_user
+                'Not Assigned' as next_assigned_user
                 FROM facilities f WHERE f.status = 'active' ORDER BY f.name
             ")->fetchAll();
             $data['today_schedule'] = $pdo->query("
