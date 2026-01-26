@@ -77,6 +77,15 @@ class ReservationSystem
         } catch (PDOException $e) {
             // Silently fail or log (app will handle missing table via try-catches in fetch methods)
         }
+
+        // Alter reservations table if columns don't exist
+        try {
+            $this->pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS deposit_paid DECIMAL(10,2) DEFAULT 0");
+            $this->pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS balance_due DECIMAL(10,2) DEFAULT 0");
+            $this->pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'Cash'");
+            $this->pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS coordinator VARCHAR(255)");
+        } catch (Exception $e) {
+        }
     }
 
 
@@ -1254,30 +1263,21 @@ if (isset($dashboard_data['error'])) {
 
                         case 'reservations':
                         default:
-                            $r_where = [];
-                            $r_params = [];
-                            if ($r_from) {
-                                $r_where[] = 'r.event_date >= ?';
-                                $r_params[] = $r_from;
-                            }
-                            if ($r_to) {
-                                $r_where[] = 'r.event_date <= ?';
-                                $r_params[] = $r_to;
-                            }
-                            if ($r_status !== 'all') {
-                                $r_where[] = 'r.status = ?';
-                                $r_params[] = $r_status;
-                            }
-
-                            $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
-                            if ($r_where)
-                                $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
+                            $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1";
+                            if ($r_from)
+                                $r_sql .= " AND r.event_date >= " . get_pdo()->quote($r_from);
+                            if ($r_to)
+                                $r_sql .= " AND r.event_date <= " . get_pdo()->quote($r_to);
+                            if ($r_status !== 'all')
+                                $r_sql .= " AND r.status = " . get_pdo()->quote($r_status);
                             $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
 
+                            $r_headers = ['ID', 'TIME', 'GUESTS', 'PACKAGE', 'TOTAL AMOUNT', 'DEPOSIT PAID', 'BALANCE DUE', 'PAYMENT METHOD', 'COORDINATOR', 'STATUS', 'ACTIONS'];
                             $r_stmt = get_pdo()->prepare($r_sql);
-                            $r_stmt->execute($r_params);
+                            $r_stmt->execute();
                             $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
-                            // We will handle the specific reservations table layout in the render block
+                            // Set a flag to use premium dark look for reports as well if desired
+                            $is_premium_report = true;
                             break;
                     }
                     ?>
@@ -1334,7 +1334,8 @@ if (isset($dashboard_data['error'])) {
                         <h2 style="margin: 0;"><?= ucfirst($r_module) ?> Reports</h2>
                     </div>
 
-                    <div class="table-container">
+                    <div class="table-container <?= isset($is_premium_report) ? 'premium-dark-card' : '' ?>"
+                        style="border:none;">
                         <div class="table-wrapper">
                             <table class="table">
                                 <thead>
@@ -1356,74 +1357,34 @@ if (isset($dashboard_data['error'])) {
                                         <?php foreach ($r_rows as $rr): ?>
                                             <tr style="border-bottom: 1px solid #edf2f7;">
                                                 <?php if ($r_module === 'reservations'): ?>
-                                                    <td
-                                                        style="font-weight: 600; color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['facility_name']) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['customer_name']) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['customer_email']) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['event_type']) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['event_date']) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= $rr['guests_count'] ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?>
-                                                    </td>
-                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                        ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                                    <td style="font-weight: 600; font-size: 12px; padding: 12px 15px;">
+                                                        #BK-<?= $rr['id'] ?></td>
                                                     <td style="font-size: 12px; padding: 12px 15px;">
-                                                        <span class="status-badge status-<?= $rr['status'] ?>">
-                                                            <?= htmlspecialchars($rr['status']) ?>
+                                                        <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?>
+                                                    </td>
+                                                    <td style="font-size: 12px; padding: 12px 15px;"><?= $rr['guests_count'] ?></td>
+                                                    <td style="font-weight: 600; font-size: 13px; padding: 14px 15px;">#BK-<?= $rr['id'] ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px;"><?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px;"><?= $rr['guests_count'] ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px; font-weight: 500;"><?= htmlspecialchars($rr['package'] ?? 'Standard') ?></td>
+                                                    <td style="font-weight: 700; font-size: 13px; padding: 14px 15px;">₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                                    <td style="color: #4ade80; font-weight: 700; font-size: 13px; padding: 14px 15px;">₱<?= number_format($rr['deposit_paid'] ?? ($rr['total_amount']*0.4), 2) ?></td>
+                                                    <td style="color: #f87171; font-weight: 700; font-size: 13px; padding: 14px 15px;">₱<?= number_format($rr['balance_due'] ?? ($rr['total_amount']*0.6), 2) ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px;"><?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px; color: #94a3b8;"><?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?></td>
+                                                    <td style="font-size: 13px; padding: 14px 15px;">
+                                                        <span class="status-badge status-<?= $rr['status'] ?>" style="font-weight: 800; padding: 4px 12px; border-radius: 4px;">
+                                                            <?= strtoupper(htmlspecialchars($rr['status'])) ?>
                                                         </span>
                                                     </td>
-                                                    <td style="padding: 12px 15px;">
+                                                    <td style="padding: 14px 15px;">
                                                         <div class="d-flex gap-1" style="justify-content: center;">
                                                             <button type="button" class="btn btn-outline btn-sm btn-icon"
                                                                 onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                                style="color: #60a5fa; border-color: #3b82f6;"
                                                                 title="View Details">
                                                                 <i class="fa-solid fa-eye"></i>
                                                             </button>
-                                                            <form method="post" style="display:inline-flex; gap: 4px;">
-                                                                <input type="hidden" name="action" value="update_status">
-                                                                <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
-                                                                <?php if ($rr['status'] === 'pending'): ?>
-                                                                    <button class="btn btn-success btn-icon" name="status"
-                                                                        value="confirmed" title="Confirm" aria-label="Confirm">
-                                                                        <i class="fa-solid fa-check"></i>
-                                                                    </button>
-                                                                    <button class="btn btn-danger btn-icon" name="status"
-                                                                        value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </button>
-                                                                <?php elseif ($rr['status'] === 'confirmed'): ?>
-                                                                    <button class="btn btn-warning btn-icon" name="status"
-                                                                        value="completed" title="Mark as Completed"
-                                                                        aria-label="Complete">
-                                                                        <i class="fa-solid fa-flag-checkered"></i>
-                                                                    </button>
-                                                                    <button class="btn btn-danger btn-icon" name="status"
-                                                                        value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </button>
-                                                                <?php endif; ?>
-                                                            </form>
                                                         </div>
                                                     </td>
                                                 <?php else: ?>
@@ -1513,7 +1474,8 @@ if (isset($dashboard_data['error'])) {
 
                     <div id="maintenance-main-section">
                         <!-- Maintenance & Status Card -->
-                        <div class="card management-card management-maintenance active-card" style="margin-top: -10px;">
+                        <div class="card management-card management-maintenance premium-dark-card active-card"
+                            style="margin-top: -10px;">
                             <div class="card-header d-flex justify-between align-center">
                                 <h3><span class="icon-img-placeholder">🛠️</span> Maintenance & Deployed Staff</h3>
                                 <div class="d-flex gap-1">
@@ -1625,81 +1587,163 @@ if (isset($dashboard_data['error'])) {
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <!-- Employees Management Card -->
+                <div class="card management-card management-employees premium-dark-card"
+                    style="margin-top: -10px; display:none;">
+                    <div class="card-header d-flex justify-between align-center">
+                        <h3><span class="icon-img-placeholder">👥</span> Employee Management (HR4)</h3>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-outline btn-sm" onclick="exportEmployeeReport()">
+                                <i class="fas fa-file-export"></i> Export List
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">
+                                <span class="icon-img-placeholder">➕</span> Add New Staff
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-wrapper">
+                            <table class="table management-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>NAME</th>
+                                        <th>EMAIL</th>
+                                        <th>POSITION</th>
+                                        <th>DEPARTMENT</th>
+                                        <th>SALARY</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeesTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Maintenance Calendar Card -->
+                <div class="card management-card management-mnt-calendar premium-dark-card"
+                    style="margin-top: -10px; display:none;">
+                    <div class="card-header d-flex justify-between align-center">
+                        <h3><span class="icon-img-placeholder">📅</span> Maintenance Schedules</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="calendar-grid">
+                            <?php
+                            for ($i = 0; $i < 7; $i++):
+                                $date = date('Y-m-d', strtotime("+$i days"));
+                                $display_date = date('D, M d', strtotime($date));
+                                $day_jobs = array_filter($dashboard_data['maintenance_logs'] ?? [], function ($job) use ($date) {
+                                    return $job['maintenance_date'] == $date;
+                                });
+                                ?>
+                                <div class="calendar-day"
+                                    style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                    <div class="calendar-date"
+                                        style="color: #cbd5e1; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <?= $display_date ?>
+                                    </div>
+                                    <div class="calendar-events">
+                                        <?php if (empty($day_jobs)): ?>
+                                            <div
+                                                style="color: #4a5568; font-style: italic; font-size: 0.7rem; text-align: center; padding: 10px;">
+                                                Clear</div>
+                                        <?php else: ?>
+                                            <?php foreach ($day_jobs as $job): ?>
+                                                <div class="calendar-event"
+                                                    style="background: rgba(49, 130, 206, 0.2); border-left: 4px solid #3182ce;">
+                                                    <div class="event-title" style="color: #f1f5f9; font-size: 0.8rem;">
+                                                        <?= htmlspecialchars($job['item_name']) ?>
+                                                    </div>
+                                                    <div class="event-details" style="color: #94a3b8; font-size: 0.7rem;">
+                                                        <?= htmlspecialchars($job['assigned_staff'] ?? 'Staff') ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
 
-
-                    <div id="maintenance-trash-section" style="display: none;">
-                        <div class="card management-card" style="margin-top: -10px; border-top: 4px solid #ef4444;">
-                            <div class="card-header d-flex justify-between align-center">
-                                <h3><span class="icon-img-placeholder">🗑️</span> Trash / Archived Logs</h3>
-                                <p style="font-size: 0.8rem; color: #64748b; margin: 0;">Deleted logs can be restored or
-                                    permanently removed.</p>
-                            </div>
-                            <div class="card-content">
-                                <?php $deleted_logs = $reservationSystem->fetchMaintenanceLogs(true); ?>
-                                <div class="table-wrapper">
-                                    <table class="table management-table">
-                                        <thead>
+                <div id="maintenance-trash-section" style="display: none;">
+                    <div class="card management-card management-trash premium-dark-card"
+                        style="margin-top: -10px; border-top: 4px solid #ef4444;">
+                        <div class="card-header d-flex justify-between align-center">
+                            <h3><span class="icon-img-placeholder">🗑️</span> Trash / Archived Logs</h3>
+                            <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Deleted logs can be restored or
+                                permanently removed.</p>
+                        </div>
+                        <div class="card-content">
+                            <?php $deleted_logs = $reservationSystem->fetchMaintenanceLogs(true); ?>
+                            <div class="table-wrapper">
+                                <table class="table management-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ITEM/AREA</th>
+                                            <th>DESCRIPTION</th>
+                                            <th>ASSIGNED STAFF</th>
+                                            <th>SCHEDULED DATE</th>
+                                            <th>ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($deleted_logs)): ?>
                                             <tr>
-                                                <th>ITEM/AREA</th>
-                                                <th>DESCRIPTION</th>
-                                                <th>ASSIGNED STAFF</th>
-                                                <th>SCHEDULED DATE</th>
-                                                <th>ACTIONS</th>
+                                                <td colspan="5"
+                                                    style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                    Trash is empty.
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (empty($deleted_logs)): ?>
-                                                <tr>
-                                                    <td colspan="5"
-                                                        style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                        Trash is empty.
+                                        <?php else: ?>
+                                            <?php foreach ($deleted_logs as $dlog): ?>
+                                                <tr style="border-bottom: 1px solid #edf2f7; opacity: 0.8;">
+                                                    <td
+                                                        style="font-weight: 600; text-align: left !important; color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($dlog['item_name']) ?>
+                                                    </td>
+                                                    <td
+                                                        style="font-size: 12px; color: #475569; padding: 12px 15px; text-align: left;">
+                                                        <?= htmlspecialchars($dlog['description']) ?>
+                                                    </td>
+                                                    <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($dlog['assigned_staff'] ?? 'N/A') ?>
+                                                    </td>
+                                                    <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
+                                                        <?= date('m/d/Y', strtotime($dlog['maintenance_date'])) ?>
+                                                    </td>
+                                                    <td style="padding: 12px 15px;">
+                                                        <div class="d-flex gap-1" style="justify-content: center;">
+                                                            <button class="btn btn-success btn-sm btn-icon"
+                                                                onclick="restoreMaintenanceLog(<?= $dlog['id'] ?>)"
+                                                                title="Restore Log">
+                                                                <i class="fa-solid fa-rotate-left"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm btn-icon"
+                                                                onclick="permanentlyDeleteMaintenanceLog(<?= $dlog['id'] ?>)"
+                                                                title="Delete Permanently">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
-                                            <?php else: ?>
-                                                <?php foreach ($deleted_logs as $dlog): ?>
-                                                    <tr style="border-bottom: 1px solid #edf2f7; opacity: 0.8;">
-                                                        <td
-                                                            style="font-weight: 600; text-align: left !important; color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                            <?= htmlspecialchars($dlog['item_name']) ?>
-                                                        </td>
-                                                        <td
-                                                            style="font-size: 12px; color: #475569; padding: 12px 15px; text-align: left;">
-                                                            <?= htmlspecialchars($dlog['description']) ?>
-                                                        </td>
-                                                        <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
-                                                            <?= htmlspecialchars($dlog['assigned_staff'] ?? 'N/A') ?>
-                                                        </td>
-                                                        <td style="font-size: 12px; color: #1e293b; padding: 12px 15px;">
-                                                            <?= date('m/d/Y', strtotime($dlog['maintenance_date'])) ?>
-                                                        </td>
-                                                        <td style="padding: 12px 15px;">
-                                                            <div class="d-flex gap-1" style="justify-content: center;">
-                                                                <button class="btn btn-success btn-sm btn-icon"
-                                                                    onclick="restoreMaintenanceLog(<?= $dlog['id'] ?>)"
-                                                                    title="Restore Log">
-                                                                    <i class="fa-solid fa-rotate-left"></i>
-                                                                </button>
-                                                                <button class="btn btn-danger btn-sm btn-icon"
-                                                                    onclick="permanentlyDeleteMaintenanceLog(<?= $dlog['id'] ?>)"
-                                                                    title="Delete Permanently">
-                                                                    <i class="fa-solid fa-xmark"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div> <!-- End Management Tab -->
-            </div> <!-- End dashboard-content -->
-        </main> <!-- End main-content -->
+                </div>
+            </div> <!-- End Management Tab -->
+    </div> <!-- End dashboard-content -->
+    </main> <!-- End main-content -->
     </div> <!-- End container -->
 
     <!-- Modals -->
