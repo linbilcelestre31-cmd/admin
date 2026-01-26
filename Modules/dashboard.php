@@ -194,6 +194,13 @@ class ReservationSystem
     {
         $pdo = $this->pdo;
         try {
+            // Check for duplicate entry (same item, staff, date) within the last hour to prevent double-submit
+            $check = $pdo->prepare("SELECT id FROM maintenance_logs WHERE item_name = ? AND assigned_staff = ? AND maintenance_date = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR) AND is_deleted = 0 LIMIT 1");
+            $check->execute([$data['item_name'], $data['assigned_staff'], $data['maintenance_date']]);
+            if ($check->fetch()) {
+                return ['success' => false, 'message' => "This maintenance log already exists!"];
+            }
+
             $stmt = $pdo->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, priority, reported_by, department, duration, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 htmlspecialchars($data['item_name']),
@@ -217,7 +224,11 @@ class ReservationSystem
     {
         try {
             $where = $deleted ? "WHERE is_deleted = 1" : "WHERE is_deleted = 0";
-            return $this->pdo->query("SELECT * FROM maintenance_logs $where ORDER BY maintenance_date DESC, created_at DESC LIMIT 50")->fetchAll();
+            // Group by item_name, assigned_staff, and maintenance_date to avoid showing identical duplicates
+            $query = $deleted ?
+                "SELECT * FROM maintenance_logs $where ORDER BY created_at DESC" :
+                "SELECT * FROM maintenance_logs $where GROUP BY item_name, assigned_staff, maintenance_date, description ORDER BY maintenance_date DESC, created_at DESC LIMIT 50";
+            return $this->pdo->query($query)->fetchAll();
         } catch (PDOException $e) {
             return [];
         }
@@ -387,7 +398,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'add_maintenance':
                 $result = $reservationSystem->addMaintenanceLog($_POST);
                 if ($result['success']) {
-                    $success_message = $result['message'];
+                    $_SESSION['success_message'] = $result['message'];
+                    header("Location: dashboard.php?tab=maintenance");
+                    exit;
                 } else {
                     $error_message = $result['message'];
                 }
@@ -713,13 +726,13 @@ if (isset($dashboard_data['error'])) {
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                         $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                         if (!empty($display_key)): ?>
-                                    <div class="api-key-display"
-                                        style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                        <i class="fas fa-key" style="color: #d4af37;"></i>
-                                        <span>Key: <strong
-                                                style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
-                                    </div>
-                            <?php endif;
+                            <div class="api-key-display"
+                                style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <i class="fas fa-key" style="color: #d4af37;"></i>
+                                <span>Key: <strong
+                                        style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
+                            </div>
+                        <?php endif;
                     }
                     ?>
                     <!-- Pinalitan ng button at inilagay ang logic sa JS -->
@@ -733,15 +746,21 @@ if (isset($dashboard_data['error'])) {
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <!-- Alert Messages -->
-                <?php if (isset($success_message)): ?>
+                <?php
+                $success = $success_message ?? $_SESSION['success_message'] ?? null;
+                $error = $error_message ?? $_SESSION['error_message'] ?? null;
+                unset($_SESSION['success_message'], $_SESSION['error_message']);
+                ?>
+
+                <?php if ($success): ?>
                         <div class="alert alert-success">
-                            <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success_message) ?>
+                            <span class="icon-img-placeholder">✔️</span> <?= htmlspecialchars($success) ?>
                         </div>
                 <?php endif; ?>
 
-                <?php if (isset($error_message)): ?>
+                <?php if ($error): ?>
                         <div class="alert alert-error">
-                            <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error_message) ?>
+                            <span class="icon-img-placeholder">⚠️</span> <?= htmlspecialchars($error) ?>
                         </div>
                 <?php endif; ?>
 
