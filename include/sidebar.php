@@ -171,7 +171,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         if (typeof switchTab === 'function') switchTab(tab);
     };
 
-    // 5. PIN PROTECTION FOR VAULT
+    // 5. PIN PROTECTION FOR VAULT (Modern Box Design)
     window.checkVaultPin = function (event, url) {
         if (event) event.preventDefault();
 
@@ -181,39 +181,84 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         // Inject PIN Modal if missing
         if (!document.getElementById('vaultPinModal')) {
             const modalHtml = `
-                <div id="vaultPinModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 30px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); font-family: 'Inter', sans-serif;">
-                        <div style="width: 60px; height: 60px; background: #fff7ed; color: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px;">
-                            <i class="fa-solid fa-lock"></i>
+                <div id="vaultPinModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); align-items: center; justify-content: center; transition: all 0.3s ease;">
+                    <div style="background: #ffffff; padding: 40px; border-radius: 24px; width: 380px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.6); position: relative; border: 1px solid rgba(255,255,255,0.1);">
+                        
+                        <div style="width: 70px; height: 70px; background: rgba(251, 146, 60, 0.1); color: #f97316; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 28px; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.1);">
+                            <i class="fa-solid fa-vault"></i>
                         </div>
-                        <h3 style="margin: 0 0 10px; color: #1e293b;">Vault Protection</h3>
-                        <p style="margin: 0 0 20px; color: #64748b; font-size: 0.9rem;">Please enter security PIN to access document archive.</p>
-                        <input type="password" id="sidebar-vault-pin-input" maxlength="4" placeholder="••••" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 10px; margin-bottom: 20px; outline: none; transition: border-color 0.2s;" onkeyup="if(event.key==='Enter') verifyVaultPin()">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button onclick="document.getElementById('vaultPinModal').style.display='none'" style="padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer; font-weight: 600;">Cancel</button>
-                            <button onclick="verifyVaultPin()" style="padding: 12px; border-radius: 10px; border: none; background: #3182ce; color: white; cursor: pointer; font-weight: 600;">Unlock</button>
+                        
+                        <h3 style="margin: 0 0 10px; color: #0f172a; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px;">Vault Protection</h3>
+                        <p style="margin: 0 0 30px; color: #64748b; font-size: 0.95rem; font-weight: 500; line-height: 1.5;">Identify yourself to access the secure document archive.</p>
+                        
+                        <div id="pin-container" style="display: flex; gap: 12px; justify-content: center; margin-bottom: 30px;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="document.getElementById('vaultPinModal').style.display='none'" style="padding: 15px; border-radius: 14px; border: 2px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s;">Cancel</button>
+                            <button onclick="verifyVaultPin()" style="padding: 15px; border-radius: 14px; border: none; background: #3182ce; color: white; cursor: pointer; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3); transition: all 0.2s;">Unlock Vault</button>
                         </div>
                     </div>
                 </div>`;
             const div = document.createElement('div');
             div.innerHTML = modalHtml;
             document.body.appendChild(div.firstElementChild);
+
+            // Add Input Behavior Logic
+            const inputs = document.querySelectorAll('.vault-digit-input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    if (Array.from(inputs).every(inp => inp.value.length === 1)) {
+                        verifyVaultPin();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    if (e.key === 'Enter') {
+                        verifyVaultPin();
+                    }
+                });
+
+                input.addEventListener('focus', (e) => {
+                    e.target.style.borderColor = '#3182ce';
+                    e.target.style.background = '#fff';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(49, 130, 206, 0.1)';
+                });
+
+                input.addEventListener('blur', (e) => {
+                    e.target.style.borderColor = '#e2e8f0';
+                    e.target.style.background = '#f8fafc';
+                    e.target.style.boxShadow = 'none';
+                });
+            });
         }
 
         const modal = document.getElementById('vaultPinModal');
         modal.style.display = 'flex';
-        const input = document.getElementById('sidebar-vault-pin-input');
-        if (input) {
-            input.value = '';
-            input.focus();
-        }
+        const inputs = document.querySelectorAll('.vault-digit-input');
+        inputs.forEach(inp => inp.value = '');
+        if (inputs[0]) inputs[0].focus();
     };
 
     window.verifyVaultPin = function () {
-        const pinInput = document.getElementById('sidebar-vault-pin-input') || document.getElementById('vault-pin-input');
-        const pin = pinInput ? pinInput.value : '';
+        const inputs = document.querySelectorAll('.vault-digit-input');
+        let pin = '';
+        inputs.forEach(inp => pin += inp.value);
 
-        if (pin === '1234') { // Default PIN
+        if (pin === '1234') { // Default Admin PIN
+            // Hide Modal
+            document.getElementById('vaultPinModal').style.display = 'none';
+            // Start Animation THEN redirect
             if (typeof window.runLoadingAnimation === 'function') {
                 window.runLoadingAnimation(() => {
                     window.location.href = window.pendingVaultUrl;
@@ -222,11 +267,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 window.location.href = window.pendingVaultUrl;
             }
         } else {
-            alert("Incorrect PIN! Access Denied.");
-            if (pinInput) {
-                pinInput.value = '';
-                pinInput.focus();
-            }
+            // Shake effect or just alert
+            alert("Security Breach: Incorrect PIN! Access Denied.");
+            inputs.forEach(inp => inp.value = '');
+            if (inputs[0]) inputs[0].focus();
         }
     };
 </script>

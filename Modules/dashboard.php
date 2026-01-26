@@ -1588,7 +1588,7 @@ if (isset($dashboard_data['error'])) {
 
                             <!-- Maintenance Requests Section (Picture 3) -->
                             <div
-                                style="background: #7EC8E3; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
+                                style="background: #CEB15E; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
                                 <div class="card-header"
                                     style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                     <h3
@@ -1634,32 +1634,34 @@ if (isset($dashboard_data['error'])) {
                                                 </tr>
                                             <?php else: ?>
                                                 <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                    <tr style="border-bottom: 1px solid #111; background: #7EC8E3;">
+                                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.1); background: #CEB15E;">
                                                         <td style="padding: 15px; text-align: left;">
                                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                                 <?php $pc = (($log['priority'] == 'high') ? '#ef4444' : (($log['priority'] == 'medium') ? '#f59e0b' : '#22c55e')); ?>
                                                                 <span
                                                                     style="width: 10px; height: 10px; border-radius: 50%; background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>;"></span>
                                                                 <span
-                                                                    style="font-weight: 800; color: #fff; text-transform: uppercase; font-size: 0.75rem;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
+                                                                    style="font-weight: 800; color: #000; text-transform: uppercase; font-size: 0.75rem;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
                                                             </div>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700;">
                                                             <?= htmlspecialchars($log['item_name']) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #94a3b8; font-size: 0.8rem; max-width: 300px;">
+                                                            style="padding: 15px; color: #333; font-size: 0.8rem; max-width: 300px; font-weight: 600;">
                                                             <?= htmlspecialchars($log['description']) ?>
                                                         </td>
-                                                        <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
+                                                        <td
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700;">
                                                             <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
                                                         </td>
-                                                        <td style="padding: 15px; color: #cbd5e1; font-size: 0.85rem;">
+                                                        <td
+                                                            style="padding: 15px; color: #333; font-size: 0.85rem; font-weight: 700;">
                                                             <?= date('m/d/Y', strtotime($log['created_at'])) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 800;">
                                                             <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
                                                         </td>
                                                     </tr>
@@ -1713,7 +1715,7 @@ if (isset($dashboard_data['error'])) {
                                     });
                                     ?>
                                     <div class="calendar-day"
-                                        style="background: #7EC8E3; border: 1px solid <?= $is_today ? '#3182ce' : '#111' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 0 20px rgba(49, 130, 206, 0.15);' : '' ?>"
+                                        style="background: #CEB15E; border: 1px solid <?= $is_today ? '#3182ce' : '#111' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 0 20px rgba(49, 130, 206, 0.15);' : '' ?>"
                                         onmouseover="this.style.borderColor='<?= $is_today ? '#3182ce' : '#333' ?>'; this.style.transform='translateY(-5px)'"
                                         onmouseout="this.style.borderColor='<?= $is_today ? '#3182ce' : '#111' ?>'; this.style.transform='translateY(0)'">
 
@@ -1723,7 +1725,7 @@ if (isset($dashboard_data['error'])) {
                                                 <span
                                                     style="display: block; font-size: 0.75rem; font-weight: 900; color: <?= $is_today ? '#3182ce' : '#475569' ?>; text-transform: uppercase; letter-spacing: 1.5px;"><?= $day_name ?></span>
                                                 <span
-                                                    style="display: block; font-size: 1.1rem; font-weight: 800; color: #fff; margin-top: 2px;"><?= $display_date ?></span>
+                                                    style="display: block; font-size: 1.1rem; font-weight: 800; color: #000; margin-top: 2px;"><?= $display_date ?></span>
                                             </div>
                                             <?php if ($is_today): ?>
                                                 <div
@@ -1807,7 +1809,7 @@ if (isset($dashboard_data['error'])) {
 
                     <div id="maintenance-trash-section" style="display: none;">
                         <div class="card management-card management-trash premium-dark-card"
-                            style="margin-top: -10px; background: #7EC8E3 !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
+                            style="margin-top: -10px; background: #CEB15E !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
                             <div class="card-header"
                                 style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -1853,21 +1855,21 @@ if (isset($dashboard_data['error'])) {
                                             <?php else: ?>
                                                 <?php foreach ($deleted_logs as $dlog): ?>
                                                     <tr
-                                                        style="border-bottom: 1px solid #111; background: #7EC8E3 opacity: 0.85;">
+                                                        style="border-bottom: 1px solid rgba(0,0,0,0.1); background: #CEB15E; opacity: 0.9;">
                                                         <td
-                                                            style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600; text-align: left !important;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700; text-align: left !important;">
                                                             <?= htmlspecialchars($dlog['item_name']) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #94a3b8; font-size: 0.8rem; text-align: left !important;">
+                                                            style="padding: 15px; color: #333; font-size: 0.8rem; text-align: left !important; font-weight: 600;">
                                                             <?= htmlspecialchars($dlog['description']) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #cbd5e1; font-size: 0.85rem; text-align: center !important;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; text-align: center !important; font-weight: 700;">
                                                             <?= htmlspecialchars($dlog['assigned_staff'] ?? 'N/A') ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #cbd5e1; font-size: 0.85rem; text-align: center !important;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; text-align: center !important; font-weight: 700;">
                                                             <?= date('m/d/Y', strtotime($dlog['maintenance_date'])) ?>
                                                         </td>
                                                         <td style="padding: 15px; text-align: center !important;">
