@@ -459,54 +459,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'export_csv':
-                // Build query with optional filters
+                $module = $_POST['module'] ?? 'reservations';
+                $from_date = $_POST['from_date'] ?? '';
+                $to_date = $_POST['to_date'] ?? '';
+                $status = $_POST['status'] ?? 'all';
+
                 $where = [];
                 $params = [];
-                if (!empty($_POST['from_date'])) {
-                    $where[] = 'event_date >= ?';
-                    $params[] = $_POST['from_date'];
-                }
-                if (!empty($_POST['to_date'])) {
-                    $where[] = 'event_date <= ?';
-                    $params[] = $_POST['to_date'];
-                }
-                if (!empty($_POST['status']) && $_POST['status'] !== 'all') {
-                    $where[] = 'status = ?';
-                    $params[] = $_POST['status'];
-                }
+                $sql = "";
+                $filename = $module . "_report.csv";
+                $headers = [];
 
-                $sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
-                if ($where) {
-                    $sql .= ' WHERE ' . implode(' AND ', $where);
+                switch ($module) {
+                    case 'facilities':
+                        $sql = "SELECT id, name, type, capacity, location, hourly_rate, status FROM facilities";
+                        $headers = ['ID', 'Name', 'Type', 'Capacity', 'Location', 'Rate', 'Status'];
+                        break;
+
+                    case 'archiving':
+                        $sql = "SELECT id, name, case_id, file_path, uploaded_at FROM documents WHERE is_deleted = 0";
+                        $headers = ['ID', 'Document Name', 'Case ID', 'File Path', 'Uploaded At'];
+                        break;
+
+                    case 'visitors':
+                        $sql = "SELECT id, full_name, email, phone, room_number, time_in, time_out, status FROM direct_checkins WHERE 1=1";
+                        if ($from_date) {
+                            $sql .= " AND DATE(time_in) >= ?";
+                            $params[] = $from_date;
+                        }
+                        if ($to_date) {
+                            $sql .= " AND DATE(time_in) <= ?";
+                            $params[] = $to_date;
+                        }
+                        $headers = ['ID', 'Name', 'Email', 'Phone', 'Facility', 'Time In', 'Time Out', 'Status'];
+                        break;
+
+                    case 'legal':
+                        $sql = "SELECT id, name, case_id, contract_type, risk_score, created_at FROM contracts";
+                        $headers = ['ID', 'Contract Name', 'Case ID', 'Type', 'Risk Score', 'Created At'];
+                        break;
+
+                    case 'reservations':
+                    default:
+                        if ($from_date) {
+                            $where[] = 'event_date >= ?';
+                            $params[] = $from_date;
+                        }
+                        if ($to_date) {
+                            $where[] = 'event_date <= ?';
+                            $params[] = $to_date;
+                        }
+                        if ($status !== 'all') {
+                            $where[] = 'status = ?';
+                            $params[] = $status;
+                        }
+
+                        $sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
+                        if ($where) {
+                            $sql .= ' WHERE ' . implode(' AND ', $where);
+                        }
+                        $sql .= ' ORDER BY r.event_date, r.start_time';
+                        $headers = ['ID', 'Facility', 'Customer', 'Email', 'Phone', 'Event Type', 'Date', 'Start Time', 'End Time', 'Guests', 'Amount', 'Status', 'Created At', 'Updated At'];
+                        break;
                 }
-                $sql .= ' ORDER BY r.event_date, r.start_time';
 
                 $stmt = get_pdo()->prepare($sql);
                 $stmt->execute($params);
 
                 header('Content-Type: text/csv');
-                header('Content-Disposition: attachment; filename="reservations_report.csv"');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
 
                 $out = fopen('php://output', 'w');
-                fputcsv($out, ['ID', 'Facility', 'Customer', 'Email', 'Phone', 'Event Type', 'Date', 'Start Time', 'End Time', 'Guests', 'Amount', 'Status', 'Created At', 'Updated At']);
+                fputcsv($out, $headers);
 
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    fputcsv($out, [
-                        $row['id'],
-                        $row['facility_name'],
-                        $row['customer_name'],
-                        $row['customer_email'],
-                        $row['customer_phone'],
-                        $row['event_type'],
-                        $row['event_date'],
-                        $row['start_time'],
-                        $row['end_time'],
-                        $row['guests_count'],
-                        $row['total_amount'],
-                        $row['status'],
-                        $row['created_at'],
-                        $row['updated_at']
-                    ]);
+                    // For reservations, we might want to pick specific columns if selective SELECT was used, 
+                    // but since we used r.*, we format it. For others, we output as is.
+                    if ($module === 'reservations') {
+                        fputcsv($out, [
+                            $row['id'],
+                            $row['facility_name'],
+                            $row['customer_name'],
+                            $row['customer_email'],
+                            $row['customer_phone'],
+                            $row['event_type'],
+                            $row['event_date'],
+                            $row['start_time'],
+                            $row['end_time'],
+                            $row['guests_count'],
+                            $row['total_amount'],
+                            $row['status'],
+                            $row['created_at'],
+                            $row['updated_at']
+                        ]);
+                    } else {
+                        fputcsv($out, array_values($row));
+                    }
                 }
                 fclose($out);
                 exit;
@@ -1082,35 +1130,87 @@ if (isset($dashboard_data['error'])) {
                     $r_from = $_GET['from_date'] ?? '';
                     $r_to = $_GET['to_date'] ?? '';
                     $r_status = $_GET['status'] ?? 'all';
+                    $r_module = $_GET['module'] ?? 'reservations';
 
-                    $r_where = [];
-                    $r_params = [];
-                    if ($r_from) {
-                        $r_where[] = 'r.event_date >= ?';
-                        $r_params[] = $r_from;
-                    }
-                    if ($r_to) {
-                        $r_where[] = 'r.event_date <= ?';
-                        $r_params[] = $r_to;
-                    }
-                    if ($r_status !== 'all') {
-                        $r_where[] = 'r.status = ?';
-                        $r_params[] = $r_status;
-                    }
+                    $r_headers = [];
+                    $r_rows = [];
 
-                    $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
-                    if ($r_where)
-                        $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
-                    $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
+                    switch ($r_module) {
+                        case 'facilities':
+                            $r_sql = "SELECT id, name, type, capacity, location, CONCAT('₱', FORMAT(hourly_rate, 2)) as rate, status FROM facilities WHERE 1=1";
+                            $r_headers = ['ID', 'NAME', 'TYPE', 'CAPACITY', 'LOCATION', 'RATE', 'STATUS'];
+                            $r_stmt = get_pdo()->prepare($r_sql);
+                            $r_stmt->execute();
+                            $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            break;
 
-                    $r_stmt = get_pdo()->prepare($r_sql);
-                    $r_stmt->execute($r_params);
-                    $r_reservations = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                        case 'archiving':
+                            $r_sql = "SELECT id, name, case_id, file_path, uploaded_at FROM documents WHERE is_deleted = 0";
+                            $r_headers = ['ID', 'DOCUMENT NAME', 'CASE ID', 'FILE PATH', 'UPLOADED AT'];
+                            $r_stmt = get_pdo()->prepare($r_sql);
+                            $r_stmt->execute();
+                            $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            break;
+
+                        case 'visitors':
+                            // Attempting to fetch from direct_checkins or visitor_logs if exists
+                            try {
+                                $r_sql = "SELECT id, full_name, email, phone, room_number as facility, time_in, time_out, status FROM direct_checkins WHERE 1=1";
+                                if ($r_from)
+                                    $r_sql .= " AND DATE(time_in) >= " . get_pdo()->quote($r_from);
+                                if ($r_to)
+                                    $r_sql .= " AND DATE(time_in) <= " . get_pdo()->quote($r_to);
+                                $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'TIME IN', 'TIME OUT', 'STATUS'];
+                                $r_stmt = get_pdo()->prepare($r_sql);
+                                $r_stmt->execute();
+                                $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            } catch (Exception $e) {
+                                $r_rows = [];
+                            }
+                            break;
+
+                        case 'legal':
+                            $r_sql = "SELECT id, name, case_id, contract_type, risk_score, created_at FROM contracts";
+                            $r_headers = ['ID', 'CONTRACT NAME', 'CASE ID', 'TYPE', 'RISK SCORE', 'CREATED AT'];
+                            $r_stmt = get_pdo()->prepare($r_sql);
+                            $r_stmt->execute();
+                            $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            break;
+
+                        case 'reservations':
+                        default:
+                            $r_where = [];
+                            $r_params = [];
+                            if ($r_from) {
+                                $r_where[] = 'r.event_date >= ?';
+                                $r_params[] = $r_from;
+                            }
+                            if ($r_to) {
+                                $r_where[] = 'r.event_date <= ?';
+                                $r_params[] = $r_to;
+                            }
+                            if ($r_status !== 'all') {
+                                $r_where[] = 'r.status = ?';
+                                $r_params[] = $r_status;
+                            }
+
+                            $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id";
+                            if ($r_where)
+                                $r_sql .= ' WHERE ' . implode(' AND ', $r_where);
+                            $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
+
+                            $r_stmt = get_pdo()->prepare($r_sql);
+                            $r_stmt->execute($r_params);
+                            $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                            // We will handle the specific reservations table layout in the render block
+                            break;
+                    }
                     ?>
 
 
 
                     <form method="get" class="filters">
+                        <input type="hidden" name="tab" value="reports">
                         From: <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
                         To: <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
                         Status: <select name="status">
@@ -1124,11 +1224,16 @@ if (isset($dashboard_data['error'])) {
                             </option>
                         </select>
                         Modules: <select name="module">
-                            <option value="reservations" selected>Reservations</option>
-                            <option value="facilities">Facilities</option>
-                            <option value="archiving">Document Archiving</option>
-                            <option value="visitors">Visitor Management</option>
-                            <option value="legal">Legal Management</option>
+                            <option value="reservations" <?= $r_module === 'reservations' ? 'selected' : '' ?>>Reservations
+                            </option>
+                            <option value="facilities" <?= $r_module === 'facilities' ? 'selected' : '' ?>>Facilities
+                            </option>
+                            <option value="archiving" <?= $r_module === 'archiving' ? 'selected' : '' ?>>Document Archiving
+                            </option>
+                            <option value="visitors" <?= $r_module === 'visitors' ? 'selected' : '' ?>>Visitor Management
+                            </option>
+                            <option value="legal" <?= $r_module === 'legal' ? 'selected' : '' ?>>Legal Management
+                            </option>
                         </select>
                         Report Type: <select name="report_type">
                             <option value="all">All Records</option>
@@ -1141,119 +1246,121 @@ if (isset($dashboard_data['error'])) {
 
                     <form method="post" style="margin-bottom:12px">
                         <input type="hidden" name="action" value="export_csv">
+                        <input type="hidden" name="module" value="<?= htmlspecialchars($r_module) ?>">
                         <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
                         <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
                         <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
                         <button class="btn">Export CSV</button>
                     </form>
 
+                    <div class="d-flex align-center gap-1 mb-1">
+                        <i class="fa-solid fa-file-invoice" style="font-size: 1.5rem; color: #3182ce;"></i>
+                        <h2 style="margin: 0;"><?= ucfirst($r_module) ?> Reports</h2>
+                    </div>
+
                     <div class="table-container">
                         <div class="table-wrapper">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>BOOKING ID</th>
-                                        <th>FACILITY</th>
-                                        <th>CUSTOMER</th>
-                                        <th>CONTACT</th>
-                                        <th>EMAIL</th>
-                                        <th>EVENT TYPE</th>
-                                        <th>DATE</th>
-                                        <th>TIME</th>
-                                        <th>GUESTS</th>
-                                        <th>PACKAGE</th>
-                                        <th>TOTAL AMOUNT</th>
-                                        <th>DEPOSIT PAID</th>
-                                        <th>BALANCE DUE</th>
-                                        <th>PAYMENT METHOD</th>
-                                        <th>COORDINATOR</th>
-                                        <th>STATUS</th>
-                                        <th>ACTIONS</th>
+                                        <?php foreach ($r_headers as $h): ?>
+                                            <th><?= $h ?></th>
+                                        <?php endforeach; ?>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($r_reservations as $rr): ?>
-                                        <tr style="border-bottom: 1px solid #edf2f7;">
-                                            <td
-                                                style="font-weight: 600; color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['facility_name']) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_name']) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['customer_email']) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['event_type']) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['event_date']) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= $rr['guests_count'] ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                ₱<?= number_format(($rr['total_amount'] ?? 0) * 0.4, 2) ?></td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                ₱<?= number_format(($rr['total_amount'] ?? 0) * 0.6, 2) ?></td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['payment_method'] ?? 'GCash') ?>
-                                            </td>
-                                            <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
-                                            </td>
-                                            <td style="font-size: 12px; padding: 12px 15px;">
-                                                <?= htmlspecialchars($rr['status']) ?>
-                                            </td>
-                                            <td style="padding: 12px 15px;">
-                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                        title="View Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                    <form method="post" style="display:inline-flex; gap: 4px;">
-                                                        <input type="hidden" name="action" value="update_status">
-                                                        <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
-                                                        <?php if ($rr['status'] === 'pending'): ?>
-                                                            <button class="btn btn-success btn-icon" name="status"
-                                                                value="confirmed" title="Confirm" aria-label="Confirm">
-                                                                <i class="fa-solid fa-check"></i>
-                                                            </button>
-                                                            <button class="btn btn-danger btn-icon" name="status"
-                                                                value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        <?php elseif ($rr['status'] === 'confirmed'): ?>
-                                                            <button class="btn btn-warning btn-icon" name="status"
-                                                                value="completed" title="Mark as Completed"
-                                                                aria-label="Complete">
-                                                                <i class="fa-solid fa-flag-checkered"></i>
-                                                            </button>
-                                                            <button class="btn btn-danger btn-icon" name="status"
-                                                                value="cancelled" title="Cancel" aria-label="Cancel">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    </form>
-                                                </div>
+                                    <?php if (empty($r_rows)): ?>
+                                        <tr>
+                                            <td colspan="<?= count($r_headers) ?>"
+                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                No records found for the selected module and filters.
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <?php foreach ($r_rows as $rr): ?>
+                                            <tr style="border-bottom: 1px solid #edf2f7;">
+                                                <?php if ($r_module === 'reservations'): ?>
+                                                    <td
+                                                        style="font-weight: 600; color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        BK-2026-<?= str_pad($rr['id'], 3, '0', STR_PAD_LEFT) ?></td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['facility_name']) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['customer_name']) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['customer_phone'] ?? '0917XXXXXXX') ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['customer_email']) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['event_type']) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['event_date']) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= date('g:i a', strtotime($rr['start_time'] ?? 'now')) ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= $rr['guests_count'] ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        <?= htmlspecialchars($rr['package'] ?? 'Standard Package') ?>
+                                                    </td>
+                                                    <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                        ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?></td>
+                                                    <td style="font-size: 12px; padding: 12px 15px;">
+                                                        <span class="status-badge status-<?= $rr['status'] ?>">
+                                                            <?= htmlspecialchars($rr['status']) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding: 12px 15px;">
+                                                        <div class="d-flex gap-1" style="justify-content: center;">
+                                                            <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                                onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                                title="View Details">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </button>
+                                                            <form method="post" style="display:inline-flex; gap: 4px;">
+                                                                <input type="hidden" name="action" value="update_status">
+                                                                <input type="hidden" name="reservation_id" value="<?= $rr['id'] ?>">
+                                                                <?php if ($rr['status'] === 'pending'): ?>
+                                                                    <button class="btn btn-success btn-icon" name="status"
+                                                                        value="confirmed" title="Confirm" aria-label="Confirm">
+                                                                        <i class="fa-solid fa-check"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-icon" name="status"
+                                                                        value="cancelled" title="Cancel" aria-label="Cancel">
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </button>
+                                                                <?php elseif ($rr['status'] === 'confirmed'): ?>
+                                                                    <button class="btn btn-warning btn-icon" name="status"
+                                                                        value="completed" title="Mark as Completed"
+                                                                        aria-label="Complete">
+                                                                        <i class="fa-solid fa-flag-checkered"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-icon" name="status"
+                                                                        value="cancelled" title="Cancel" aria-label="Cancel">
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                <?php else: ?>
+                                                    <!-- Generic display for other modules -->
+                                                    <?php foreach ($rr as $key => $val): ?>
+                                                        <td style="color: #1e293b; font-size: 12px; padding: 12px 15px;">
+                                                            <?= htmlspecialchars($val) ?>
+                                                        </td>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
