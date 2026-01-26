@@ -1584,11 +1584,11 @@ if (isset($dashboard_data['error'])) {
                         <!-- Maintenance Requests Card (Picture 3) -->
                         <div class="card management-card management-maintenance premium-dark-card active-card"
                             data-card-type="maintenance"
-                            style="margin-top: -10px; background: #000 !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; display: block !important;">
+                            style="margin-top: -10px; background: # !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; display: block !important;">
 
                             <!-- Maintenance Requests Section (Picture 3) -->
                             <div
-                                style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
+                                style="background: #7EC8E3; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
                                 <div class="card-header"
                                     style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                     <h3
@@ -1634,7 +1634,7 @@ if (isset($dashboard_data['error'])) {
                                                 </tr>
                                             <?php else: ?>
                                                 <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                    <tr style="border-bottom: 1px solid #111; background: #000;">
+                                                    <tr style="border-bottom: 1px solid #111; background: #7EC8E3;">
                                                         <td style="padding: 15px; text-align: left;">
                                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                                 <?php $pc = (($log['priority'] == 'high') ? '#ef4444' : (($log['priority'] == 'medium') ? '#f59e0b' : '#22c55e')); ?>
@@ -1713,7 +1713,7 @@ if (isset($dashboard_data['error'])) {
                                     });
                                     ?>
                                     <div class="calendar-day"
-                                        style="background: #000; border: 1px solid <?= $is_today ? '#3182ce' : '#111' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 0 20px rgba(49, 130, 206, 0.15);' : '' ?>"
+                                        style="background: #7EC8E3; border: 1px solid <?= $is_today ? '#3182ce' : '#111' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 0 20px rgba(49, 130, 206, 0.15);' : '' ?>"
                                         onmouseover="this.style.borderColor='<?= $is_today ? '#3182ce' : '#333' ?>'; this.style.transform='translateY(-5px)'"
                                         onmouseout="this.style.borderColor='<?= $is_today ? '#3182ce' : '#111' ?>'; this.style.transform='translateY(0)'">
 
@@ -1807,7 +1807,7 @@ if (isset($dashboard_data['error'])) {
 
                     <div id="maintenance-trash-section" style="display: none;">
                         <div class="card management-card management-trash premium-dark-card"
-                            style="margin-top: -10px; background: #000 !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
+                            style="margin-top: -10px; background: #7EC8E3 !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
                             <div class="card-header"
                                 style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -1852,7 +1852,8 @@ if (isset($dashboard_data['error'])) {
                                                 </tr>
                                             <?php else: ?>
                                                 <?php foreach ($deleted_logs as $dlog): ?>
-                                                    <tr style="border-bottom: 1px solid #111; background: #000; opacity: 0.85;">
+                                                    <tr
+                                                        style="border-bottom: 1px solid #111; background: #7EC8E3 opacity: 0.85;">
                                                         <td
                                                             style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600; text-align: left !important;">
                                                             <?= htmlspecialchars($dlog['item_name']) ?>
@@ -2474,8 +2475,8 @@ if (isset($dashboard_data['error'])) {
             }
         });
 
-    // Utility function to dynamically change header colors
-        window.updateHeaderColor = function(cardType, bgColor) {
+        // Utility function to dynamically change header colors
+        window.updateHeaderColor = function (cardType, bgColor) {
             const card = document.querySelector(`[data-card-type="${cardType}"]`);
             if (card) {
                 const header = card.querySelector('.card-header');
