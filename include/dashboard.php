@@ -264,7 +264,7 @@
             style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
-                <a href="document management(archiving).php"
+                <a href="#" onclick="checkVaultPin(event, 'document management(archiving).php')"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">Go to Vault <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>

@@ -66,7 +66,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="reservations">
                     <i class="fa-solid fa-calendar-check"></i> Reservations
                 </a></li>
-            <li><a href="../Modules/document management(archiving).php"
+            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-vault"></i> Document Archiving
@@ -85,9 +85,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="calendar">
                     <i class="fa-solid fa-calendar-days"></i> Calendar
                 </a></li>
-            <li><a href="<?= get_nav_link('maintenance', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'maintenance' || $_GET['tab'] == 'management')) ? 'active' : '' ?>"
-                    data-tab="maintenance">
+            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>"
+                    data-tab="management">
                     <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
                 </a></li>
         </ul>
@@ -169,5 +169,64 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     window.handleSidebarNav = function (tab) {
         // Allow animation for specific tabs if needed, or just default behavior
         if (typeof switchTab === 'function') switchTab(tab);
+    };
+
+    // 5. PIN PROTECTION FOR VAULT
+    window.checkVaultPin = function (event, url) {
+        if (event) event.preventDefault();
+
+        // Store target URL
+        window.pendingVaultUrl = url || '../Modules/document management(archiving).php';
+
+        // Inject PIN Modal if missing
+        if (!document.getElementById('vaultPinModal')) {
+            const modalHtml = `
+                <div id="vaultPinModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); font-family: 'Inter', sans-serif;">
+                        <div style="width: 60px; height: 60px; background: #fff7ed; color: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px;">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <h3 style="margin: 0 0 10px; color: #1e293b;">Vault Protection</h3>
+                        <p style="margin: 0 0 20px; color: #64748b; font-size: 0.9rem;">Please enter security PIN to access document archive.</p>
+                        <input type="password" id="sidebar-vault-pin-input" maxlength="4" placeholder="••••" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 10px; margin-bottom: 20px; outline: none; transition: border-color 0.2s;" onkeyup="if(event.key==='Enter') verifyVaultPin()">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button onclick="document.getElementById('vaultPinModal').style.display='none'" style="padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer; font-weight: 600;">Cancel</button>
+                            <button onclick="verifyVaultPin()" style="padding: 12px; border-radius: 10px; border: none; background: #3182ce; color: white; cursor: pointer; font-weight: 600;">Unlock</button>
+                        </div>
+                    </div>
+                </div>`;
+            const div = document.createElement('div');
+            div.innerHTML = modalHtml;
+            document.body.appendChild(div.firstElementChild);
+        }
+
+        const modal = document.getElementById('vaultPinModal');
+        modal.style.display = 'flex';
+        const input = document.getElementById('sidebar-vault-pin-input');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    };
+
+    window.verifyVaultPin = function () {
+        const pinInput = document.getElementById('sidebar-vault-pin-input') || document.getElementById('vault-pin-input');
+        const pin = pinInput ? pinInput.value : '';
+
+        if (pin === '1234') { // Default PIN
+            if (typeof window.runLoadingAnimation === 'function') {
+                window.runLoadingAnimation(() => {
+                    window.location.href = window.pendingVaultUrl;
+                }, true);
+            } else {
+                window.location.href = window.pendingVaultUrl;
+            }
+        } else {
+            alert("Incorrect PIN! Access Denied.");
+            if (pinInput) {
+                pinInput.value = '';
+                pinInput.focus();
+            }
+        }
     };
 </script>
