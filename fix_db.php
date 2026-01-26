@@ -16,17 +16,17 @@ try {
     }
 }
 
-// Check contracts table just in case
+// Check documents.uploaded_at
 try {
-    $db->query("SELECT case_id FROM contracts LIMIT 1");
-    echo "contracts.case_id exists.\n";
+    $db->query("SELECT uploaded_at FROM documents LIMIT 1");
+    echo "documents.uploaded_at exists.\n";
 } catch (PDOException $e) {
-    echo "contracts.case_id missing, adding it...\n";
+    echo "documents.uploaded_at missing, adding it...\n";
     try {
-        $db->exec("ALTER TABLE contracts ADD COLUMN case_id VARCHAR(50) DEFAULT NULL AFTER name");
-        echo "Successfully added contracts.case_id\n";
+        $db->exec("ALTER TABLE documents ADD COLUMN uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        echo "Successfully added documents.uploaded_at\n";
     } catch (PDOException $ex) {
-        echo "Error adding column: " . $ex->getMessage() . "\n";
+        echo "Error: " . $ex->getMessage() . "\n";
     }
 }
 ?>
