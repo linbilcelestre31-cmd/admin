@@ -94,14 +94,16 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </div>
 
     <div class="nav-section">
-        <div class="nav-title">External Links</div>
+        <div class="nav-title d-flex align-center gap-1">
+            External Links
+            <img src="../assets/image/logo2.png" alt="Icon" style="height: 14px; width: auto; opacity: 0.7;">
+        </div>
         <ul class="nav-links">
             <li><a href="<?= get_nav_link('reports', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>"
                     data-tab="reports">
                     <i class="fa-solid fa-chart-pie"></i> Reports
                 </a></li>
-
         </ul>
     </div>
 </nav>
