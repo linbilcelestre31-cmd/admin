@@ -1590,12 +1590,12 @@ if (isset($dashboard_data['error'])) {
                             <div
                                 style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
                                 <div class="card-header"
-                                    style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                     <h3
                                         style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
                                         Maintenance Requests</h3>
                                     <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')"
-                                        style="background: #3182ce; border: none; font-weight: 700; padding: 8px 16px; border-radius: 6px;">
+                                        style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; padding: 8px 16px; border-radius: 6px;">
                                         <i class="fa-solid fa-plus"></i> Add Request
                                     </button>
                                 </div>
@@ -1681,17 +1681,18 @@ if (isset($dashboard_data['error'])) {
                         style="margin-top: -10px; background: transparent !important; border: none; box-shadow: none; display: none ; visibility: visible !important;">
 
                         <div class="card-header"
-                            style="background: #111; border-bottom: 2px solid #333; padding: 20px; border-radius: 12px; border: 1px solid #111; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #3182ce; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <div
-                                    style="width: 45px; height: 45px; background: rgba(49, 130, 206, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #3182ce; font-size: 1.4rem; border: 1px solid rgba(49, 130, 206, 0.2);">
+                                    style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.4rem; border: 1px solid rgba(255, 255, 255, 0.3);">
                                     <i class="fa-solid fa-calendar-check"></i>
                                 </div>
                                 <div>
                                     <h3
                                         style="color: #fff; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
                                         Maintenance Schedules</h3>
-                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                                    <p
+                                        style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.8); font-weight: 600;">
                                         Operational roadmap for the next 7 days</p>
                                 </div>
                             </div>
@@ -2473,6 +2474,17 @@ if (isset($dashboard_data['error'])) {
             }
         });
 
+    // Utility function to dynamically change header colors
+        window.updateHeaderColor = function(cardType, bgColor) {
+            const card = document.querySelector(`[data-card-type="${cardType}"]`);
+            if (card) {
+                const header = card.querySelector('.card-header');
+                if (header) {
+                    header.style.setProperty('background', bgColor, 'important');
+                    header.style.color = '#fff';
+                }
+            }
+        };
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
