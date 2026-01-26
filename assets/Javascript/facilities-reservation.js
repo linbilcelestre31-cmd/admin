@@ -313,6 +313,7 @@ window.showManagementCard = function (type) {
     // Update active button styling
     const btns = {
         'maintenance': document.getElementById('show-maintenance-card'),
+        'reservations-mnt': document.getElementById('show-reservations-card'),
         'employees': document.getElementById('show-employees-card'),
         'mnt-calendar': document.getElementById('show-mnt-calendar')
     };
