@@ -1182,6 +1182,11 @@ if (isset($dashboard_data['error'])) {
                     switch ($r_module) {
                         case 'all':
                             $r_headers = ['MODULE', 'ID', 'NAME/TITLE', 'REFERENCE', 'DATE', 'STATUS'];
+                            $v_cols = $db->query("SHOW COLUMNS FROM direct_checkins")->fetchAll(PDO::FETCH_COLUMN);
+                            $v_checkin = in_array('checkin_date', $v_cols) ? 'checkin_date' : 'time_in';
+                            $v_checkout = in_array('checkout_date', $v_cols) ? 'checkout_date' : 'time_out';
+                            $v_phone = in_array('phone_number', $v_cols) ? 'phone_number' : 'phone';
+
                             $all_sql = "
                                 (SELECT 'Reservation' as module, r.id, r.customer_name as name, f.name as ref, r.event_date as date, r.status 
                                  FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id)
@@ -1190,7 +1195,7 @@ if (isset($dashboard_data['error'])) {
                                 UNION ALL
                                 (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0)
                                 UNION ALL
-                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, status FROM direct_checkins)
+                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST($v_checkin AS CHAR) as date, status FROM direct_checkins)
                                 UNION ALL
                                 (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts)
                                 ORDER BY date DESC
@@ -1219,11 +1224,16 @@ if (isset($dashboard_data['error'])) {
                         case 'visitors':
                             // Attempting to fetch from direct_checkins or visitor_logs if exists
                             try {
-                                $r_sql = "SELECT id, full_name, email, phone_number as phone, room_number as facility, checkin_date as time_in, checkout_date as time_out, status FROM direct_checkins WHERE 1=1";
+                                $v_cols = get_pdo()->query("SHOW COLUMNS FROM direct_checkins")->fetchAll(PDO::FETCH_COLUMN);
+                                $v_checkin = in_array('checkin_date', $v_cols) ? 'checkin_date' : 'time_in';
+                                $v_checkout = in_array('checkout_date', $v_cols) ? 'checkout_date' : 'time_out';
+                                $v_phone = in_array('phone_number', $v_cols) ? 'phone_number' : 'phone';
+
+                                $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as time_in, $v_checkout as time_out, status FROM direct_checkins WHERE 1=1";
                                 if ($r_from)
-                                    $r_sql .= " AND DATE(checkin_date) >= " . get_pdo()->quote($r_from);
+                                    $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($r_from);
                                 if ($r_to)
-                                    $r_sql .= " AND DATE(checkin_date) <= " . get_pdo()->quote($r_to);
+                                    $r_sql .= " AND DATE($v_checkin) <= " . get_pdo()->quote($r_to);
                                 $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'TIME IN', 'TIME OUT', 'STATUS'];
                                 $r_stmt = get_pdo()->prepare($r_sql);
                                 $r_stmt->execute();
