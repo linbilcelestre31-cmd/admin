@@ -1493,186 +1493,108 @@ if (isset($dashboard_data['error'])) {
 
 
                     <div id="maintenance-main-section" style="width: 100%;">
-                        <!-- Combined view for Maintenance & Reservations (Pictures 2 & 3 style) -->
-                        <div class="card management-card management-maintenance premium-dark-card active-card"
-                            style="margin-top: -10px; background: transparent !important; border: none; box-shadow: none;">
-
-                            <div style="display: flex; flex-direction: column; gap: 30px; width: 100%;">
-                                <!-- Maintenance Logs Section (Picture 3 style) -->
-                                <div
-                                    style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111;">
-                                    <div class="card-header"
-                                        style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-                                        <h3
-                                            style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin: 0; font-weight: 800;">
-                                            MAINTENANCE LOGS</h3>
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')"
-                                            style="background: #3182ce; border: none;">
-                                            <i class="fa-solid fa-plus"></i> Add Log
-                                        </button>
-                                    </div>
-                                    <div class="table-wrapper"
-                                        style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
-                                        <table class="table"
-                                            style="background: transparent; border-collapse: collapse; min-width: 1000px;">
-                                            <thead>
-                                                <tr style="border-bottom: 2px solid #333;">
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        PRIORITY</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        ITEM/AREA</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        DESCRIPTION</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        REPORTED BY</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        REPORTED DATE</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        SCHEDULE</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                                        <tr>
-                                                            <td colspan="6"
-                                                                style="padding: 40px; text-align: center; color: #718096;">No
-                                                                tasks.</td>
-                                                        </tr>
-                                                <?php else: ?>
-                                                        <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                                <tr style="border-bottom: 1px solid #1a1a1a;">
-                                                                    <td style="padding: 15px; text-align: left; color: #fff;">
-                                                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                                                            <?php $pc = (($log['priority'] == 'high') ? '#ef4444' : (($log['priority'] == 'medium') ? '#f59e0b' : '#22c55e')); ?>
-                                                                            <span
-                                                                                style="width: 10px; height: 10px; border-radius: 50%; background: <?= $pc ?>; box-shadow: 0 0 8px <?= $pc ?>;"></span>
-                                                                            <span
-                                                                                style="font-weight: 700; font-size: 0.85rem;"><?= ucfirst($log['priority'] ?? 'Low') ?></span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;">
-                                                                        <?= htmlspecialchars($log['item_name']) ?></td>
-                                                                    <td style="padding: 15px; color: #aaa; font-size: 0.85rem;">
-                                                                        <?= htmlspecialchars($log['description']) ?></td>
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?></td>
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= date('m/d/Y', strtotime($log['created_at'])) ?></td>
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
-                                                                </tr>
-                                                        <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                        <!-- Combined card containing BOTH requests and overview (Pictures 2 & 3) -->
+                        <div class="card management-card management-maintenance premium-dark-card active-card" 
+                             data-card-type="maintenance"
+                             style="margin-top: -10px; background: transparent !important; border: none; box-shadow: none; display: block !important; visibility: visible !important; opacity: 1 !important;">
+                            
+                            <!-- Maintenance Requests Section (Picture 3) -->
+                            <div style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
+                                <div class="card-header" style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">Maintenance Requests</h3>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')" style="background: #3182ce; border: none; font-weight: 700; padding: 8px 16px; border-radius: 6px;">
+                                        <i class="fa-solid fa-plus"></i> Add Request
+                                    </button>
                                 </div>
-
-                                <!-- Active Reservations Section (Picture 2 style) -->
-                                <div
-                                    style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111;">
-                                    <div class="card-header"
-                                        style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-                                        <h3
-                                            style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin: 0; font-weight: 800;">
-                                            ACTIVE RESERVATIONS</h3>
-                                        <button class="btn btn-primary btn-sm" onclick="openModal('reservation-modal')"
-                                            style="background: #38a169; border: none;">
-                                            <i class="fa-solid fa-plus"></i> New Reservation
-                                        </button>
-                                    </div>
-                                    <div class="table-wrapper"
-                                        style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
-                                        <table class="table"
-                                            style="background: transparent; border-collapse: collapse; min-width: 1100px;">
-                                            <thead>
-                                                <tr style="border-bottom: 2px solid #333;">
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        TIME</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        GUESTS</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        PACKAGE</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        TOTAL AMOUNT</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        DEPOSIT PAID</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        BALANCE DUE</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        PAYMENT METHOD</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        COORDINATOR</th>
-                                                    <th
-                                                        style="padding: 15px; color: #888; text-align: left; font-size: 0.75rem; background: transparent; font-weight: 900;">
-                                                        STATUS</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($dashboard_data['reservations'])): ?>
-                                                        <tr>
-                                                            <td colspan="9"
-                                                                style="padding: 40px; text-align: center; color: #718096;">No
-                                                                active reservations.</td>
-                                                        </tr>
-                                                <?php else: ?>
-                                                        <?php foreach ($dashboard_data['reservations'] as $res): ?>
-                                                                <tr style="border-bottom: 1px solid #1a1a1a;">
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= date('g:i A', strtotime($res['start_time'] ?? 'now')) ?>
-                                                                    </td>
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= $res['guests_count'] ?></td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;">
-                                                                        <?= htmlspecialchars($res['package'] ?? 'Premium Party') ?></td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;">
-                                                                        ₱<?= number_format($res['total_amount'] ?? 0, 2) ?></td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #4ade80; font-size: 0.85rem; font-weight: 700;">
-                                                                        ₱<?= number_format(($res['total_amount'] ?? 0) * 0.4, 2) ?></td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #f87171; font-size: 0.85rem; font-weight: 700;">
-                                                                        ₱<?= number_format(($res['total_amount'] ?? 0) * 0.6, 2) ?></td>
-                                                                    <td style="padding: 15px; color: #fff; font-size: 0.85rem;">
-                                                                        <?= htmlspecialchars($res['payment_method'] ?? 'Credit Card') ?>
-                                                                    </td>
-                                                                    <td style="padding: 15px; color: #94a3b8; font-size: 0.85rem;">
-                                                                        <?= htmlspecialchars($res['coordinator'] ?? 'Luis Gomez') ?>
-                                                                    </td>
-                                                                    <td
-                                                                        style="padding: 15px; color: #fff; font-size: 0.8rem; font-weight: 900; text-transform: uppercase;">
-                                                                        <?= htmlspecialchars($res['status']) ?></td>
-                                                                </tr>
-                                                        <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                <div class="table-wrapper" style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
+                                    <table class="table" style="background: transparent; border-collapse: collapse; min-width: 1000px;">
+                                        <thead>
+                                            <tr style="border-bottom: 2px solid #333;">
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">PRIORITY</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">ITEM/AREA</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">DESCRIPTION</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">REPORTED BY</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">REPORTED DATE</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">SCHEDULE</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                                    <tr><td colspan="6" style="padding: 40px; text-align: center; color: #4a5568; border-bottom: 1px solid #1a1a1a; font-style: italic;">No maintenance logs currently recorded.</td></tr>
+                                            <?php else: ?>
+                                                    <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                            <tr style="border-bottom: 1px solid #111; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+                                                                <td style="padding: 15px; text-align: left;">
+                                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                                        <?php $pc = (($log['priority'] == 'high') ? '#ef4444' : (($log['priority'] == 'medium') ? '#f59e0b' : '#22c55e')); ?>
+                                                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>;"></span>
+                                                                        <span style="font-weight: 800; color: #fff; text-transform: uppercase; font-size: 0.75rem;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;"><?= htmlspecialchars($log['item_name']) ?></td>
+                                                                <td style="padding: 15px; color: #94a3b8; font-size: 0.8rem; max-width: 300px;"><?= htmlspecialchars($log['description']) ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem;"><?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?></td>
+                                                                <td style="padding: 15px; color: #cbd5e1; font-size: 0.85rem;"><?= date('m/d/Y', strtotime($log['created_at'])) ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;"><?= date('m/d/Y', strtotime($log['maintenance_date'])) ?></td>
+                                                            </tr>
+                                                    <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
+                            <!-- Reservation Overview Section (Picture 2) -->
+                            <div style="background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #111;">
+                                <div class="card-header" style="background: #111; border-bottom: 2px solid #333; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">Reservation Overview</h3>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal('reservation-modal')" style="background: #38a169; border: none; font-weight: 700; padding: 8px 16px; border-radius: 6px;">
+                                        <i class="fa-solid fa-hotel"></i> Add Reservation
+                                    </button>
+                                </div>
+                                <div class="table-wrapper" style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
+                                    <table class="table" style="background: transparent; border-collapse: collapse; min-width: 1100px;">
+                                        <thead>
+                                            <tr style="border-bottom: 2px solid #333;">
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">TIME</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">GUESTS</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">PACKAGE</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">TOTAL AMOUNT</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">DEPOSIT PAID</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">BALANCE DUE</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">PAYMENT METHOD</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">COORDINATOR</th>
+                                                <th style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900;">STATUS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($dashboard_data['reservations'])): ?>
+                                                    <tr><td colspan="9" style="padding: 40px; text-align: center; color: #4a5568; border-bottom: 1px solid #1a1a1a; font-style: italic;">No active reservations found.</td></tr>
+                                            <?php else: ?>
+                                                    <?php foreach ($dashboard_data['reservations'] as $res): ?>
+                                                            <tr style="border-bottom: 1px solid #111; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 600;"><?= date('g:i A', strtotime($res['start_time'] ?? 'now')) ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem;"><?= $res['guests_count'] ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 700;"><?= htmlspecialchars($res['package'] ?? 'Grand Wedding') ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.85rem; font-weight: 800;">₱<?= number_format($res['total_amount'] ?? 0, 2) ?></td>
+                                                                <td style="padding: 15px; color: #4ade80; font-size: 0.85rem; font-weight: 800;">₱<?= number_format(($res['total_amount'] ?? 0) * 0.4, 2) ?></td>
+                                                                <td style="padding: 15px; color: #f87171; font-size: 0.85rem; font-weight: 800;">₱<?= number_format(($res['total_amount'] ?? 0) * 0.6, 2) ?></td>
+                                                                <td style="padding: 15px; color: #cbd5e1; font-size: 0.85rem;"><?= htmlspecialchars($res['payment_method'] ?? 'Online Payment') ?></td>
+                                                                <td style="padding: 15px; color: #94a3b8; font-size: 0.85rem;"><?= htmlspecialchars($res['coordinator'] ?? 'Luis Gomez') ?></td>
+                                                                <td style="padding: 15px; color: #fff; font-size: 0.75rem; font-weight: 900; text-transform: uppercase;">
+                                                                    <span style="padding: 4px 10px; border-radius: 4px; border: 1px solid #333; background: #111;"><?= htmlspecialchars($res['status']) ?></span>
+                                                                </td>
+                                                            </tr>
+                                                    <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Reservations Summary card placeholder (hidden as it's now combined inside Maintenance view) -->
-                        <div class="card management-card management-reservations-mnt premium-dark-card"
-                            style="display: none;"></div>
+                        <!-- Reservations separate button placeholder (handled by JS) -->
+                        <div class="card management-card management-reservations-mnt" data-card-type="reservations-mnt" style="display: none;"></div>
                     </div>
                 </div>
 

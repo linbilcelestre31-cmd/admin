@@ -505,18 +505,24 @@ window.toggleMaintenanceTrash = function () {
     const mainSection = document.getElementById('maintenance-main-section');
     const btn = document.getElementById('btn-toggle-trash');
 
-    if (trashSection.style.display === 'none') {
+    if (!trashSection || !mainSection) return;
+
+    if (trashSection.style.display === 'none' || trashSection.style.display === '') {
         trashSection.style.display = 'block';
         mainSection.style.display = 'none';
-        btn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to Logs';
-        btn.classList.remove('btn-outline');
-        btn.classList.add('btn-primary');
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to Logs';
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+        }
     } else {
         trashSection.style.display = 'none';
         mainSection.style.display = 'block';
-        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> View Trash';
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-outline');
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> View Trash';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline');
+        }
     }
 };
 
