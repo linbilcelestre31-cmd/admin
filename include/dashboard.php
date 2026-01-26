@@ -328,7 +328,7 @@
                         <span style="color: #15803d; font-size: 0.9rem; font-weight: 700;">All Clear</span>
                     </div>
                 <?php else: ?>
-                    <?php foreach (array_slice($pending_maintenance, 0, 3) as $job): ?>
+                    <?php foreach (array_slice($pending_maintenance, 0, 4) as $job): ?>
                         <div
                             style="padding: 12px; border-radius: 12px; background: #fffcf0; border: 1px solid #fef08a; display: flex; align-items: flex-start; gap: 10px;">
                             <div
@@ -338,7 +338,8 @@
                             <div style="flex: 1; min-width: 0;">
                                 <div
                                     style="font-weight: 700; color: #854d0e; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    <?= htmlspecialchars($job['item_name']) ?></div>
+                                    <?= htmlspecialchars($job['item_name']) ?>
+                                </div>
                                 <div style="font-size: 0.7rem; color: #a16207; margin-top: 2px;">
                                     <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>
                                     <?= date('M d', strtotime($job['maintenance_date'])) ?>

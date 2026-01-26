@@ -31,6 +31,7 @@ window.switchTab = function (tabName) {
         'reservations': 'Reservation Management',
         'calendar': 'Reservation Calendar',
         'management': 'System Management',
+        'maintenance': 'Maintenance Management',
         'reports': 'Reports & Analytics'
     };
 
@@ -40,13 +41,14 @@ window.switchTab = function (tabName) {
         'reservations': 'View and manage all reservations',
         'calendar': 'View upcoming reservations schedule',
         'management': 'System configuration and reports',
+        'maintenance': 'Manage facility maintenance logs and staff',
         'reports': 'Generate reports and export data'
     };
 
     const pageTitleEl = document.getElementById('page-title');
     const pageSubtitleEl = document.getElementById('page-subtitle');
 
-    if (pageTitleEl) pageTitleEl.textContent = titles[tabName] || 'Facilities Reservation System';
+    if (pageTitleEl) pageTitleEl.textContent = titles[tabName] || 'Facilities Reservation Management';
     if (pageSubtitleEl) pageSubtitleEl.textContent = subtitles[tabName] || 'Manage hotel';
 
     sessionStorage.setItem('activeTab', tabName);
@@ -455,7 +457,7 @@ window.viewMaintenanceDetails = function (log) {
 };
 
 window.deleteMaintenanceLog = function (id) {
-    if (confirm('Are you sure you want to permanently delete this maintenance log?')) {
+    if (confirm('Move this maintenance log to trash?')) {
         const formData = new FormData();
         formData.append('action', 'delete_maintenance');
         formData.append('log_id', id);
@@ -463,6 +465,50 @@ window.deleteMaintenanceLog = function (id) {
         fetch('', { method: 'POST', body: formData })
             .then(res => location.reload())
             .catch(err => console.error('Delete error:', err));
+    }
+};
+
+window.restoreMaintenanceLog = function (id) {
+    if (confirm('Restore this maintenance log?')) {
+        const formData = new FormData();
+        formData.append('action', 'restore_maintenance');
+        formData.append('log_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => location.reload())
+            .catch(err => console.error('Restore error:', err));
+    }
+};
+
+window.permanentlyDeleteMaintenanceLog = function (id) {
+    if (confirm('Permanently delete this maintenance log? This action cannot be undone.')) {
+        const formData = new FormData();
+        formData.append('action', 'permanent_delete_maintenance');
+        formData.append('log_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => location.reload())
+            .catch(err => console.error('Permanent delete error:', err));
+    }
+};
+
+window.toggleMaintenanceTrash = function () {
+    const trashSection = document.getElementById('maintenance-trash-section');
+    const mainSection = document.getElementById('maintenance-main-section');
+    const btn = document.getElementById('btn-toggle-trash');
+
+    if (trashSection.style.display === 'none') {
+        trashSection.style.display = 'block';
+        mainSection.style.display = 'none';
+        btn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to Logs';
+        btn.classList.remove('btn-outline');
+        btn.classList.add('btn-primary');
+    } else {
+        trashSection.style.display = 'none';
+        mainSection.style.display = 'block';
+        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> View Trash';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline');
     }
 };
 
