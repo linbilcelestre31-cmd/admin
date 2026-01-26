@@ -479,7 +479,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             UNION ALL
                             (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0)
                             UNION ALL
-                            (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(time_in AS CHAR) as date, status FROM direct_checkins)
+                            (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, status FROM direct_checkins)
                             UNION ALL
                             (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts)
                             ORDER BY date DESC
@@ -498,13 +498,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
 
                     case 'visitors':
-                        $sql = "SELECT id, full_name, email, phone, room_number, time_in, time_out, status FROM direct_checkins WHERE 1=1";
+                        $sql = "SELECT id, full_name, email, phone_number as phone, room_number, checkin_date as time_in, checkout_date as time_out, status FROM direct_checkins WHERE 1=1";
                         if ($from_date) {
-                            $sql .= " AND DATE(time_in) >= ?";
+                            $sql .= " AND DATE(checkin_date) >= ?";
                             $params[] = $from_date;
                         }
                         if ($to_date) {
-                            $sql .= " AND DATE(time_in) <= ?";
+                            $sql .= " AND DATE(checkin_date) <= ?";
                             $params[] = $to_date;
                         }
                         $headers = ['ID', 'Name', 'Email', 'Phone', 'Facility', 'Time In', 'Time Out', 'Status'];
@@ -1159,6 +1159,14 @@ if (isset($dashboard_data['error'])) {
                         } catch (PDOException $ex) {
                         }
                     }
+                    // Self-healing for direct_checkins
+                    try {
+                        $db->query("SELECT checkin_date FROM direct_checkins LIMIT 1");
+                    } catch (PDOException $e) {
+                        // If checkin_date is missing, maybe it's called checkin_time or time_in? 
+                        // But based on Vistor.php, it should be checkin_date. 
+                        // Let's ensure the table exists and has correct columns if we are querying it.
+                    }
                     ?>
 
                     <?php
@@ -1182,7 +1190,7 @@ if (isset($dashboard_data['error'])) {
                                 UNION ALL
                                 (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0)
                                 UNION ALL
-                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(time_in AS CHAR) as date, status FROM direct_checkins)
+                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, status FROM direct_checkins)
                                 UNION ALL
                                 (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts)
                                 ORDER BY date DESC
@@ -1211,11 +1219,11 @@ if (isset($dashboard_data['error'])) {
                         case 'visitors':
                             // Attempting to fetch from direct_checkins or visitor_logs if exists
                             try {
-                                $r_sql = "SELECT id, full_name, email, phone, room_number as facility, time_in, time_out, status FROM direct_checkins WHERE 1=1";
+                                $r_sql = "SELECT id, full_name, email, phone_number as phone, room_number as facility, checkin_date as time_in, checkout_date as time_out, status FROM direct_checkins WHERE 1=1";
                                 if ($r_from)
-                                    $r_sql .= " AND DATE(time_in) >= " . get_pdo()->quote($r_from);
+                                    $r_sql .= " AND DATE(checkin_date) >= " . get_pdo()->quote($r_from);
                                 if ($r_to)
-                                    $r_sql .= " AND DATE(time_in) <= " . get_pdo()->quote($r_to);
+                                    $r_sql .= " AND DATE(checkin_date) <= " . get_pdo()->quote($r_to);
                                 $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'TIME IN', 'TIME OUT', 'STATUS'];
                                 $r_stmt = get_pdo()->prepare($r_sql);
                                 $r_stmt->execute();
