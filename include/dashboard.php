@@ -18,7 +18,7 @@
         $today_visitors = $db->query("SELECT COUNT(*) FROM direct_checkins WHERE DATE(checkin_date) = CURDATE()")->fetchColumn() ?? 0;
 
         // 3. Archived Documents
-        $total_documents = $db->query("SELECT COUNT(*) FROM documents")->fetchColumn() ?? 0;
+        $total_documents = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn() ?? 0;
 
         // 4. Employee Count from HR4 API
         require_once __DIR__ . '/../integ/hr4_api.php';
@@ -26,14 +26,14 @@
         $employee_count = (is_array($employees_data) && isset($employees_data)) ? count($employees_data) : 0;
 
         // 5. Maintenance Logic (Pending Logs)
-        $pending_maintenance = $db->query("SELECT * FROM maintenance_logs WHERE status != 'completed' ORDER BY maintenance_date ASC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
+        $pending_maintenance = $db->query("SELECT * FROM maintenance_logs WHERE status != 'completed' AND is_deleted = 0 ORDER BY maintenance_date ASC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
 
         // 6. Compliance Status (Legal Contracts)
         $high_risk_contracts = $db->query("SELECT COUNT(*) FROM contracts WHERE risk_score >= 70")->fetchColumn() ?? 0;
         $total_contracts = $db->query("SELECT COUNT(*) FROM contracts")->fetchColumn() ?? 0;
 
         // 7. Archiving Break-down (Simulated or from categories if they exist)
-        $recent_archived = $db->query("SELECT * FROM documents ORDER BY uploaded_at DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
+        $recent_archived = $db->query("SELECT * FROM documents WHERE is_deleted = 0 ORDER BY uploaded_at DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
 
         // 8. Recent Reservations for Activity Card
         $recent_reservations_dash = $db->query("SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id ORDER BY r.id DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
