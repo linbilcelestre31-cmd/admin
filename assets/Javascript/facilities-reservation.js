@@ -282,39 +282,37 @@ window.viewReservationDetails = function (data) {
 
 // --- MANAGEMENT CARD TOGGLES (BULLETPROOF) ---
 window.showManagementCard = function (type) {
-    console.log('CRITICAL: Attempting to show management card:', type);
+    console.log('Attempting to show management card:', type);
 
     // Hide all cards
     const allCards = document.querySelectorAll('.management-card');
-    console.log('Found management cards:', allCards.length);
-
     allCards.forEach(el => {
         el.classList.remove('active-card');
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.style.opacity = '0';
     });
 
     // Show selected card
-    const targetSelector = `.management-card.management-${type}`;
-    const sel = document.querySelector(targetSelector);
+    // 1. Try finding by class
+    let sel = document.querySelector(`.management-card.management-${type}`);
+    // 2. Fallback to data attribute (more reliable)
+    if (!sel) sel = document.querySelector(`[data-card-type="${type}"]`);
 
     if (sel) {
-        console.log('Target card found:', targetSelector);
+        console.log('Target card found:', type);
         sel.classList.add('active-card');
+        sel.style.display = 'block';
+        sel.style.visibility = 'visible';
+        sel.style.opacity = '1';
     } else {
-        console.error('CRITICAL ERROR: Management card not found for type:', type);
-        console.log('Available cards:', Array.from(allCards).map(c => c.className));
-        // Fallback: try finding by data attribute if exists
-        const fallback = document.querySelector(`[data-card-type="${type}"]`);
-        if (fallback) {
-            console.log('Found fallback card with data attribute');
-            fallback.classList.add('active-card');
-        }
+        console.error('Management card not found for type:', type);
     }
 
     // Update active button styling
     const btns = {
         'maintenance': document.getElementById('show-maintenance-card'),
         'reservations-mnt': document.getElementById('show-reservations-card'),
-        'employees': document.getElementById('show-employees-card'),
         'mnt-calendar': document.getElementById('show-mnt-calendar')
     };
 
@@ -330,8 +328,6 @@ window.showManagementCard = function (type) {
                 btn.style.background = '';
                 btn.style.color = '';
             }
-        } else {
-            console.warn(`Button not found for: ${key}`);
         }
     });
 };
