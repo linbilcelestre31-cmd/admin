@@ -1490,6 +1490,20 @@ if (isset($dashboard_data['error'])) {
                 <div id="management"
                     class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
                     <div class="management-header d-flex justify-between align-center mb-2">
+                        <div class="management-buttons">
+                            <button id="show-maintenance-card" class="btn management-btn active"
+                                onclick="showManagementCard('maintenance')">
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                            </button>
+                            <button id="show-employees-card" class="btn management-btn"
+                                onclick="showManagementCard('employees')">
+                                <i class="fa-solid fa-users"></i> Employees
+                            </button>
+                            <button id="show-mnt-calendar" class="btn management-btn"
+                                onclick="showManagementCard('mnt-calendar')">
+                                <i class="fa-solid fa-calendar"></i> Schedules
+                            </button>
+                        </div>
                         <button id="btn-toggle-trash" class="btn btn-outline btn-sm" onclick="toggleMaintenanceTrash()">
                             <i class="fa-solid fa-trash-can"></i> View Trash
                         </button>
@@ -2263,74 +2277,6 @@ if (isset($dashboard_data['error'])) {
             }
         });
 
-        // --- PIN PROTECTION FOR VAULT ---
-        function checkVaultPin(event, url) {
-            if (event) event.preventDefault();
-
-            // Store target URL
-            window.pendingVaultUrl = url || '../Modules/document management(archiving).php';
-
-            // Open PIN Modal
-            const modal = document.getElementById('vaultPinModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.getElementById('vault-pin-input').value = '';
-                document.getElementById('vault-pin-input').focus();
-            } else {
-                // Fallback to simple prompt if modal is missing
-                const pin = prompt("Enter PIN to access Vault:");
-                if (pin === '1234') {
-                    window.location.href = window.pendingVaultUrl;
-                } else if (pin !== null) {
-                    alert("Incorrect PIN!");
-                }
-            }
-        }
-
-        function verifyVaultPin() {
-            const pinInput = document.getElementById('vault-pin-input');
-            const pin = pinInput.value;
-
-            if (pin === '1234') { // Default PIN
-                window.location.href = window.pendingVaultUrl;
-            } else {
-                alert("Incorrect PIN! Access Denied.");
-                pinInput.value = '';
-                pinInput.focus();
-            }
-        }
-
-        function closeVaultPinModal() {
-            const modal = document.getElementById('vaultPinModal');
-            if (modal) modal.style.display = 'none';
-        }
-    </script>
-
-    <!-- Vault PIN Modal -->
-    <div id="vaultPinModal"
-        style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
-        <div
-            style="background: white; padding: 30px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-            <div
-                style="width: 60px; height: 60px; background: #fff7ed; color: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px;">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h3 style="margin: 0 0 10px; color: #1e293b;">Vault Protection</h3>
-            <p style="margin: 0 0 20px; color: #64748b; font-size: 0.9rem;">Please enter security PIN to access document
-                archive.</p>
-
-            <input type="password" id="vault-pin-input" maxlength="4" placeholder="••••"
-                style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 10px; margin-bottom: 20px; outline: none; transition: border-color 0.2s;"
-                onkeyup="if(event.key==='Enter') verifyVaultPin()">
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button onclick="closeVaultPinModal()"
-                    style="padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer; font-weight: 600;">Cancel</button>
-                <button onclick="verifyVaultPin()"
-                    style="padding: 12px; border-radius: 10px; border: none; background: #3182ce; color: white; cursor: pointer; font-weight: 600;">Unlock</button>
-            </div>
-        </div>
-    </div>
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"

@@ -354,7 +354,6 @@
         </div>
     </div>
 </div>
-</div>
 
 <!-- Recent Activities Modal HTML (Kept for compatibility with JS) -->
 <div id="recentActivitiesModal"
