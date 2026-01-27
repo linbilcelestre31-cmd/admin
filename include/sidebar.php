@@ -88,7 +88,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
                     onclick="toggleDropdown(event, this)">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fa-solid fa-calendar-check"></i> Facilities Reservation & Maintenance
+                        <i class="fa-solid fa-calendar-check"></i> Facilities
+                        <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                        <i class="fa-solid fa-calendar-check"></i> Reservation
                     </div>
                     <i class="fa-solid fa-chevron-down dropdown-arrow"
                         style="transform: <?= $mgr_active ? 'rotate(180deg)' : '0deg' ?>;"></i>
