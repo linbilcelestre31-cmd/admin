@@ -31,11 +31,11 @@ try {
 try {
     $checkQ = $db->query("SELECT COUNT(*) FROM contracts WHERE name LIKE '%Privacy Policy%' OR name LIKE '%Logistics Supply%'");
     if ($checkQ->fetchColumn() == 0) {
-        $db->exec("INSERT IGNORE INTO contracts (name, case_id, contract_type, description, risk_level, risk_score) VALUES 
-            ('Employee Privacy Policy 2024', 'HR-POL-001', 'Internal', 'Comprehensive privacy policy for hotel and restaurant staff.', 'Low', 15),
-            ('Internal Operational Guidelines', 'OPS-SOP-2024', 'Internal', 'Operational standard procedures for internal departments.', 'Low', 20),
-            ('Global Logistics Supply Agreement', 'LOGI-2024-01', 'External', 'Supply chain and logistics agreement with LogiTrans Corp.', 'Medium', 45),
-            ('Outsourced Security Services NDA', 'SEC-NDA-042', 'External', 'Non-disclosure agreement with SafeGuard Solutions.', 'Low', 30)");
+        $db->exec("INSERT IGNORE INTO contracts (name, case_id, contract_type, description, risk_score) VALUES 
+            ('Employee Privacy Policy 2024', 'HR-POL-001', 'Internal', 'Comprehensive privacy policy for hotel and restaurant staff.', 15),
+            ('Internal Operational Guidelines', 'OPS-SOP-2024', 'Internal', 'Operational standard procedures for internal departments.', 20),
+            ('Global Logistics Supply Agreement', 'LOGI-2024-01', 'External', 'Supply chain and logistics agreement with LogiTrans Corp.', 45),
+            ('Outsourced Security Services NDA', 'SEC-NDA-042', 'External', 'Non-disclosure agreement with SafeGuard Solutions.', 30)");
     }
 } catch (PDOException $e) {
 }
@@ -43,31 +43,31 @@ try {
 // Ensure additional Internal Data exists for new tabs
 try {
     $extraDocs = [
-        ['Employee Code of Conduct 2024', 'HR-POL-002', 'Internal', 'Standard code of conduct for all employees.', 'Low', 10],
-        ['Labor Union Collective Agreement', 'HR-LAB-001', 'Internal', 'Agreement with Hotel Workers Union regarding wages and benefits.', 'Medium', 35],
-        ['Staff Disciplinary Policy', 'HR-DISC-001', 'Internal', 'Procedures for employee disciplinary actions.', 'Low', 15],
-        ['Workplace Safety Compliance Guide', 'CMP-SAF-2024', 'Internal', 'Safety protocols compliant with DOLE standards.', 'Low', 5],
-        ['Board Resolution 2024-001', 'GOV-RES-001', 'Internal', 'Board approval for FY 2024 budget allocation.', 'Low', 0],
-        ['Corporate By-Laws 2024 Amendment', 'GOV-LAW-002', 'Internal', 'Amendments to corporate by-laws regarding shareholder meetings.', 'Medium', 25],
-        ['Annual Risk Audit Report', 'RSK-AUD-2023', 'Internal', 'Comprehensive risk assessment audit for 2023.', 'Medium', 40],
-        ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 'High', 65],
+        ['Employee Code of Conduct 2024', 'HR-POL-002', 'Internal', 'Standard code of conduct for all employees.', 10],
+        ['Labor Union Collective Agreement', 'HR-LAB-001', 'Internal', 'Agreement with Hotel Workers Union regarding wages and benefits.', 35],
+        ['Staff Disciplinary Policy', 'HR-DISC-001', 'Internal', 'Procedures for employee disciplinary actions.', 15],
+        ['Workplace Safety Compliance Guide', 'CMP-SAF-2024', 'Internal', 'Safety protocols compliant with DOLE standards.', 5],
+        ['Board Resolution 2024-001', 'GOV-RES-001', 'Internal', 'Board approval for FY 2024 budget allocation.', 0],
+        ['Corporate By-Laws 2024 Amendment', 'GOV-LAW-002', 'Internal', 'Amendments to corporate by-laws regarding shareholder meetings.', 25],
+        ['Annual Risk Audit Report', 'RSK-AUD-2023', 'Internal', 'Comprehensive risk assessment audit for 2023.', 40],
+        ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 65],
 
         // External
-        ['Food Supplier Contract - BestMeats', 'SUP-2024-001', 'External', 'Annual contract for premium meat supply.', 'Low', 20],
-        ['Beverage Partnership Agreement', 'SUP-2024-002', 'External', 'Exclusive partnership with Major Soda Co.', 'Low', 15],
-        ['City Hall Business Permit 2024', 'GOV-PER-2024', 'External', 'Annual business operation permit renewal.', 'High', 80],
-        ['BIR Tax Compliance Certificate', 'GOV-TAX-001', 'External', 'Certificate of updated tax compliance.', 'High', 75],
-        ['Pending Litigation - Case 8821', 'LAW-DISP-001', 'External', 'Ongoing labor dispute case filed by former contractor.', 'High', 90],
-        ['Settlement Agreement - Slip/Fall', 'LAW-SET-002', 'External', 'Settlement agreement regarding minor guest accident.', 'Medium', 45],
-        ['Data Privacy Compliance 2024', 'REG-DPA-001', 'External', 'Compliance report for National Data Privacy Act.', 'Medium', 50],
-        ['Guest Waiver & Release Form', 'CON-PROT-001', 'External', 'Standard liability waiver for swimming pool usage.', 'Low', 30]
+        ['Food Supplier Contract - BestMeats', 'SUP-2024-001', 'External', 'Annual contract for premium meat supply.', 20],
+        ['Beverage Partnership Agreement', 'SUP-2024-002', 'External', 'Exclusive partnership with Major Soda Co.', 15],
+        ['City Hall Business Permit 2024', 'GOV-PER-2024', 'External', 'Annual business operation permit renewal.', 80],
+        ['BIR Tax Compliance Certificate', 'GOV-TAX-001', 'External', 'Certificate of updated tax compliance.', 75],
+        ['Pending Litigation - Case 8821', 'LAW-DISP-001', 'External', 'Ongoing labor dispute case filed by former contractor.', 90],
+        ['Settlement Agreement - Slip/Fall', 'LAW-SET-002', 'External', 'Settlement agreement regarding minor guest accident.', 45],
+        ['Data Privacy Compliance 2024', 'REG-DPA-001', 'External', 'Compliance report for National Data Privacy Act.', 50],
+        ['Guest Waiver & Release Form', 'CON-PROT-001', 'External', 'Standard liability waiver for swimming pool usage.', 30]
     ];
 
     foreach ($extraDocs as $doc) {
         $check = $db->prepare("SELECT COUNT(*) FROM contracts WHERE name = ?");
         $check->execute([$doc[0]]);
         if ($check->fetchColumn() == 0) {
-            $ins = $db->prepare("INSERT INTO contracts (name, case_id, contract_type, description, risk_level, risk_score) VALUES (?, ?, ?, ?, ?, ?)");
+            $ins = $db->prepare("INSERT INTO contracts (name, case_id, contract_type, description, risk_score) VALUES (?, ?, ?, ?, ?)");
             $ins->execute($doc);
         }
     }
@@ -514,7 +514,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $contract_type = $_POST['contract_type'] ?? 'External';
 
-        $query = "INSERT INTO contracts (name, case_id, contract_type, description, file_path, risk_level, risk_score, risk_factors, recommendations, analysis_summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO contracts (name, case_id, contract_type, description, file_path, risk_score, risk_factors, recommendations, analysis_summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($query);
 
         $risk_factors_json = json_encode($riskAnalysis['risk_factors']);
@@ -527,7 +527,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $contract_type,
                 $description,
                 $file_name,
-                $riskAnalysis['risk_level'],
                 $riskAnalysis['risk_score'],
                 $risk_factors_json,
                 $recommendations_json,
@@ -553,7 +552,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = 'legal2025'; // Password para sa PDF Report (Simulasyon)
 
         // Kunin ang lahat ng data ng kontrata para sa ulat
-        $query = "SELECT name as contract_name, risk_level, risk_score, analysis_summary FROM contracts ORDER BY created_at DESC";
+        $query = "SELECT name as contract_name, risk_score, analysis_summary FROM contracts ORDER BY created_at DESC";
         $stmt = $db->prepare($query);
         $stmt->execute();
         $contracts_to_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -576,7 +575,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo "Kontrata sa Report:\n";
         foreach ($contracts_to_report as $contract) {
-            echo "- " . $contract['contract_name'] . " (Risk: " . $contract['risk_level'] . ", Score: " . $contract['risk_score'] . "/100)\n";
+            echo "- " . $contract['contract_name'] . " (Score: " . $contract['risk_score'] . "/100)\n";
             echo "  Buod ng Pagsusuri: " . $contract['analysis_summary'] . "\n";
         }
 
@@ -658,15 +657,15 @@ try {
 // NEW: Fetch documents and billing (with fallbacks) and build risk summary
 $documents = [];
 try {
-    $query = "SELECT id, name, case_id, file_path, uploaded_at, risk_level, risk_score, analysis_date, ai_analysis FROM documents ORDER BY uploaded_at DESC";
+    $query = "SELECT id, name, case_id, file_path, uploaded_at, risk_score, analysis_date, ai_analysis FROM documents ORDER BY uploaded_at DESC";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     // fallback demo data if query fails
     $documents = [
-        ['id' => 1, 'name' => 'Employment Contract.pdf', 'case_id' => 'C-001', 'file_path' => 'uploads/documents/Employment Contract.pdf', 'uploaded_at' => '2023-05-20 12:00:00', 'risk_level' => 'unknown', 'risk_score' => null, 'analysis_date' => null, 'ai_analysis' => null],
-        ['id' => 2, 'name' => 'Supplier Agreement.docx', 'case_id' => 'C-002', 'file_path' => 'uploads/documents/Supplier Agreement.docx', 'uploaded_at' => '2023-06-25 12:00:00', 'risk_level' => 'unknown', 'risk_score' => null, 'analysis_date' => null, 'ai_analysis' => null]
+        ['id' => 1, 'name' => 'Employment Contract.pdf', 'case_id' => 'C-001', 'file_path' => 'uploads/documents/Employment Contract.pdf', 'uploaded_at' => '2023-05-20 12:00:00', 'risk_score' => null, 'analysis_date' => null, 'ai_analysis' => null],
+        ['id' => 2, 'name' => 'Supplier Agreement.docx', 'case_id' => 'C-002', 'file_path' => 'uploads/documents/Supplier Agreement.docx', 'uploaded_at' => '2023-06-25 12:00:00', 'risk_score' => null, 'analysis_date' => null, 'ai_analysis' => null]
     ];
 }
 
@@ -674,10 +673,12 @@ try {
 // Risk summary with normalized casing
 $riskCounts = ['High' => 0, 'Medium' => 0, 'Low' => 0];
 foreach ($contracts as $c) {
-    $lvl_raw = $c['risk_level'] ?? 'Low';
-    $lvl = ucfirst(strtolower($lvl_raw));
-    if (isset($riskCounts[$lvl])) {
-        $riskCounts[$lvl]++;
+    // Determine risk level based on score only
+    $score = $c['risk_score'] ?? 0;
+    if ($score >= 70) {
+        $riskCounts['High']++;
+    } elseif ($score >= 31) {
+        $riskCounts['Medium']++;
     } else {
         $riskCounts['Low']++;
     }
@@ -704,6 +705,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap"
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1" media="none"
@@ -985,7 +987,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <td><?php echo htmlspecialchars($employee['phone']); ?></td>
                                     <td>
                                         <div class="action-container">
-                                            <button class="action-btn view-btn" data-type="employee-view"
+                                            <button class="action-btn view-btn"
                                                 data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
                                                 <i class="fa-solid fa-eye"></i> View
                                             </button>
@@ -1037,10 +1039,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
                         </button>
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'governance')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-building-columns" style="margin-right: 8px;"></i> Corporate Governance
-                        </button>
+                       
                         <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
@@ -1095,7 +1094,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <tr>
                                         <th>Policy Name</th>
                                         <th>Case ID</th>
-                                        <th>Risk level</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1127,12 +1125,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                <td>
-                                                    <span
-                                                        class="status-badge status-<?php echo strtolower($doc['risk_level'] ?? 'low'); ?>">
-                                                        <?php echo htmlspecialchars($doc['risk_level'] ?? 'Low'); ?>
-                                                    </span>
-                                                </td>
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
@@ -1508,7 +1500,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <tr>
                             <th>Contract Name</th>
                             <th>Case</th>
-                            <th>Risk Level</th>
+                            
                             <th>Risk Score</th>
                             <th>Upload Date</th>
                             <th>Actions</th>
@@ -1529,11 +1521,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($contract['risk_level']); ?>">
-                                        <?php echo htmlspecialchars($contract['risk_level']); ?>
-                                    </span>
-                                </td>
                                 <td><?php echo htmlspecialchars($contract['risk_score']); ?>/100</td>
                                 <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
                                 <td>
@@ -1608,11 +1595,51 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="risk-analysis-layout">
                     <div class="chart-container-wrapper">
-                        <h3 class="subsection-title"><i class="fa-solid fa-chart-simple"></i> Risk Distribution</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <h3 class="subsection-title" style="margin: 0; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                                    <i class="fa-solid fa-chart-simple" style="color: white; font-size: 18px;"></i>
+                                </div>
+                                <span style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk Distribution Analysis</span>
+                            </h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="window.initRiskChart()" 
+                                    style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-sync-alt"></i> Refresh
+                                </button>
+                                <button onclick="window.downloadChart()" 
+                                    style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
                         <div class="chart-area" id="chartArea"
-                            style="height: 320px; width: 100%; position: relative; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; padding: 20px; display: block; overflow: hidden;">
-                            <canvas id="riskDistributionChart" width="600" height="320"
-                                style="width: 100%; height: 100%; opacity: 1;"></canvas>
+                            style="height: 400px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 24px; border: 2px solid #e2e8f0; padding: 30px; display: block; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;">
+                            <div style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                <span style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live Data</span>
+                            </div>
+                            <canvas id="riskDistributionChart" width="600" height="400"
+                                style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 20px;">
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #ef4444; font-weight: 700;">High Risk</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium Risk</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"></div>
+                                    <span style="font-size: 0.9rem; color: #10b981; font-weight: 700;">Low Risk</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Last Updated</div>
+                                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;"><?php echo date('M j, Y g:i A'); ?></div>
+                            </div>
                         </div>
                     </div>
 
@@ -1793,63 +1820,75 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <i class="fa-solid fa-xmark"></i>
                 </button>
 
-                <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                    <div id="genderImageContainer" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
+                        <img src="../assets/image/Women.png" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                     <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.5rem; backdrop-filter: blur(5px);">
+                        style="width: 100px; height: 100px; background: rgba(255,255,255,0.25); border-radius: 50%; display: grid; place-items: center; font-size: 2.8rem; backdrop-filter: blur(8px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.4);">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <div>
+                    <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
-                            style="margin:0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Employee
+                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Employee
                             Profile</h2>
                         <span id="employeeRoleBadge"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(147, 197, 253, 0.2);">Legal
+                            style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
                             Team</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Body -->
-            <div id="employeeInfoBody" style="padding: 40px; background: white; position: relative;">
-                <div id="employeeSensitiveData" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <!-- Data Row: Name -->
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Full
-                                Name</label>
-                            <div id="display_emp_name"
-                                style="font-size: 1.1rem; font-weight: 600; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+            <!-- Modal Body with Circular Design -->
+            <div id="employeeInfoBody" style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
+                <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 320px;">
+                    <!-- Circular Container -->
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                        <!-- Circular Profile Section -->
+                        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
+                            <div style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
+                                <i class="fa-solid fa-id-card" style="color: white; font-size: 12px;"></i>
+                            </div>
+                            <div style="text-align: center; padding: 15px;">
+                                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
+                                    <i class="fa-solid fa-user" style="color: white; font-size: 24px;"></i>
+                                </div>
+                                <h3 id="display_emp_name" style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
+                                <span id="display_emp_position" style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
+                            </div>
                         </div>
 
-                        <!-- Data Row: Position -->
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Position</label>
-                            <div id="display_emp_position"
-                                style="font-size: 1rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                -</div>
+                        <!-- Contact Information Circles -->
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <!-- Email Circle -->
+                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                    <i class="fa-solid fa-envelope" style="color: white; font-size: 14px;"></i>
+                                </div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Email</div>
+                                <div id="display_emp_email" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">-</div>
+                            </div>
+
+                            <!-- Phone Circle -->
+                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                    <i class="fa-solid fa-phone" style="color: white; font-size: 14px;"></i>
+                                </div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Phone</div>
+                                <div id="display_emp_phone" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-</div>
+                            </div>
                         </div>
 
-                        <!-- Data Grid: Contact Info -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Email
-                                    Address</label>
-                                <div id="display_emp_email"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #2563eb; padding: 12px 16px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    -</div>
-                            </div>
-                            <div class="info-row">
-                                <label
-                                    style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Phone
-                                    Number</label>
-                                <div id="display_emp_phone"
-                                    style="font-size: 0.95rem; font-weight: 500; color: #1e293b; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="modalDownloadEmpPdf" 
+                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                            <button id="closeEmployeeInfoBottom"
+                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1857,18 +1896,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div id="employeeRevealOverlay" class="reveal-overlay">
                     <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
                         Reveal</button>
-                </div>
-
-                <!-- Footer Actions -->
-                <div style="margin-top: 30px; display: flex; gap: 12px;">
-                    <button type="button" id="closeEmployeeInfoBottom"
-                        style="flex: 1; padding: 14px; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                        Close
-                    </button>
-                    <button type="button" class="save-btn" id="modalDownloadEmpPdf"
-                        style="flex: 2; border-radius: 16px; padding: 14px; font-weight: 700; background: #3b82f6; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <i class="fa-solid fa-file-pdf"></i> Download Official Profile
-                    </button>
                 </div>
             </div>
         </div>
@@ -2114,38 +2141,90 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             datasets: [{
                                 label: 'Contracts',
                                 data: chartData,
-                                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+                                backgroundColor: [
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)', 
+                                    'rgba(16, 185, 129, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(239, 68, 68, 1)',
+                                    'rgba(245, 158, 11, 1)',
+                                    'rgba(16, 185, 129, 1)'
+                                ],
                                 borderWidth: 2,
-                                borderRadius: 10,
-                                barPercentage: 0.55
+                                borderRadius: 8,
+                                barThickness: 60
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            animation: {
+                                duration: 1500,
+                                easing: 'easeInOutQuart',
+                                delay: (context) => {
+                                    let delay = 0;
+                                    if (context.type === 'data' && context.mode === 'default') {
+                                        delay = context.dataIndex * 200 + context.datasetIndex * 100;
+                                    }
+                                    return delay;
+                                }
+                            },
                             plugins: {
-                                legend: { display: false },
+                                legend: {
+                                    display: false
+                                },
                                 tooltip: {
-                                    backgroundColor: '#0f172a',
+                                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                                    titleColor: '#ffffff',
+                                    bodyColor: '#ffffff',
                                     padding: 12,
-                                    titleFont: { size: 14, weight: 'bold' }
+                                    borderRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.dataset.label || '';
+                                            const value = context.parsed.y;
+                                            const total = chartData.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
                                 }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                                    grid: { color: '#f1f5f9' }
+                                    grid: {
+                                        color: 'rgba(226, 232, 240, 0.5)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        font: {
+                                            weight: 600,
+                                            size: 12
+                                        },
+                                        stepSize: 1
+                                    }
                                 },
                                 x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#475569', font: { weight: 'bold', size: 12 } }
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        font: {
+                                            weight: 700,
+                                            size: 13
+                                        }
+                                    }
                                 }
                             }
                         }
                     });
-                    console.log("Chart Rendered:", chartData);
+                    console.log("Enhanced Chart Rendered:", chartData);
                 } catch (e) {
                     console.error("Chart Error:", e);
                 }
@@ -2157,6 +2236,20 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     window.initRiskChart();
                 }
             }, 2000);
+
+            // Download Chart Function
+            window.downloadChart = function() {
+                const canvas = document.getElementById('riskDistributionChart');
+                if (canvas && window.riskChartRef) {
+                    const url = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0,10) + '.png';
+                    link.href = url;
+                    link.click();
+                } else {
+                    alert('Please generate the chart first by clicking Refresh.');
+                }
+            };
 
             // Security Gate Implementation
             window.withPasswordGate = function (callback) {
@@ -2417,42 +2510,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 const target = e.target.closest('button, a.view-pdf-link, .download-btn');
                 if (!target) return;
 
-                const type = target.getAttribute('data-type') || (target.classList.contains('download-btn') ? 'download' : (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
-                if (!type) return;
+                const type = target.getAttribute('data-type') || 
+                            (target.classList.contains('download-btn') ? 'download' : 
+                            (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
 
-                // 1. PDF DOWNLOAD HANDLING
-                if (target.classList.contains('download-btn') || type === 'download') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data);
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF generation failed:", err); }
-                    }
-                }
-
-                // 2. PDF VIEW HANDLING (Hijacked Name Links)
-                if (type === 'pdf-view') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF view failed:", err); }
-                    }
-                }
-
-                // 3. TABLE ACTION MODALS (Password Protected)
-                withPasswordGate(() => {
-                    // Employee/Member View/Edit
+                // Handle employee-view specifically
+                if (target.classList.contains('view-btn') && target.getAttribute('data-emp')) {
                     // Employee View
-                    if (type === 'employee-view') {
+                    withPasswordGate(() => {
                         const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
                         const modal = document.getElementById('employeeInfoModal');
 
@@ -2462,6 +2527,28 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
                         document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
                         document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
+
+                        // Update Gender Image Based on Name
+                        const genderImageContainer = document.getElementById('genderImageContainer');
+                        if (genderImageContainer && emp.name) {
+                            const employeeName = emp.name.toLowerCase();
+                            let genderImage = '../assets/image/Men.png'; // Default to male
+                            
+                            // Simple gender detection based on common Filipino names
+                            const femaleNames = ['maria', 'mary', 'ana', 'anna', 'juanita', 'carmela', 'rosa', 'rose', 'grace', 'joy', 'patricia', 'pat', 'christine', 'tin', 'elizabeth', 'beth', 'catherine', 'cathy', 'margarita', 'maggie', 'lourdes', 'lou', 'rebecca', 'becky', 'sophia', 'sophie', 'isabella', 'bella', 'angelica', 'angeli', 'micah', 'mika', 'sarah', 'sam', 'rachel', 'rach', 'diana', 'diane', 'hannah', 'anna', 'maria', 'mary', 'josephine', 'joyce', 'evelyn', 'lyn', 'eunice', 'cecille', 'cecil', 'charmaine', 'charm', 'kathleen', 'kath', 'maureen', 'mau', 'regina', 'reg', 'liza', 'elisa', 'victoria', 'vic', 'bianca', 'bianx', 'camille', 'cam', 'danielle', 'dan', 'frances', 'fran', 'gillian', 'gil', 'jacqueline', 'jackie', 'kristine', 'kris', 'lovelyn', 'love', 'michelle', 'mich', 'nicole', 'nic', 'pamela', 'pam', 'stephanie', 'steph', 'teresa', 'terry', 'vanessa', 'van', 'yvonne', 'von', 'alexis', 'lex', 'amber', 'brianna', 'bri', 'claudine', 'clau', 'fatima', 'faye', 'georgina', 'georg', 'helena', 'len', 'irish', 'janine', 'jan', 'katherine', 'kat', 'lilian', 'lil', 'monica', 'mon', 'natalie', 'nat', 'olivia', 'liv', 'princess', 'princ', 'queenie', 'queen', 'roxanne', 'rox', 'samantha', 'sam', 'tricia', 'trish', 'ursula', 'urs', 'valerie', 'val', 'winona', 'win', 'zara', 'zar'];
+                            
+                            // Check if name contains any female indicators
+                            const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) || 
+                                            employeeName.includes('ms.') || 
+                                            employeeName.includes('miss') ||
+                                            employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
+                            
+                            if (isFemale) {
+                                genderImage = '../assets/image/Women.png';
+                            }
+                            
+                            genderImageContainer.innerHTML = `<img src="${genderImage}" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        }
 
                         // Handle Role Badge Colors
                         const badge = document.getElementById('employeeRoleBadge');
@@ -2509,9 +2596,44 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             void content.offsetWidth; // Trigger reflow
                             content.classList.add('modal-animate-in');
                         }
+                    });
+                    return;
+                }
+
+                if (!type) return;
+
+                // 1. PDF DOWNLOAD HANDLING
+                if (target.classList.contains('download-btn') || type === 'download') {
+                    const pdfType = target.getAttribute('data-pdf-type');
+                    const pdfContent = target.getAttribute('data-pdf-content');
+                    if (pdfType && pdfContent) {
+                        try {
+                            const data = JSON.parse(pdfContent);
+                            downloadRecordAsPDF(pdfType, data);
+                            e.preventDefault();
+                            return;
+                        } catch (err) { console.error("PDF generation failed:", err); }
                     }
+                }
+
+                // 2. PDF VIEW HANDLING (Hijacked Name Links)
+                if (type === 'pdf-view') {
+                    const pdfType = target.getAttribute('data-pdf-type');
+                    const pdfContent = target.getAttribute('data-pdf-content');
+                    if (pdfType && pdfContent) {
+                        try {
+                            const data = JSON.parse(pdfContent);
+                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
+                            e.preventDefault();
+                            return;
+                        } catch (err) { console.error("PDF view failed:", err); }
+                    }
+                }
+
+                // 3. TABLE ACTION MODALS (Password Protected)
+                withPasswordGate(() => {
                     // Document View
-                    else if (type === 'doc-view') {
+                    if (type === 'doc-view') {
                         const d = JSON.parse(target.getAttribute('data-doc') || '{}');
                         detailsTitle.textContent = 'Document Details';
                         detailsBody.innerHTML = `
@@ -2847,16 +2969,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
-        style="display:block; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;">
+        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 0;">
         <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
             allowtransparency="true"></iframe>
     </div>
     <!-- Edit Legal Modal -->
-    <div id="editLegalModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:92%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            <button onclick="closeModal(document.getElementById('editLegalModal'))"
+    <div id="editLegalModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
+        <div style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
+            <button type="button" onclick="closeModal(document.getElementById('editLegalModal'))"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
             <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
             <form method="POST" id="editLegalForm">
@@ -2865,14 +2985,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
-                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%;"
-                        required>
+                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
-                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
-                        style="width:100%;" required>
+                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div id="dynamic_edit_fields"></div>
@@ -2882,8 +3000,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
                         onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
                     <button type="submit" name="update_legal_record" class="save-btn"
-                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
-                        Changes</button>
+                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update Changes</button>
                 </div>
             </form>
         </div>
@@ -2917,6 +3034,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
 
             modal.style.display = 'flex';
+        }
+
+        function closeModal(modal) {
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>

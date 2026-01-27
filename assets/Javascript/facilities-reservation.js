@@ -31,6 +31,7 @@ window.switchTab = function (tabName) {
         'reservations': 'Reservation Management',
         'calendar': 'Reservation Calendar',
         'management': 'System Management',
+        'maintenance': 'Maintenance Management',
         'reports': 'Reports & Analytics'
     };
 
@@ -40,17 +41,39 @@ window.switchTab = function (tabName) {
         'reservations': 'View and manage all reservations',
         'calendar': 'View upcoming reservations schedule',
         'management': 'System configuration and reports',
+        'maintenance': 'Manage facility maintenance logs and staff',
         'reports': 'Generate reports and export data'
     };
 
     const pageTitleEl = document.getElementById('page-title');
     const pageSubtitleEl = document.getElementById('page-subtitle');
 
-    if (pageTitleEl) pageTitleEl.textContent = titles[tabName] || 'Facilities Reservation System';
+    if (pageTitleEl) pageTitleEl.textContent = titles[tabName] || 'Facilities Reservation Management';
     if (pageSubtitleEl) pageSubtitleEl.textContent = subtitles[tabName] || 'Manage hotel';
 
     sessionStorage.setItem('activeTab', tabName);
+
+    // Ensure maintenance card is shown if switching to management/maintenance tab
+    if (tabName === 'management' || tabName === 'maintenance') {
+        if (typeof window.showManagementCard === 'function') {
+            window.showManagementCard('maintenance');
+        }
+    }
+
+    // Update URL with pushState for back button support
+    const url = new URL(window.location);
+    if (url.searchParams.get('tab') !== tabName) {
+        url.searchParams.set('tab', tabName);
+        window.history.pushState({ tab: tabName }, '', url);
+    }
 };
+
+// Handle Browser Back/Forward buttons
+window.addEventListener('popstate', (event) => {
+    const url = new URL(window.location);
+    const tab = url.searchParams.get('tab') || 'dashboard';
+    window.switchTab(tab);
+});
 
 // --- MODAL CONTROLS ---
 window.openModal = function (modalId) {
@@ -124,7 +147,7 @@ window.calculateTotal = function () {
         if (hours < 0) hours += 24;
 
         const total = hours * rate;
-        totalCost.innerHTML = `<i class="fa-solid fa-calculator"></i> Estimated Total: ₱${total.toFixed(2)} (${Math.ceil(hours)} hours)`;
+        totalCost.innerHTML = `<i class="fa-solid fa-calculator"></i> Estimated Total: Php${total.toFixed(2)} (${Math.ceil(hours)} hours)`;
     }
 };
 
@@ -189,35 +212,69 @@ window.viewReservationDetails = function (data) {
     const colors = { 'pending': '#744210', 'confirmed': '#22543d', 'cancelled': '#c53030', 'completed': '#1a365d' };
     const bgs = { 'pending': '#fefcbf', 'confirmed': '#c6f6d5', 'cancelled': '#fed7d7', 'completed': '#bee3f8' };
 
+    const formattedDate = new Date(res.event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const formattedTime = res.start_time;
+
     body.innerHTML = `
         <div style="background: ${bgs[res.status] || '#f7fafc'}; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.05);">
-            <span style="font-weight: 700; color: ${colors[res.status] || '#2d3748'};">Status: ${res.status.toUpperCase()}</span>
-            <span style="font-size: 0.85rem; color: #64748b;">ID: #${res.id}</span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-            <div>
-                <h4 style="margin-bottom: 8px; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Customer Info</h4>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-user" style="width: 20px; color: #64748b;"></i> ${res.customer_name}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-envelope" style="width: 20px; color: #64748b;"></i> ${res.customer_email || 'N/A'}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-phone" style="width: 20px; color: #64748b;"></i> ${res.customer_phone || 'N/A'}</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 800; color: ${colors[res.status] || '#2d3748'}; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Status: ${res.status.toUpperCase()}</span>
             </div>
-            <div>
-                <h4 style="margin-bottom: 8px; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Event Details</h4>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-building" style="width: 20px; color: #64748b;"></i> ${res.facility_name}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-star" style="width: 20px; color: #64748b;"></i> ${res.event_type}</p>
-                <p style="margin: 4px 0;"><i class="fa-solid fa-users" style="width: 20px; color: #64748b;"></i> ${res.guests_count} guests</p>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">#BK-2026-${res.id.toString().padStart(3, '0')}</span>
+        </div>
+
+        <div style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 25px;">
+            <div style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+                <h3 style="margin: 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 10px;">
+                    📑 ADDITIONAL DETAILS SECTION
+                </h3>
             </div>
-        </div>
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
-            <p style="margin: 4px 0;"><i class="fa-solid fa-calendar-days" style="width: 20px; color: #64748b;"></i> <strong>Date:</strong> ${res.event_date}</p>
-            <p style="margin: 4px 0;"><i class="fa-solid fa-clock" style="width: 20px; color: #64748b;"></i> <strong>Time:</strong> ${res.start_time} - ${res.end_time}</p>
-            <p style="font-size: 1.25rem; color: #059669; margin-top: 12px; font-weight: 700;">₱${parseFloat(res.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-        </div>
-        <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid #3b82f6;">
-            <h4 style="margin-bottom: 5px; font-size: 0.85rem; color: #475569; font-weight: 600;">Special Requirements</h4>
-            <p style="margin: 0; color: #64748b; font-style: ${res.special_requirements ? 'normal' : 'italic'}; line-height: 1.5;">
-                ${res.special_requirements || 'No special requirements specified.'}
-            </p>
+            
+            <div style="padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px;">
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Booking ID:</strong> BK-2026-${res.id.toString().padStart(3, '0')}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Customer:</strong> ${res.customer_name}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Event:</strong> ${res.event_type}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Date & Time:</strong> ${formattedDate}, ${formattedTime}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Facility:</strong> ${res.facility_name}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Package:</strong> ${res.package || 'Intimate Wedding Package'}</p>
+                    <p style="margin: 0; font-size: 0.95rem; color: #334155;"><strong>Guests:</strong> ${res.guests_count} (plus 20 virtual attendees)</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">SPECIAL REQUIREMENTS:</h4>
+                    <ul style="margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px;">
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Sound system with microphone</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ White floral arrangements</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Vegetarian meal for 1 guest</li>
+                        <li style="display: flex; align-items: center; gap: 10px; color: #475569; font-size: 0.9rem;">❖ Projector and screen</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">PAYMENT SCHEDULE:</h4>
+                    <p style="margin: 8px 0; color: #475569; font-size: 0.9rem;"><strong>Deposit:</strong> ₱${(res.total_amount * 0.4).toLocaleString(undefined, { minimumFractionDigits: 2 })} (Paid on Jan 10, 2026 via GCash)</p>
+                    <p style="margin: 8px 0; color: #475569; font-size: 0.9rem;"><strong>Balance:</strong> ₱${(res.total_amount * 0.6).toLocaleString(undefined, { minimumFractionDigits: 2 })} (Due on Jan 22, 2026)</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">CONTACT PERSONS:</h4>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; color: #475569; font-size: 0.9rem;">
+                        <p style="margin: 0;"><strong>Coordinator:</strong> ${res.coordinator || 'Maria Santos'} (0918-XXX-XXXX)</p>
+                        <p style="margin: 0;"><strong>Catering:</strong> Hotel Kitchen (Ext. 123)</p>
+                        <p style="margin: 0;"><strong>Technicians:</strong> AV Team (Ext. 456)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 0.85rem; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; letter-spacing: 0.5px;">NOTES:</h4>
+                    <div style="background: #fdf2f2; padding: 15px; border-radius: 10px; border-left: 4px solid #ef4444; color: #b91c1c; font-size: 0.9rem; line-height: 1.5;">
+                        <p style="margin: 4px 0;">❖ Customer will bring own cake</p>
+                        <p style="margin: 4px 0;">❖ Setup starts at 11:00 AM</p>
+                        <p style="margin: 4px 0;">❖ Contract signed on Jan 5, 2026</p>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
     openModal('details-modal');
@@ -225,48 +282,43 @@ window.viewReservationDetails = function (data) {
 
 // --- MANAGEMENT CARD TOGGLES (BULLETPROOF) ---
 window.showManagementCard = function (type) {
-    console.log('CRITICAL: Attempting to show management card:', type);
+    console.log('Attempting to show management card:', type);
 
     // Hide all cards
     const allCards = document.querySelectorAll('.management-card');
-    console.log('Found management cards:', allCards.length);
-
     allCards.forEach(el => {
-        el.style.setProperty('display', 'none', 'important');
+        el.classList.remove('active-card');
+        el.style.display = 'none';
         el.style.visibility = 'hidden';
+        el.style.opacity = '0';
     });
 
     // Show selected card
-    const targetSelector = `.management-card.management-${type}`;
-    const sel = document.querySelector(targetSelector);
+    // 1. Try finding by class
+    let sel = document.querySelector(`.management-card.management-${type}`);
+    // 2. Fallback to data attribute (more reliable)
+    if (!sel) sel = document.querySelector(`[data-card-type="${type}"]`);
 
     if (sel) {
-        console.log('Target card found:', targetSelector);
-        sel.style.setProperty('display', 'block', 'important');
+        console.log('Target card found:', type);
+        sel.classList.add('active-card');
+        sel.style.display = 'block';
         sel.style.visibility = 'visible';
-
-        // Ensure parent container doesn't hide it
-        if (sel.parentElement) {
-            sel.parentElement.style.display = 'block';
-        }
+        sel.style.opacity = '1';
     } else {
-        console.error('CRITICAL ERROR: Management card not found for type:', type);
-        console.log('Available cards:', Array.from(allCards).map(c => c.className));
-        // Fallback: try finding by data attribute if exists
-        const fallback = document.querySelector(`[data-card-type="${type}"]`);
-        if (fallback) {
-            console.log('Found fallback card with data attribute');
-            fallback.style.setProperty('display', 'block', 'important');
-            fallback.style.visibility = 'visible';
-        }
+        console.error('Management card not found for type:', type);
     }
 
     // Update active button styling
     const btns = {
         'maintenance': document.getElementById('show-maintenance-card'),
+<<<<<<< HEAD
         'schedules': document.getElementById('show-schedules-card'),
         'facilities': document.getElementById('show-facilities-card'),
         'reports': document.getElementById('show-reports-card')
+=======
+        'mnt-calendar': document.getElementById('show-mnt-calendar')
+>>>>>>> 1f2a82047eb20a7c6bb547a8baf9c2b983bb0bd6
     };
 
     Object.keys(btns).forEach(key => {
@@ -281,8 +333,6 @@ window.showManagementCard = function (type) {
                 btn.style.background = '';
                 btn.style.color = '';
             }
-        } else {
-            console.warn(`Button not found for: ${key}`);
         }
     });
 };
@@ -295,12 +345,17 @@ window.viewFacilityDetails = function (facility) {
 
     body.innerHTML = `
         <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-            <div style="text-align: center; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <i class="fa-solid fa-building" style="font-size: 3rem; color: #3b82f6; margin-bottom: 10px;"></i>
-                <h2 style="margin: 0; color: #1e293b;">${facility.name}</h2>
-                <span class="status-badge status-${facility.status}" style="display: inline-block; margin-top: 10px;">
-                    ${facility.status.toUpperCase()}
-                </span>
+            <div style="text-align: center; background: #f8fafc; padding: 0; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+                ${facility.image_url ?
+            `<img src="${facility.image_url}" alt="${facility.name}" style="width: 100%; height: 200px; object-fit: cover;">` :
+            `<div style="padding: 30px;"><i class="fa-solid fa-building" style="font-size: 3rem; color: #3b82f6; margin-bottom: 10px;"></i></div>`
+        }
+                <div style="padding: 15px; border-top: 1px solid #e2e8f0; background: white;">
+                    <h2 style="margin: 0; color: #1e293b;">${facility.name}</h2>
+                    <span class="status-badge status-${facility.status || 'active'}" style="display: inline-block; margin-top: 10px; font-weight: 700;">
+                        ${(facility.status || 'ACTIVE').toUpperCase()}
+                    </span>
+                </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -314,7 +369,7 @@ window.viewFacilityDetails = function (facility) {
                 </div>
                 <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7;">
                     <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Hourly Rate</h4>
-                    <p style="margin: 0; font-weight: 600; color: #059669;">₱${parseFloat(facility.hourly_rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                    <p style="margin: 0; font-weight: 600; color: #059669;">Php${parseFloat(facility.hourly_rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                 </div>
                 <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7;">
                     <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Location</h4>
@@ -331,9 +386,40 @@ window.viewFacilityDetails = function (facility) {
                 <h4 style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 5px;">Amenities</h4>
                 <p style="margin: 0; color: #15803d; font-size: 0.9rem;">${facility.amenities || 'Standard hotel amenities included.'}</p>
             </div>
-        </div>
-    `;
+        </div >
+        `;
     window.openModal('facility-details-modal');
+};
+
+window.switchFacilityView = function (view) {
+    const gridView = document.getElementById('facility-grid-view');
+    const listView = document.getElementById('facility-list-view');
+    const gridBtn = document.getElementById('btn-grid-view');
+    const listBtn = document.getElementById('btn-list-view');
+
+    if (!gridView || !listView || !gridBtn || !listBtn) return;
+
+    if (view === 'grid') {
+        gridView.style.display = 'block';
+        listView.style.display = 'none';
+        gridBtn.classList.add('active');
+        gridBtn.style.background = 'white';
+        gridBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        listBtn.classList.remove('active');
+        listBtn.style.background = 'transparent';
+        listBtn.style.boxShadow = 'none';
+    } else {
+        gridView.style.display = 'none';
+        listView.style.display = 'block';
+        listBtn.classList.add('active');
+        listBtn.style.background = 'white';
+        listBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        gridBtn.classList.remove('active');
+        gridBtn.style.background = 'transparent';
+        gridBtn.style.boxShadow = 'none';
+    }
 };
 
 // --- MAINTENANCE ACTIONS ---
@@ -380,7 +466,7 @@ window.viewMaintenanceDetails = function (log) {
 };
 
 window.deleteMaintenanceLog = function (id) {
-    if (confirm('Are you sure you want to permanently delete this maintenance log?')) {
+    if (confirm('Move this maintenance log to trash?')) {
         const formData = new FormData();
         formData.append('action', 'delete_maintenance');
         formData.append('log_id', id);
@@ -391,17 +477,71 @@ window.deleteMaintenanceLog = function (id) {
     }
 };
 
+window.restoreMaintenanceLog = function (id) {
+    if (confirm('Restore this maintenance log?')) {
+        const formData = new FormData();
+        formData.append('action', 'restore_maintenance');
+        formData.append('log_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => location.reload())
+            .catch(err => console.error('Restore error:', err));
+    }
+};
+
+window.permanentlyDeleteMaintenanceLog = function (id) {
+    if (confirm('Permanently delete this maintenance log? This action cannot be undone.')) {
+        const formData = new FormData();
+        formData.append('action', 'permanent_delete_maintenance');
+        formData.append('log_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => location.reload())
+            .catch(err => console.error('Permanent delete error:', err));
+    }
+};
+
+window.toggleMaintenanceTrash = function () {
+    const trashSection = document.getElementById('maintenance-trash-section');
+    const mainSection = document.getElementById('maintenance-main-section');
+    const btn = document.getElementById('btn-toggle-trash');
+
+    if (!trashSection || !mainSection) return;
+
+    if (trashSection.style.display === 'none' || trashSection.style.display === '') {
+        trashSection.style.display = 'block';
+        mainSection.style.display = 'none';
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to Logs';
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+        }
+    } else {
+        trashSection.style.display = 'none';
+        mainSection.style.display = 'block';
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> View Trash';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline');
+        }
+    }
+};
+
 // --- INITIALIZATION ---
 function initializePage() {
     console.log('Initializing Facilities Reservation Page...');
 
     // Tab wiring
-    const activeTab = sessionStorage.getItem('activeTab') || 'dashboard';
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTab = urlParams.get('tab');
+    const activeTab = urlTab || sessionStorage.getItem('activeTab') || 'dashboard';
     window.switchTab(activeTab);
 
-    // Initial state for management
-    if (activeTab === 'management') {
-        window.showManagementCard('facilities');
+    // Initial state for management/maintenance
+    if (activeTab === 'management' || activeTab === 'maintenance') {
+        if (typeof window.showManagementCard === 'function') {
+            window.showManagementCard('maintenance');
+        }
     }
 
     // Nav links listeners (for sidebar)
@@ -423,6 +563,24 @@ function initializePage() {
         if (e.target.classList.contains('modal')) window.closeModal(e.target.id);
     });
 }
+
+window.deleteFacility = function (id) {
+    if (confirm('Are you sure you want to permanently delete this facility? All related data may be lost.')) {
+        const formData = new FormData();
+        formData.append('action', 'delete_facility');
+        formData.append('facility_id', id);
+
+        fetch('', { method: 'POST', body: formData })
+            .then(res => {
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('Error deleting facility. Please try again.');
+                }
+            })
+            .catch(err => console.error('Delete error:', err));
+    }
+};
 
 // Ensure execution no matter what
 if (document.readyState === 'loading') {

@@ -182,6 +182,49 @@ body {
     color: #fbbf24;
 }
 
+/* Dropdown Styles */
+.has-dropdown .dropdown-toggle {
+    justify-content: space-between;
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-menu {
+    display: none;
+    list-style: none;
+    margin: 0.25rem 0 0.25rem 1rem;
+    padding: 0;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown-menu a {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-left: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #3182ce;
+    transform: translateX(3px);
+}
+
+.dropdown-menu a.active {
+    background: rgba(49, 130, 206, 0.3);
+    border-left-color: #3182ce;
+}
+
 /* Sidebar Header with Burger & Back Button */
 .sidebar-header {
     display: flex;
@@ -645,7 +688,7 @@ body {
     color: #000000 !important;
 }
 
-/* IYONG HULING PAGBABAGO: Black Border at Centering Headers */
+/* Standard Table Header Styling */
 .table th {
     background: #ffffff !important;
     font-weight: 700;
@@ -653,6 +696,7 @@ body {
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+<<<<<<< HEAD
 
     /* Pinilit na center ang lahat ng TH */
     text-align: center !important;
@@ -660,6 +704,8 @@ body {
     /* Black border */
     border-bottom: 2px solid #000000 !important;
     /* Premium black border */
+=======
+>>>>>>> 1f2a82047eb20a7c6bb547a8baf9c2b983bb0bd6
 }
 
 /* Override para sa mga TH na dapat naka-left align (kung ginamit ang class na ito sa PHP) */
@@ -1289,16 +1335,69 @@ body {
 .management-card {
     width: 100%;
     max-width: 100% !important;
-    /* Override previous max-width */
-    /* Hide all management cards by default */
-    display: none !important;
+    display: none;
     visibility: hidden;
+    transition: all 0.3s ease;
 }
 
 /* Show the active management card */
-.management-card[style*="display: block"] {
+.management-card.active-card {
     display: block !important;
     visibility: visible;
+}
+
+/* Premium Dark Table Theme (matching Picture 2 & 3) */
+.premium-dark-card {
+    background: #0f172a !important;
+    /* Very dark blue/black */
+    color: #f8fafc !important;
+    border: 1px solid #1e293b !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15) !important;
+}
+
+.premium-dark-card .card-header {
+    background: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+.premium-dark-card .card-header h3 {
+    color: #f1f5f9 !important;
+    font-weight: 700;
+}
+
+.premium-dark-card .table {
+    background: transparent !important;
+}
+
+.premium-dark-card .table thead th {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    font-weight: 800;
+    border-bottom: 2px solid #334155 !important;
+}
+
+.premium-dark-card .table tbody td {
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #1e293b !important;
+    padding: 14px 12px !important;
+}
+
+.premium-dark-card .table tr:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: none !important;
+}
+
+.premium-dark-card .status-badge {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.premium-dark-card .table th,
+.premium-dark-card .table td {
+    border-color: #1e293b !important;
 }
 
 /* Ensure tables take full width */

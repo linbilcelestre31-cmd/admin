@@ -19,8 +19,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 ?>
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
-            title="Go to Dashboard">
+        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>"
+            class="logo-link" title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
@@ -42,7 +42,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li>
                 <a href="<?= $isSuperAdmin ? '../Super-admin/Settings.php' : '../include/Settings.php' ?>"
                     class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">👤</span> Account
+                    <i class="fa-solid fa-circle-user"></i> Account
                 </a>
             </li>
         </ul>
@@ -54,44 +54,42 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
                     data-tab="dashboard">
-                    <span class="icon-img-placeholder">📊</span> Dashboard
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a></li>
             <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
                     data-tab="facilities">
-                    <span class="icon-img-placeholder">🏢</span> Facilities
+                    <i class="fa-solid fa-hotel"></i> Facilities
                 </a></li>
             <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                     data-tab="reservations">
-                    <span class="icon-img-placeholder">📅</span> Reservations
+                    <i class="fa-solid fa-calendar-check"></i> Reservations
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
-                    data-tab="calendar">
-                    <span class="icon-img-placeholder">📅</span> Calendar
+            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <i class="fa-solid fa-vault"></i> Document Archiving
                 </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>"
-                    data-tab="management">
-                    <span class="icon-img-placeholder">⚙️</span> Management
+            <li><a href="../Modules/Visitor-logs.php"
+                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
+                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
                 </a></li>
             <li><a href="../Modules/legalmanagement.php"
                     class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">⚖️</span> Legal Management
+                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
                 </a></li>
-            <li><a href="../Modules/document management(archiving).php"
-                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
-                    style="white-space: nowrap;">
-                    <span class="icon-img-placeholder">🗄️</span> Document Archiving
+            <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
+                    data-tab="calendar">
+                    <i class="fa-solid fa-calendar-days"></i> Calendar
                 </a></li>
-            <li><a href="../Modules/Visitor-logs.php"
-                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
-                    <span class="icon-img-placeholder">🚶</span> Visitors Log
+            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>"
+                    data-tab="management">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
                 </a></li>
-
-
         </ul>
     </div>
 
@@ -101,9 +99,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <li><a href="<?= get_nav_link('reports', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports') ? 'active' : '' ?>"
                     data-tab="reports">
-                    <span class="icon-img-placeholder">📈</span> Reports
+                    <i class="fa-solid fa-chart-pie"></i> Reports
                 </a></li>
-
         </ul>
     </div>
 </nav>
@@ -172,5 +169,108 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     window.handleSidebarNav = function (tab) {
         // Allow animation for specific tabs if needed, or just default behavior
         if (typeof switchTab === 'function') switchTab(tab);
+    };
+
+    // 5. PIN PROTECTION FOR VAULT (Modern Box Design)
+    window.checkVaultPin = function (event, url) {
+        if (event) event.preventDefault();
+
+        // Store target URL
+        window.pendingVaultUrl = url || '../Modules/document management(archiving).php';
+
+        // Inject PIN Modal if missing
+        if (!document.getElementById('vaultPinModal')) {
+            const modalHtml = `
+                <div id="vaultPinModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); align-items: center; justify-content: center; transition: all 0.3s ease;">
+                    <div style="background: #ffffff; padding: 40px; border-radius: 24px; width: 380px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.6); position: relative; border: 1px solid rgba(255,255,255,0.1);">
+                        
+                        <div style="width: 70px; height: 70px; background: rgba(251, 146, 60, 0.1); color: #f97316; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 28px; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.1);">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        
+                        <h3 style="margin: 0 0 10px; color: #0f172a; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px;">Vault Protection</h3>
+                        <p style="margin: 0 0 30px; color: #64748b; font-size: 0.95rem; font-weight: 500; line-height: 1.5;">Identify yourself to access the secure document archive.</p>
+                        
+                        <div id="pin-container" style="display: flex; gap: 12px; justify-content: center; margin-bottom: 30px;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                            <input type="password" class="vault-digit-input" maxlength="1" style="width: 60px; height: 75px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 28px; text-align: center; outline: none; transition: all 0.3s; background: #f8fafc; font-weight: 800; color: #1e293b;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="document.getElementById('vaultPinModal').style.display='none'" style="padding: 15px; border-radius: 14px; border: 2px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s;">Cancel</button>
+                            <button onclick="verifyVaultPin()" style="padding: 15px; border-radius: 14px; border: none; background: #3182ce; color: white; cursor: pointer; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3); transition: all 0.2s;">Unlock Vault</button>
+                        </div>
+                    </div>
+                </div>`;
+            const div = document.createElement('div');
+            div.innerHTML = modalHtml;
+            document.body.appendChild(div.firstElementChild);
+
+            // Add Input Behavior Logic
+            const inputs = document.querySelectorAll('.vault-digit-input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    if (Array.from(inputs).every(inp => inp.value.length === 1)) {
+                        verifyVaultPin();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    if (e.key === 'Enter') {
+                        verifyVaultPin();
+                    }
+                });
+
+                input.addEventListener('focus', (e) => {
+                    e.target.style.borderColor = '#3182ce';
+                    e.target.style.background = '#fff';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(49, 130, 206, 0.1)';
+                });
+
+                input.addEventListener('blur', (e) => {
+                    e.target.style.borderColor = '#e2e8f0';
+                    e.target.style.background = '#f8fafc';
+                    e.target.style.boxShadow = 'none';
+                });
+            });
+        }
+
+        const modal = document.getElementById('vaultPinModal');
+        modal.style.display = 'flex';
+        const inputs = document.querySelectorAll('.vault-digit-input');
+        inputs.forEach(inp => inp.value = '');
+        if (inputs[0]) inputs[0].focus();
+    };
+
+    window.verifyVaultPin = function () {
+        const inputs = document.querySelectorAll('.vault-digit-input');
+        let pin = '';
+        inputs.forEach(inp => pin += inp.value);
+
+        if (pin === '1234') { // Default Admin PIN
+            // Hide Modal
+            document.getElementById('vaultPinModal').style.display = 'none';
+            // Start Animation THEN redirect
+            if (typeof window.runLoadingAnimation === 'function') {
+                window.runLoadingAnimation(() => {
+                    window.location.href = window.pendingVaultUrl;
+                }, true);
+            } else {
+                window.location.href = window.pendingVaultUrl;
+            }
+        } else {
+            // Shake effect or just alert
+            alert("Security Breach: Incorrect PIN! Access Denied.");
+            inputs.forEach(inp => inp.value = '');
+            if (inputs[0]) inputs[0].focus();
+        }
     };
 </script>

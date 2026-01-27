@@ -69,8 +69,16 @@ if (basename($_SERVER['PHP_SELF']) == 'log1.php' || isset($_GET['api'])) {
     if (!$inventory) {
         // Fallback data
         $inventory = [
-            ['inventory_id' => 57, 'item_name' => 'Orange Juice 1L', 'category' => 'Beverages', 'quantity' => 250, 'unit' => 'Bottle'],
-            ['inventory_id' => 56, 'item_name' => 'Cola Drink 330ml', 'category' => 'Beverages', 'quantity' => 300, 'unit' => 'Bottle']
+            ['inventory_id' => 101, 'item_name' => 'Premium Bed Sheets (King)', 'category' => 'Linens', 'quantity' => 150, 'unit' => 'Set', 'unit_price' => 2500.00],
+            ['inventory_id' => 102, 'item_name' => 'Bath Towels (White)', 'category' => 'Linens', 'quantity' => 500, 'unit' => 'Pcs', 'unit_price' => 450.00],
+            ['inventory_id' => 103, 'item_name' => 'Shampoo 50ml', 'category' => 'Toiletries', 'quantity' => 1200, 'unit' => 'Bottle', 'unit_price' => 45.00],
+            ['inventory_id' => 104, 'item_name' => 'Soap Bar 30g', 'category' => 'Toiletries', 'quantity' => 1500, 'unit' => 'Pcs', 'unit_price' => 25.00],
+            ['inventory_id' => 105, 'item_name' => 'Orange Juice 1L', 'category' => 'Beverages', 'quantity' => 250, 'unit' => 'Bottle', 'unit_price' => 120.00],
+            ['inventory_id' => 106, 'item_name' => 'Cola Drink 330ml', 'category' => 'Beverages', 'quantity' => 300, 'unit' => 'Can', 'unit_price' => 45.00],
+            ['inventory_id' => 107, 'item_name' => 'Housekeeping Cart', 'category' => 'Equipment', 'quantity' => 15, 'unit' => 'Unit', 'unit_price' => 15000.00],
+            ['inventory_id' => 108, 'item_name' => 'Vacuum Cleaner', 'category' => 'Equipment', 'quantity' => 10, 'unit' => 'Unit', 'unit_price' => 12500.00],
+            ['inventory_id' => 109, 'item_name' => 'Kitchen Detergent 5L', 'category' => 'Cleaning', 'quantity' => 50, 'unit' => 'Gallon', 'unit_price' => 850.00],
+            ['inventory_id' => 110, 'item_name' => 'Toilet Paper Rolls', 'category' => 'Toiletries', 'quantity' => 2000, 'unit' => 'Roll', 'unit_price' => 18.00]
         ];
     }
 
@@ -90,13 +98,19 @@ if (basename($_SERVER['PHP_SELF']) == 'log1.php' || isset($_GET['api'])) {
     if (is_array($inventory)) {
         $inventory = array_map(function ($item) {
             // Ensure ID exists
-            if (!isset($item['id'])) {
-                $item['id'] = $item['inventory_id'] ?? $item['item_id'] ?? 0;
-            }
+            $item['id'] = $item['inventory_id'] ?? $item['item_id'] ?? 0;
+
             // Ensure Name exists
-            if (!isset($item['name'])) {
-                $item['name'] = $item['item_name'] ?? $item['product_name'] ?? 'Unknown Item';
+            $item['name'] = $item['item_name'] ?? $item['product_name'] ?? 'Unknown Item';
+
+            // Ensure Stock exists
+            $item['stock'] = $item['quantity'] ?? $item['stock'] ?? 0;
+
+            // Ensure Price exists (Simulate if missing from external API)
+            if (!isset($item['unit_price']) && !isset($item['price'])) {
+                $item['unit_price'] = isset($item['category']) && $item['category'] == 'Equipment' ? 5000.00 : 150.00;
             }
+
             return $item;
         }, $inventory);
     }
