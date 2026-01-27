@@ -706,199 +706,194 @@ if (isset($dashboard_data['error'])) {
         .table td {
             text-align: center !important;
             vertical-align: middle;
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            font-size: 0.85rem;
+            padding: 12px 15px;
+            white-space: nowrap;
+        }
 
-            .table th,
-            .table td {
-                text-align: center !important;
-                vertical-align: middle;
-                background: #ffffff !important;
-                color: #000000 !important;
-                border-bottom: 1px solid #e2e8f0 !important;
-                font-size: 0.85rem;
-                padding: 12px 15px;
-                white-space: nowrap;
-            }
+        .table th {
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-weight: 701;
+            border-bottom: 2px solid #000000 !important;
+        }
 
-            .table th {
-                background: #ffffff !important;
-                color: #000000 !important;
-                font-weight: 701;
-                border-bottom: 2px solid #000000 !important;
-            }
+        .table tr:hover {
+            background: transparent !important;
+        }
 
-            .table tr:hover {
-                background: transparent !important;
-            }
+        /* Gold Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
 
-            /* Gold Scrollbar Styles */
-            ::-webkit-scrollbar {
-                width: 8px;
-                height: 8px;
-            }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
 
-            ::-webkit-scrollbar-track {
-                background: #f1f5f9;
-                border-radius: 10px;
-            }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
 
-            ::-webkit-scrollbar-thumb {
-                background: #d4af37;
-                border-radius: 10px;
-                border: 2px solid #f1f5f9;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b8860b;
+        }
 
-            ::-webkit-scrollbar-thumb:hover {
-                background: #b8860b;
-            }
+        /* Schedule Card Styling */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
 
-            /* Schedule Card Styling */
-            .schedule-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 1.5rem;
-                margin-top: 1rem;
-            }
+        .schedule-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border-left: 5px solid #d4af37;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s;
+        }
 
-            .schedule-item {
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                padding: 1.25rem;
-                border-left: 5px solid #d4af37;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-                transition: transform 0.2s;
-            }
+        .schedule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
 
-            .schedule-item:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            }
+        .schedule-date-header {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-            .schedule-date-header {
-                font-size: 0.8rem;
-                color: #64748b;
-                text-transform: uppercase;
-                font-weight: 700;
-                margin-bottom: 0.75rem;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #f1f5f9;
+        }
 
-            .table-container {
-                overflow-x: auto;
-                max-width: 100%;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                border: 1px solid #e2e8f0;
-                scrollbar-width: thin;
-                scrollbar-color: #d4af37 #f1f5f9;
-            }
+        .table {
+            border-spacing: 0 4px;
+            border-collapse: separate;
+            width: 100%;
+        }
 
-            .table {
-                border-spacing: 0 4px;
-                border-collapse: separate;
-                width: 100%;
-            }
+        /* Icon-only action buttons */
+        .btn.btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.45rem 0.55rem;
+            min-width: 38px;
+            height: 34px;
+            border-radius: 10px;
+            font-size: 0;
+            /* hide any accidental text spacing */
+            line-height: 0;
+            gap: 0;
+        }
 
-            /* Icon-only action buttons */
-            .btn.btn-icon {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.45rem 0.55rem;
-                min-width: 38px;
-                height: 34px;
-                border-radius: 10px;
-                font-size: 0;
-                /* hide any accidental text spacing */
-                line-height: 0;
-                gap: 0;
-            }
+        .btn.btn-icon i {
+            font-size: 14px;
+            line-height: 1;
+        }
 
-            .btn.btn-icon i {
-                font-size: 14px;
-                line-height: 1;
-            }
+        .facility-type-badge {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
-            .facility-type-badge {
-                background: #edf2f7;
-                color: #4a5568;
-                padding: 2px 8px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-            }
+        /* View Switcher Enhancements */
+        .btn-group button.active {
+            color: var(--primary) !important;
+            font-weight: 700 !important;
+        }
 
-            /* View Switcher Enhancements */
-            .btn-group button.active {
-                color: var(--primary) !important;
-                font-weight: 700 !important;
-            }
+        .btn-group button:not(.active):hover {
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
 
-            .btn-group button:not(.active):hover {
-                background: rgba(255, 255, 255, 0.5) !important;
-            }
+        /* Reports filters - improved visual and centered layout */
+        #reports .filters {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #ffffff;
+            border: 1px solid var(--border, #e2e8f0);
+            padding: 12px 14px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+            margin: 0 auto 14px;
+            max-width: 920px;
+        }
 
-            /* Reports filters - improved visual and centered layout */
-            #reports .filters {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
-                flex-wrap: wrap;
-                background: #ffffff;
-                border: 1px solid var(--border, #e2e8f0);
-                padding: 12px 14px;
-                border-radius: 10px;
-                box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
-                margin: 0 auto 14px;
-                max-width: 920px;
-            }
+        #reports .filters input[type="date"],
+        #reports .filters select {
+            height: 36px;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: #0f172a;
+        }
 
-            #reports .filters input[type="date"],
-            #reports .filters select {
-                height: 36px;
-                padding: 6px 10px;
-                border: 1px solid #cbd5e1;
-                border-radius: 8px;
-                background: #fff;
-                color: #0f172a;
-            }
+        #reports .filters button.btn {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
 
-            #reports .filters button.btn {
-                height: 36px;
-                padding: 0 14px;
-                border-radius: 8px;
-                font-weight: 600;
-            }
+        /* Export button centered under filters */
+        #reports form[action=""][method="post"] button.btn,
+        #reports form[method="post"] button.btn {
+            display: inline-flex;
+            margin: 6px auto 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
 
-            /* Export button centered under filters */
-            #reports form[action=""][method="post"] button.btn,
-            #reports form[method="post"] button.btn {
-                display: inline-flex;
-                margin: 6px auto 14px;
-                padding: 8px 14px;
-                border-radius: 8px;
-                font-weight: 600;
-            }
+        /* Small labels spacing */
+        #reports .filters label,
+        #reports .filters span {
+            font-weight: 600;
+            color: #334155;
+        }
 
-            /* Small labels spacing */
-            #reports .filters label,
-            #reports .filters span {
-                font-weight: 600;
-                color: #334155;
-            }
+        .tab-content {
+            display: none;
+        }
 
-            .tab-content {
-                display: none;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -1541,13 +1536,19 @@ if (isset($dashboard_data['error'])) {
             <div id="calendar"
                 class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
 
-                <div class="calendar-container">
-                    <div class="calendar-header">
-                        <h2 id="currentMonthYear" style="margin:0; font-size:1.8rem;"></h2>
-                        <div class="calendar-nav" style="display:flex; gap:10px;">
-                            <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"><i
+                <div class="calendar-container"
+                    style="background: #ffffff; border-radius: 20px; padding: 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); width: 100%; margin: 0 auto;">
+                    <div class="calendar-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                        <h2 id="currentMonthYear"
+                            style="margin:0; font-size:1.8rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; font-family: 'Inter', sans-serif;">
+                        </h2>
+                        <div class="calendar-nav" style="display:flex; gap:12px;">
+                            <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
+                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"><i
                                     class="fa-solid fa-chevron-left"></i></button>
-                            <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"><i
+                            <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"
+                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"><i
                                     class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
@@ -1585,7 +1586,20 @@ if (isset($dashboard_data['error'])) {
                 <script>
                     (function () {
                         let currentCalendarDate = new Date();
-                        const calendarReservations = <?= json_encode($dashboard_data['reservations'] ?? []) ?>;
+                        let calendarReservations = <?= json_encode($dashboard_data['reservations'] ?? []) ?>;
+
+                        // Add sample content if empty as requested by user ("lagyan mo ng laman")
+                        if (calendarReservations.length === 0) {
+                            const today = new Date();
+                            const y = today.getFullYear();
+                            const m = today.getMonth() + 1;
+                            calendarReservations = [
+                                { id: 1, customer_name: 'John Doe', facility_name: 'Executive Boardroom', event_date: `${y}-${String(m).padStart(2, '0')}-15`, start_time: '10:00 AM', status: 'confirmed' },
+                                { id: 2, customer_name: 'Jane Smith', facility_name: 'Grand Ballroom', event_date: `${y}-${String(m).padStart(2, '0')}-16`, start_time: '02:00 PM', status: 'pending' },
+                                { id: 3, customer_name: 'Bob Wilson', facility_name: 'Pacific Hall', event_date: `${y}-${String(m).padStart(2, '0')}-20`, start_time: '09:00 AM', status: 'confirmed' },
+                                { id: 4, customer_name: 'Alice Brown', facility_name: 'Sky Garden', event_date: `${y}-${String(m).padStart(2, '0')}-25`, start_time: '04:00 PM', status: 'completed' }
+                            ];
+                        }
 
                         window.initCalendar = function () {
                             renderCalendar(currentCalendarDate);
@@ -1838,7 +1852,7 @@ if (isset($dashboard_data['error'])) {
                     <!-- Redesigned Maintenance Calendar Card (Premium Clean Light Style) -->
                     <div class="card management-card management-mnt-calendar premium-light-card"
                         id="management-mnt-calendar"
-                        style="margin-top: 30px; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important;">
+                        style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important; width: 100%;">
 
                         <div class="card-header"
                             style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -1920,7 +1934,8 @@ if (isset($dashboard_data['error'])) {
                                                             style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                                                             <div
                                                                 style="background: <?= $bg_color ?>; color: <?= $text_color ?>; font-size: 0.6rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                                                <?= $job_priority ?> Priority</div>
+                                                                <?= $job_priority ?> Priority
+                                                            </div>
                                                             <i class="fa-solid fa-circle-check"
                                                                 style="color: #10b981; font-size: 0.8rem; opacity: <?= $job['status'] == 'completed' ? '1' : '0.2' ?>;"></i>
                                                         </div>
