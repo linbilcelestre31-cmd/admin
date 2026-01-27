@@ -56,16 +56,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="dashboard">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a></li>
-            <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
-                    data-tab="facilities">
-                    <i class="fa-solid fa-hotel"></i> Facilities
-                </a></li>
-            <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
-                    data-tab="reservations">
-                    <i class="fa-solid fa-calendar-check"></i> Reservations
-                </a></li>
+
             <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
@@ -80,22 +71,36 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-scale-balanced"></i> Legal Management
                 </a></li>
-            <!-- Dropdown for Calendar & Maintenance -->
+            <!-- Dropdown for Management -->
             <?php
-            $mgr_active = (isset($_GET['tab']) && ($_GET['tab'] == 'calendar' || $_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance'));
+            $mgr_active = (isset($_GET['tab']) && (
+                $_GET['tab'] == 'facilities' ||
+                $_GET['tab'] == 'reservations' ||
+                $_GET['tab'] == 'calendar' ||
+                $_GET['tab'] == 'management' ||
+                $_GET['tab'] == 'maintenance'
+            ));
             ?>
             <li class="has-dropdown">
                 <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
                     onclick="toggleDropdown(event, this)">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fa-solid fa-calendar-check"></i> Facilities
-                        <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
-                        <i class="fa-solid fa-calendar-check"></i> Reservation
+                        <i class="fa-solid fa-list-check"></i> Management
                     </div>
                     <i class="fa-solid fa-chevron-down dropdown-arrow"
                         style="transform: <?= $mgr_active ? 'rotate(180deg)' : '0deg' ?>;"></i>
                 </a>
                 <ul class="dropdown-menu" style="display: <?= $mgr_active ? 'block' : 'none' ?>;">
+                    <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
+                            data-tab="facilities">
+                            <i class="fa-solid fa-hotel"></i> Facilities
+                        </a></li>
+                    <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
+                            data-tab="reservations">
+                            <i class="fa-solid fa-calendar-check"></i> Reservations
+                        </a></li>
                     <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
                             data-tab="calendar">
