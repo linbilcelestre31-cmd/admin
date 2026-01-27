@@ -1187,11 +1187,11 @@ body {
 
 /* Management Section Styling */
 .management-header {
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 .management-buttons {
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     display: flex;
     gap: 1rem;
     flex-wrap: nowrap !important;
@@ -1257,7 +1257,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
     flex-wrap: wrap;
     gap: 1rem;
 }
@@ -1323,8 +1323,8 @@ body {
 .management-cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 0.5rem;
+    margin-top: 0;
     width: 100%;
 }
 
