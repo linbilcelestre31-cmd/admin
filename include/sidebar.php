@@ -81,14 +81,19 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     <i class="fa-solid fa-scale-balanced"></i> Legal Management
                 </a></li>
             <!-- Dropdown for Calendar & Maintenance -->
+            <?php
+            $mgr_active = (isset($_GET['tab']) && ($_GET['tab'] == 'calendar' || $_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance'));
+            ?>
             <li class="has-dropdown">
-                <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event, this)">
+                <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
+                    onclick="toggleDropdown(event, this)">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <i class="fa-solid fa-calendar-check"></i> Facilities Reservation
                     </div>
-                    <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                    <i class="fa-solid fa-chevron-down dropdown-arrow"
+                        style="transform: <?= $mgr_active ? 'rotate(180deg)' : '0deg' ?>;"></i>
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" style="display: <?= $mgr_active ? 'block' : 'none' ?>;">
                     <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
                             data-tab="calendar">
