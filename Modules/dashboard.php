@@ -1603,69 +1603,7 @@ if (isset($dashboard_data['error'])) {
                 </div>
 
                 <div class="management-cards">
-                    <!-- Schedules Card -->
-                    <div class="card management-card management-mnt-calendar" id="management-mnt-calendar"
-                        style="display: none;">
-                        <div class="card-header" style="background: #3182ce; color: white;">
-                            <h3><span class="icon-img-placeholder">📅</span> Maintenance Schedules</h3>
-                            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 4px;">Operational
-                                roadmap for the next 7 days</p>
-                        </div>
-                        <div class="card-content">
-                            <div class="schedule-grid">
-                                <?php
-                                for ($i = 0; $i < 7; $i++):
-                                    $curr_date = date('Y-m-d', strtotime("+$i days"));
-                                    $day_name = date('l', strtotime($curr_date));
-                                    $formatted_date = date('M d, Y', strtotime($curr_date));
-                                    $day_logs = array_filter($dashboard_data['maintenance_logs'] ?? [], function ($log) use ($curr_date) {
-                                        return $log['maintenance_date'] == $curr_date;
-                                    });
-                                    ?>
-                                    <div class="schedule-day">
-                                        <div class="schedule-date-header">
-                                            <i class="fa-regular fa-clock"></i> <?= $day_name ?> • <?= $formatted_date ?>
-                                        </div>
-                                        <?php if (empty($day_logs)): ?>
-                                            <div
-                                                style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px dashed #cbd5e1; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem;">
-                                                No maintenance activities scheduled.
-                                            </div>
-                                        <?php else: ?>
-                                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                                <?php foreach ($day_logs as $log): ?>
-                                                    <div class="schedule-item">
-                                                        <div
-                                                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                                                            <span
-                                                                style="font-weight: 700; color: #1e293b; font-size: 0.95rem;"><?= htmlspecialchars($log['item_name']) ?></span>
-                                                            <span class="status-badge status-<?= $log['status'] ?>"
-                                                                style="font-size: 0.65rem;">
-                                                                <?= ucfirst($log['status']) ?>
-                                                            </span>
-                                                        </div>
-                                                        <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.4;">
-                                                            <?= htmlspecialchars($log['description']) ?>
-                                                        </p>
-                                                        <div
-                                                            style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 8px;">
-                                                            <div
-                                                                style="width: 24px; height: 24px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #64748b;">
-                                                                <i class="fa-solid fa-user"></i>
-                                                            </div>
-                                                            <span style="font-size: 0.8rem; font-weight: 600; color: #475569;">
-                                                                <?= htmlspecialchars($log['assigned_staff'] ?? 'TBA') ?>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endfor; ?>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Facility Management Card -->
                     <div class="card management-card management-facilities" id="management-facilities"
@@ -1819,23 +1757,23 @@ if (isset($dashboard_data['error'])) {
                     </div>
 
 
-                    <!-- Redesigned Maintenance Calendar Card (Premium Modern Style) -->
-                    <div class="card management-card management-mnt-calendar premium-dark-card"
-                        style="margin-top: -10px; background: transparent !important; border: none; box-shadow: none; display: none ; visibility: visible !important;">
+                    <!-- Redesigned Maintenance Calendar Card (Premium Clean Light Style) -->
+                    <div class="card management-card management-mnt-calendar premium-light-card"
+                        id="management-mnt-calendar"
+                        style="margin-top: 30px; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important;">
 
                         <div class="card-header"
-                            style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #3182ce; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <div
-                                    style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.4rem; border: 1px solid rgba(255, 255, 255, 0.3);">
+                                    style="width: 45px; height: 45px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.4rem; border: 1px solid #dbeafe;">
                                     <i class="fa-solid fa-calendar-check"></i>
                                 </div>
                                 <div>
                                     <h3
-                                        style="color: #fff; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
+                                        style="color: #0f172a; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
                                         Maintenance Schedules</h3>
-                                    <p
-                                        style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.8); font-weight: 600;">
+                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b; font-weight: 600;">
                                         Operational roadmap for the next 7 days</p>
                                 </div>
                             </div>
@@ -1856,21 +1794,21 @@ if (isset($dashboard_data['error'])) {
                                     });
                                     ?>
                                     <div class="calendar-day"
-                                        style="background: #CEB15E; border: 1px solid <?= $is_today ? '#3182ce' : '#111' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 0 20px rgba(49, 130, 206, 0.15);' : '' ?>"
-                                        onmouseover="this.style.borderColor='<?= $is_today ? '#3182ce' : '#333' ?>'; this.style.transform='translateY(-5px)'"
-                                        onmouseout="this.style.borderColor='<?= $is_today ? '#3182ce' : '#111' ?>'; this.style.transform='translateY(0)'">
+                                        style="background: #ffffff; border: 1px solid <?= $is_today ? '#3b82f6' : '#e2e8f0' ?>; border-radius: 16px; min-height: 280px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.15);' : 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);' ?>"
+                                        onmouseover="this.style.borderColor='<?= $is_today ? '#3b82f6' : '#cbd5e1' ?>'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.1)';"
+                                        onmouseout="this.style.borderColor='<?= $is_today ? '#3b82f6' : '#e2e8f0' ?>'; this.style.transform='translateY(0)'; this.style.boxShadow='<?= $is_today ? '0 10px 15px -3px rgba(59, 130, 246, 0.15)' : '0 4px 6px -1px rgba(0, 0, 0, 0.05)' ?>';">
 
                                         <div class="calendar-day-header"
-                                            style="padding: 20px; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; background: <?= $is_today ? 'rgba(49, 130, 206, 0.08)' : 'rgba(255,255,255,0.02)' ?>; border-radius: 16px 16px 0 0;">
+                                            style="padding: 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: <?= $is_today ? '#eff6ff' : '#f8fafc' ?>; border-radius: 16px 16px 0 0;">
                                             <div>
                                                 <span
-                                                    style="display: block; font-size: 0.75rem; font-weight: 900; color: <?= $is_today ? '#3182ce' : '#475569' ?>; text-transform: uppercase; letter-spacing: 1.5px;"><?= $day_name ?></span>
+                                                    style="display: block; font-size: 0.75rem; font-weight: 900; color: <?= $is_today ? '#3b82f6' : '#64748b' ?>; text-transform: uppercase; letter-spacing: 1.5px;"><?= $day_name ?></span>
                                                 <span
-                                                    style="display: block; font-size: 1.1rem; font-weight: 800; color: #000; margin-top: 2px;"><?= $display_date ?></span>
+                                                    style="display: block; font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 2px;"><?= $display_date ?></span>
                                             </div>
                                             <?php if ($is_today): ?>
                                                 <div
-                                                    style="background: #3182ce; color: #fff; font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(49, 130, 206, 0.3);">
+                                                    style="background: #3b82f6; color: #fff; font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);">
                                                     Today</div>
                                             <?php endif; ?>
                                         </div>
@@ -1879,11 +1817,11 @@ if (isset($dashboard_data['error'])) {
                                             style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 12px;">
                                             <?php if (empty($day_jobs)): ?>
                                                 <div
-                                                    style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.15; padding: 20px;">
+                                                    style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6; padding: 20px;">
                                                     <i class="fa-solid fa-moon"
-                                                        style="font-size: 2rem; color: #64748b; margin-bottom: 12px;"></i>
+                                                        style="font-size: 2rem; color: #cbd5e1; margin-bottom: 12px;"></i>
                                                     <span
-                                                        style="color: #64748b; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">No
+                                                        style="color: #94a3b8; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">No
                                                         Schedule</span>
                                                 </div>
                                             <?php else: ?>
@@ -1891,36 +1829,37 @@ if (isset($dashboard_data['error'])) {
                                                     <?php
                                                     $job_priority = strtolower($job['priority'] ?? 'low');
                                                     $accent_color = ($job_priority == 'high') ? '#ef4444' : (($job_priority == 'medium') ? '#f59e0b' : '#22c55e');
-                                                    $light_accent = ($job_priority == 'high') ? 'rgba(239, 68, 68, 0.1)' : (($job_priority == 'medium') ? 'rgba(245, 158, 11, 0.1)' : 'rgba(34, 197, 94, 0.1)');
+                                                    $light_accent = ($job_priority == 'high') ? '#fef2f2' : (($job_priority == 'medium') ? '#fffbeb' : '#f0fdf4');
+                                                    $text_accent = ($job_priority == 'high') ? '#b91c1c' : (($job_priority == 'medium') ? '#b45309' : '#15803d');
                                                     ?>
                                                     <div class="calendar-event-card"
-                                                        style="background: #080808; border: 1px solid #111; border-left: 4px solid <?= $accent_color ?>; border-radius: 10px; padding: 15px; transition: all 0.3s ease; position: relative; cursor: default;"
-                                                        onmouseover="this.style.background='#111'; this.style.borderColor='<?= $accent_color ?>'"
-                                                        onmouseout="this.style.background='#080808'; this.style.borderColor='#111'">
+                                                        style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid <?= $accent_color ?>; border-radius: 10px; padding: 15px; transition: all 0.2s ease; position: relative; cursor: default;"
+                                                        onmouseover="this.style.background='#f8fafc'; this.style.borderColor='<?= $accent_color ?>'"
+                                                        onmouseout="this.style.background='#ffffff'; this.style.borderColor='#e2e8f0'">
 
                                                         <div
                                                             style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                                             <h4
-                                                                style="color: #f8fafc; font-size: 0.85rem; font-weight: 700; margin: 0; line-height: 1.4;">
+                                                                style="color: #334155; font-size: 0.85rem; font-weight: 700; margin: 0; line-height: 1.4;">
                                                                 <?= htmlspecialchars($job['item_name']) ?>
                                                             </h4>
                                                             <span
-                                                                style="font-size: 0.6rem; font-weight: 900; color: <?= $accent_color ?>; text-transform: uppercase; background: <?= $light_accent ?>; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);"><?= $job_priority ?></span>
+                                                                style="font-size: 0.6rem; font-weight: 900; color: <?= $text_accent ?>; text-transform: uppercase; background: <?= $light_accent ?>; padding: 2px 6px; border-radius: 4px; border: 1px solid <?= $accent_color ?>20;"><?= $job_priority ?></span>
                                                         </div>
 
                                                         <div
                                                             style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                                                             <div
-                                                                style="width: 24px; height: 24px; border-radius: 50%; background: #111; border: 1px solid #222; display: flex; align-items: center; justify-content: center; color: #64748b;">
+                                                                style="width: 24px; height: 24px; border-radius: 50%; background: #f1f5f9; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b;">
                                                                 <i class="fa-solid fa-screwdriver-wrench"
                                                                     style="font-size: 0.7rem;"></i>
                                                             </div>
                                                             <div style="display: flex; flex-direction: column;">
                                                                 <span
-                                                                    style="color: #64748b; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Assigned
+                                                                    style="color: #94a3b8; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Assigned
                                                                     To</span>
                                                                 <span
-                                                                    style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600;"><?= htmlspecialchars($job['assigned_staff'] ?? 'Facility Team') ?></span>
+                                                                    style="color: #475569; font-size: 0.75rem; font-weight: 600;"><?= htmlspecialchars($job['assigned_staff'] ?? 'Facility Team') ?></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1929,15 +1868,15 @@ if (isset($dashboard_data['error'])) {
                                         </div>
 
                                         <div
-                                            style="padding: 15px 20px; border-top: 1px solid #111; border-radius: 0 0 16px 16px; background: rgba(255,255,255,0.01); display: flex; justify-content: space-between; align-items: center;">
+                                            style="padding: 15px 20px; border-top: 1px solid #f1f5f9; border-radius: 0 0 16px 16px; background: #fafafa; display: flex; justify-content: space-between; align-items: center;">
                                             <span
-                                                style="font-size: 0.7rem; color: #475569; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                style="font-size: 0.7rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
                                                 Capacity: 100%
                                             </span>
                                             <div style="display: flex; gap: 4px;">
                                                 <?php for ($k = 0; $k < count($day_jobs); $k++): ?>
                                                     <div
-                                                        style="width: 6px; height: 6px; border-radius: 50%; background: #3182ce;">
+                                                        style="width: 6px; height: 6px; border-radius: 50%; background: #3b82f6;">
                                                     </div>
                                                 <?php endfor; ?>
                                             </div>
@@ -2378,7 +2317,7 @@ if (isset($dashboard_data['error'])) {
     <script src="../assets/Javascript/facilities-reservation.js?v=<?= time() ?>"></script>
 
     <script>
-        // Final insurance to ensure Management functions are ready
+        // Final insurance to ensure Management f unctions are ready
         // Final insurance to ensure Management functions are ready
         document.addEventListener('DOMContentLoaded', function () {
             if (sessionStorage.getItem('activeTab') === 'maintenance' || sessionStorage.getItem('activeTab') === 'management') {
