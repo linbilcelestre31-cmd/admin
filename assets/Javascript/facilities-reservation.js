@@ -263,8 +263,9 @@ window.showManagementCard = function (type) {
 
     // Update active button styling
     const btns = {
-        'facilities': document.getElementById('show-facilities-card'),
         'maintenance': document.getElementById('show-maintenance-card'),
+        'schedules': document.getElementById('show-schedules-card'),
+        'facilities': document.getElementById('show-facilities-card'),
         'reports': document.getElementById('show-reports-card')
     };
 

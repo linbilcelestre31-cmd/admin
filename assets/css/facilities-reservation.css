@@ -630,21 +630,26 @@ body {
 .table {
     width: 100%;
     border-collapse: collapse;
+    background-color: #ffffff;
+    /* Explicitly white background */
+    color: #000000;
+    /* Explicitly black text */
 }
 
+/* Base table cell styling override for white/black theme */
 .table th,
 .table td {
     padding: 0.8rem;
-    /* Binawasan ang padding */
-    /* Default text-align: left; */
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 
 /* IYONG HULING PAGBABAGO: Black Border at Centering Headers */
 .table th {
-    background: var(--light);
-    font-weight: 600;
-    color: var(--dark);
+    background: #ffffff !important;
+    font-weight: 700;
+    color: #000000 !important;
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -653,7 +658,8 @@ body {
     text-align: center !important;
 
     /* Black border */
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid #000000 !important;
+    /* Premium black border */
 }
 
 /* Override para sa mga TH na dapat naka-left align (kung ginamit ang class na ito sa PHP) */
@@ -663,7 +669,7 @@ body {
 
 
 .table tr:hover {
-    background: #f8fafc;
+    background: transparent !important;
 }
 
 /* Status Badges */
