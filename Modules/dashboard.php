@@ -1602,7 +1602,7 @@ if (isset($dashboard_data['error'])) {
                     </button>
                 </div>
 
-                <div class="management-cards">
+                <div class="management-cards" style="margin-top: 1rem;">
 
 
                     <!-- Facility Management Card -->
@@ -1660,87 +1660,89 @@ if (isset($dashboard_data['error'])) {
 
 
                     <div id="maintenance-main-section" style="width: 100%;">
-                        <!-- Maintenance Requests Card (Picture 3) -->
-                        <div class="card management-card management-maintenance premium-dark-card active-card"
+                        <!-- Maintenance Requests Card (Clean White Theme) -->
+                        <div class="card management-card management-maintenance premium-light-card active-card"
                             data-card-type="maintenance"
-                            style="margin-top: -40px; border-radius: 12px; overflow: hidden; border: 1px solid #111; display: block !important;">
+                            style="margin-top: 0; border-radius: 12px; overflow: hidden; border: none; box-shadow: none; display: block !important;">
 
-                            <!-- Maintenance Requests Section (Picture 3) -->
+                            <!-- Maintenance Requests Section -->
                             <div
-                                style="background: #CEB15E; border-radius: 12px; overflow: hidden; border: 1px solid #111; margin-bottom: 30px;">
+                                style="background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
                                 <div class="card-header"
-                                    style="background: #3182ce; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                     <h3
-                                        style="color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
+                                        style="color: #0f172a; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.2px; margin: 0; font-weight: 800; font-family: 'Inter', sans-serif;">
                                         Maintenance Requests</h3>
                                     <button class="btn btn-primary btn-sm" onclick="openModal('maintenance-modal')"
-                                        style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; padding: 8px 16px; border-radius: 6px;">
+                                        style="background: #3b82f6; color: #fff; border: none; font-weight: 700; padding: 8px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);">
                                         <i class="fa-solid fa-plus"></i> Add Request
                                     </button>
                                 </div>
                                 <div class="table-wrapper"
                                     style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
                                     <table class="table"
-                                        style="background: transparent; border-collapse: collapse; min-width: 1000px;">
+                                        style="background: transparent; border-collapse: collapse; min-width: 1000px; width: 100%;">
                                         <thead>
-                                            <tr style="border-bottom: 2px solid #333;">
+                                            <tr style="border-bottom: 2px solid #000;">
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    PRIORITY</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Priority</th>
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    ITEM/AREA</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Item/Area</th>
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    DESCRIPTION</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Description</th>
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    REPORTED BY</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Reported By</th>
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    REPORTED DATE</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Reported Date</th>
                                                 <th
-                                                    style="padding: 15px; color: #64748b; text-align: left; font-size: 0.7rem; background: transparent; font-weight: 900; letter-spacing: 1px;">
-                                                    SCHEDULE</th>
+                                                    style="padding: 15px; color: #000; text-align: left; font-size: 0.7rem; background: #fff; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+                                                    Schedule</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php if (empty($dashboard_data['maintenance_logs'])): ?>
                                                 <tr>
                                                     <td colspan="6"
-                                                        style="padding: 40px; text-align: center; color: #4a5568; border-bottom: 1px solid #1a1a1a; font-style: italic;">
+                                                        style="padding: 40px; text-align: center; color: #64748b; border-bottom: 1px solid #e2e8f0; font-style: italic;">
                                                         No maintenance logs currently recorded.</td>
                                                 </tr>
                                             <?php else: ?>
                                                 <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
-                                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.1); background: #CEB15E;">
-                                                        <td style="padding: 15px; text-align: left;">
+                                                    <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff; transition: background 0.2s;"
+                                                        onmouseover="this.style.background='#f8fafc'"
+                                                        onmouseout="this.style.background='#ffffff'">
+                                                        <td style="padding: 15px; text-align: left; background: inherit;">
                                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                                 <?php $pc = (($log['priority'] == 'high') ? '#ef4444' : (($log['priority'] == 'medium') ? '#f59e0b' : '#22c55e')); ?>
                                                                 <span
-                                                                    style="width: 10px; height: 10px; border-radius: 50%; background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>;"></span>
+                                                                    style="width: 10px; height: 10px; border-radius: 50%; background: <?= $pc ?>; box-shadow: 0 0 5px <?= $pc ?>40;"></span>
                                                                 <span
                                                                     style="font-weight: 800; color: #000; text-transform: uppercase; font-size: 0.75rem;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
                                                             </div>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700; background: inherit;">
                                                             <?= htmlspecialchars($log['item_name']) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #333; font-size: 0.8rem; max-width: 300px; font-weight: 600;">
+                                                            style="padding: 15px; color: #333; font-size: 0.8rem; max-width: 300px; font-weight: 600; background: inherit; line-height: 1.4;">
                                                             <?= htmlspecialchars($log['description']) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 700; background: inherit;">
                                                             <?= htmlspecialchars($log['reported_by'] ?? 'Staff') ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #333; font-size: 0.85rem; font-weight: 700;">
+                                                            style="padding: 15px; color: #333; font-size: 0.85rem; font-weight: 700; background: inherit;">
                                                             <?= date('m/d/Y', strtotime($log['created_at'])) ?>
                                                         </td>
                                                         <td
-                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 800;">
+                                                            style="padding: 15px; color: #000; font-size: 0.85rem; font-weight: 800; background: inherit;">
                                                             <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
                                                         </td>
                                                     </tr>
