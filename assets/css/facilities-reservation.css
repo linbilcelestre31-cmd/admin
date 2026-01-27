@@ -373,7 +373,7 @@ body {
 
 /* Dashboard Content */
 .dashboard-content {
-    padding: 1.25rem 2rem;
+    padding: 0.75rem 1.5rem;
     max-width: 1400px;
     margin: 0 auto;
 }

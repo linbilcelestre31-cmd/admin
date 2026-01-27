@@ -1762,8 +1762,8 @@ if (isset($dashboard_data['error'])) {
             <div id="management"
                 class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
                 <div class="management-header">
-                    <h2><span class="icon-img-placeholder">⚙️</span> System Management</h2>
-                    <div class="management-buttons" style="display: flex; gap: 1rem;">
+                    <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
+                    <div class="management-buttons" style="display: flex; gap: 0.75rem;">
                         <button id="show-maintenance-card" class="btn btn-outline management-btn active"
                             onclick="event.preventDefault(); window.showManagementCard('maintenance')">
                             <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
@@ -1836,7 +1836,7 @@ if (isset($dashboard_data['error'])) {
 
 
                     <div id="maintenance-main-section"
-                        style="width: 100%; max-width: calc(100vw - 320px); margin: 0 auto;">
+                        style="width: 100%; max-width: calc(100vw - 300px); margin: 0 auto; overflow: hidden;">
                         <!-- Maintenance Requests Card (Clean White Theme) -->
                         <div class="card management-card management-maintenance premium-light-card active-card"
                             data-card-type="maintenance"
@@ -1939,7 +1939,7 @@ if (isset($dashboard_data['error'])) {
                     <!-- Redesigned Maintenance Calendar Card (Premium Clean Light Style) -->
                     <div class="card management-card management-mnt-calendar premium-light-card"
                         id="management-mnt-calendar"
-                        style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important; width: 100%;">
+                        style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important; width: 100%; max-width: calc(100vw - 300px); overflow-x: auto;">
 
                         <div class="card-header"
                             style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -1958,9 +1958,9 @@ if (isset($dashboard_data['error'])) {
                             </div>
                         </div>
 
-                        <div class="card-content" style="padding: 0;">
+                        <div class="card-content" style="padding: 0; width: 100%;">
                             <div class="calendar-grid"
-                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
                                 <?php
                                 for ($i = 0; $i < 7; $i++):
                                     $date = date('Y-m-d', strtotime("+$i days"));
@@ -2748,9 +2748,31 @@ if (isset($dashboard_data['error'])) {
 
         // Logout Modal Implementation
         window.openLogoutModal = function () {
-            if (confirm("Are you sure you want to log out?")) {
-                window.location.href = "../auth/logout.php";
+            // Inject Logout Modal if missing
+            if (!document.getElementById('logoutConfirmModal')) {
+                const modalHtml = `
+                    <div id="logoutConfirmModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center; transition: all 0.3s ease;">
+                        <div style="background: #ffffff; padding: 40px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.05);">
+                            <div style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 32px; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.1);">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+                            <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">Exit ATIERA?</h3>
+                            <p style="margin: 0 0 35px; color: #64748b; font-size: 1rem; font-weight: 500; line-height: 1.6;">Are you sure you want to exit Atiéra Hotel?<br>You will need to sign in again to access the dashboard.</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <button onclick="document.getElementById('logoutConfirmModal').style.display='none'" style="padding: 16px; border-radius: 14px; border: 2px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s;">No, Stay</button>
+                                <button onclick="window.confirmLogout()" style="padding: 16px; border-radius: 14px; border: none; background: #e11d48; color: white; cursor: pointer; font-weight: 700; font-size: 0.95rem; box-shadow: 0 8px 20px rgba(225, 29, 72, 0.25); transition: all 0.2s;">Yes, Logout</button>
+                            </div>
+                        </div>
+                    </div>`;
+                const div = document.createElement('div');
+                div.innerHTML = modalHtml;
+                document.body.appendChild(div.firstElementChild);
             }
+            document.getElementById('logoutConfirmModal').style.display = 'flex';
+        };
+
+        window.confirmLogout = function () {
+            window.location.href = "../auth/login.php?logout=1";
         };
 
         // Utility function to dynamically change header colors
