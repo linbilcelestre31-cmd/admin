@@ -68,7 +68,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             ?>
             <li class="has-dropdown">
                 <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
-                    onclick="toggleDropdown(event, this)">
+                    onclick="toggleSidebarFolder(event, this)">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <i class="fa-solid fa-list-check"></i> Management
                     </div>
@@ -298,27 +298,43 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         }
     };
 
-    // 6. Handle Sidebar Dropdown Toggle
-    window.toggleDropdown = function (event, element) {
-        event.preventDefault();
+    // 6. Handle Sidebar Dropdown Toggle (Renamed to avoid conflict)
+    window.toggleSidebarFolder = function (event, element) {
+        if (event) event.preventDefault();
         const parentLi = element.closest('li');
         const dropdownMenu = parentLi.querySelector('.dropdown-menu');
         const arrow = parentLi.querySelector('.dropdown-arrow');
 
-        // Close other open dropdowns (optional, but good for UX)
+        if (!dropdownMenu) return;
+
+        const isVisible = dropdownMenu.style.display === 'block';
+
+        // Close other open dropdowns
         document.querySelectorAll('.has-dropdown .dropdown-menu').forEach(menu => {
             if (menu !== dropdownMenu) {
                 menu.style.display = 'none';
-                menu.previousElementSibling.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)';
+                const otherArrow = menu.previousElementSibling.querySelector('.dropdown-arrow');
+                if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
             }
         });
 
-        if (dropdownMenu.style.display === 'block') {
+        if (isVisible) {
             dropdownMenu.style.display = 'none';
-            arrow.style.transform = 'rotate(0deg)';
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
         } else {
             dropdownMenu.style.display = 'block';
-            arrow.style.transform = 'rotate(180deg)';
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
         }
     };
+
+    // 7. Close Sidebar Dropdowns on Outside Click
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.has-dropdown')) {
+            document.querySelectorAll('.has-dropdown .dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+                const arrow = menu.previousElementSibling.querySelector('.dropdown-arrow');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            });
+        }
+    });
 </script>
