@@ -696,7 +696,6 @@ body {
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-<<<<<<< HEAD
 
     /* Pinilit na center ang lahat ng TH */
     text-align: center !important;
@@ -704,8 +703,6 @@ body {
     /* Black border */
     border-bottom: 2px solid #000000 !important;
     /* Premium black border */
-=======
->>>>>>> 1f2a82047eb20a7c6bb547a8baf9c2b983bb0bd6
 }
 
 /* Override para sa mga TH na dapat naka-left align (kung ginamit ang class na ito sa PHP) */

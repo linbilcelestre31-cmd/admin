@@ -312,13 +312,9 @@ window.showManagementCard = function (type) {
     // Update active button styling
     const btns = {
         'maintenance': document.getElementById('show-maintenance-card'),
-<<<<<<< HEAD
-        'schedules': document.getElementById('show-schedules-card'),
+        'mnt-calendar': document.getElementById('show-mnt-calendar'),
         'facilities': document.getElementById('show-facilities-card'),
         'reports': document.getElementById('show-reports-card')
-=======
-        'mnt-calendar': document.getElementById('show-mnt-calendar')
->>>>>>> 1f2a82047eb20a7c6bb547a8baf9c2b983bb0bd6
     };
 
     Object.keys(btns).forEach(key => {
