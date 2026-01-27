@@ -1540,46 +1540,104 @@ if (isset($dashboard_data['error'])) {
             </div>
             <div id="calendar"
                 class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
-                <h2 class="mb-2"><span class="icon-img-placeholder">📅</span> Reservation Calendar</h2>
 
-                <div class="calendar-grid">
-                    <?php
-                    // Display next 7 days
-                    for ($i = 0; $i < 7; $i++):
-                        $date = date('Y-m-d', strtotime("+$i days"));
-                        $display_date = date('D, M d, Y', strtotime($date));
-                        $day_events = array_filter($dashboard_data['reservations'], function ($event) use ($date) {
-                            return $event['event_date'] == $date && $event['status'] == 'confirmed';
-                        });
-                        ?>
-                        <div class="calendar-day">
-                            <div class="calendar-date"><?= $display_date ?></div>
-                            <div class="calendar-events">
-                                <?php foreach ($day_events as $event): ?>
-                                    <div class="calendar-event">
-                                        <div class="event-time">
-                                            <?= date('g:i a', strtotime($event['start_time'])) ?> -
-                                            <?= date('g:i a', strtotime($event['end_time'])) ?>
-                                        </div>
-                                        <div class="event-title"><?= htmlspecialchars($event['facility_name']) ?>
-                                        </div>
-                                        <div class="event-details">
-                                            <?= htmlspecialchars($event['customer_name']) ?> •
-                                            <?= htmlspecialchars($event['event_type']) ?> •
-                                            <?= $event['guests_count'] ?>
-                                            guests
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                                <?php if (empty($day_events)): ?>
-                                    <div style="color: #718096; font-style: italic; text-align: center; padding: 1rem;">
-                                        <span class="icon-img-placeholder">🚫</span> No reservations
-                                    </div>
-                                <?php endif; ?>
-                            </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h2 id="currentMonthYear" style="margin:0; font-size:1.8rem;"></h2>
+                        <div class="calendar-nav" style="display:flex; gap:10px;">
+                            <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
-                    <?php endfor; ?>
+                    </div>
+                    <div class="calendar-grid-header">
+                        <div>SUN</div>
+                        <div>MON</div>
+                        <div>TUE</div>
+                        <div>WED</div>
+                        <div>THU</div>
+                        <div>FRI</div>
+                        <div>SAT</div>
+                    </div>
+                    <div id="calendar-days" class="calendar-days-grid"></div>
                 </div>
+
+                <script>
+                    (function () {
+                        let currentCalendarDate = new Date();
+                        const calendarReservations = <?= json_encode($dashboard_data['reservations'] ?? []) ?>;
+
+                        window.initCalendar = function () {
+                            renderCalendar(currentCalendarDate);
+                        }
+
+                        window.changeMonth = function (delta) {
+                            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+                            renderCalendar(currentCalendarDate);
+                        }
+
+                        function renderCalendar(date) {
+                            const year = date.getFullYear();
+                            const month = date.getMonth();
+
+                            const monthNames = ["January", "February", "March", "April", "May", "June",
+                                "July", "August", "September", "October", "November", "December"
+                            ];
+                            document.getElementById('currentMonthYear').textContent = `${monthNames[month]} ${year}`;
+
+                            const firstDay = new Date(year, month, 1);
+                            const lastDay = new Date(year, month + 1, 0);
+                            const startDayIndex = firstDay.getDay();
+                            const totalDays = lastDay.getDate();
+
+                            const grid = document.getElementById('calendar-days');
+                            grid.innerHTML = '';
+
+                            // Empty cells
+                            for (let i = 0; i < startDayIndex; i++) {
+                                const cell = document.createElement('div');
+                                cell.className = 'calendar-day-cell empty';
+                                cell.style.background = '#f8fafc';
+                                grid.appendChild(cell);
+                            }
+
+                            // Days
+                            const today = new Date();
+                            for (let d = 1; d <= totalDays; d++) {
+                                const cell = document.createElement('div');
+                                cell.className = 'calendar-day-cell';
+
+                                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+                                const dayNumber = document.createElement('div');
+                                dayNumber.className = `day-number ${d === today.getDate() && month === today.getMonth() && year === today.getFullYear() ? 'today' : ''}`;
+                                dayNumber.textContent = d;
+                                cell.appendChild(dayNumber);
+
+                                const events = calendarReservations.filter(e => e.event_date === dateStr);
+                                events.forEach(evt => {
+                                    const dot = document.createElement('div');
+                                    dot.className = `calendar-event-dot event-${evt.status || 'other'}`;
+                                    dot.textContent = `${evt.facility_name}`; // Show facility name
+                                    dot.title = `${evt.customer_name} (${evt.start_time})`;
+                                    dot.onclick = (e) => {
+                                        e.stopPropagation();
+                                        if (window.viewReservationDetails) window.viewReservationDetails(evt);
+                                    };
+                                    cell.appendChild(dot);
+                                });
+
+                                grid.appendChild(cell);
+                            }
+                        }
+
+                        // Initialize
+                        if (document.getElementById('calendar-days')) {
+                            initCalendar();
+                        }
+                    })();
+                </script>
             </div>
 
             <!-- Management Tab -->

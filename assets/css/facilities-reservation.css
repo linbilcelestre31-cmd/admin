@@ -1470,3 +1470,88 @@ body {
     padding-left: 1.25rem;
     /* optional spacing */
 }
+/* Calendar Month View Styles */
+.calendar-container {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.calendar-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+.calendar-nav button {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.calendar-nav button:hover {
+    background: var(--light);
+    color: var(--accent);
+}
+.calendar-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 1rem;
+}
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #e2e8f0;
+    border: 1px solid #e2e8f0;
+}
+.calendar-day-cell {
+    background: white;
+    min-height: 120px;
+    padding: 0.5rem;
+    position: relative;
+    transition: background 0.2s;
+}
+.calendar-day-cell:hover {
+    background: #f8fafc;
+}
+.day-number {
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    border-radius: 50%;
+}
+.day-number.today {
+    background: var(--accent);
+    color: white;
+}
+.calendar-event-dot {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    color: white;
+}
+.event-confirmed { background: var(--success); }
+.event-pending { background: var(--warning); }
+.event-other { background: var(--info); }
+

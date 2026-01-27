@@ -80,16 +80,27 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-scale-balanced"></i> Legal Management
                 </a></li>
-            <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
-                    data-tab="calendar">
-                    <i class="fa-solid fa-calendar-days"></i> Calendar
-                </a></li>
-            <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>"
-                    data-tab="management">
-                    <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
-                </a></li>
+            <!-- Dropdown for Calendar & Maintenance -->
+            <li class="has-dropdown">
+                <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event, this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa-solid fa-calendar-check"></i> Facilities Reservation
+                    </div>
+                    <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
+                            data-tab="calendar">
+                            <i class="fa-solid fa-calendar-days"></i> Calendar
+                        </a></li>
+                    <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
+                            class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>"
+                            data-tab="management">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                        </a></li>
+                </ul>
+            </li>
         </ul>
     </div>
 
@@ -271,6 +282,30 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             alert("Security Breach: Incorrect PIN! Access Denied.");
             inputs.forEach(inp => inp.value = '');
             if (inputs[0]) inputs[0].focus();
+        }
+    };
+
+    // 6. Handle Sidebar Dropdown Toggle
+    window.toggleDropdown = function (event, element) {
+        event.preventDefault();
+        const parentLi = element.closest('li');
+        const dropdownMenu = parentLi.querySelector('.dropdown-menu');
+        const arrow = parentLi.querySelector('.dropdown-arrow');
+
+        // Close other open dropdowns (optional, but good for UX)
+        document.querySelectorAll('.has-dropdown .dropdown-menu').forEach(menu => {
+            if (menu !== dropdownMenu) {
+                menu.style.display = 'none';
+                menu.previousElementSibling.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)';
+            }
+        });
+
+        if (dropdownMenu.style.display === 'block') {
+            dropdownMenu.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            dropdownMenu.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
         }
     };
 </script>
