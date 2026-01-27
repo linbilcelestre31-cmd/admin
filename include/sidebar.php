@@ -56,21 +56,6 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="dashboard">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a></li>
-
-            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
-                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
-                    style="white-space: nowrap;">
-                    <i class="fa-solid fa-vault"></i> Document Archiving
-                </a></li>
-            <li><a href="../Modules/Visitor-logs.php"
-                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
-                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
-                </a></li>
-            <li><a href="../Modules/legalmanagement.php"
-                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
-                    style="white-space: nowrap;">
-                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
-                </a></li>
             <!-- Dropdown for Management -->
             <?php
             $mgr_active = (isset($_GET['tab']) && (
@@ -113,6 +98,22 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         </a></li>
                 </ul>
             </li>
+
+            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+                    class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <i class="fa-solid fa-vault"></i> Document Archiving
+                </a></li>
+            <li><a href="../Modules/Visitor-logs.php"
+                    class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
+                    <i class="fa-solid fa-id-card-clip"></i> Visitors Management
+                </a></li>
+            <li><a href="../Modules/legalmanagement.php"
+                    class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
+                    style="white-space: nowrap;">
+                    <i class="fa-solid fa-scale-balanced"></i> Legal Management
+                </a></li>
+
         </ul>
     </div>
 
