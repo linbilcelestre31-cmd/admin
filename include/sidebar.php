@@ -127,6 +127,18 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 </a></li>
         </ul>
     </div>
+
+    <!-- Sidebar Bottom Logout Section -->
+    <div class="nav-section"
+        style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+        <ul class="nav-links">
+            <li>
+                <a href="#" onclick="openLogoutModal()" style="color: #fda4af;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
 </nav>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

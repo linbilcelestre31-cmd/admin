@@ -920,14 +920,14 @@ if (isset($dashboard_data['error'])) {
                             Dashboard</h1>
                     </div>
 
-                    <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                    <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                         <?php
                         // Display Active Key if Super Admin
                         if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                             $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                             if (!empty($display_key)): ?>
                                 <div class="api-key-display"
-                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 11px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                     <i class="fas fa-key" style="color: #d4af37;"></i>
                                     <span>Key: <strong
                                             style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
@@ -935,10 +935,12 @@ if (isset($dashboard_data['error'])) {
                             <?php endif;
                         }
                         ?>
-                        <button class="btn btn-outline" onclick="openLogoutModal()"
-                            style="font-weight: 700; border-radius: 10px; padding: 8px 16px;">
-                            <span class="icon-img-placeholder">🚪</span> Logout
-                        </button>
+                        <div class="current-date-header"
+                            style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
+                            <span
+                                style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -1601,14 +1603,24 @@ if (isset($dashboard_data['error'])) {
                                 style="margin:0; font-size:2rem; font-weight: 800; color: #0f172a; letter-spacing: -0.7px; font-family: 'Outfit', sans-serif;">
                             </h2>
                         </div>
-                        <div class="calendar-nav" style="display:flex; gap:12px;">
-                            <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
-                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
-                                <i class="fa-solid fa-chevron-left"></i>
+                        <div class="calendar-nav" style="display:flex; gap:15px; align-items: center;">
+                            <button onclick="goToToday()" class="btn btn-outline btn-sm"
+                                style="height: 45px; padding: 0 18px; border-radius: 12px; font-weight: 700; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; color: #64748b;">
+                                Today
                             </button>
-                            <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"
-                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
-                                <i class="fa-solid fa-chevron-right"></i>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
+                                    style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"
+                                    style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <button onclick="openModal('reservation-modal')" class="btn btn-primary btn-sm"
+                                style="height: 45px; padding: 0 25px; border-radius: 12px; font-weight: 700; background: #3b82f6; border: none; cursor: pointer; transition: all 0.3s; color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-calendar-plus" style="font-size: 1.1rem;"></i> Book Now
                             </button>
                         </div>
                     </div>
@@ -1676,6 +1688,11 @@ if (isset($dashboard_data['error'])) {
 
                         window.changeMonth = function (delta) {
                             currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+                            renderCalendar(currentCalendarDate);
+                        }
+
+                        window.goToToday = function () {
+                            currentCalendarDate = new Date();
                             renderCalendar(currentCalendarDate);
                         }
 
@@ -1818,15 +1835,16 @@ if (isset($dashboard_data['error'])) {
                     </div>
 
 
-                    <div id="maintenance-main-section" style="width: 100%;">
+                    <div id="maintenance-main-section"
+                        style="width: 100%; max-width: calc(100vw - 320px); margin: 0 auto;">
                         <!-- Maintenance Requests Card (Clean White Theme) -->
                         <div class="card management-card management-maintenance premium-light-card active-card"
                             data-card-type="maintenance"
-                            style="margin-top: 0; border-radius: 12px; overflow: hidden; border: none; box-shadow: none; display: block !important;">
+                            style="margin-top: 0; border-radius: 12px; overflow: hidden; border: none; box-shadow: none; display: block !important; width: 100%;">
 
                             <!-- Maintenance Requests Section -->
                             <div
-                                style="background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                                style="background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); width: 100%;">
                                 <div class="card-header"
                                     style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
                                     <h3
@@ -1838,7 +1856,7 @@ if (isset($dashboard_data['error'])) {
                                     </button>
                                 </div>
                                 <div class="table-wrapper"
-                                    style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
+                                    style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0; width: 100%;">
                                     <table class="table"
                                         style="background: transparent; border-collapse: collapse; min-width: 1000px; width: 100%;">
                                         <thead>
@@ -2714,12 +2732,26 @@ if (isset($dashboard_data['error'])) {
             // Check if we need to open a specific management card
             const urlParams = new URLSearchParams(window.location.search);
             const tab = urlParams.get('tab');
+
+            // If it's a reload (performance type 1) and user wants to focus dashboard
+            if (window.performance && window.performance.navigation.type === 1 && !tab) {
+                // Already defaults to dashboard via PHP, but we can ensure UI state here
+                if (typeof switchTab === 'function') switchTab('dashboard');
+            }
+
             if (tab === 'management' || tab === 'maintenance') {
                 if (typeof window.showManagementCard === 'function') {
                     window.showManagementCard('maintenance');
                 }
             }
         });
+
+        // Logout Modal Implementation
+        window.openLogoutModal = function () {
+            if (confirm("Are you sure you want to log out?")) {
+                window.location.href = "../auth/logout.php";
+            }
+        };
 
         // Utility function to dynamically change header colors
         window.updateHeaderColor = function (cardType, bgColor) {
