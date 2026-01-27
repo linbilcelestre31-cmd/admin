@@ -373,7 +373,9 @@ body {
 
 /* Dashboard Content */
 .dashboard-content {
-    padding: 2rem;
+    padding: 1.25rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .tab-content {
@@ -401,7 +403,7 @@ body {
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
@@ -1470,6 +1472,7 @@ body {
     padding-left: 1.25rem;
     /* optional spacing */
 }
+
 /* Calendar Month View Styles - Redesigned for Premium Look */
 .calendar-container {
     background: #ffffff;
@@ -1530,7 +1533,7 @@ body {
     align-items: center;
     justify-content: center;
     color: #64748b;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .calendar-nav button:hover {
@@ -1568,7 +1571,7 @@ body {
     transition: all 0.3s ease;
     border-radius: 16px;
     border: 1px solid #f1f5f9;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -1629,29 +1632,33 @@ body {
     transform: scale(1.02);
 }
 
-.event-confirmed { 
-    background: #ecfdf5; 
-    color: #065f46; 
+.event-confirmed {
+    background: #ecfdf5;
+    color: #065f46;
     border-left-color: #059669;
 }
-.event-pending { 
-    background: #fffbeb; 
-    color: #92400e; 
+
+.event-pending {
+    background: #fffbeb;
+    color: #92400e;
     border-left-color: #d97706;
 }
-.event-cancelled { 
-    background: #fef2f2; 
-    color: #991b1b; 
+
+.event-cancelled {
+    background: #fef2f2;
+    color: #991b1b;
     border-left-color: #dc2626;
 }
-.event-completed { 
-    background: #eff6ff; 
-    color: #1e40af; 
+
+.event-completed {
+    background: #eff6ff;
+    color: #1e40af;
     border-left-color: #2563eb;
 }
-.event-other { 
-    background: #f3f4f6; 
-    color: #374151; 
+
+.event-other {
+    background: #f3f4f6;
+    color: #374151;
     border-left-color: #4b5563;
 }
 
@@ -1679,4 +1686,3 @@ body {
     height: 12px;
     border-radius: 3px;
 }
-

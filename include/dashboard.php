@@ -78,11 +78,11 @@
 
     <!-- Top Metrics Grid -->
     <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
 
         <!-- Available Room Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+            style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <div
                     style="width: 45px; height: 45px; background: #fff7ed; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #f97316;">
@@ -90,8 +90,9 @@
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $available_rooms ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Available Facilities</p>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $available_rooms ?>
+                </h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin: 5px 0 0;">Available Facilities</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
                 <div style="width: 15%; background: #f97316; height: 30%; border-radius: 2px;"></div>
@@ -112,8 +113,8 @@
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $today_visitors ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Visitors (Today)</p>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $today_visitors ?></h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin: 5px 0 0;">Visitors (Today)</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
                 <div style="width: 15%; background: #22c55e; height: 60%; border-radius: 2px;"></div>
@@ -134,8 +135,9 @@
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $total_documents ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Total Documents</p>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $total_documents ?>
+                </h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin: 5px 0 0;">Total Documents</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
                 <div style="width: 15%; background: #ef4444; height: 40%; border-radius: 2px;"></div>
@@ -156,8 +158,8 @@
                 </div>
             </div>
             <div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $employee_count ?></h3>
-                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0 0;">Active Employees</p>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $employee_count ?></h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin: 5px 0 0;">Active Employees</p>
             </div>
             <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
                 <div style="width: 15%; background: #7c3aed; height: 50%; border-radius: 2px;"></div>
@@ -174,7 +176,7 @@
 
         <!-- Compliance Reports (Legal) -->
         <div
-            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Compliance Reports</h3>
                 <a href="legalmanagement.php" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View
@@ -220,7 +222,7 @@
 
         <!-- Recent Activity (Employee Activity from HR4) -->
         <div
-            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Recent Activity</h3>
                 <a href="#" onclick="openRecentActivitiesModal(event)"
@@ -261,7 +263,7 @@
             </div>
         </div>
         <div
-            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
                 <a href="#" onclick="checkVaultPin(event, 'document management(archiving).php')"
@@ -311,7 +313,7 @@
 
         <!-- Maintenance Tracking -->
         <div
-            style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">Maintenance Schedule</h3>
                 <a href="dashboard.php?tab=management"

@@ -908,34 +908,38 @@ if (isset($dashboard_data['error'])) {
         <!-- Main Content -->
         <main class="main-content">
             <!-- Top Header -->
-            <header class="top-header">
-                <div class="header-title">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <span class="icon-img-placeholder">☰</span>
-                    </button>
-                    <h1 id="page-title">Dashboard</h1>
-                </div>
+            <header class="top-header" style="background: white; border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
+                <div
+                    style="max-width: 1400px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="header-title">
+                        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                            <span class="icon-img-placeholder">☰</span>
+                        </button>
+                        <h1 id="page-title"
+                            style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
+                            Dashboard</h1>
+                    </div>
 
-                <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
-                    <?php
-                    // Display Active Key if Super Admin
-                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
-                        $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
-                        if (!empty($display_key)): ?>
-                            <div class="api-key-display"
-                                style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                <i class="fas fa-key" style="color: #d4af37;"></i>
-                                <span>Key: <strong
-                                        style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
-                            </div>
-                        <?php endif;
-                    }
-                    ?>
-                    <!-- Pinalitan ng button at inilagay ang logic sa JS -->
-                    <button class="btn btn-outline" onclick="openLogoutModal()">
-                        <span class="icon-img-placeholder">🚪</span> Logout
-                    </button>
-
+                    <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                        <?php
+                        // Display Active Key if Super Admin
+                        if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
+                            $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
+                            if (!empty($display_key)): ?>
+                                <div class="api-key-display"
+                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <i class="fas fa-key" style="color: #d4af37;"></i>
+                                    <span>Key: <strong
+                                            style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
+                                </div>
+                            <?php endif;
+                        }
+                        ?>
+                        <button class="btn btn-outline" onclick="openLogoutModal()"
+                            style="font-weight: 700; border-radius: 10px; padding: 8px 16px;">
+                            <span class="icon-img-placeholder">🚪</span> Logout
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -1536,20 +1540,76 @@ if (isset($dashboard_data['error'])) {
             <div id="calendar"
                 class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
 
+                <style>
+                    /* Force grid styles in case of external CSS breakdown */
+                    .calendar-grid-header {
+                        display: grid !important;
+                        grid-template-columns: repeat(7, 1fr) !important;
+                        gap: 10px !important;
+                        margin-bottom: 15px !important;
+                        text-align: center !important;
+                        font-weight: 800 !important;
+                        color: #64748b !important;
+                        font-size: 0.75rem !important;
+                        text-transform: uppercase !important;
+                        letter-spacing: 1px !important;
+                    }
+
+                    .calendar-days-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(7, 1fr) !important;
+                        gap: 12px !important;
+                        width: 100% !important;
+                    }
+
+                    .calendar-day-cell {
+                        background: #ffffff !important;
+                        border: 1px solid #f1f5f9 !important;
+                        border-radius: 16px !important;
+                        min-height: 120px !important;
+                        padding: 12px !important;
+                        transition: all 0.3s ease !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 6px !important;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+                    }
+
+                    .calendar-day-cell:hover {
+                        transform: translateY(-4px) !important;
+                        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08) !important;
+                        border-color: #3b82f640 !important;
+                    }
+
+                    .calendar-day-cell.empty {
+                        background: #f8fafc !important;
+                        opacity: 0.5 !important;
+                        border: none !important;
+                    }
+                </style>
+
                 <div class="calendar-container"
-                    style="background: #ffffff; border-radius: 20px; padding: 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); width: 100%; margin: 0 auto;">
+                    style="background: #ffffff; border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); width: 95%; max-width: 1200px; margin: 0 auto 40px auto; overflow: hidden;">
                     <div class="calendar-header"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
-                        <h2 id="currentMonthYear"
-                            style="margin:0; font-size:1.8rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; font-family: 'Inter', sans-serif;">
-                        </h2>
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div
+                                style="width: 50px; height: 50px; background: #eff6ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.5rem;">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
+                            <h2 id="currentMonthYear"
+                                style="margin:0; font-size:2rem; font-weight: 800; color: #0f172a; letter-spacing: -0.7px; font-family: 'Outfit', sans-serif;">
+                            </h2>
+                        </div>
                         <div class="calendar-nav" style="display:flex; gap:12px;">
                             <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
-                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"><i
-                                    class="fa-solid fa-chevron-left"></i></button>
+                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
                             <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"
-                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"><i
-                                    class="fa-solid fa-chevron-right"></i></button>
+                                style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="calendar-grid-header">
@@ -1563,21 +1623,30 @@ if (isset($dashboard_data['error'])) {
                     </div>
                     <div id="calendar-days" class="calendar-days-grid"></div>
 
-                    <div class="calendar-legend">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #059669;"></div>
+                    <div class="calendar-legend"
+                        style="display: flex; gap: 25px; margin-top: 35px; padding-top: 25px; border-top: 1px solid #f1f5f9; flex-wrap: wrap;">
+                        <div class="legend-item"
+                            style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 700; color: #64748b;">
+                            <div class="legend-color"
+                                style="width: 12px; height: 12px; border-radius: 4px; background: #059669;"></div>
                             <span>Confirmed</span>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #d97706;"></div>
+                        <div class="legend-item"
+                            style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 700; color: #64748b;">
+                            <div class="legend-color"
+                                style="width: 12px; height: 12px; border-radius: 4px; background: #d97706;"></div>
                             <span>Pending</span>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #dc2626;"></div>
+                        <div class="legend-item"
+                            style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 700; color: #64748b;">
+                            <div class="legend-color"
+                                style="width: 12px; height: 12px; border-radius: 4px; background: #dc2626;"></div>
                             <span>Cancelled</span>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #2563eb;"></div>
+                        <div class="legend-item"
+                            style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 700; color: #64748b;">
+                            <div class="legend-color"
+                                style="width: 12px; height: 12px; border-radius: 4px; background: #2563eb;"></div>
                             <span>Completed</span>
                         </div>
                     </div>
