@@ -1637,7 +1637,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     Distribution Analysis</span>
                             </h3>
                             <div style="display: flex; gap: 10px;">
-                                <button onclick="window.initRiskChart()"
+                                <button type="button" onclick="window.location.reload()"
                                     style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
                                     <i class="fa-solid fa-sync-alt"></i> Refresh
                                 </button>

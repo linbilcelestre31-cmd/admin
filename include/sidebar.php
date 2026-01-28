@@ -7,20 +7,17 @@ $is_dashboard = ($current_page == 'dashboard.php');
 
 function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 {
-    if ($is_dashboard) {
-        return "#\" onclick=\"event.preventDefault(); handleSidebarNav('$tab'); return false;\"";
-    } else {
-        if ($isSuperAdmin && $tab === 'dashboard') {
-            return "../Super-admin/Dashboard.php\"";
-        }
-        return "../Modules/dashboard.php?tab=$tab\"";
+    if ($isSuperAdmin && $tab === 'dashboard') {
+        return "../Super-admin/Dashboard.php";
     }
+    // Always return a direct link for reliability
+    return "../Modules/dashboard.php?tab=$tab";
 }
 ?>
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>"
-            class="logo-link" title="Go to Dashboard">
+        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
+            title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
                     <img src="../assets/image/logo.png" alt="Atiéra Logo"
