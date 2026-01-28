@@ -1548,16 +1548,19 @@ if (isset($dashboard_data['error'])) {
                             $r_stmt->execute();
                             $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                            // Mock visitors
-                            if (empty($r_rows)) {
-                                $r_rows = [
-                                    ['id' => 1, 'full_name' => 'Juan Dela Cruz', 'email' => 'juan@example.com', 'phone' => '09171234567', 'facility' => 'Room 101', 'time_in' => date('Y-m-d 08:00:00'), 'time_out' => date('Y-m-d 17:00:00'), 'status' => 'Checked In'],
-                                    ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out']
-                                ];
-                            }
                             $is_premium_report = true;
                         } catch (Exception $e) {
                             $r_rows = [];
+                        }
+
+                        // Robust Mock visitors if still empty
+                        if (empty($r_rows)) {
+                            $r_rows = [
+                                ['id' => 1, 'full_name' => 'Juan Dela Cruz', 'email' => 'juan@example.com', 'phone' => '09171234567', 'facility' => 'Room 101', 'time_in' => date('Y-m-d 08:00:00'), 'time_out' => date('Y-m-d 17:00:00'), 'status' => 'Checked In'],
+                                ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out'],
+                                ['id' => 3, 'full_name' => 'Marvin Quiriado', 'email' => 'marvin@example.com', 'phone' => '09221239876', 'facility' => 'Main Ballroom', 'time_in' => date('Y-m-d 11:45:00'), 'time_out' => '...', 'status' => 'Checked In']
+                            ];
+                            $is_premium_report = true;
                         }
                         break;
 
@@ -1572,6 +1575,15 @@ if (isset($dashboard_data['error'])) {
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Mock data for Legal Management if empty
+                        if (empty($r_rows)) {
+                            $r_rows = [
+                                ['id' => 1, 'name' => 'Hotel Lease Agreement.pdf', 'case_id' => 'C-001', 'type' => 'External', 'risk_score' => 'High', 'created_at' => date('Y-m-d H:i:s')],
+                                ['id' => 2, 'name' => 'Supplier Contract.docx', 'case_id' => 'C-002', 'type' => 'Internal', 'risk_score' => 'Medium', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 month'))],
+                                ['id' => 3, 'name' => 'Employment Contract - Celestre', 'case_id' => 'C-003', 'type' => 'Internal', 'risk_score' => 'Low', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 day'))]
+                            ];
+                        }
                         break;
 
                     case 'reservations':
@@ -1595,7 +1607,7 @@ if (isset($dashboard_data['error'])) {
                             $mock_entries = [
                                 [
                                     'id' => 101,
-                                    'customer_name' => 'John Marvin Celestre',
+                                    'customer_name' => 'Marvin Quiriado',
                                     'customer_email' => 'john.marvin@example.com',
                                     'customer_phone' => '09123456789',
                                     'event_type' => 'Wedding Reception',
