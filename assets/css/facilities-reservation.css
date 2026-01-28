@@ -1345,58 +1345,45 @@ body {
     visibility: visible;
 }
 
-/* Premium Dark Table Theme (matching Picture 2 & 3) */
-.premium-dark-card {
-    background: #0f172a !important;
-    /* Very dark blue/black */
-    color: #f8fafc !important;
-    border: 1px solid #1e293b !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15) !important;
+/* Premium White Table Theme (matching user request for Reports) */
+.premium-white-card {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
 }
 
-.premium-dark-card .card-header {
-    background: #1e293b !important;
-    border-bottom: 1px solid #334155 !important;
-    color: #e2e8f0 !important;
+.premium-white-card .card-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
 }
 
-.premium-dark-card .card-header h3 {
-    color: #f1f5f9 !important;
-    font-weight: 700;
-}
-
-.premium-dark-card .table {
-    background: transparent !important;
-}
-
-.premium-dark-card .table thead th {
-    background: #1e293b !important;
-    color: #94a3b8 !important;
+.premium-white-card .table thead th {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
     text-transform: uppercase;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     letter-spacing: 0.05em;
-    font-weight: 800;
-    border-bottom: 2px solid #334155 !important;
+    font-weight: 700;
+    border-bottom: 2px solid #e2e8f0 !important;
+    padding: 15px !important;
 }
 
-.premium-dark-card .table tbody td {
-    color: #cbd5e1 !important;
-    border-bottom: 1px solid #1e293b !important;
-    padding: 14px 12px !important;
+.premium-white-card .table tbody td {
+    color: #1e293b !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 14px 15px !important;
 }
 
-.premium-dark-card .table tr:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
-    transform: none !important;
+.premium-white-card .table tr:hover {
+    background: #f8fafc !important;
 }
 
-.premium-dark-card .status-badge {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.premium-dark-card .table th,
-.premium-dark-card .table td {
-    border-color: #1e293b !important;
+.premium-white-card .table th,
+.premium-white-card .table td {
+    border-color: #f1f5f9 !important;
 }
 
 /* Ensure tables take full width */
