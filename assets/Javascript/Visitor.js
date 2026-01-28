@@ -395,7 +395,7 @@ function loadCurrentVisitors() {
                             <td>${guest.full_name || 'N/A'}</td>
                             <td>${guest.room_number || 'N/A'}</td>
                             <td>${formatDate(guest.checkin_date)}</td>
-                            <td>${guest.checkout_date ? formatDate(guest.checkout_date) : 'Inside'}</td>
+                            <td>${guest.checkout_date ? formatDate(guest.checkout_date) : 'CHECKED IN'}</td>
                             <td style="display: flex; gap: 8px;">
                                 <button class="btn-action-view" onclick="viewVisitorDetails('${guest.id}')">
                                     <i class="fas fa-eye"></i> View
@@ -597,7 +597,7 @@ function generateReport() {
     if (venue === 'all' || venue === 'hotel') {
         reportData += `<h4>Hotel Statistics</h4>`;
         reportData += `<p>Total Guests: ${hotelData.length}</p>`;
-        reportData += `<p>Currently Time-in: ${hotelData.filter(g => g.status === 'timed-in').length}</p>`;
+        reportData += `<p>Currently CHECKED IN: ${hotelData.filter(g => g.status === 'timed-in').length}</p>`;
 
         if (hotelData.length > 0) {
             reportData += `<table>
@@ -619,7 +619,7 @@ function generateReport() {
                                 <td>${guest.room}</td>
                                 <td>${formatDate(guest.checkin)}</td>
                                 <td>${formatDate(guest.checkout)}</td>
-                                <td>${guest.status}</td>
+                                <td>${guest.status === 'timed-in' ? 'CHECKED IN' : guest.status}</td>
                             </tr>`;
             });
 
@@ -631,7 +631,7 @@ function generateReport() {
         reportData += `<h4>Restaurant Statistics</h4>`;
         reportData += `<p>Total Visitors: ${restaurantData.length}</p>`;
         reportData += `<p>Total Covers: ${restaurantData.reduce((sum, visitor) => sum + visitor.partySize, 0)}</p>`;
-        reportData += `<p>Currently Dining (Time-in): ${restaurantData.filter(v => v.status === 'timed-in').length}</p>`;
+        reportData += `<p>Currently Dining (CHECKED IN): ${restaurantData.filter(v => v.status === 'timed-in').length}</p>`;
 
         if (restaurantData.length > 0) {
             reportData += `<table>
@@ -653,7 +653,7 @@ function generateReport() {
                                 <td>${visitor.partySize}</td>
                                 <td>${visitor.table}</td>
                                 <td>${formatTime(visitor.checkinTime)}</td>
-                                <td>${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'N/A'}</td>
+                                <td>${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'CHECKED IN'}</td>
                             </tr>`;
             });
 

@@ -639,7 +639,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             UNION ALL
                             (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . ($status !== 'all' && $status === 'Archived' ? "" : ($status !== 'all' ? " AND 1=0" : "")) . ")
                             UNION ALL
-                            (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
+                            (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
                             UNION ALL
                             (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts WHERE 1=1 $where_date_leg " . ($status !== 'all' ? " AND 1=0" : "") . ")
                             ORDER BY date DESC
@@ -666,7 +666,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
 
                     case 'visitors':
-                        $sql = "SELECT id, full_name, email, phone_number as phone, room_number, checkin_date as time_in, checkout_date as time_out, status FROM direct_checkins WHERE 1=1";
+                        $sql = "SELECT id, full_name, email, phone_number as phone, room_number, checkin_date as time_in, checkout_date as time_out, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1";
                         if ($from_date) {
                             $sql .= " AND DATE(checkin_date) >= ?";
                             $params[] = $from_date;
@@ -1489,7 +1489,7 @@ if (isset($dashboard_data['error'])) {
                                 UNION ALL
                                 (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . (($r_status !== 'all' && $r_status === 'Archived') ? "" : ($r_status !== 'all' ? " AND 1=0" : "")) . ")
                                 UNION ALL
-                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, status as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
+                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
                                 UNION ALL
                                 (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts WHERE 1=1 $where_date_leg " . (($r_status !== 'all') ? " WHERE 1=0" : "") . ")
                                 ORDER BY date DESC
@@ -1538,7 +1538,7 @@ if (isset($dashboard_data['error'])) {
                             $v_checkout = in_array('checkout_date', $v_cols) ? 'checkout_date' : 'time_out';
                             $v_phone = in_array('phone_number', $v_cols) ? 'phone_number' : 'phone';
 
-                            $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as time_in, $v_checkout as time_out, status FROM direct_checkins WHERE 1=1";
+                            $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as time_in, $v_checkout as time_out, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1";
                             if ($r_from)
                                 $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($r_from);
                             if ($r_to)
@@ -1877,7 +1877,12 @@ if (isset($dashboard_data['error'])) {
                                                         <?php if (strtolower($key) === 'status'): ?>
                                                             <span class="status-badge status-<?= strtolower($val) ?>"
                                                                 style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
-                                                                <?= strtoupper(htmlspecialchars($val)) ?>
+                                                                <?php
+                                                                $display_val = $val;
+                                                                if (strtolower($val) === 'active')
+                                                                    $display_val = 'Checked In';
+                                                                echo strtoupper(htmlspecialchars($display_val));
+                                                                ?>
                                                             </span>
                                                         <?php else: ?>
                                                             <?= htmlspecialchars($val) ?>

@@ -227,12 +227,12 @@ function getLastInsertId()
                         <div class="stat-card">
                             <i class="fas fa-user-clock"></i>
                             <div class="stat-number" id="hotel-current">0</div>
-                            <div class="stat-label">Inside Hotel</div>
+                            <div class="stat-label">CHECKED IN Hotel</div>
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-chair"></i>
                             <div class="stat-number" id="restaurant-current">0</div>
-                            <div class="stat-label">Inside Restaurant</div>
+                            <div class="stat-label">CHECKED IN Restaurant</div>
                         </div>
                     </div>
 
