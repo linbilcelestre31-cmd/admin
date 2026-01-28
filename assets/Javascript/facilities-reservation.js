@@ -53,12 +53,7 @@ window.switchTab = function (tabName) {
 
     sessionStorage.setItem('activeTab', tabName);
 
-    // Ensure maintenance card is shown if switching to management/maintenance tab
-    if (tabName === 'management' || tabName === 'maintenance') {
-        if (typeof window.showManagementCard === 'function') {
-            window.showManagementCard('maintenance');
-        }
-    }
+
 
     // Update URL with pushState for back button support
     const url = new URL(window.location);
@@ -531,12 +526,7 @@ function initializePage() {
     const activeTab = urlTab || sessionStorage.getItem('activeTab') || 'dashboard';
     window.switchTab(activeTab);
 
-    // Initial state for management/maintenance
-    if (activeTab === 'management' || activeTab === 'maintenance') {
-        if (typeof window.showManagementCard === 'function') {
-            window.showManagementCard('maintenance');
-        }
-    }
+
 
     // Nav links listeners (for sidebar)
     document.querySelectorAll('.nav-links a').forEach(link => {
