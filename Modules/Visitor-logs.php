@@ -203,8 +203,6 @@ function getLastInsertId()
                                 style="margin-right: 12px;"></i>Reports</a></li>
                     <li><a href="#" class="sidebar-link" data-page="maintenance"><i class="fas fa-tools"
                                 style="margin-right: 12px;"></i>Maintenance</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="settings"><i class="fas fa-cog"
-                                style="margin-right: 12px;"></i>Settings</a></li>
                 </ul>
             </aside>
 
@@ -521,39 +519,14 @@ function getLastInsertId()
                     </aside>
                 </div>
 
-                <!-- Settings Page -->
-                <div id="settings" class="page">
-                    <h1>System Settings</h1>
-                    <div class="card">
-                        <h2>General Settings</h2>
-                        <form id="settings-form">
-                            <div class="form-group">
-                                <label for="business-name">Business Name</label>
-                                <input type="text" id="business-name" name="business-name" value="Hotel & Restaurant">
-                            </div>
-                            <div class="form-group">
-                                <label for="timezone">Timezone</label>
-                                <select id="timezone" name="timezone">
-                                    <option value="UTC">UTC</option>
-                                    <option value="EST">Eastern Time</option>
-                                    <option value="PST">Pacific Time</option>
-                                    <!-- Add more timezones as needed -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="data-retention">Data Retention (days)</label>
-                                <input type="number" id="data-retention" name="data-retention" value="365" min="30">
-                            </div>
-                            <button type="submit" class="btn-success">Save Settings</button>
-                        </form>
-                    </div>
-                </div>
+
 
                 <!-- Maintenance Page -->
                 <div id="maintenance" class="page">
                     <h1>Maintenance Management</h1>
                     <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h2><i class="fas fa-tools"></i> Maintenance Logs</h2>
                             <button class="btn btn-success" onclick="alert('Maintenance feature coming soon!')">
                                 <i class="fas fa-plus"></i> Schedule Maintenance
@@ -578,36 +551,60 @@ function getLastInsertId()
                                         <td>Banquet Hall A</td>
                                         <td>Air conditioning unit leaking water</td>
                                         <td>2024-01-15</td>
-                                        <td><span class="status-badge" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span></td>
-                                        <td><span class="status-badge" style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In Progress</span></td>
-                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-001')"><i class="fas fa-eye"></i></button></td>
+                                        <td><span class="status-badge"
+                                                style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span>
+                                        </td>
+                                        <td><span class="status-badge"
+                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In
+                                                Progress</span></td>
+                                        <td><button class="btn btn-sm btn-outline"
+                                                onclick="alert('View details for #MT-2024-001')"><i
+                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td>#MT-2024-002</td>
                                         <td>Meeting Room 2</td>
                                         <td>Projector bulb replacement needed</td>
                                         <td>2024-01-20</td>
-                                        <td><span class="status-badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span></td>
-                                        <td><span class="status-badge" style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span></td>
-                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-002')"><i class="fas fa-eye"></i></button></td>
+                                        <td><span class="status-badge"
+                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        </td>
+                                        <td><span class="status-badge"
+                                                style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"
+                                                onclick="alert('View details for #MT-2024-002')"><i
+                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td>#MT-2024-003</td>
                                         <td>Pool Side</td>
                                         <td>Loose tiles near the deep end</td>
                                         <td>2024-01-18</td>
-                                        <td><span class="status-badge" style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span></td>
-                                        <td><span class="status-badge" style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span></td>
-                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-003')"><i class="fas fa-check"></i></button></td>
+                                        <td><span class="status-badge"
+                                                style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span>
+                                        </td>
+                                        <td><span class="status-badge"
+                                                style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"
+                                                onclick="alert('View details for #MT-2024-003')"><i
+                                                    class="fas fa-check"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td>#MT-2024-004</td>
                                         <td>Executive Lounge</td>
                                         <td>Coffee machine malfunction</td>
                                         <td>2024-01-22</td>
-                                        <td><span class="status-badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span></td>
-                                        <td><span class="status-badge" style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span></td>
-                                        <td><button class="btn btn-sm btn-outline" onclick="alert('View details for #MT-2024-004')"><i class="fas fa-eye"></i></button></td>
+                                        <td><span class="status-badge"
+                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        </td>
+                                        <td><span class="status-badge"
+                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span>
+                                        </td>
+                                        <td><button class="btn btn-sm btn-outline"
+                                                onclick="alert('View details for #MT-2024-004')"><i
+                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>

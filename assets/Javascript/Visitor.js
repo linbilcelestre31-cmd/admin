@@ -30,9 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Load employees for host selection
     loadEmployeesForHosts();
-
-    // Apply settings
-    applySettings();
 });
 
 // Navigation setup
@@ -179,14 +176,6 @@ function setupForms() {
         });
     }
 
-    // Settings form
-    const settingsForm = document.getElementById('settings-form');
-    if (settingsForm) {
-        settingsForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            saveSettings();
-        });
-    }
 }
 
 // Time-in hotel guest
@@ -677,38 +666,7 @@ function generateReport() {
     document.getElementById('report-results').style.display = 'block';
 }
 
-// Save settings
-function saveSettings() {
-    const form = document.getElementById('settings-form');
-    const formData = new FormData(form);
 
-    settings.businessName = formData.get('business-name');
-    settings.timezone = formData.get('timezone');
-    settings.dataRetention = parseInt(formData.get('data-retention'));
-
-    localStorage.setItem('visitorSettings', JSON.stringify(settings));
-
-    showAlert('Settings saved successfully!', 'success');
-    applySettings();
-}
-
-// Apply settings
-function applySettings() {
-    // Update business name in UI if needed
-    const businessNameEl = document.querySelector('.logo');
-    if (businessNameEl && settings.businessName) {
-        businessNameEl.textContent = `${settings.businessName} Visitor Management`;
-    }
-
-    // Populate settings form
-    const businessNameInput = document.getElementById('business-name');
-    const timezoneSelect = document.getElementById('timezone');
-    const dataRetentionInput = document.getElementById('data-retention');
-
-    if (businessNameInput) businessNameInput.value = settings.businessName;
-    if (timezoneSelect) timezoneSelect.value = settings.timezone;
-    if (dataRetentionInput) dataRetentionInput.value = settings.dataRetention;
-}
 
 // Load employees for host selection from HR4 API
 function loadEmployeesForHosts() {
