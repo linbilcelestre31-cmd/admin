@@ -1086,9 +1086,25 @@ if (isset($dashboard_data['error'])) {
                                     </div>
                                     <div class="facility-content">
                                         <div class="facility-header">
-                                            <div class="facility-name"><?= htmlspecialchars($facility['name']) ?></div>
+                                            <div class="facility-name">
+                                                <?php
+                                                $fName = $facility['name'];
+                                                if (strtolower($fName) === 'marvin79') {
+                                                    $fName = 'Executive Suite';
+                                                }
+                                                echo htmlspecialchars($fName);
+                                                ?>
+                                            </div>
                                             <span class="facility-type"
-                                                style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;"><?= htmlspecialchars($facility['type']) ?></span>
+                                                style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;">
+                                                <?php
+                                                $fType = $facility['type'];
+                                                if (strtolower($facility['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
+                                                    $fType = 'VIP MEETING';
+                                                }
+                                                echo htmlspecialchars($fType);
+                                                ?>
+                                            </span>
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 8px;">
                                             <button class="btn btn-outline btn-sm"
@@ -1140,10 +1156,23 @@ if (isset($dashboard_data['error'])) {
                                                 <?= htmlspecialchars($f['next_reserve_name'] ?? 'Available') ?>
                                             </td>
                                             <td style="text-align: left; font-weight: 600;">
-                                                <?= htmlspecialchars($f['name']) ?>
+                                                <?php
+                                                $fName = $f['name'];
+                                                if (strtolower($fName) === 'marvin79') {
+                                                    $fName = 'Executive Suite';
+                                                }
+                                                echo htmlspecialchars($fName);
+                                                ?>
                                             </td>
-                                            <td><span
-                                                    class="facility-type-badge"><?= ucfirst(htmlspecialchars($f['type'])) ?></span>
+                                            <td><span class="facility-type-badge">
+                                                    <?php
+                                                    $fType = $f['type'];
+                                                    if (strtolower($f['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
+                                                        $fType = 'VIP MEETING';
+                                                    }
+                                                    echo ucfirst(htmlspecialchars($fType));
+                                                    ?>
+                                                </span>
                                             </td>
                                             <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
                                             <td style="text-align: left;"><?= htmlspecialchars($f['location']) ?></td>
@@ -1185,23 +1214,23 @@ if (isset($dashboard_data['error'])) {
                         </button>
                     </div>
 
-                    <div class="table-container premium-dark-card">
+                    <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left; padding: 15px;">ID</th>
-                                    <th style="text-align: left;">FACILITY</th>
-                                    <th style="text-align: left;">CUSTOMER</th>
-                                    <th style="text-align: left;">CONTACT</th>
-                                    <th style="text-align: left;">EMAIL</th>
-                                    <th style="text-align: left;">EVENT TYPE</th>
-                                    <th style="text-align: left;">DATE</th>
-                                    <th style="text-align: left;">TIME</th>
-                                    <th style="text-align: center;">GUESTS</th>
-                                    <th style="text-align: center;">STATUS</th>
-                                    <th style="text-align: center;">TABLE/ROOM</th>
-                                    <th style="text-align: center;">PAYMENT</th>
-                                    <th style="text-align: center;">ACTIONS</th>
+                                    <th style="text-align: left; padding: 15px; color: #000000 !important;">ID</th>
+                                    <th style="text-align: left; color: #000000 !important;">FACILITY</th>
+                                    <th style="text-align: left; color: #000000 !important;">CUSTOMER</th>
+                                    <th style="text-align: left; color: #000000 !important;">CONTACT</th>
+                                    <th style="text-align: left; color: #000000 !important;">EMAIL</th>
+                                    <th style="text-align: left; color: #000000 !important;">EVENT TYPE</th>
+                                    <th style="text-align: left; color: #000000 !important;">DATE</th>
+                                    <th style="text-align: left; color: #000000 !important;">TIME</th>
+                                    <th style="text-align: center; color: #000000 !important;">GUESTS</th>
+                                    <th style="text-align: center; color: #000000 !important;">STATUS</th>
+                                    <th style="text-align: center; color: #000000 !important;">TABLE/ROOM</th>
+                                    <th style="text-align: center; color: #000000 !important;">PAYMENT</th>
+                                    <th style="text-align: center; color: #000000 !important;">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1218,39 +1247,44 @@ if (isset($dashboard_data['error'])) {
                                 <?php else: ?>
                                     <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
                                         <tr>
-                                            <td style="font-weight: 700; color: #f1f5f9;">#<?= $reservation['id'] ?></td>
+                                            <td style="font-weight: 700; color: #000000 !important;">#<?= $reservation['id'] ?>
+                                            </td>
                                             <td style="text-align: left;">
-                                                <div style="font-weight: 600; color: #f8fafc;">
+                                                <div style="font-weight: 600; color: #000000 !important;">
                                                     <?= htmlspecialchars($reservation['facility_name']) ?>
                                                 </div>
                                             </td>
                                             <td style="text-align: left;">
-                                                <div style="font-weight: 500; color: #e2e8f0;">
+                                                <div style="font-weight: 500; color: #000000 !important;">
                                                     <?= htmlspecialchars($reservation['customer_name']) ?>
                                                 </div>
                                             </td>
-                                            <td style="text-align: left; color: #94a3b8;">
-                                                <?= htmlspecialchars($reservation['customer_phone'] ?? 'N/A') ?></td>
-                                            <td style="text-align: left; color: #94a3b8; font-size: 0.8rem;">
+                                            <td style="text-align: left; color: #000000 !important;">
+                                                <?= htmlspecialchars($reservation['customer_phone'] ?? 'N/A') ?>
+                                            </td>
+                                            <td style="text-align: left; color: #000000 !important; font-size: 0.8rem;">
                                                 <?= htmlspecialchars($reservation['customer_email'] ?? 'N/A') ?>
                                             </td>
-                                            <td style="text-align: left; color: #cbd5e1;">
-                                                <?= htmlspecialchars($reservation['event_type']) ?></td>
-                                            <td style="text-align: left; color: #cbd5e1;">
-                                                <?= date('m/d/Y', strtotime($reservation['event_date'])) ?></td>
-                                            <td style="text-align: left; font-size: 0.8rem; color: #cbd5e1;">
+                                            <td style="text-align: left; color: #000000 !important;">
+                                                <?= htmlspecialchars($reservation['event_type']) ?>
+                                            </td>
+                                            <td style="text-align: left; color: #000000 !important;">
+                                                <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
+                                            </td>
+                                            <td style="text-align: left; font-size: 0.8rem; color: #000000 !important;">
                                                 <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
                                                 <?= date('g:i a', strtotime($reservation['end_time'])) ?>
                                             </td>
-                                            <td style="text-align: center; font-weight: 600; color: #f1f5f9;">
-                                                <?= $reservation['guests_count'] ?></td>
+                                            <td style="text-align: center; font-weight: 600; color: #000000 !important;">
+                                                <?= $reservation['guests_count'] ?>
+                                            </td>
                                             <td style="text-align: center;">
                                                 <span class="status-badge status-<?= $reservation['status'] ?>"
                                                     style="min-width: 90px; text-align: center;">
                                                     <?= ucfirst($reservation['status']) ?>
                                                 </span>
                                             </td>
-                                            <td style="text-align: center; color: #94a3b8; font-weight: 500;">
+                                            <td style="text-align: center; color: #000000 !important; font-weight: 500;">
                                                 <?php
                                                 // Derive Table/Room if possible, otherwise use a default
                                                 $tableRoom = 'N/A';
@@ -1282,7 +1316,7 @@ if (isset($dashboard_data['error'])) {
                                             <td>
                                                 <div class="d-flex gap-1" style="justify-content: center;">
                                                     <button class="btn btn-outline btn-sm btn-icon"
-                                                        style="border-color: #334155; color: #94a3b8;"
+                                                        style="border-color: #e2e8f0; color: #475569;"
                                                         onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($reservation)) ?>)"
                                                         title="View Details">
                                                         <i class="fa-solid fa-eye"></i>

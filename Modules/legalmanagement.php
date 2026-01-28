@@ -1039,7 +1039,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
                         </button>
-                       
+
                         <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
                             style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
@@ -1500,7 +1500,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <tr>
                             <th>Contract Name</th>
                             <th>Case</th>
-                            
+
                             <th>Risk Score</th>
                             <th>Upload Date</th>
                             <th>Actions</th>
@@ -1510,8 +1510,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <?php foreach ($contracts as $contract):
                             $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
                             $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
+                            $score = $contract['risk_score'] ?? 0;
+                            $rowRisk = 'Low';
+                            if ($score >= 70)
+                                $rowRisk = 'High';
+                            elseif ($score >= 31)
+                                $rowRisk = 'Medium';
                             ?>
-                            <tr>
+                            <tr class="contract-row" data-risk="<?php echo $rowRisk; ?>">
                                 <td>
                                     <?php if (!empty($contract['file_path'])): ?>
                                         <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
@@ -1567,7 +1573,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <span class="stat-value"><?php echo $totalContracts; ?></span>
                         </div>
                     </div>
-                    <div class="stat-card high">
+                    <div class="stat-card high" onclick="filterByRiskLevel('High')"
+                        style="cursor: pointer; transition: all 0.3s ease;">
                         <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">High Risk</span>
@@ -1575,7 +1582,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <span class="stat-meta"><?php echo $highPct; ?>% of total</span>
                         </div>
                     </div>
-                    <div class="stat-card medium">
+                    <div class="stat-card medium" onclick="filterByRiskLevel('Medium')"
+                        style="cursor: pointer; transition: all 0.3s ease;">
                         <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">Medium Risk</span>
@@ -1583,7 +1591,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <span class="stat-meta"><?php echo $mediumPct; ?>% of total</span>
                         </div>
                     </div>
-                    <div class="stat-card low">
+                    <div class="stat-card low" onclick="filterByRiskLevel('Low')"
+                        style="cursor: pointer; transition: all 0.3s ease;">
                         <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">Low Risk</span>
@@ -1595,19 +1604,24 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="risk-analysis-layout">
                     <div class="chart-container-wrapper">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                            <h3 class="subsection-title" style="margin: 0; display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <h3 class="subsection-title"
+                                style="margin: 0; display: flex; align-items: center; gap: 12px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
                                     <i class="fa-solid fa-chart-simple" style="color: white; font-size: 18px;"></i>
                                 </div>
-                                <span style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk Distribution Analysis</span>
+                                <span
+                                    style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk
+                                    Distribution Analysis</span>
                             </h3>
                             <div style="display: flex; gap: 10px;">
-                                <button onclick="window.initRiskChart()" 
+                                <button onclick="window.initRiskChart()"
                                     style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
                                     <i class="fa-solid fa-sync-alt"></i> Refresh
                                 </button>
-                                <button onclick="window.downloadChart()" 
+                                <button onclick="window.downloadChart()"
                                     style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: flex; align-items: center; gap: 8px;">
                                     <i class="fa-solid fa-download"></i> Export
                                 </button>
@@ -1615,30 +1629,46 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                         <div class="chart-area" id="chartArea"
                             style="height: 400px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 24px; border: 2px solid #e2e8f0; padding: 30px; display: block; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;">
-                            <div style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                <span style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live Data</span>
+                            <div
+                                style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                <span
+                                    style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live
+                                    Data</span>
                             </div>
                             <canvas id="riskDistributionChart" width="600" height="400"
                                 style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
                         </div>
-                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div
+                            style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <div style="display: flex; gap: 20px;">
-                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
-                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);"></div>
+                                <div
+                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                    <div
+                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                    </div>
                                     <span style="font-size: 0.9rem; color: #ef4444; font-weight: 700;">High Risk</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
-                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);"></div>
-                                    <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium Risk</span>
+                                <div
+                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                    <div
+                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);">
+                                    </div>
+                                    <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium
+                                        Risk</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"></div>
+                                <div
+                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                    <div
+                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                    </div>
                                     <span style="font-size: 0.9rem; color: #10b981; font-weight: 700;">Low Risk</span>
                                 </div>
                             </div>
                             <div style="text-align: right;">
                                 <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Last Updated</div>
-                                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;"><?php echo date('M j, Y g:i A'); ?></div>
+                                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;">
+                                    <?php echo date('M j, Y g:i A'); ?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1821,8 +1851,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
 
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                    <div id="genderImageContainer" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
-                        <img src="../assets/image/Women.png" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div id="genderImageContainer"
+                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
+                        <img src="../assets/image/Women.png" alt="Gender"
+                            style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div
                         style="width: 100px; height: 100px; background: rgba(255,255,255,0.25); border-radius: 50%; display: grid; place-items: center; font-size: 2.8rem; backdrop-filter: blur(8px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.4);">
@@ -1830,7 +1862,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </div>
                     <div style="text-align: center;">
                         <h2 id="employeeInfoTitle"
-                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Employee
+                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            Employee
                             Profile</h2>
                         <span id="employeeRoleBadge"
                             style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
@@ -1840,48 +1873,64 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             </div>
 
             <!-- Modal Body with Circular Design -->
-            <div id="employeeInfoBody" style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
+            <div id="employeeInfoBody"
+                style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
                 <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 320px;">
                     <!-- Circular Container -->
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                         <!-- Circular Profile Section -->
-                        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
-                            <div style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
+                        <div
+                            style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
+                            <div
+                                style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
                                 <i class="fa-solid fa-id-card" style="color: white; font-size: 12px;"></i>
                             </div>
                             <div style="text-align: center; padding: 15px;">
-                                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
+                                <div
+                                    style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
                                     <i class="fa-solid fa-user" style="color: white; font-size: 24px;"></i>
                                 </div>
-                                <h3 id="display_emp_name" style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
-                                <span id="display_emp_position" style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
+                                <h3 id="display_emp_name"
+                                    style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
+                                <span id="display_emp_position"
+                                    style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
                             </div>
                         </div>
 
                         <!-- Contact Information Circles -->
                         <div style="display: flex; gap: 15px; justify-content: center;">
                             <!-- Email Circle -->
-                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
-                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                            <div
+                                style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div
+                                    style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
                                     <i class="fa-solid fa-envelope" style="color: white; font-size: 14px;"></i>
                                 </div>
-                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Email</div>
-                                <div id="display_emp_email" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">-</div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
+                                    Email</div>
+                                <div id="display_emp_email"
+                                    style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">
+                                    -</div>
                             </div>
 
                             <!-- Phone Circle -->
-                            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
-                                <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                            <div
+                                style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                                <div
+                                    style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
                                     <i class="fa-solid fa-phone" style="color: white; font-size: 14px;"></i>
                                 </div>
-                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">Phone</div>
-                                <div id="display_emp_phone" style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-</div>
+                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
+                                    Phone</div>
+                                <div id="display_emp_phone"
+                                    style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-
+                                </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button id="modalDownloadEmpPdf" 
+                            <button id="modalDownloadEmpPdf"
                                 style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
                                 <i class="fa-solid fa-download"></i>
                             </button>
@@ -2143,7 +2192,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 data: chartData,
                                 backgroundColor: [
                                     'rgba(239, 68, 68, 0.8)',
-                                    'rgba(245, 158, 11, 0.8)', 
+                                    'rgba(245, 158, 11, 0.8)',
                                     'rgba(16, 185, 129, 0.8)'
                                 ],
                                 borderColor: [
@@ -2182,7 +2231,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     borderRadius: 8,
                                     displayColors: true,
                                     callbacks: {
-                                        label: function(context) {
+                                        label: function (context) {
                                             const label = context.dataset.label || '';
                                             const value = context.parsed.y;
                                             const total = chartData.reduce((a, b) => a + b, 0);
@@ -2238,12 +2287,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }, 2000);
 
             // Download Chart Function
-            window.downloadChart = function() {
+            window.downloadChart = function () {
                 const canvas = document.getElementById('riskDistributionChart');
                 if (canvas && window.riskChartRef) {
                     const url = canvas.toDataURL('image/png');
                     const link = document.createElement('a');
-                    link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0,10) + '.png';
+                    link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0, 10) + '.png';
                     link.href = url;
                     link.click();
                 } else {
@@ -2510,9 +2559,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 const target = e.target.closest('button, a.view-pdf-link, .download-btn');
                 if (!target) return;
 
-                const type = target.getAttribute('data-type') || 
-                            (target.classList.contains('download-btn') ? 'download' : 
-                            (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
+                const type = target.getAttribute('data-type') ||
+                    (target.classList.contains('download-btn') ? 'download' :
+                        (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
 
                 // Handle employee-view specifically
                 if (target.classList.contains('view-btn') && target.getAttribute('data-emp')) {
@@ -2533,20 +2582,20 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         if (genderImageContainer && emp.name) {
                             const employeeName = emp.name.toLowerCase();
                             let genderImage = '../assets/image/Men.png'; // Default to male
-                            
+
                             // Simple gender detection based on common Filipino names
                             const femaleNames = ['maria', 'mary', 'ana', 'anna', 'juanita', 'carmela', 'rosa', 'rose', 'grace', 'joy', 'patricia', 'pat', 'christine', 'tin', 'elizabeth', 'beth', 'catherine', 'cathy', 'margarita', 'maggie', 'lourdes', 'lou', 'rebecca', 'becky', 'sophia', 'sophie', 'isabella', 'bella', 'angelica', 'angeli', 'micah', 'mika', 'sarah', 'sam', 'rachel', 'rach', 'diana', 'diane', 'hannah', 'anna', 'maria', 'mary', 'josephine', 'joyce', 'evelyn', 'lyn', 'eunice', 'cecille', 'cecil', 'charmaine', 'charm', 'kathleen', 'kath', 'maureen', 'mau', 'regina', 'reg', 'liza', 'elisa', 'victoria', 'vic', 'bianca', 'bianx', 'camille', 'cam', 'danielle', 'dan', 'frances', 'fran', 'gillian', 'gil', 'jacqueline', 'jackie', 'kristine', 'kris', 'lovelyn', 'love', 'michelle', 'mich', 'nicole', 'nic', 'pamela', 'pam', 'stephanie', 'steph', 'teresa', 'terry', 'vanessa', 'van', 'yvonne', 'von', 'alexis', 'lex', 'amber', 'brianna', 'bri', 'claudine', 'clau', 'fatima', 'faye', 'georgina', 'georg', 'helena', 'len', 'irish', 'janine', 'jan', 'katherine', 'kat', 'lilian', 'lil', 'monica', 'mon', 'natalie', 'nat', 'olivia', 'liv', 'princess', 'princ', 'queenie', 'queen', 'roxanne', 'rox', 'samantha', 'sam', 'tricia', 'trish', 'ursula', 'urs', 'valerie', 'val', 'winona', 'win', 'zara', 'zar'];
-                            
+
                             // Check if name contains any female indicators
-                            const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) || 
-                                            employeeName.includes('ms.') || 
-                                            employeeName.includes('miss') ||
-                                            employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
-                            
+                            const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) ||
+                                employeeName.includes('ms.') ||
+                                employeeName.includes('miss') ||
+                                employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
+
                             if (isFemale) {
                                 genderImage = '../assets/image/Women.png';
                             }
-                            
+
                             genderImageContainer.innerHTML = `<img src="${genderImage}" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">`;
                         }
 
@@ -2964,6 +3013,43 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 }
                 document.body.classList.add('loaded');
             }, 3000); // 3 seconds total loading time
+
+            // Risk Filter Logic
+            window.filterByRiskLevel = function (level) {
+                // Switch to contracts section if not already there
+                const contractsBtn = document.querySelector('[data-section="contracts"]');
+                if (contractsBtn) contractsBtn.click();
+
+                // Set the filter
+                const rows = document.querySelectorAll('.contract-row');
+                rows.forEach(row => {
+                    if (row.dataset.risk === level) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Add a "Show All" or "Reset" button if it doesn't exist
+                let resetBtn = document.getElementById('resetRiskFilter');
+                if (!resetBtn) {
+                    const header = document.querySelector('#contracts .section-header');
+                    resetBtn = document.createElement('button');
+                    resetBtn.id = 'resetRiskFilter';
+                    resetBtn.className = 'add-btn';
+                    resetBtn.style.background = '#64748b';
+                    resetBtn.style.marginLeft = '10px';
+                    resetBtn.innerHTML = '<i class="fa-solid fa-undo"></i> Show All Risk';
+                    resetBtn.onclick = function () {
+                        rows.forEach(r => r.style.display = '');
+                        this.remove();
+                    };
+                    header.appendChild(resetBtn);
+                }
+
+                // Scroll to table
+                document.getElementById('contracts').scrollIntoView({ behavior: 'smooth' });
+            }
         });
     </script>
 
@@ -2974,8 +3060,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             allowtransparency="true"></iframe>
     </div>
     <!-- Edit Legal Modal -->
-    <div id="editLegalModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
-        <div style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
+    <div id="editLegalModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
+        <div
+            style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
             <button type="button" onclick="closeModal(document.getElementById('editLegalModal'))"
                 style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
             <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
@@ -2985,12 +3073,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
-                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
+                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control"
+                        style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
-                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
+                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
+                        style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
                 </div>
 
                 <div id="dynamic_edit_fields"></div>
@@ -3000,7 +3090,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
                         onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
                     <button type="submit" name="update_legal_record" class="save-btn"
-                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update Changes</button>
+                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
+                        Changes</button>
                 </div>
             </form>
         </div>
