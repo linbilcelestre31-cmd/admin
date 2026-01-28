@@ -30,7 +30,7 @@ window.switchTab = function (tabName) {
         'facilities': 'Hotel Facilities',
         'reservations': 'Reservation Management',
         'calendar': 'Reservation Calendar',
-        'management': 'System Management',
+        'management': 'Management',
         'maintenance': 'Maintenance Management',
         'reports': 'Reports & Analytics'
     };
