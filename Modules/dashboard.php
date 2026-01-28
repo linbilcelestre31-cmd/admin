@@ -1892,13 +1892,317 @@ if (isset($dashboard_data['error'])) {
             <!-- Management Tab -->
             <div id="management"
                 class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
+                <div class="management-header">
+                    <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
+                    <div class="management-buttons" style="display: flex; gap: 0.75rem;">
+                        <button id="show-maintenance-card" class="btn btn-outline management-btn active"
+                            onclick="event.preventDefault(); window.showManagementCard('maintenance')">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                        </button>
+                        <button id="show-mnt-calendar" class="btn btn-outline management-btn"
+                            onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
+                            <i class="fa-solid fa-calendar-days"></i> Schedules
+                        </button>
+                    </div>
+                </div>
 
+                <div class="management-cards" style="margin-top: 1rem;">
+
+
+                    <!-- Facility Management Card -->
+                    <div class="card management-card management-facilities" id="management-facilities"
+                        style="display: none;">
+                        <div class="card-header">
+                            <h3><span class="icon-img-placeholder">🏢</span> Facility Management</h3>
+                        </div>
+                        <div class="card-content">
+                            <button class="btn btn-primary mb-1" onclick="openModal('facility-modal')">
+                                <span class="icon-img-placeholder">➕</span> Add New Facility
+                            </button>
+                            <div class="table-wrapper">
+                                <table class="table management-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left !important;">Name</th>
+                                            <th>Type</th>
+                                            <th>Rate</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                                            <tr>
+                                                <td style="font-weight: 600; text-align: left !important;">
+                                                    <?= htmlspecialchars($facility['name']) ?>
+                                                </td>
+                                                <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
+                                                <td style="font-weight: 500;">
+                                                    ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                <td>
+                                                    <span
+                                                        class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
+                                                        <?= ucfirst($facility['status'] ?? 'active') ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex gap-1" style="justify-content: center;">
+                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)"
+                                                            title="View Facility Info">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="maintenance-main-section" class="management-card management-maintenance active-card"
+                        style="width: 100%; margin: 0; overflow: hidden; display: block; opacity: 1; visibility: visible;">
+                        <style>
+                            /* Premium Maintenance Table Styles */
+                            .maintenance-card-premium {
+                                background: #ffffff !important;
+                                border-radius: 16px !important;
+                                border: 1px solid #e2e8f0 !important;
+                                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+                                overflow: hidden !important;
+                                margin-bottom: 30px !important;
+                            }
+
+                            .maintenance-header-premium {
+                                background: #ffffff !important;
+                                padding: 25px 30px !important;
+                                border-bottom: 2px solid #f1f5f9 !important;
+                                display: flex !important;
+                                justify-content: space-between !important;
+                                align-items: center !important;
+                            }
+
+                            .maintenance-title-group {
+                                display: flex !important;
+                                align-items: center !important;
+                                gap: 15px !important;
+                            }
+
+                            .maintenance-icon-box {
+                                width: 45px !important;
+                                height: 45px !important;
+                                background: #eff6ff !important;
+                                border-radius: 12px !important;
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                                color: #3b82f6 !important;
+                                font-size: 1.2rem !important;
+                                border: 1px solid #dbeafe !important;
+                            }
+
+                            .maintenance-table-premium {
+                                width: 100% !important;
+                                border-collapse: collapse !important;
+                                background: #fff !important;
+                            }
+
+                            .maintenance-table-premium th {
+                                background: #f8fafc !important;
+                                padding: 18px 20px !important;
+                                font-weight: 800 !important;
+                                font-size: 0.75rem !important;
+                                color: #475569 !important;
+                                text-transform: uppercase !important;
+                                letter-spacing: 1.5px !important;
+                                border-bottom: 2px solid #e2e8f0 !important;
+                                white-space: nowrap !important;
+                            }
+
+                            .maintenance-table-premium td {
+                                padding: 20px !important;
+                                vertical-align: middle !important;
+                                border-bottom: 1px solid #f1f5f9 !important;
+                                transition: all 0.2s ease !important;
+                                color: #1e293b !important;
+                            }
+
+                            .maintenance-table-premium tr:hover td {
+                                background: #f8fafc !important;
+                            }
+
+                            .col-priority {
+                                width: 120px;
+                                text-align: left !important;
+                            }
+
+                            .col-item {
+                                width: 220px;
+                                text-align: left !important;
+                                font-weight: 800 !important;
+                                font-size: 0.9rem !important;
+                            }
+
+                            .col-description {
+                                min-width: 300px;
+                                text-align: center !important;
+                                line-height: 1.6 !important;
+                                font-weight: 500 !important;
+                                color: #475569 !important;
+                            }
+
+                            .col-reported-by {
+                                width: 150px;
+                                text-align: left !important;
+                                font-weight: 700 !important;
+                            }
+
+                            .col-date {
+                                width: 130px;
+                                text-align: left !important;
+                                font-weight: 700 !important;
+                                color: #334155 !important;
+                            }
+
+                            .col-schedule {
+                                width: 130px;
+                                text-align: left !important;
+                                font-weight: 800 !important;
+                                color: #1e293b !important;
+                            }
+
+                            .priority-indicator-modern {
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                            }
+
+                            .priority-dot-modern {
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                            }
+
+                            .btn-add-premium {
+                                background: #3b82f6 !important;
+                                color: white !important;
+                                border: none !important;
+                                padding: 12px 24px !important;
+                                border-radius: 12px !important;
+                                font-weight: 700 !important;
+                                font-size: 0.9rem !important;
+                                display: flex !important;
+                                align-items: center !important;
+                                gap: 10px !important;
+                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
+                                cursor: pointer !important;
+                            }
+
+                            .btn-add-premium:hover {
+                                background: #2563eb !important;
+                                transform: translateY(-2px) !important;
+                                box-shadow: 0 8px 120px rgba(59, 130, 246, 0.4) !important;
+                            }
+                        </style>
+
+                        <div class="maintenance-card-premium">
+                            <div class="maintenance-header-premium">
+                                <div class="maintenance-title-group">
+                                    <div class="maintenance-icon-box">
+                                        <i class="fa-solid fa-list-check"></i>
+                                    </div>
+                                    <h3
+                                        style="margin:0; font-family: 'Inter', sans-serif; font-size: 1.3rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+                                        Maintenance Requests</h3>
+                                </div>
+                                <button class="btn-add-premium" onclick="openModal('maintenance-modal')">
+                                    <i class="fa-solid fa-plus"></i> Add New Request
+                                </button>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table class="maintenance-table-premium">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-priority">Priority</th>
+                                            <th class="col-item">Item/Area</th>
+                                            <th class="col-description">Description</th>
+                                            <th class="col-reported-by">Reported By</th>
+                                            <th class="col-date">Reported Date</th>
+                                            <th class="col-schedule">Schedule</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($dashboard_data['maintenance_logs'])): ?>
+                                            <tr>
+                                                <td colspan="6"
+                                                    style="padding: 60px; text-align: center; color: #94a3b8; font-style: italic; font-weight: 500;">
+                                                    <i class="fa-solid fa-inbox"
+                                                        style="font-size: 2.5rem; display: block; margin-bottom: 15px; opacity: 0.3;"></i>
+                                                    No maintenance logs currently recorded.
+                                                </td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                <tr>
+                                                    <td class="col-priority">
+                                                        <div class="priority-indicator-modern">
+                                                            <?php
+                                                            $p_lower = strtolower($log['priority'] ?? 'low');
+                                                            $pc = ($p_lower == 'high') ? '#ef4444' : (($p_lower == 'medium') ? '#f59e0b' : '#10b981');
+                                                            ?>
+                                                            <span class="priority-dot-modern"
+                                                                style="background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>80;"></span>
+                                                            <span
+                                                                style="font-weight: 800; color: #1e293b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-item">
+                                                        <?= htmlspecialchars($log['item_name']) ?>
+                                                    </td>
+                                                    <td class="col-description">
+                                                        <?= htmlspecialchars($log['description']) ?>
+                                                    </td>
+                                                    <td class="col-reported-by">
+                                                        <span
+                                                            style="color: #64748b; font-size: 0.75rem; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Staff</span>
+                                                        <?= htmlspecialchars($log['reported_by'] ?? 'General Staff') ?>
+                                                    </td>
+                                                    <td class="col-date">
+                                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                                            <i class="fa-regular fa-calendar"
+                                                                style="color: #94a3b8; font-size: 0.8rem;"></i>
+                                                            <?= date('m/d/Y', strtotime($log['created_at'])) ?>
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-schedule">
+                                                        <div
+                                                            style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                                                            <i class="fa-solid fa-clock"
+                                                                style="color: #3b82f6; font-size: 0.8rem;"></i>
+                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
 
                 <!-- Redesigned Maintenance Calendar Card (Premium Clean Light Style) -->
-                <div class="card management-card management-mnt-calendar premium-light-card active-card"
+                <div class="card management-card management-mnt-calendar premium-light-card"
                     id="management-mnt-calendar"
-                    style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: block; visibility: visible !important; width: 100%; overflow-x: auto;">
+                    style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important; width: 100%; overflow-x: auto;">
 
                     <div class="card-header"
                         style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -1915,10 +2219,6 @@ if (isset($dashboard_data['error'])) {
                                     Operational roadmap for the next 7 days</p>
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="openModal('maintenance-modal')"
-                            style="background: #3b82f6; border-radius: 12px; font-weight: 700; padding: 10px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
-                            <i class="fa-solid fa-plus" style="margin-right: 8px;"></i> Add New Request
-                        </button>
                     </div>
 
                     <div class="card-content" style="padding: 0; width: 100%;">
