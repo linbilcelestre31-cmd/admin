@@ -1719,6 +1719,76 @@ if (isset($dashboard_data['error'])) {
                         opacity: 0.5 !important;
                         border: none !important;
                     }
+
+                    .calendar-event-dot {
+                        font-size: 0.7rem !important;
+                        font-weight: 700 !important;
+                        padding: 4px 8px !important;
+                        border-radius: 6px !important;
+                        margin-bottom: 4px !important;
+                        cursor: pointer !important;
+                        transition: all 0.2s ease !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        display: block !important;
+                        width: 100% !important;
+                        border-left: 3px solid transparent !important;
+                    }
+
+                    .calendar-event-dot:hover {
+                        transform: scale(1.02) !important;
+                        filter: brightness(0.95) !important;
+                    }
+
+                    .event-confirmed {
+                        background: #ecfdf5 !important;
+                        color: #065f46 !important;
+                        border-left-color: #10b981 !important;
+                    }
+
+                    .event-pending {
+                        background: #fffbeb !important;
+                        color: #92400e !important;
+                        border-left-color: #f59e0b !important;
+                    }
+
+                    .event-cancelled {
+                        background: #fef2f2 !important;
+                        color: #991b1b !important;
+                        border-left-color: #ef4444 !important;
+                    }
+
+                    .event-completed {
+                        background: #eff6ff !important;
+                        color: #1e40af !important;
+                        border-left-color: #3b82f6 !important;
+                    }
+
+                    .event-other {
+                        background: #f8fafc !important;
+                        color: #475569 !important;
+                        border-left-color: #94a3b8 !important;
+                    }
+
+                    .day-number {
+                        font-weight: 800 !important;
+                        font-size: 0.9rem !important;
+                        color: #64748b !important;
+                        margin-bottom: 8px !important;
+                        width: 28px !important;
+                        height: 28px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        border-radius: 50% !important;
+                    }
+
+                    .day-number.today {
+                        background: #3b82f6 !important;
+                        color: #ffffff !important;
+                        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3) !important;
+                    }
                 </style>
 
                 <div class="calendar-container"
@@ -1805,11 +1875,21 @@ if (isset($dashboard_data['error'])) {
                             const today = new Date();
                             const y = today.getFullYear();
                             const m = today.getMonth() + 1;
+                            const d = (day) => `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
                             calendarReservations = [
-                                { id: 1, customer_name: 'John Doe', facility_name: 'Executive Boardroom', event_date: `${y}-${String(m).padStart(2, '0')}-15`, start_time: '10:00 AM', status: 'confirmed' },
-                                { id: 2, customer_name: 'Jane Smith', facility_name: 'Grand Ballroom', event_date: `${y}-${String(m).padStart(2, '0')}-16`, start_time: '02:00 PM', status: 'pending' },
-                                { id: 3, customer_name: 'Bob Wilson', facility_name: 'Pacific Hall', event_date: `${y}-${String(m).padStart(2, '0')}-20`, start_time: '09:00 AM', status: 'confirmed' },
-                                { id: 4, customer_name: 'Alice Brown', facility_name: 'Sky Garden', event_date: `${y}-${String(m).padStart(2, '0')}-25`, start_time: '04:00 PM', status: 'completed' }
+                                { id: 1, customer_name: 'John Doe', facility_name: 'Executive Boardroom', event_date: d(15), start_time: '10:00 AM', status: 'confirmed' },
+                                { id: 2, customer_name: 'Jane Smith', facility_name: 'Grand Ballroom', event_date: d(16), start_time: '02:00 PM', status: 'pending' },
+                                { id: 3, customer_name: 'Bob Wilson', facility_name: 'Pacific Hall', event_date: d(20), start_time: '09:00 AM', status: 'confirmed' },
+                                { id: 4, customer_name: 'Alice Brown', facility_name: 'Sky Garden', event_date: d(25), start_time: '04:00 PM', status: 'completed' },
+                                { id: 5, customer_name: 'Carlos Mendez', facility_name: 'Conference Suite A', event_date: d(5), start_time: '08:30 AM', status: 'confirmed' },
+                                { id: 6, customer_name: 'Sarah Lee', facility_name: 'Rooftop Lounge', event_date: d(10), start_time: '06:00 PM', status: 'pending' },
+                                { id: 7, customer_name: 'Mike Tyson', facility_name: 'Fitness Center', event_date: d(12), start_time: '07:00 AM', status: 'completed' },
+                                { id: 8, customer_name: 'Tom Hanks', facility_name: 'Private Theater', event_date: d(18), start_time: '08:00 PM', status: 'confirmed' },
+                                { id: 9, customer_name: 'Emma Watson', facility_name: 'Library Lounge', event_date: d(22), start_time: '11:00 AM', status: 'cancelled' },
+                                { id: 10, customer_name: 'Bruce Wayne', facility_name: 'Underground Suite', event_date: d(28), start_time: '11:59 PM', status: 'confirmed' },
+                                { id: 11, customer_name: 'Peter Parker', facility_name: 'Lab Room 101', event_date: d(14), start_time: '03:00 PM', status: 'pending' },
+                                { id: 12, customer_name: 'Tony Stark', facility_name: 'Penthouse Area', event_date: d(16), start_time: '12:00 PM', status: 'confirmed' }
                             ];
                         }
 
@@ -1932,29 +2012,29 @@ if (isset($dashboard_data['error'])) {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                                            <tr>
-                                                <td style="font-weight: 600; text-align: left !important;">
-                                                    <?= htmlspecialchars($facility['name']) ?>
-                                                </td>
-                                                <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
-                                                <td style="font-weight: 500;">
-                                                    ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
-                                                <td>
-                                                    <span
-                                                        class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
-                                                        <?= ucfirst($facility['status'] ?? 'active') ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex gap-1" style="justify-content: center;">
-                                                        <button class="btn btn-outline btn-sm btn-icon"
-                                                            onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)"
-                                                            title="View Facility Info">
-                                                            <i class="fa-solid fa-eye"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td style="font-weight: 600; text-align: left !important;">
+                                                        <?= htmlspecialchars($facility['name']) ?>
+                                                    </td>
+                                                    <td><?= ucfirst(htmlspecialchars($facility['type'])) ?></td>
+                                                    <td style="font-weight: 500;">
+                                                        ₱<?= number_format($facility['hourly_rate'], 2) ?></td>
+                                                    <td>
+                                                        <span
+                                                            class="status-badge status-<?= $facility['status'] ?? 'active' ?>">
+                                                            <?= ucfirst($facility['status'] ?? 'active') ?>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-1" style="justify-content: center;">
+                                                            <button class="btn btn-outline btn-sm btn-icon"
+                                                                onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($facility)) ?>)"
+                                                                title="View Facility Info">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -2138,57 +2218,57 @@ if (isset($dashboard_data['error'])) {
                                     </thead>
                                     <tbody>
                                         <?php if (empty($dashboard_data['maintenance_logs'])): ?>
-                                            <tr>
-                                                <td colspan="6"
-                                                    style="padding: 60px; text-align: center; color: #94a3b8; font-style: italic; font-weight: 500;">
-                                                    <i class="fa-solid fa-inbox"
-                                                        style="font-size: 2.5rem; display: block; margin-bottom: 15px; opacity: 0.3;"></i>
-                                                    No maintenance logs currently recorded.
-                                                </td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
                                                 <tr>
-                                                    <td class="col-priority">
-                                                        <div class="priority-indicator-modern">
-                                                            <?php
-                                                            $p_lower = strtolower($log['priority'] ?? 'low');
-                                                            $pc = ($p_lower == 'high') ? '#ef4444' : (($p_lower == 'medium') ? '#f59e0b' : '#10b981');
-                                                            ?>
-                                                            <span class="priority-dot-modern"
-                                                                style="background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>80;"></span>
-                                                            <span
-                                                                style="font-weight: 800; color: #1e293b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="col-item">
-                                                        <?= htmlspecialchars($log['item_name']) ?>
-                                                    </td>
-                                                    <td class="col-description">
-                                                        <?= htmlspecialchars($log['description']) ?>
-                                                    </td>
-                                                    <td class="col-reported-by">
-                                                        <span
-                                                            style="color: #64748b; font-size: 0.75rem; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Staff</span>
-                                                        <?= htmlspecialchars($log['reported_by'] ?? 'General Staff') ?>
-                                                    </td>
-                                                    <td class="col-date">
-                                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                                            <i class="fa-regular fa-calendar"
-                                                                style="color: #94a3b8; font-size: 0.8rem;"></i>
-                                                            <?= date('m/d/Y', strtotime($log['created_at'])) ?>
-                                                        </div>
-                                                    </td>
-                                                    <td class="col-schedule">
-                                                        <div
-                                                            style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
-                                                            <i class="fa-solid fa-clock"
-                                                                style="color: #3b82f6; font-size: 0.8rem;"></i>
-                                                            <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
-                                                        </div>
+                                                    <td colspan="6"
+                                                        style="padding: 60px; text-align: center; color: #94a3b8; font-style: italic; font-weight: 500;">
+                                                        <i class="fa-solid fa-inbox"
+                                                            style="font-size: 2.5rem; display: block; margin-bottom: 15px; opacity: 0.3;"></i>
+                                                        No maintenance logs currently recorded.
                                                     </td>
                                                 </tr>
-                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                                <?php foreach ($dashboard_data['maintenance_logs'] as $log): ?>
+                                                        <tr>
+                                                            <td class="col-priority">
+                                                                <div class="priority-indicator-modern">
+                                                                    <?php
+                                                                    $p_lower = strtolower($log['priority'] ?? 'low');
+                                                                    $pc = ($p_lower == 'high') ? '#ef4444' : (($p_lower == 'medium') ? '#f59e0b' : '#10b981');
+                                                                    ?>
+                                                                    <span class="priority-dot-modern"
+                                                                        style="background: <?= $pc ?>; box-shadow: 0 0 10px <?= $pc ?>80;"></span>
+                                                                    <span
+                                                                        style="font-weight: 800; color: #1e293b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;"><?= htmlspecialchars($log['priority'] ?? 'Low') ?></span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="col-item">
+                                                                <?= htmlspecialchars($log['item_name']) ?>
+                                                            </td>
+                                                            <td class="col-description">
+                                                                <?= htmlspecialchars($log['description']) ?>
+                                                            </td>
+                                                            <td class="col-reported-by">
+                                                                <span
+                                                                    style="color: #64748b; font-size: 0.75rem; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Staff</span>
+                                                                <?= htmlspecialchars($log['reported_by'] ?? 'General Staff') ?>
+                                                            </td>
+                                                            <td class="col-date">
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                                    <i class="fa-regular fa-calendar"
+                                                                        style="color: #94a3b8; font-size: 0.8rem;"></i>
+                                                                    <?= date('m/d/Y', strtotime($log['created_at'])) ?>
+                                                                </div>
+                                                            </td>
+                                                            <td class="col-schedule">
+                                                                <div
+                                                                    style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                                                                    <i class="fa-solid fa-clock"
+                                                                        style="color: #3b82f6; font-size: 0.8rem;"></i>
+                                                                    <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                <?php endforeach; ?>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
