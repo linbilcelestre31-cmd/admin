@@ -523,6 +523,51 @@ tr:hover td {
     background: #ef4444;
 }
 
+.status-active {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.status-active::before {
+    background: #10b981;
+}
+
+.status-completed {
+    background: #fff1f2;
+    color: #9f1239;
+}
+
+.status-completed::before {
+    background: #ef4444;
+}
+
+/* View Button */
+.view-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.view-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.view-btn:active {
+    transform: translateY(0);
+}
+
 /* Tabs */
 .tabs {
     display: flex;

@@ -21,11 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up form submissions
     setupForms();
 
-    // Initialize dashboard
-    updateDashboard();
-
-    // Load all data
-    loadCurrentVisitors();
+    // Load all data - We fetch data first, which will update global arrays and THEN update dashboard
+    loadCurrentVisitors().then(() => {
+        updateDashboard();
+    });
     loadHistory();
 
     // Load employees for host selection
@@ -137,13 +136,44 @@ function showPage(pageId) {
     if (targetPage) {
         targetPage.classList.add('active');
 
+        // Update Nav & Sidebar Links state
+        document.querySelectorAll('[data-page]').forEach(el => {
+            const requested = el.getAttribute('data-page');
+            if (requested === pageId || requested === pageId + '-checkin' || requested === pageId + '-visitors') {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
+        });
+
         // Load data if needed
         if (pageId === 'dashboard') {
             updateDashboard();
         } else if (pageId === 'hotel' || pageId === 'restaurant') {
-            loadCurrentVisitors();
+            loadCurrentVisitors().then(() => {
+                updateDashboard();
+            });
             loadHistory();
         }
+    }
+}
+
+// Activate inner tab (programmatic)
+function activateTab(tabName) {
+    document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+    const tab = document.querySelector('.tabs .tab[data-tab="' + tabName + '"]');
+    if (tab) tab.classList.add('active');
+
+    const tc = document.getElementById(tabName + '-tab');
+    if (tc) tc.classList.add('active');
+
+    // Trigger data refresh if needed for specific tabs
+    if (tabName.includes('visitors')) {
+        loadCurrentVisitors();
+    } else if (tabName.includes('history')) {
+        loadHistory();
     }
 }
 
@@ -206,8 +236,9 @@ function timeInHotelGuest() {
             if (data.status === 'success') {
                 showAlert('Guest time-in recorded successfully!', 'success');
                 form.reset();
-                updateDashboard();
-                loadCurrentVisitors();
+                loadCurrentVisitors().then(() => {
+                    updateDashboard();
+                });
             } else {
                 showAlert('Error: ' + data.message, 'error');
             }
@@ -338,41 +369,44 @@ function updateRecentActivity() {
     // Combine recent activities from both hotel and restaurant
     const allActivities = [
         ...hotelVisitors.map(guest => ({
-            type: 'hotel',
+            type: 'Hotel',
             name: guest.name,
-            action: guest.status === 'timed-in' ? 'time-in' : 'time-out',
+            action: guest.status === 'timed-in' ? 'timed-in' : 'timed-out',
             time: guest.status === 'timed-in' ? guest.checkinTime : guest.checkoutTime,
             details: `Room ${guest.room}`
         })),
         ...restaurantVisitors.map(visitor => ({
-            type: 'restaurant',
+            type: 'Restaurant',
             name: visitor.name,
-            action: visitor.status === 'timed-in' ? 'time-in' : 'time-out',
+            action: visitor.status === 'timed-in' ? 'timed-in' : 'timed-out',
             time: visitor.status === 'timed-in' ? visitor.checkinTime : visitor.checkoutTime,
             details: `Table ${visitor.table}, Party of ${visitor.partySize}`
         }))
     ];
 
-    // Sort by time (newest first)
-    allActivities.sort((a, b) => new Date(b.time) - new Date(a.time));
+    // Filter out items with no time and sort by time (newest first)
+    const filteredActivities = allActivities.filter(a => a.time && a.time !== 'N/A');
+    filteredActivities.sort((a, b) => new Date(b.time) - new Date(a.time));
 
-    // Get top 5
-    const recentActivities = allActivities.slice(0, 5);
+    // Get top 8 instead of 5 for better dashboard use
+    const recentActivities = filteredActivities.slice(0, 8);
 
     // Update DOM
     activityContainer.innerHTML = '';
     if (recentActivities.length === 0) {
-        activityContainer.innerHTML = '<p>No recent activity</p>';
+        activityContainer.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">No recent activity</p>';
         return;
     }
 
     recentActivities.forEach(activity => {
         const activityEl = document.createElement('div');
         activityEl.className = 'activity-item';
+        const displayStatus = activity.action === 'timed-in' ? 'CHECKED IN' : 'Checked Out';
         activityEl.innerHTML = `
-                    <strong>${activity.name}</strong> ${activity.action} at the ${activity.type}
-                    <br><small>${activity.details} • ${formatTime(activity.time)}</small>
-                    <hr>
+                    <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                        <strong>${activity.name}</strong> is <span class="status-badge status-${activity.action.replace('timed-', '')}" style="font-size:10px; padding:2px 8px;">${displayStatus}</span> at the ${activity.type}
+                        <br><small style="color:#64748b;">${activity.details} • ${formatTime(activity.time)}</small>
+                    </div>
                 `;
         activityContainer.appendChild(activityEl);
     });
@@ -382,41 +416,61 @@ function updateRecentActivity() {
 function loadCurrentVisitors() {
     // 1. Hotel current visitors (from API)
     const hotelCurrentTable = document.getElementById('hotel-current-table');
-    if (hotelCurrentTable) {
-        const tbody = hotelCurrentTable.querySelector('tbody');
-        fetch(API_BASE_URL)
-            .then(response => response.json())
-            .then(data => {
-                tbody.innerHTML = '';
-                if (data.status === 'success' && data.data && data.data.length > 0) {
-                    data.data.forEach(guest => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${guest.full_name || 'N/A'}</td>
-                            <td>${guest.room_number || 'N/A'}</td>
-                            <td>${formatDate(guest.checkin_date)}</td>
-                            <td>${guest.checkout_date ? formatDate(guest.checkout_date) : 'CHECKED IN'}</td>
-                            <td style="display: flex; gap: 8px;">
-                                <button class="btn-action-view" onclick="viewVisitorDetails('${guest.id}')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn-action-timeout" onclick="timeOutHotelGuest('${guest.id}')">
-                                    <i class="fas fa-sign-out-alt"></i> Time-out
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current guests</td></tr>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching visitors:', error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
-            });
-    }
+    const tbody = hotelCurrentTable ? hotelCurrentTable.querySelector('tbody') : null;
 
+    return fetch(API_BASE_URL)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.data) {
+                // Update global hotelVisitors array
+                hotelVisitors = data.data.map(guest => ({
+                    id: guest.id,
+                    name: guest.full_name,
+                    room: guest.room_number,
+                    checkinTime: guest.checkin_date,
+                    checkoutTime: guest.checkout_date,
+                    status: guest.status === 'active' ? 'timed-in' : (guest.status || 'unknown'),
+                    email: guest.email,
+                    phone: guest.phone_number,
+                    notes: guest.notes,
+                    source: guest.source
+                }));
+
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    if (data.data.length > 0) {
+                        data.data.forEach(guest => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${guest.full_name || 'N/A'}</td>
+                                <td>${guest.room_number || 'N/A'}</td>
+                                <td>${formatDate(guest.checkin_date)}</td>
+                                <td>${guest.status === 'active' ? 'CHECKED IN' : guest.status}</td>
+                                <td style="display: flex; gap: 8px;">
+                                    <button class="btn-action-view" onclick="viewVisitorDetails('${guest.id}')">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn-action-timeout" onclick="timeOutHotelGuest('${guest.id}')">
+                                        <i class="fas fa-sign-out-alt"></i> Time-out
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current guests</td></tr>';
+                    }
+                }
+            } else if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching visitors:', error);
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
+            }
+        });
     // 2. Restaurant current visitors (from localStorage)
     const restaurantCurrentTable = document.getElementById('restaurant-current-table');
     if (restaurantCurrentTable) {
@@ -460,12 +514,14 @@ function loadHistory() {
         } else {
             hotelVisitors.forEach(guest => {
                 const row = document.createElement('tr');
+                const statusLabel = guest.status === 'timed-in' ? 'CHECKED IN' : guest.status;
+                const statusClass = guest.status === 'timed-in' ? 'status-timed-in' : 'status-timed-out';
                 row.innerHTML = `
                     <td>${guest.name}</td>
-                    <td>${guest.room}</td>
-                    <td>${formatDate(guest.checkin)}</td>
-                    <td>${guest.checkout ? formatDate(guest.checkout) : 'N/A'}</td>
-                    <td><span class="status-badge status-${guest.status.replace('-', '')}">${guest.status}</span></td>
+                    <td>${guest.room || 'N/A'}</td>
+                    <td>${formatDate(guest.checkinTime)}</td>
+                    <td>${guest.checkoutTime ? formatDate(guest.checkoutTime) : 'N/A'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -613,13 +669,25 @@ function generateReport() {
                         <tbody>`;
 
             hotelData.forEach(guest => {
+                const itemData = JSON.stringify({
+                    name: guest.name,
+                    venue: 'Hotel',
+                    checkin: formatDate(guest.checkinTime),
+                    checkout: guest.checkoutTime ? formatDate(guest.checkoutTime) : 'N/A',
+                    notes: guest.notes || 'None'
+                });
                 reportData += `
-                            <tr>
+                            <tr data-item='${itemData.replace(/'/g, "&apos;")}'>
                                 <td>${guest.name}</td>
                                 <td>${guest.room}</td>
-                                <td>${formatDate(guest.checkin)}</td>
-                                <td>${formatDate(guest.checkout)}</td>
-                                <td>${guest.status === 'timed-in' ? 'CHECKED IN' : guest.status}</td>
+                                <td>${formatDate(guest.checkinTime)}</td>
+                                <td>${guest.checkoutTime ? formatDate(guest.checkoutTime) : 'CHECKED IN'}</td>
+                                <td style="display:flex; gap:5px;">
+                                    <span class="status-badge ${guest.status === 'timed-in' ? 'status-active' : 'status-completed'}">
+                                        ${guest.status === 'timed-in' ? 'CHECKED IN' : guest.status}
+                                    </span>
+                                    <button class="view-btn" style="padding: 2px 8px; font-size: 12px; cursor: pointer;">View</button>
+                                </td>
                             </tr>`;
             });
 
@@ -647,13 +715,23 @@ function generateReport() {
                         <tbody>`;
 
             restaurantData.forEach(visitor => {
+                const itemData = JSON.stringify({
+                    name: visitor.name,
+                    venue: 'Restaurant',
+                    checkin: formatTime(visitor.checkinTime),
+                    checkout: visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'N/A',
+                    notes: visitor.notes || 'None'
+                });
                 reportData += `
-                            <tr>
+                            <tr data-item='${itemData.replace(/'/g, "&apos;")}'>
                                 <td>${visitor.name}</td>
                                 <td>${visitor.partySize}</td>
                                 <td>${visitor.table}</td>
                                 <td>${formatTime(visitor.checkinTime)}</td>
-                                <td>${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'CHECKED IN'}</td>
+                                <td style="display:flex; gap:5px; justify-content:space-between; align-items:center;">
+                                    ${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'CHECKED IN'}
+                                    <button class="view-btn" style="padding: 2px 8px; font-size: 12px; cursor: pointer;">View</button>
+                                </td>
                             </tr>`;
             });
 
@@ -739,3 +817,56 @@ function showAlert(message, type) {
         }
     }, 5000);
 }
+
+// --- Details Modal ---
+function showDetailsModal(title, content) {
+    const titleEl = document.getElementById('details-modal-title');
+    const bodyEl = document.getElementById('details-modal-body');
+    const modalEl = document.getElementById('details-modal');
+
+    if (titleEl) titleEl.innerText = title;
+    if (bodyEl) bodyEl.innerHTML = content;
+    if (modalEl) modalEl.style.display = 'block';
+}
+
+function closeDetailsModal() {
+    const modalEl = document.getElementById('details-modal');
+    if (modalEl) modalEl.style.display = 'none';
+}
+
+// --- Confirmation Modal ---
+function showConfirmationModal(message, callback) {
+    const msgEl = document.getElementById('confirmation-message');
+    const modalEl = document.getElementById('confirmation-modal');
+    const confirmBtn = document.getElementById('confirm-btn');
+
+    if (msgEl) msgEl.innerText = message;
+    if (modalEl) modalEl.style.display = 'block';
+
+    if (confirmBtn) {
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+        newBtn.onclick = function () {
+            callback();
+            closeConfirmationModal();
+        };
+    }
+}
+
+function closeConfirmationModal() {
+    const modalEl = document.getElementById('confirmation-modal');
+    if (modalEl) modalEl.style.display = 'none';
+}
+
+// --- Window Click Handler ---
+window.addEventListener('click', function (event) {
+    const confirmModal = document.getElementById('confirmation-modal');
+    const detailsModal = document.getElementById('details-modal');
+
+    if (event.target == confirmModal) {
+        closeConfirmationModal();
+    }
+    if (event.target == detailsModal) {
+        closeDetailsModal();
+    }
+});
