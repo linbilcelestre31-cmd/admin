@@ -350,6 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (move_uploaded_file($tmp, $dest))
                 $file_path = $dest;
         }
+        $doc_case = generateAutoCaseID($db, 'document');
         $q = "INSERT INTO documents (name, case_id, file_path, uploaded_at) VALUES (?, ?, ?, NOW())";
         $s = $db->prepare($q);
         if ($s->execute([$doc_name, $doc_case, $file_path])) {
@@ -463,7 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle contract upload with AI analysis
     if (isset($_POST['add_contract'])) {
         $contract_name = $_POST['contract_name'];
-        $case_id = $_POST['contract_case'];
+        $case_id = generateAutoCaseID($db, 'contract');
         $description = $_POST['contract_description'] ?? '';
 
         // AI Risk Analysis
@@ -683,6 +684,17 @@ foreach ($contracts as $c) {
         $riskCounts['Low']++;
     }
 }
+
+// Auto-generation helper for Case ID
+function generateAutoCaseID($pdo, $type = 'contract')
+{
+    $table = ($type === 'contract') ? 'contracts' : 'documents';
+    $prefix = ($type === 'contract') ? 'C-' : 'D-';
+    $stmt = $pdo->query("SELECT COUNT(*) FROM $table");
+    $count = $stmt->fetchColumn();
+    return $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+}
+
 $totalContracts = count($contracts);
 $highPct = $totalContracts ? round(($riskCounts['High'] / $totalContracts) * 100, 1) : 0;
 $mediumPct = $totalContracts ? round(($riskCounts['Medium'] / $totalContracts) * 100, 1) : 0;
@@ -1279,8 +1291,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             } elseif (strpos($nameLower, 'consumer') !== false || strpos($nameLower, 'customer') !== false || strpos($nameLower, 'waiver') !== false || strpos($nameLower, 'guest') !== false) {
                                                 $docCategory = 'consumer';
                                             }
+
+                                            $score = $doc['risk_score'] ?? 0;
+                                            $docRisk = 'Low';
+                                            if ($score >= 70)
+                                                $docRisk = 'High';
+                                            elseif ($score >= 31)
+                                                $docRisk = 'Medium';
                                             ?>
-                                            <tr class="external-doc-row" data-category="<?php echo $docCategory; ?>">
+                                            <tr class="external-doc-row contract-row"
+                                                data-category="<?php echo $docCategory; ?>" data-risk="<?php echo $docRisk; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
@@ -1431,10 +1451,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <input type="text" id="contractName" name="contract_name" class="form-control"
                                 placeholder="Enter contract name" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="display:none;">
                             <label for="contractCase">Case ID</label>
                             <input type="text" id="contractCase" name="contract_case" class="form-control"
-                                placeholder="Enter case ID (e.g., C-001)" required>
+                                placeholder="Auto-generated">
                         </div>
                         <div class="form-group">
                             <label for="contractType">Contract Type</label>
@@ -1967,8 +1987,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <input type="hidden" name="add_document" value="1">
                     <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
                             class="form-control" required></div>
-                    <div class="form-group"><label>Case ID</label><input type="text" name="doc_case"
-                            class="form-control" required></div>
+                    <div class="form-group" style="display:none;"><label>Case ID</label><input type="text"
+                            name="doc_case" class="form-control" placeholder="Auto-generated"></div>
                     <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
                             accept=".pdf,.doc,.docx" required></div>
                     <div class="form-actions"><button type="button" class="cancel-btn"
@@ -3017,10 +3037,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             // Risk Filter Logic
             window.filterByRiskLevel = function (level) {
                 // Switch to contracts section if not already there
-                const contractsBtn = document.querySelector('[data-section="contracts"]');
+                const contractsBtn = document.querySelector('[data-target="contracts"]');
                 if (contractsBtn) contractsBtn.click();
 
-                // Set the filter
+                // Set the filter for all tables with contract-row class
                 const rows = document.querySelectorAll('.contract-row');
                 rows.forEach(row => {
                     if (row.dataset.risk === level) {
@@ -3041,7 +3061,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     resetBtn.style.marginLeft = '10px';
                     resetBtn.innerHTML = '<i class="fa-solid fa-undo"></i> Show All Risk';
                     resetBtn.onclick = function () {
-                        rows.forEach(r => r.style.display = '');
+                        const allRows = document.querySelectorAll('.contract-row');
+                        allRows.forEach(r => r.style.display = '');
                         this.remove();
                     };
                     header.appendChild(resetBtn);
