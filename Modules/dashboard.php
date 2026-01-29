@@ -1771,6 +1771,14 @@ if (isset($dashboard_data['error'])) {
                                     'facility_name' => 'Function Hall A'
                                 ]
                             ];
+                            
+                            // Apply status filter to mock data if status is not 'all'
+                            if ($r_status !== 'all') {
+                                $mock_entries = array_filter($mock_entries, function($entry) use ($r_status) {
+                                    return $entry['status'] === $r_status;
+                                });
+                            }
+                            
                             $r_rows = array_merge($r_rows, $mock_entries);
                         }
                         // Set a flag to use premium light look for reports
