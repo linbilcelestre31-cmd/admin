@@ -1675,8 +1675,10 @@ function formatFileSize($bytes)
                                     <td>${item.quantity || item.stock || 0}</td>
                                     <td>P${parseFloat(item.price || item.unit_price || 0).toLocaleString()}</td>
                                     <td>
-                                        <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
-                                        <button class="btn-view-small" onclick="restoreInventory(${item.id}, '${(item.name || item.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i></button>
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
+                                            <button class="btn-view-small" onclick="restoreInventory(${item.id}, '${(item.name || item.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i></button>
+                                        </div>
                                     </td>
                                 </tr>
                             `).join('')}
