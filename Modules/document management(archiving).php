@@ -1042,7 +1042,7 @@ function formatFileSize($bytes)
                                 <i class="fas fa-plus"></i> NEW UPLOAD
                             </button>
                         <?php endif; ?>
-                        <button class="btn btn-info btn-sm btn-icon" onclick="loadCategoryFiles('all')" title="Refresh"
+                        <button class="btn btn-info btn-sm btn-icon" onclick="loadCategoryFiles(activeCategory)" title="Refresh"
                             aria-label="Refresh">
                             <i class="fas fa-sync-alt"></i>
                         </button>
@@ -1212,6 +1212,7 @@ function formatFileSize($bytes)
     <script>
         // Main JavaScript functionality
         let targetCategory = null;
+        let activeCategory = 'all'; // Track current category
         let isAuthenticated = false;
         let pinSessionTimeout = null;
         const SESSION_DURATION = 15 * 60 * 1000; // 15 minutes
@@ -1219,6 +1220,7 @@ function formatFileSize($bytes)
 
         // DOM Elements
         const messageContainer = document.getElementById('messageContainer');
+        const documentSearch = document.getElementById('documentSearch');
         const archivePinDigits = document.querySelectorAll('.pin-digit');
         const pinForm = document.getElementById('pinForm');
         const pinErrorMessage = document.getElementById('pinErrorMessage');
@@ -1289,6 +1291,19 @@ function formatFileSize($bytes)
                     }
                 });
             });
+
+            // Search Functionality
+            if (documentSearch) {
+                documentSearch.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('table tbody tr');
+                    
+                    rows.forEach(row => {
+                        const text = row.innerText.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+            }
 
             // PIN Input handling
             archivePinDigits.forEach((input, index) => {
@@ -1407,6 +1422,9 @@ function formatFileSize($bytes)
         }
 
         function loadCategoryFiles(category) {
+            activeCategory = category;
+            if(documentSearch) documentSearch.value = '';
+
             let endpoint;
             let gridId;
 
