@@ -2875,11 +2875,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <div style="display: flex; gap: 20px; margin-top: 20px;">
                                 <div style="flex: 1;">
                                     <h4 style="color: #ef4444; margin-bottom: 8px;">Risk Factors</h4>
-                                    <ul style="margin: 0; padding-left: 20px;">${rf.map(r => `<li>${r.factor || 'Unknown Factor'}</li>`).join('') || '<li>None</li>'}</ul>
+                                    <ul style="margin: 0; padding-left: 20px;">${(rf && Array.isArray(rf) ? rf.map(r => `<li>${r.factor || 'Unknown Factor'}</li>`).join('') : '<li>None</li>')}</ul>
                                 </div>
                                 <div style="flex: 1;">
                                     <h4 style="color: #059669; margin-bottom: 8px;">Recommendations</h4>
-                                    <ul style="margin: 0; padding-left: 20px;">${rec.map(x => `<li>${x}</li>`).join('') || '<li>Standard review</li>'}</ul>
+                                    <ul style="margin: 0; padding-left: 20px;">${(rec && Array.isArray(rec) ? rec.map(x => `<li>${x}</li>`).join('') : '<li>Standard review</li>')}</ul>
                                 </div>
                             </div>
                             ${imageHTML}
