@@ -1042,8 +1042,8 @@ function formatFileSize($bytes)
                                 <i class="fas fa-plus"></i> NEW UPLOAD
                             </button>
                         <?php endif; ?>
-                        <button class="btn btn-info btn-sm btn-icon" onclick="loadCategoryFiles(activeCategory)" title="Refresh"
-                            aria-label="Refresh">
+                        <button class="btn btn-info btn-sm btn-icon" onclick="loadCategoryFiles(activeCategory)"
+                            title="Refresh" aria-label="Refresh">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -1294,10 +1294,10 @@ function formatFileSize($bytes)
 
             // Search Functionality
             if (documentSearch) {
-                documentSearch.addEventListener('input', function() {
+                documentSearch.addEventListener('input', function () {
                     const searchTerm = this.value.toLowerCase();
                     const rows = document.querySelectorAll('table tbody tr');
-                    
+
                     rows.forEach(row => {
                         const text = row.innerText.toLowerCase();
                         row.style.display = text.includes(searchTerm) ? '' : 'none';
@@ -1423,7 +1423,7 @@ function formatFileSize($bytes)
 
         function loadCategoryFiles(category) {
             activeCategory = category;
-            if(documentSearch) documentSearch.value = '';
+            if (documentSearch) documentSearch.value = '';
 
             let endpoint;
             let gridId;
@@ -1564,20 +1564,22 @@ function formatFileSize($bytes)
                 { id: 1005, full_name: 'Emily Blunt', username: 'eblunt_cashier', role: 'Head Cashier', department: 'Treasury', status: 'On Leave' }
             ];
 
+            // Attempt to fetch from API, but default to fallback on ANY error (CORS, 404, etc.)
             fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
                 .then(data => {
                     let records = Array.isArray(data) ? data : (data.data || []);
                     if (records.length === 0) {
-                        // Use fallback if API returns empty
                         renderFinancialTable(fallbackFinancialData, grid);
                         return;
                     }
                     renderFinancialTable(records, grid);
                 })
                 .catch(error => {
-                    console.error('Error loading financial records:', error);
-                    // Use fallback on error
+                    console.warn('Financial API unreachable (using offline mode):', error.message);
                     renderFinancialTable(fallbackFinancialData, grid);
                 });
         }
