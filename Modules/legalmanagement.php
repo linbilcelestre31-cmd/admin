@@ -1066,6 +1066,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             border-color: #10b981;
             box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
         }
+    </style>
+</head>
+
     <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-form">
