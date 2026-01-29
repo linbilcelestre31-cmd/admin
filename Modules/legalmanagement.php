@@ -1877,16 +1877,29 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="premium-modal modal-animate-in"
             style="width:94%; max-width:550px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
 
-            <!-- Modal Header with Gradient -->
+        <!-- Modal Header with Gradient -->
             <div
                 style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
-                <button type="button" id="closeEmployeeInfoTop"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20;"
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                    <div id="genderImageContainer"
+                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
+                        <img src="../assets/image/Women.png" alt="Gender"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 id="employeeInfoTitle"
+                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            Employee
+                            Profile</h2>
                         <span id="employeeRoleBadge"
                             style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
                             Team</span>
                     </div>
                 </div>
+                <button type="button" id="closeEmployeeInfoTop"
+                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <!-- Modal Body with Circular Design -->
