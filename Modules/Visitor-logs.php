@@ -164,63 +164,6 @@ function getLastInsertId()
             color: #fff;
             background-color: rgba(255, 255, 255, 0.1);
         }
-
-        /* Recent Activity Redesign */
-        .recent-activity-item {
-            padding: 18px 0;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .recent-activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-main {
-            font-size: 1rem;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            line-height: 1.4;
-        }
-
-        .activity-name {
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .activity-text {
-            font-weight: 400;
-            color: #1e293b;
-        }
-
-        .activity-status {
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            padding-top: 2px;
-        }
-
-        .status-text-in {
-            color: #10b981;
-            /* Green for check in */
-        }
-
-        .status-text-out {
-            color: #334155;
-            /* Dark Slate for check out, matches 'neutral' look */
-        }
-
-        .activity-meta {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
     </style>
 </head>
 

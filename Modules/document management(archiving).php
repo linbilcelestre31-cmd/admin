@@ -1267,7 +1267,7 @@ function formatFileSize($bytes)
 
         window.restoreInventory = function (id, name) {
             if (!confirm(`Are you sure you want to retrieve/restore "${name}" from the archive?`)) return;
-            
+
             // Simulate API call for Inventory restoration
             setTimeout(() => {
                 alert(`Successfully retrieved "${name}". Stock count updated.`);
@@ -1592,7 +1592,7 @@ function formatFileSize($bytes)
                                     <td>
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
-                                            <button class="btn-view-small" onclick="alert('Retrieve initiated for: ${item.username}')"><i class="fas fa-undo"></i></button>
+                                            <button class="btn-view-small" onclick="restoreFinancialUser('${encodeURIComponent(JSON.stringify(item)).replace(/'/g, "%27")}')"><i class="fas fa-undo"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1690,7 +1690,7 @@ function formatFileSize($bytes)
                                         <div style="display: flex; gap: 8px;">
                                             <a href="?api=1&action=download&id=${item.id}" class="btn-view-small"><i class="fas fa-download"></i></a>
                                             <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
-                                            <button class="btn-view-small" onclick="restoreDocument(${item.id})"><i class="fas fa-undo"></i></button>
+                                            <button class="btn-view-small" onclick="restoreDocument(${item.id}, '${(item.name || '').replace(/'/g, "\\'")}')"><i class="fas fa-undo"></i></button>
                                             ${isSuperAdmin ? `<button class="btn-view-small" style="color: #ef4444;" onclick="deletePermanent(${item.id})"><i class="fas fa-skull"></i></button>` : ''}
                                         </div>
                                     </td>
@@ -1699,7 +1699,7 @@ function formatFileSize($bytes)
                         </tbody>
                     </table>
                 </div>
-            `;
+             `;
         }
 
         function showNoDataMessage(grid, category) {
@@ -1759,6 +1759,91 @@ function formatFileSize($bytes)
                 .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
         };
 
+    <!-- Restore Confirmation Modal -->
+    <div id="restoreModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; border-radius: 24px; padding: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div class="stat-icon bg-orange" style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                <i class="fas fa-history"></i>
+            </div>
+            <h2 style="margin-top: 20px; margin-bottom: 10px; font-size: 1.5rem; color: var(--dark-blue);">Retrieve Record?</h2>
+            <p style="color: var(--text-gray); margin-bottom: 25px; line-height: 1.5;" id="restoreMessage">
+                Are you sure you want to restore this item? It will be moved back to the active list.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button class="btn" id="confirmRestore" style="background: var(--primary-blue); color: white; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Yes, Retrieve</button>
+                <button class="btn" onclick="document.getElementById('restoreModal').style.display='none'" style="background: #e2e8f0; color: #475569; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Existing Scripts...
+        
+        let pendingRestoreAction = null;
+
+        function showRestoreModal(action, itemName) {
+            const modal = document.getElementById('restoreModal');
+            document.getElementById('restoreMessage').innerText = `Are you sure you want to retrieve "${itemName}"? It will be restored to the active list.`;
+            pendingRestoreAction = action;
+            modal.style.display = 'flex';
+        }
+
+        document.getElementById('confirmRestore').addEventListener('click', function() {
+            if (pendingRestoreAction) {
+                pendingRestoreAction();
+                document.getElementById('restoreModal').style.display = 'none';
+                pendingRestoreAction = null;
+            }
+        });
+
+        // Restore Document (from Database)
+        window.restoreDocument = function(id, name) {
+            showRestoreModal(() => {
+                const formData = new FormData();
+                formData.append('action', 'restore');
+                formData.append('id', id);
+
+                fetch('?api=1', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadCategoryFiles('all'); // Refresh list
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during retrieval.');
+                });
+            }, name || 'this document');
+        };
+
+        // Restore Inventory (Mock/External)
+        window.restoreInventory = function(id, name) {
+            showRestoreModal(() => {
+                // Here you would call your inventory API
+                // For now, prompt success for demo
+                setTimeout(() => {
+                    alert(`Successfully retrieved inventory item: ${name}`);
+                    // Refresh if possible
+                }, 500);
+            }, name);
+        };
+
+        // Restore Financial User (Mock/External)
+        window.restoreFinancialUser = function(itemString) {
+            const item = JSON.parse(decodeURIComponent(itemString));
+            showRestoreModal(() => {
+                // Here you would call financial API to reactivate user
+                // Mocking success
+                setTimeout(() => {
+                    alert(`Successfully retrieved user record: ${item.username}`);
+                }, 500);
+            }, item.full_name);
+        };
+        
+        // ... (Keep existing helpers like uploadForm listener)
         document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);

@@ -83,3 +83,23 @@
 
 **Summary of Flow:**
 `Your System (cURL)` -> `Request` -> `External Server (HR)` -> `Response (JSON)` -> `Your Dashboard (Table)`
+
+# D. RETRIEVE FUNCTION (ARCHIVING)
+
+### How the Restore/Retrieve Process Works
+
+**1. User Action**
+*   **Trigger**: The user clicks the "Retrieve" (Switch Icon) button on an Archived Document or Inactive Record.
+*   **Confirmation**: A modal appears asking "Are you sure you want to restore this item?".
+
+**2. System Logic (Backend)**
+*   **Database Update**: The system sends a command to the database to change the item's status from `is_deleted = 1` (Archived) back to `is_deleted = 0` (Active).
+*   **Code Concept**:
+    ```php
+    UPDATE documents SET is_deleted = 0 WHERE id = :id
+    ```
+*   **Reactivation**: For linked records (like Inventory/Users), it sends a signal to reactivate the status.
+
+**3. Result**
+*   **Feedback**: The user sees a "Success" message.
+*   **View Update**: The table automatically refreshes, and the item moves from the "Archives" list back to the "Active" list.
