@@ -687,7 +687,7 @@ foreach ($contracts as $c) {
 }
 
 // Increase High Risk count
-$riskCounts['High'] = 8;
+$riskCounts['High'] = 15;
 
 // Auto-generation helper for Case ID
 function generateAutoCaseID($pdo, $type = 'contract')
