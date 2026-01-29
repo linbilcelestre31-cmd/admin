@@ -1832,7 +1832,7 @@ if (isset($dashboard_data['error'])) {
                             <tbody>
                                 <?php if (empty($r_rows)): ?>
                                     <tr>
-                                        <td colspan="<?= count($r_headers) ?>"
+                                        <td colspan="<?= count($r_headers) + 1 ?>"
                                             style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
                                             No records found for the selected module and filters.
                                         </td>
