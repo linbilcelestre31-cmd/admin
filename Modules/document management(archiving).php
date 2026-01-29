@@ -1758,27 +1758,35 @@ function formatFileSize($bytes)
             fetch('?api=1', { method: 'DELETE', body: `id=${id}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
                 .then(r => r.json()).then(res => { alert(res.message); loadCategoryFiles('all'); });
         };
+    </script>
 
     <!-- Restore Confirmation Modal -->
-    <div id="restoreModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
-        <div class="modal-content" style="background: white; border-radius: 24px; padding: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-            <div class="stat-icon bg-orange" style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+    <div id="restoreModal" class="modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="modal-content"
+            style="background: white; border-radius: 24px; padding: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div class="stat-icon bg-orange"
+                style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
                 <i class="fas fa-history"></i>
             </div>
-            <h2 style="margin-top: 20px; margin-bottom: 10px; font-size: 1.5rem; color: var(--dark-blue);">Retrieve Record?</h2>
+            <h2 style="margin-top: 20px; margin-bottom: 10px; font-size: 1.5rem; color: var(--dark-blue);">Retrieve
+                Record?</h2>
             <p style="color: var(--text-gray); margin-bottom: 25px; line-height: 1.5;" id="restoreMessage">
                 Are you sure you want to restore this item? It will be moved back to the active list.
             </p>
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button class="btn" id="confirmRestore" style="background: var(--primary-blue); color: white; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Yes, Retrieve</button>
-                <button class="btn" onclick="document.getElementById('restoreModal').style.display='none'" style="background: #e2e8f0; color: #475569; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button class="btn" id="confirmRestore"
+                    style="background: var(--primary-blue); color: white; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Yes,
+                    Retrieve</button>
+                <button class="btn" onclick="document.getElementById('restoreModal').style.display='none'"
+                    style="background: #e2e8f0; color: #475569; padding: 12px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
         // Existing Scripts...
-        
+
         let pendingRestoreAction = null;
 
         function showRestoreModal(action, itemName) {
@@ -1788,7 +1796,7 @@ function formatFileSize($bytes)
             modal.style.display = 'flex';
         }
 
-        document.getElementById('confirmRestore').addEventListener('click', function() {
+        document.getElementById('confirmRestore').addEventListener('click', function () {
             if (pendingRestoreAction) {
                 pendingRestoreAction();
                 document.getElementById('restoreModal').style.display = 'none';
@@ -1797,7 +1805,7 @@ function formatFileSize($bytes)
         });
 
         // Restore Document (from Database)
-        window.restoreDocument = function(id, name) {
+        window.restoreDocument = function (id, name) {
             showRestoreModal(() => {
                 const formData = new FormData();
                 formData.append('action', 'restore');
@@ -1807,20 +1815,20 @@ function formatFileSize($bytes)
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    loadCategoryFiles('all'); // Refresh list
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred during retrieval.');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        loadCategoryFiles('all'); // Refresh list
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during retrieval.');
+                    });
             }, name || 'this document');
         };
 
         // Restore Inventory (Mock/External)
-        window.restoreInventory = function(id, name) {
+        window.restoreInventory = function (id, name) {
             showRestoreModal(() => {
                 // Here you would call your inventory API
                 // For now, prompt success for demo
@@ -1832,7 +1840,7 @@ function formatFileSize($bytes)
         };
 
         // Restore Financial User (Mock/External)
-        window.restoreFinancialUser = function(itemString) {
+        window.restoreFinancialUser = function (itemString) {
             const item = JSON.parse(decodeURIComponent(itemString));
             showRestoreModal(() => {
                 // Here you would call financial API to reactivate user
@@ -1842,7 +1850,7 @@ function formatFileSize($bytes)
                 }, 500);
             }, item.full_name);
         };
-        
+
         // ... (Keep existing helpers like uploadForm listener)
         document.getElementById('uploadForm')?.addEventListener('submit', function (e) {
             e.preventDefault();
