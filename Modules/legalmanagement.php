@@ -51,6 +51,7 @@ try {
         ['Corporate By-Laws 2024 Amendment', 'GOV-LAW-002', 'Internal', 'Amendments to corporate by-laws regarding shareholder meetings.', 25],
         ['Annual Risk Audit Report', 'RSK-AUD-2023', 'Internal', 'Comprehensive risk assessment audit for 2023.', 40],
         ['Disaster Recovery Plan', 'RSK-REC-001', 'Internal', 'IT and Operations disaster recovery and business continuity plan.', 65],
+        ['Memorandum: Reminder on Hotel and Restaurant Policies', 'HR-MEMO-2024-01', 'Internal', "MEMORANDUM\nTO: All Employees\nFROM: Human Resources Department / Management\nSUBJECT: Reminder on Hotel and Restaurant Policies\n\nDear Team,\n\nFirst and foremost, we would like to thank you for your valuable contribution. Your dedication helps maintain the high standards of service and satisfaction for our guests.\n\nHowever, we would like to emphasize some important guidelines that must be followed to ensure orderly and professional operations:\n\n*Punctuality and Work Hours* – It is essential to report to work on schedule. Any delay may affect operations and your colleagues.\n\n*Professional Appearance and Uniform* – Your uniform, including your name tag, must always be clean and tidy to reflect professionalism.\n\n*Guest Relations* – Always show respect, courtesy, and willingness to assist all guests.\n\n*Safety and Sanitation* – Follow all safety and sanitation policies, especially in the kitchen, dining area, and other work areas.\n\n*Coordination with Colleagues and Supervisors* – Immediately inform your supervisor of any problems or unexpected incidents.\n\nWe would like to remind you that adhering to these guidelines is not only for the benefit of the establishment but also for your personal and professional growth.\n\nIf you have any questions or require further guidance, please do not hesitate to contact us.\n\nThank you for your cooperation and continued support.\n\nSincerely,\nHR Manager", 10],
 
         // External
         ['Food Supplier Contract - BestMeats', 'SUP-2024-001', 'External', 'Annual contract for premium meat supply.', 20],
@@ -1134,13 +1135,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             ?>
                                             <tr class="internal-doc-row" data-category="<?php echo $docCategory; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance')"><i
+                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
                                                         <button class="action-btn analyze-btn"
                                                             onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'Internal')"><i
@@ -1302,7 +1303,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             <tr class="external-doc-row contract-row"
                                                 data-category="<?php echo $docCategory; ?>" data-risk="<?php echo $docRisk; ?>">
                                                 <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
                                                 <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
@@ -1310,7 +1311,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 <td>
                                                     <div class="action-container">
                                                         <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor')"><i
+                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
                                                         <button class="action-btn analyze-btn"
                                                             onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'External')"><i
@@ -2079,6 +2080,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     -</div>
                             </div>
                         </div>
+                        <div class="info-row">
+                            <label
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
+                                Document Content</label>
+                            <div id="legalDetailDescription"
+                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap; max-height: 250px; overflow-y: auto;">
+                                -</div>
+                        </div>
                         <div style="margin-top: 20px;">
                             <button type="button"
                                 onclick="document.getElementById('legalDetailModal').style.display='none'"
@@ -2374,12 +2383,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             window.addEventListener('load', window.initRiskChart);
 
             // Function to show Legal Details Modal
-            window.showLegalDetails = function (name, secondary, date, type, secondaryLabel) {
+            window.showLegalDetails = function (name, secondary, date, type, secondaryLabel, description) {
                 document.getElementById('legalDetailName').textContent = name;
                 document.getElementById('legalDetailCategory').textContent = type;
                 document.getElementById('legalDetailSecondary').textContent = secondary;
                 document.getElementById('legalDetailDate').textContent = date;
                 document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
+                document.getElementById('legalDetailDescription').innerText = description || 'No detailed content available.';
 
                 // Reset Blur State
                 document.getElementById('legalDetailContent').classList.add('blurred-content');
