@@ -1066,6 +1066,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             border-color: #10b981;
             box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
         }
+
+        /* AI Risk Analysis Modal Animations */
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 94%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
     </style>
 </head>
 
@@ -2318,70 +2349,143 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div id="legalAnalysisModal"
         style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
         <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:650px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
+            style="width:94%; max-width:700px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+            
+            <!-- Enhanced Modal Header with Animated Background -->
             <div
-                style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 30px 40px; color: white; position: relative;">
+                style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); padding: 40px; color: white; position: relative; overflow: hidden;">
+                
+                <!-- Animated Background Elements -->
+                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; animation: float 20s linear infinite;"></div>
+                <div style="position: absolute; top: 20px; right: 20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 3s ease-in-out infinite;"></div>
+                <div style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255,255,255,0.08); border-radius: 50%; animation: pulse 3s ease-in-out infinite 1s;"></div>
+                
                 <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s;">
+                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 40px; height: 40px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 10; backdrop-filter: blur(10px);">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <div style="display: flex; align-items: center; gap: 20px;">
+                
+                <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 5;">
                     <div
-                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem;">
-                        <i class="fa-solid fa-robot"></i>
+                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.2rem; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.1); animation: float-icon 3s ease-in-out infinite;">
+                        <i class="fa-solid fa-brain"></i>
                     </div>
                     <div>
-                        <h2 style="margin:0; font-size: 1.3rem; font-weight: 800;">AI Risk Analysis Report</h2>
-                        <span id="analysisTargetType"
-                            style="display: inline-block; margin-top: 5px; background: rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">TYPE</span>
+                        <h2 style="margin:0; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Risk Analysis</h2>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <span id="analysisTargetType"
+                                style="display: inline-block; background: rgba(255,255,255,0.3); color: white; padding: 6px 16px; border-radius: 25px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">CONTRACT</span>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: blink 2s infinite;"></div>
+                                <span style="font-size: 0.75rem; font-weight: 600; opacity: 0.9;">AI Powered</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div style="padding: 40px; background: white; max-height: 70vh; overflow-y: auto;position: relative;">
+            
+            <!-- Enhanced Modal Body -->
+            <div style="padding: 40px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); max-height: 70vh; overflow-y: auto; position: relative;">
+                
+                <!-- Reveal Overlay -->
+                <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn" onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
+                        <i class="fa-solid fa-lock"></i> Enter PIN to Reveal Analysis
+                    </button>
+                </div>
+                
                 <div id="legalAnalysisContent" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 25px;">
+                    <div style="display: flex; flex-direction: column; gap: 30px;">
+                        
+                        <!-- Enhanced Confidence Score Section -->
                         <div
-                            style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+                            style="text-align: center; padding: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 24px; border: 2px solid #0ea5e9; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6, #ec4899); animation: shimmer 2s infinite;"></div>
                             <div
-                                style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase;">
-                                Confidence Score</div>
-                            <div style="font-size: 2.5rem; font-weight: 900; color: #4338ca;">94%</div>
-                        </div>
-                        <div>
-                            <h4 id="analysisTargetName"
-                                style="font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; font-weight: 700;">-</h4>
-                            <div id="analysisSummaryText"
-                                style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; border-radius: 10px;">
-                                <p style="margin:0; font-size: 0.9rem; color: #166534; line-height: 1.6;">AI analysis
-                                    suggests this document is highly compliant with standard legal framework. Minimal
-                                    risk
-                                    exposure detected.</p>
+                                style="font-size: 0.8rem; font-weight: 700; color: #0369a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                                AI Confidence Score</div>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                                <div style="font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #0ea5e9, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">94%</div>
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <div style="width: 120px; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
+                                        <div style="width: 94%; height: 100%; background: linear-gradient(90deg, #0ea5e9, #3b82f6); border-radius: 10px; animation: progress 2s ease-out;"></div>
+                                    </div>
+                                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 600;">HIGH ACCURACY</span>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Enhanced Analysis Summary -->
+                        <div>
+                            <h4 id="analysisTargetName"
+                                style="font-size: 1.3rem; color: #1e293b; margin-bottom: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                                <span style="width: 4px; height: 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 2px;"></span>
+                                Contract Analysis
+                            </h4>
+                            <div id="analysisSummaryText"
+                                style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 5px solid #22c55e; padding: 20px; border-radius: 16px; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%;"></div>
+                                <div style="display: flex; align-items: start; gap: 15px;">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-shield-check" style="color: white; font-size: 18px;"></i>
+                                    </div>
+                                    <div>
+                                        <p style="margin:0; font-size: 0.95rem; color: #166534; line-height: 1.7; font-weight: 500;">AI analysis
+                                            suggests this document is highly compliant with standard legal framework. Minimal
+                                            risk
+                                            exposure detected with strong protective clauses in place.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Key Findings -->
                         <div class="info-row">
                             <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Key
-                                Findings</label>
-                            <ul id="analysisKeyFindings"
-                                style="padding-left: 20px; margin: 0; color: #475569; font-size: 0.9rem; line-height: 1.8;">
-                                <li>No restrictive clauses detected.</li>
-                                <li>Liability terms are clearly defined and balanced.</li>
-                                <li>Renewal and termination policies are standard.</li>
-                            </ul>
+                                style="display: block; font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">
+                                <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px; color: #3b82f6;"></i>
+                                Key Findings
+                            </label>
+                            <div id="analysisKeyFindings"
+                                style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 20px;">
+                                <ul style="padding-left: 0; margin: 0; list-style: none; color: #92400e; font-size: 0.9rem; line-height: 1.8;">
+                                    <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                        </div>
+                                        <span>No restrictive clauses detected.</span>
+                                    </li>
+                                    <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                        </div>
+                                        <span>Liability terms are clearly defined and balanced.</span>
+                                    </li>
+                                    <li style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                        </div>
+                                        <span>Renewal and termination policies are standard.</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div style="margin-top: 10px;">
+                        
+                        <!-- Enhanced Action Buttons -->
+                        <div style="display: flex; gap: 15px; margin-top: 20px;">
                             <button type="button"
                                 onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
+                                style="flex: 1; padding: 16px; border-radius: 16px; border: 2px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); color: #475569; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i class="fa-solid fa-times"></i>
                                 Close Report
+                            </button>
+                            <button type="button"
+                                style="flex: 1; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+                                <i class="fa-solid fa-download"></i>
+                                Export PDF
                             </button>
                         </div>
                     </div>
-                </div>
-                <!-- Reveal Overlay for Analysis -->
-                <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn"
-                        onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
                         <i class="fa-solid fa-lock"></i> Enter PIN to View Analysis
                     </button>
                 </div>
