@@ -1548,6 +1548,86 @@ if (isset($dashboard_data['error'])) {
                         $r_stmt = get_pdo()->prepare($all_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // Add mock data for All Records if no results found
+                        if (empty($r_rows)) {
+                            $mock_all_data = [
+                                [
+                                    'module' => 'Reservation',
+                                    'id' => 101,
+                                    'name' => 'Marvin Quiriado',
+                                    'ref' => 'Grand Ballroom',
+                                    'date' => date('Y-m-d'),
+                                    'status' => 'confirmed'
+                                ],
+                                [
+                                    'module' => 'Reservation',
+                                    'id' => 102,
+                                    'name' => 'Elizabeth Santos',
+                                    'ref' => 'Function Hall B',
+                                    'date' => date('Y-m-d', strtotime('+1 day')),
+                                    'status' => 'pending'
+                                ],
+                                [
+                                    'module' => 'Facility',
+                                    'id' => 1,
+                                    'name' => 'Grand Ballroom',
+                                    'ref' => 'Main Building',
+                                    'date' => 'N/A',
+                                    'status' => 'active'
+                                ],
+                                [
+                                    'module' => 'Facility',
+                                    'id' => 2,
+                                    'name' => 'Function Hall A',
+                                    'ref' => 'East Wing',
+                                    'date' => 'N/A',
+                                    'status' => 'maintenance'
+                                ],
+                                [
+                                    'module' => 'Document',
+                                    'id' => 1,
+                                    'name' => 'ServiceAgreement_2026.pdf',
+                                    'ref' => 'DOC-882',
+                                    'date' => date('Y-m-d H:i:s'),
+                                    'status' => 'Archived'
+                                ],
+                                [
+                                    'module' => 'Visitor',
+                                    'id' => 1,
+                                    'name' => 'Juan Dela Cruz',
+                                    'ref' => 'Room 101',
+                                    'date' => date('Y-m-d 08:00:00'),
+                                    'status' => 'Checked In'
+                                ],
+                                [
+                                    'module' => 'Visitor',
+                                    'id' => 2,
+                                    'name' => 'Maria Clara',
+                                    'ref' => 'Function Hall',
+                                    'date' => date('Y-m-d 09:30:00', strtotime('-1 day')),
+                                    'status' => 'Checked Out'
+                                ],
+                                [
+                                    'module' => 'Legal',
+                                    'id' => 1,
+                                    'name' => 'Hotel Lease Agreement.pdf',
+                                    'ref' => 'C-001',
+                                    'date' => date('Y-m-d H:i:s'),
+                                    'status' => 'High'
+                                ]
+                            ];
+                            
+                            // Apply status filter to mock data if status is not 'all'
+                            if ($r_status !== 'all') {
+                                $mock_all_data = array_filter($mock_all_data, function($entry) use ($r_status) {
+                                    return strtolower($entry['status']) === strtolower($r_status);
+                                });
+                            }
+                            
+                            $r_rows = array_merge($r_rows, $mock_all_data);
+                        }
+                        
                         $is_premium_report = true;
                         break;
 
