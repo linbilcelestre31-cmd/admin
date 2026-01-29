@@ -400,14 +400,23 @@ function updateRecentActivity() {
 
     recentActivities.forEach(activity => {
         const activityEl = document.createElement('div');
-        activityEl.className = 'activity-item';
-        const displayStatus = activity.action === 'timed-in' ? 'CHECKED IN' : 'Checked Out';
+        activityEl.className = 'recent-activity-item';
+
+        const displayStatus = activity.action === 'timed-in' ? 'CHECKED IN' : 'CHECKED OUT';
+        // Status specific styling class
+        const statusClass = activity.action === 'timed-in' ? 'status-text-in' : 'status-text-out';
+
         activityEl.innerHTML = `
-                    <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
-                        <strong>${activity.name}</strong> is <span class="status-badge status-${activity.action.replace('timed-', '')}" style="font-size:10px; padding:2px 8px;">${displayStatus}</span> at the ${activity.type}
-                        <br><small style="color:#64748b;">${activity.details} • ${formatTime(activity.time)}</small>
-                    </div>
-                `;
+            <div class="activity-main">
+                <span class="activity-name">${activity.name}</span>
+                <span class="activity-text">is</span>
+                <span class="activity-status ${statusClass}">${displayStatus}</span>
+                <span class="activity-text">at the ${activity.type}</span>
+            </div>
+            <div class="activity-meta">
+                ${activity.details} • ${formatTime(activity.time)}
+            </div>
+        `;
         activityContainer.appendChild(activityEl);
     });
 }
