@@ -1626,7 +1626,7 @@ function formatFileSize($bytes)
                                     <td>
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <button class="btn-view-small" onclick='showFileDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'><i class="fas fa-eye"></i></button>
-                                            <button class="btn-view-small" onclick="alert('Retrieve initiated for: ${item.full_name || item.name}')"><i class="fas fa-undo"></i></button>
+                                            <button class="btn-view-small" onclick="restoreGuest('${encodeURIComponent(JSON.stringify(item)).replace(/'/g, "%27")}')"><i class="fas fa-undo"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1849,6 +1849,20 @@ function formatFileSize($bytes)
                     alert(`Successfully retrieved user record: ${item.username}`);
                 }, 500);
             }, item.full_name);
+        };
+
+        // Restore Guest Function
+        window.restoreGuest = function (itemString) {
+            try {
+                const item = JSON.parse(decodeURIComponent(itemString));
+                showRestoreModal(() => {
+                    setTimeout(() => {
+                        alert(`Successfully retrieved guest record: ${item.full_name || item.name}`);
+                    }, 500);
+                }, item.full_name || item.name);
+            } catch (e) {
+                console.error("Error with guest item", e);
+            }
         };
 
         // ... (Keep existing helpers like uploadForm listener)
