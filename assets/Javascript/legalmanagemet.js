@@ -704,6 +704,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Function to filter contracts by risk level
 function filterByRiskLevel(riskLevel) {
+    // Switch to Contracts section first
+    const contractsSection = document.getElementById('contracts');
+    const riskAnalysisSection = document.getElementById('risk_analysis');
+    
+    if (contractsSection && riskAnalysisSection) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+            section.style.display = 'none';
+        });
+        
+        // Show Contracts section
+        contractsSection.classList.add('active');
+        contractsSection.style.display = 'block';
+        
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const contractsTab = document.querySelector('[onclick="showSection(\'contracts\')"]');
+        if (contractsTab) {
+            contractsTab.classList.add('active');
+        }
+    }
+    
     const contractRows = document.querySelectorAll('.contract-row');
     const totalContractsCard = document.querySelector('.stat-card.total');
     
