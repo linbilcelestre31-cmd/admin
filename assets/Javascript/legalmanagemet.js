@@ -701,3 +701,74 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 /* --- END: PIN modal & sensitive view handlers --- */
+
+// Function to filter contracts by risk level
+function filterByRiskLevel(riskLevel) {
+    const contractRows = document.querySelectorAll('.contract-row');
+    const totalContractsCard = document.querySelector('.stat-card.total');
+    
+    // Reset all cards to normal appearance
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.style.border = '';
+        card.style.transform = '';
+        card.style.boxShadow = '';
+    });
+    
+    // Highlight selected risk card
+    const selectedCard = document.querySelector(`.stat-card.${riskLevel.toLowerCase()}`);
+    if (selectedCard) {
+        selectedCard.style.border = '3px solid #4a6cf7';
+        selectedCard.style.transform = 'scale(1.05)';
+        selectedCard.style.boxShadow = '0 8px 25px rgba(74, 108, 247, 0.3)';
+    }
+    
+    let visibleCount = 0;
+    
+    contractRows.forEach(row => {
+        const rowRisk = row.getAttribute('data-risk');
+        
+        if (riskLevel === 'All' || rowRisk === riskLevel) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update total contracts card to show filtered count
+    if (totalContractsCard && riskLevel !== 'All') {
+        const totalValue = totalContractsCard.querySelector('.stat-value');
+        const totalLabel = totalContractsCard.querySelector('.stat-label');
+        if (totalValue && totalLabel) {
+            totalValue.textContent = visibleCount;
+            totalLabel.textContent = `Filtered Contracts (${riskLevel})`;
+        }
+    }
+    
+    // Show all contracts if clicking on total contracts card
+    if (riskLevel === 'All') {
+        contractRows.forEach(row => {
+            row.style.display = '';
+        });
+        if (totalContractsCard) {
+            const totalValue = totalContractsCard.querySelector('.stat-value');
+            const totalLabel = totalContractsCard.querySelector('.stat-label');
+            if (totalValue && totalLabel) {
+                const originalTotal = contractRows.length;
+                totalValue.textContent = originalTotal;
+                totalLabel.textContent = 'Total Contracts';
+            }
+        }
+    }
+}
+
+// Add click handler to total contracts card to reset filter
+document.addEventListener('DOMContentLoaded', function() {
+    const totalContractsCard = document.querySelector('.stat-card.total');
+    if (totalContractsCard) {
+        totalContractsCard.style.cursor = 'pointer';
+        totalContractsCard.addEventListener('click', function() {
+            filterByRiskLevel('All');
+        });
+    }
+});
