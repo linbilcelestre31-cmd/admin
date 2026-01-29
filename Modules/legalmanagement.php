@@ -1784,7 +1784,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
                                 <td>
                                     <?php 
                                     $score = $contract['risk_score'] ?? 0;

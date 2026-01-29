@@ -1513,8 +1513,8 @@ if (isset($dashboard_data['error'])) {
                         break;
 
                     case 'facilities':
-                        $r_sql = "SELECT id, name, type, capacity, location, CONCAT('₱', FORMAT(hourly_rate, 2)) as rate, status FROM facilities WHERE 1=1";
-                        $r_headers = ['ID', 'NAME', 'TYPE', 'CAPACITY', 'LOCATION', 'RATE', 'STATUS'];
+                        $r_sql = "SELECT id, name, type, capacity, location, CONCAT('₱', FORMAT(hourly_rate, 2)) as rate, created_at, status FROM facilities WHERE 1=1";
+                        $r_headers = ['ID', 'NAME', 'TYPE', 'CAPACITY', 'LOCATION', 'RATE', 'DATE', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1550,12 +1550,12 @@ if (isset($dashboard_data['error'])) {
                             $v_checkout = in_array('checkout_date', $v_cols) ? 'checkout_date' : 'time_out';
                             $v_phone = in_array('phone_number', $v_cols) ? 'phone_number' : 'phone';
 
-                            $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as time_in, $v_checkout as time_out, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1";
+                            $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as checkin_date, $v_checkin as time_in, $v_checkout as time_out, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1";
                             if ($r_from)
                                 $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($r_from);
                             if ($r_to)
                                 $r_sql .= " AND DATE($v_checkin) <= " . get_pdo()->quote($r_to);
-                            $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'TIME IN', 'TIME OUT', 'STATUS'];
+                            $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'DATE', 'TIME IN', 'TIME OUT', 'STATUS'];
                             $r_stmt = get_pdo()->prepare($r_sql);
                             $r_stmt->execute();
                             $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1568,9 +1568,9 @@ if (isset($dashboard_data['error'])) {
                         // Robust Mock visitors if still empty
                         if (empty($r_rows)) {
                             $r_rows = [
-                                ['id' => 1, 'full_name' => 'Juan Dela Cruz', 'email' => 'juan@example.com', 'phone' => '09171234567', 'facility' => 'Room 101', 'time_in' => date('Y-m-d 08:00:00'), 'time_out' => date('Y-m-d 17:00:00'), 'status' => 'Checked In'],
-                                ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out'],
-                                ['id' => 3, 'full_name' => 'Marvin Quiriado', 'email' => 'marvin@example.com', 'phone' => '09221239876', 'facility' => 'Main Ballroom', 'time_in' => date('Y-m-d 11:45:00'), 'time_out' => '...', 'status' => 'Checked In']
+                                ['id' => 1, 'full_name' => 'Juan Dela Cruz', 'email' => 'juan@example.com', 'phone' => '09171234567', 'facility' => 'Room 101', 'checkin_date' => date('Y-m-d 08:00:00'), 'time_in' => date('Y-m-d 08:00:00'), 'time_out' => date('Y-m-d 17:00:00'), 'status' => 'Checked In'],
+                                ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'checkin_date' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out'],
+                                ['id' => 3, 'full_name' => 'Marvin Quiriado', 'email' => 'marvin@example.com', 'phone' => '09221239876', 'facility' => 'Main Ballroom', 'checkin_date' => date('Y-m-d 11:45:00'), 'time_in' => date('Y-m-d 11:45:00'), 'time_out' => '...', 'status' => 'Checked In']
                             ];
                             $is_premium_report = true;
                         }
@@ -1609,7 +1609,7 @@ if (isset($dashboard_data['error'])) {
                             $r_sql .= " AND r.status = " . get_pdo()->quote($r_status);
                         $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
 
-                        $r_headers = ['ID', 'TIME', 'GUESTS', 'PACKAGE', 'TOTAL AMOUNT', 'DEPOSIT PAID', 'BALANCE DUE', 'PAYMENT METHOD', 'COORDINATOR', 'STATUS', 'ACTIONS'];
+                        $r_headers = ['ID', 'DATE', 'TIME', 'GUESTS', 'PACKAGE', 'TOTAL AMOUNT', 'DEPOSIT PAID', 'BALANCE DUE', 'PAYMENT METHOD', 'COORDINATOR', 'STATUS', 'ACTIONS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1843,6 +1843,9 @@ if (isset($dashboard_data['error'])) {
                                             <?php if ($r_module === 'reservations'): ?>
                                                 <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
                                                     #BK-<?= $rr['id'] ?></td>
+                                                <td style="font-size: 13px; color: #64748b;">
+                                                    <?= date('Y-m-d', strtotime($rr['event_date'] ?? 'now')) ?>
+                                                </td>
                                                 <td style="font-size: 13px;">
                                                     <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?>
                                                 </td>
@@ -1958,6 +1961,23 @@ if (isset($dashboard_data['error'])) {
                                 <option value="legal" <?= (($_GET['module'] ?? '') === 'legal') ? 'selected' : '' ?>>Legal Management</option>
                             </select>
                         </div>
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
+                            <select name="date_range"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;"
+                                onchange="setDateRange(this.value)">
+                                <option value="">Custom Range</option>
+                                <option value="today" <?= (($_GET['date_range'] ?? '') === 'today') ? 'selected' : '' ?>>Today</option>
+                                <option value="yesterday" <?= (($_GET['date_range'] ?? '') === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
+                                <option value="this_week" <?= (($_GET['date_range'] ?? '') === 'this_week') ? 'selected' : '' ?>>This Week</option>
+                                <option value="last_week" <?= (($_GET['date_range'] ?? '') === 'last_week') ? 'selected' : '' ?>>Last Week</option>
+                                <option value="this_month" <?= (($_GET['date_range'] ?? '') === 'this_month') ? 'selected' : '' ?>>This Month</option>
+                                <option value="last_month" <?= (($_GET['date_range'] ?? '') === 'last_month') ? 'selected' : '' ?>>Last Month</option>
+                                <option value="this_quarter" <?= (($_GET['date_range'] ?? '') === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
+                                <option value="this_year" <?= (($_GET['date_range'] ?? '') === 'this_year') ? 'selected' : '' ?>>This Year</option>
+                            </select>
+                        </div>
                         <div class="filter-group" style="align-self: flex-end;">
                             <button class="btn btn-primary" style="padding: 10px 25px;"><i
                                     class="fa-solid fa-filter"></i> Filter</button>
@@ -2005,6 +2025,45 @@ if (isset($dashboard_data['error'])) {
                                 $rd_to = $_GET['to_date'] ?? '';
                                 $rd_status = $_GET['status'] ?? 'all';
                                 $rd_module = $_GET['module'] ?? 'all';
+                                $rd_date_range = $_GET['date_range'] ?? '';
+                                
+                                // Handle date_range parameter to auto-set from_date and to_date
+                                if ($rd_date_range && !$rd_from && !$rd_to) {
+                                    $today = date('Y-m-d');
+                                    switch($rd_date_range) {
+                                        case 'today':
+                                            $rd_from = $rd_to = $today;
+                                            break;
+                                        case 'yesterday':
+                                            $rd_from = $rd_to = date('Y-m-d', strtotime('-1 day'));
+                                            break;
+                                        case 'this_week':
+                                            $rd_from = date('Y-m-d', strtotime('monday this week'));
+                                            $rd_to = date('Y-m-d', strtotime('sunday this week'));
+                                            break;
+                                        case 'last_week':
+                                            $rd_from = date('Y-m-d', strtotime('monday last week'));
+                                            $rd_to = date('Y-m-d', strtotime('sunday last week'));
+                                            break;
+                                        case 'this_month':
+                                            $rd_from = date('Y-m-01');
+                                            $rd_to = date('Y-m-t');
+                                            break;
+                                        case 'last_month':
+                                            $rd_from = date('Y-m-01', strtotime('-1 month'));
+                                            $rd_to = date('Y-m-t', strtotime('-1 month'));
+                                            break;
+                                        case 'this_quarter':
+                                            $current_quarter = ceil(date('n') / 3);
+                                            $rd_from = date('Y-m-d', mktime(0, 0, 0, ($current_quarter - 1) * 3 + 1, 1, date('Y')));
+                                            $rd_to = date('Y-m-d', mktime(0, 0, 0, $current_quarter * 3 + 1, 0, date('Y')));
+                                            break;
+                                        case 'this_year':
+                                            $rd_from = date('Y-01-01');
+                                            $rd_to = date('Y-12-31');
+                                            break;
+                                    }
+                                }
                                 
                                 $db = get_pdo();
                                 $rd_rows = [];
@@ -3349,6 +3408,72 @@ if (isset($dashboard_data['error'])) {
             } else {
                 window.location.href = url;
             }
+        }
+
+        // Date Range Selection Function
+        function setDateRange(range) {
+            const today = new Date();
+            let fromDate = '';
+            let toDate = '';
+            
+            switch(range) {
+                case 'today':
+                    fromDate = toDate = today.toISOString().split('T')[0];
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    fromDate = toDate = yesterday.toISOString().split('T')[0];
+                    break;
+                case 'this_week':
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    fromDate = startOfWeek.toISOString().split('T')[0];
+                    toDate = endOfWeek.toISOString().split('T')[0];
+                    break;
+                case 'last_week':
+                    const startOfLastWeek = new Date(today);
+                    startOfLastWeek.setDate(today.getDate() - today.getDay() - 7);
+                    const endOfLastWeek = new Date(startOfLastWeek);
+                    endOfLastWeek.setDate(startOfLastWeek.getDate() + 6);
+                    fromDate = startOfLastWeek.toISOString().split('T')[0];
+                    toDate = endOfLastWeek.toISOString().split('T')[0];
+                    break;
+                case 'this_month':
+                    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    fromDate = startOfMonth.toISOString().split('T')[0];
+                    toDate = endOfMonth.toISOString().split('T')[0];
+                    break;
+                case 'last_month':
+                    const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    fromDate = startOfLastMonth.toISOString().split('T')[0];
+                    toDate = endOfLastMonth.toISOString().split('T')[0];
+                    break;
+                case 'this_quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    const startOfQuarter = new Date(today.getFullYear(), quarter * 3, 1);
+                    const endOfQuarter = new Date(today.getFullYear(), quarter * 3 + 3, 0);
+                    fromDate = startOfQuarter.toISOString().split('T')[0];
+                    toDate = endOfQuarter.toISOString().split('T')[0];
+                    break;
+                case 'this_year':
+                    const startOfYear = new Date(today.getFullYear(), 0, 1);
+                    const endOfYear = new Date(today.getFullYear(), 11, 31);
+                    fromDate = startOfYear.toISOString().split('T')[0];
+                    toDate = endOfYear.toISOString().split('T')[0];
+                    break;
+            }
+            
+            // Update the date input fields
+            const fromInput = document.querySelector('input[name="from_date"]');
+            const toInput = document.querySelector('input[name="to_date"]');
+            
+            if (fromInput) fromInput.value = fromDate;
+            if (toInput) toInput.value = toDate;
         }
 
         // Employee Management Functions
