@@ -1475,6 +1475,45 @@ if (isset($dashboard_data['error'])) {
                 $r_to = $_GET['to_date'] ?? '';
                 $r_status = $_GET['status'] ?? 'all';
                 $r_module = $_GET['module'] ?? 'reservations';
+                $r_date_range = $_GET['date_range'] ?? '';
+                
+                // Handle date_range parameter to auto-set from_date and to_date
+                if ($r_date_range && !$r_from && !$r_to) {
+                    $today = date('Y-m-d');
+                    switch($r_date_range) {
+                        case 'today':
+                            $r_from = $r_to = $today;
+                            break;
+                        case 'yesterday':
+                            $r_from = $r_to = date('Y-m-d', strtotime('-1 day'));
+                            break;
+                        case 'this_week':
+                            $r_from = date('Y-m-d', strtotime('monday this week'));
+                            $r_to = date('Y-m-d', strtotime('sunday this week'));
+                            break;
+                        case 'last_week':
+                            $r_from = date('Y-m-d', strtotime('monday last week'));
+                            $r_to = date('Y-m-d', strtotime('sunday last week'));
+                            break;
+                        case 'this_month':
+                            $r_from = date('Y-m-01');
+                            $r_to = date('Y-m-t');
+                            break;
+                        case 'last_month':
+                            $r_from = date('Y-m-01', strtotime('-1 month'));
+                            $r_to = date('Y-m-t', strtotime('-1 month'));
+                            break;
+                        case 'this_quarter':
+                            $current_quarter = ceil(date('n') / 3);
+                            $r_from = date('Y-m-d', mktime(0, 0, 0, ($current_quarter - 1) * 3 + 1, 1, date('Y')));
+                            $r_to = date('Y-m-d', mktime(0, 0, 0, $current_quarter * 3 + 1, 0, date('Y')));
+                            break;
+                        case 'this_year':
+                            $r_from = date('Y-01-01');
+                            $r_to = date('Y-12-31');
+                            break;
+                    }
+                }
 
                 $r_headers = [];
                 $r_rows = [];
@@ -1790,6 +1829,23 @@ if (isset($dashboard_data['error'])) {
                                     Management</option>
                                 <option value="legal" <?= $r_module === 'legal' ? 'selected' : '' ?>>Legal Management
                                 </option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
+                            <select name="date_range"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;"
+                                onchange="setDateRange(this.value)">
+                                <option value="">Custom Range</option>
+                                <option value="today" <?= ($r_date_range === 'today') ? 'selected' : '' ?>>Today</option>
+                                <option value="yesterday" <?= ($r_date_range === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
+                                <option value="this_week" <?= ($r_date_range === 'this_week') ? 'selected' : '' ?>>This Week</option>
+                                <option value="last_week" <?= ($r_date_range === 'last_week') ? 'selected' : '' ?>>Last Week</option>
+                                <option value="this_month" <?= ($r_date_range === 'this_month') ? 'selected' : '' ?>>This Month</option>
+                                <option value="last_month" <?= ($r_date_range === 'last_month') ? 'selected' : '' ?>>Last Month</option>
+                                <option value="this_quarter" <?= ($r_date_range === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
+                                <option value="this_year" <?= ($r_date_range === 'this_year') ? 'selected' : '' ?>>This Year</option>
                             </select>
                         </div>
                         <div class="filter-group" style="align-self: flex-end;">
