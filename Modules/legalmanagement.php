@@ -1143,9 +1143,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         <button class="action-btn view-btn"
                                                             onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
-                                                        <button class="action-btn analyze-btn"
-                                                            onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'Internal')"><i
-                                                                class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
 
                                                         <?php if ($isSuperAdmin): ?>
                                                             <button class="action-btn edit-btn"
@@ -1313,9 +1310,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                         <button class="action-btn view-btn"
                                                             onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
                                                                 class="fa-solid fa-eye"></i> View</button>
-                                                        <button class="action-btn analyze-btn"
-                                                            onclick="showLegalAnalysis('<?php echo addslashes($doc['name']); ?>', 'External')"><i
-                                                                class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>
 
                                                         <?php if ($isSuperAdmin): ?>
                                                             <button class="action-btn edit-btn"

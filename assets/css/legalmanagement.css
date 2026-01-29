@@ -424,6 +424,12 @@
       border-color: #4a6cf7 !important;
   }
 
+  /* Remove focus from analyze buttons */
+  .analyze-btn:focus {
+      outline: none;
+      box-shadow: none;
+  }
+
   .form-actions {
       display: flex;
       justify-content: flex-end;
