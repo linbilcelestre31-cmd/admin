@@ -86,6 +86,14 @@ class ReservationSystem
             $this->pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS coordinator VARCHAR(255)");
         } catch (Exception $e) {
         }
+
+        // Alter facilities table if columns don't exist
+        try {
+            $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS status ENUM('active', 'maintenance', 'closed') DEFAULT 'active'");
+            $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS assigned_user VARCHAR(255) DEFAULT 'Not Assigned'");
+            $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS reserve_name VARCHAR(255) DEFAULT ''");
+        } catch (Exception $e) {
+        }
     }
 
 
@@ -170,8 +178,9 @@ class ReservationSystem
         $pdo = $this->pdo;
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO facilities (name, type, capacity, location, description, hourly_rate, amenities, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO facilities (reserve_name, name, type, capacity, location, description, hourly_rate, amenities, image_url, status, assigned_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
+                htmlspecialchars($data['reserve_name'] ?? ''),
                 htmlspecialchars($data['name']),
                 htmlspecialchars($data['type']),
                 intval($data['capacity']),
@@ -179,7 +188,9 @@ class ReservationSystem
                 htmlspecialchars($data['description']),
                 floatval($data['hourly_rate']),
                 htmlspecialchars($data['amenities'] ?? ''),
-                htmlspecialchars($data['image_url'] ?? '')
+                htmlspecialchars($data['image_url'] ?? ''),
+                htmlspecialchars($data['status'] ?? 'active'),
+                htmlspecialchars($data['assigned_user'] ?? 'Not Assigned')
             ]);
 
             return ['success' => true, 'message' => "Facility added successfully!"];
@@ -633,15 +644,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $where_date_leg = ($from_date ? " AND DATE(created_at) >= " . $db->quote($from_date) : "") . ($to_date ? " AND DATE(created_at) <= " . $db->quote($to_date) : "");
 
                         $sql = "
-                            (SELECT 'Reservation' as module, r.id, r.customer_name as name, f.name as ref, CAST(r.event_date AS CHAR) as date, r.status FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1 $where_status_res $where_date_res)
+                            (SELECT 'Reservation' as module, r.id, CONVERT(r.customer_name USING utf8mb4) as name, CONVERT(f.name USING utf8mb4) as ref, CAST(r.event_date AS CHAR) as date, CONVERT(r.status USING utf8mb4) as status FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1 $where_status_res $where_date_res)
                             UNION ALL
-                            (SELECT 'Facility' as module, id, name, location as ref, 'N/A' as date, status FROM facilities WHERE 1=1 $where_status)
+                            (SELECT 'Facility' as module, id, CONVERT(name USING utf8mb4), CONVERT(location USING utf8mb4), 'N/A' as date, CONVERT(status USING utf8mb4) FROM facilities WHERE 1=1 $where_status)
                             UNION ALL
-                            (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . ($status !== 'all' && $status === 'Archived' ? "" : ($status !== 'all' ? " AND 1=0" : "")) . ")
+                            (SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . ($status !== 'all' && $status === 'Archived' ? "" : ($status !== 'all' ? " AND 1=0" : "")) . ")
                             UNION ALL
-                            (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
+                            (SELECT 'Visitor' as module, id, CONVERT(full_name USING utf8mb4), CONVERT(room_number USING utf8mb4), CAST(checkin_date AS CHAR) as date, CONVERT(CASE WHEN status = 'active' THEN 'Checked In' ELSE status END USING utf8mb4) as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
                             UNION ALL
-                            (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts WHERE 1=1 $where_date_leg " . ($status !== 'all' ? " AND 1=0" : "") . ")
+                            (SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, CONVERT(risk_score USING utf8mb4) as status FROM contracts WHERE 1=1 $where_date_leg " . ($status !== 'all' ? " AND 1=0" : "") . ")
                             ORDER BY date DESC
                         ";
                         $headers = ['Module', 'ID', 'Report Topic', 'Reference', 'Date', 'Status'];
@@ -1482,16 +1493,16 @@ if (isset($dashboard_data['error'])) {
                         $where_date_leg = ($r_from ? " AND DATE(created_at) >= " . $db->quote($r_from) : "") . ($r_to ? " AND DATE(created_at) <= " . $db->quote($r_to) : "");
 
                         $all_sql = "
-                                (SELECT 'Reservation' as module, r.id, r.customer_name as name, f.name as ref, CAST(r.event_date AS CHAR) as date, r.status 
+                                (SELECT 'Reservation' as module, r.id, CONVERT(r.customer_name USING utf8mb4) as name, CONVERT(f.name USING utf8mb4) as ref, CAST(r.event_date AS CHAR) as date, CONVERT(r.status USING utf8mb4) as status 
                                  FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1 $where_status_res $where_date_res)
                                 UNION ALL
-                                (SELECT 'Facility' as module, id, name, location as ref, 'N/A' as date, status FROM facilities WHERE 1=1 $where_status)
+                                (SELECT 'Facility' as module, id, CONVERT(name USING utf8mb4), CONVERT(location USING utf8mb4), 'N/A' as date, CONVERT(status USING utf8mb4) FROM facilities WHERE 1=1 $where_status)
                                 UNION ALL
-                                (SELECT 'Document' as module, id, name, case_id as ref, CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . (($r_status !== 'all' && $r_status === 'Archived') ? "" : ($r_status !== 'all' ? " AND 1=0" : "")) . ")
+                                (SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . (($r_status !== 'all' && $r_status === 'Archived') ? "" : ($r_status !== 'all' ? " AND 1=0" : "")) . ")
                                 UNION ALL
-                                (SELECT 'Visitor' as module, id, full_name as name, room_number as ref, CAST(checkin_date AS CHAR) as date, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
+                                (SELECT 'Visitor' as module, id, CONVERT(full_name USING utf8mb4), CONVERT(room_number USING utf8mb4), CAST(checkin_date AS CHAR) as date, CONVERT(CASE WHEN status = 'active' THEN 'Checked In' ELSE status END USING utf8mb4) as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
                                 UNION ALL
-                                (SELECT 'Legal' as module, id, name, case_id as ref, CAST(created_at AS CHAR) as date, CAST(risk_score AS CHAR) as status FROM contracts WHERE 1=1 $where_date_leg " . (($r_status !== 'all') ? " WHERE 1=0" : "") . ")
+                                (SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, CONVERT(risk_score USING utf8mb4) as status FROM contracts WHERE 1=1 $where_date_leg " . (($r_status !== 'all') ? " AND 1=0" : "") . ")
                                 ORDER BY date DESC
                             ";
                         $r_stmt = get_pdo()->prepare($all_sql);
@@ -2850,6 +2861,12 @@ if (isset($dashboard_data['error'])) {
             <form id="facility-form" method="POST">
                 <input type="hidden" name="action" value="add_facility">
                 <div class="form-group">
+                    <label for="reserve_name">Reserve Name</label>
+                    <input type="text" id="reserve_name" name="reserve_name" class="form-control"
+                        placeholder="e.g. Main Hall A">
+                </div>
+
+                <div class="form-group">
                     <label for="facility_name">Facility Name</label>
                     <input type="text" id="facility_name" name="name" class="form-control" required>
                 </div>
@@ -2887,6 +2904,21 @@ if (isset($dashboard_data['error'])) {
                     <label for="facility_rate">Hourly Rate (₱)</label>
                     <input type="number" id="facility_rate" name="hourly_rate" class="form-control" step="0.01"
                         required>
+                </div>
+
+                <div class="form-group">
+                    <label for="facility_status">Status</label>
+                    <select id="facility_status" name="status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="maintenance">Under Maintenance</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="assigned_user">Assigned User</label>
+                    <input type="text" id="assigned_user" name="assigned_user" class="form-control"
+                        placeholder="Name of assigned staff">
                 </div>
 
                 <div class="form-group">
