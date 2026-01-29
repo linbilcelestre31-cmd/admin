@@ -1032,7 +1032,7 @@ function formatFileSize($bytes)
 
             <div class="content">
                 <div class="content-header"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30pGIT x;">
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <h2 id="contentTitle" style="font-weight: 700;">Document Archive | Admin ATIE`RA</h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
                         <input type="text" id="documentSearch" placeholder="Search archive..."
@@ -1042,10 +1042,9 @@ function formatFileSize($bytes)
                                 <i class="fas fa-plus"></i> NEW UPLOAD
                             </button>
                         <?php endif; ?>
-                        <button class="btn btn-info btn-sm btn-icon"
-                            onclick="event.preventDefault(); window.updateReservationStatus(<?= $reservation['id'] ?>, 'pending')"
-                            title="Retrieve Reservation" aria-label="Retrieve">
-                            <i class="fa-solid fa-rotate-left"></i>
+                        <button class="btn btn-info btn-sm btn-icon" onclick="loadCategoryFiles('all')" title="Refresh"
+                            aria-label="Refresh">
+                            <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
                 </div>
