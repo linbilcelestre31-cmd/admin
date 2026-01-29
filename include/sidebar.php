@@ -122,6 +122,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     data-tab="reports">
                     <i class="fa-solid fa-chart-pie"></i> Reports
                 </a></li>
+            <li><a href="<?= get_nav_link('reports_dates', $is_dashboard, $isSuperAdmin) ?>"
+                    class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports_dates') ? 'active' : '' ?>"
+                    data-tab="reports_dates">
+                    <i class="fa-solid fa-calendar-days"></i> Reports Dates
+                </a></li>
         </ul>
     </div>
 

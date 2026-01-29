@@ -1017,7 +1017,8 @@ if (isset($dashboard_data['error'])) {
                                 'calendar' => 'Reservation Calendar',
                                 'management' => 'Management',
                                 'maintenance' => 'Maintenance Management',
-                                'reports' => 'Reports & Analytics'
+                                'reports' => 'Reports & Analytics',
+                                'reports_dates' => 'Reports Dates'
                             ];
                             $current_tab = $_GET['tab'] ?? 'dashboard';
                             echo $tab_titles[$current_tab] ?? 'Dashboard';
@@ -1909,6 +1910,209 @@ if (isset($dashboard_data['error'])) {
                     </div>
                 </div>
             </div>
+
+            <!-- Reports Dates Tab -->
+            <div id="reports_dates"
+                class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports_dates') ? 'active' : '' ?>"
+                style="padding-top: 0; margin-top: -25px; margin-left: 20px; padding-right: 40px; margin-right: 15px;">
+                
+                <div class="filters-container"
+                    style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+                    <form method="get" class="d-flex flex-wrap gap-1 align-center">
+                        <input type="hidden" name="tab" value="reports_dates">
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label><br>
+                            <input type="date" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>"
+                                class="btn-outline"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label><br>
+                            <input type="date" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>" class="btn-outline"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status</label><br>
+                            <select name="status"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                                <option value="all" <?= (($_GET['status'] ?? 'all') === 'all') ? 'selected' : '' ?>>All</option>
+                                <option value="pending" <?= (($_GET['status'] ?? '') === 'pending') ? 'selected' : '' ?>>Pending</option>
+                                <option value="confirmed" <?= (($_GET['status'] ?? '') === 'confirmed') ? 'selected' : '' ?>>Confirmed</option>
+                                <option value="cancelled" <?= (($_GET['status'] ?? '') === 'cancelled') ? 'selected' : '' ?>>Cancelled</option>
+                                <option value="completed" <?= (($_GET['status'] ?? '') === 'completed') ? 'selected' : '' ?>>Completed</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Modules</label><br>
+                            <select name="module"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                                <option value="all" <?= (($_GET['module'] ?? 'all') === 'all') ? 'selected' : '' ?>>All Records</option>
+                                <option value="reservations" <?= (($_GET['module'] ?? '') === 'reservations') ? 'selected' : '' ?>>Reservations</option>
+                                <option value="facilities" <?= (($_GET['module'] ?? '') === 'facilities') ? 'selected' : '' ?>>Facilities</option>
+                                <option value="archiving" <?= (($_GET['module'] ?? '') === 'archiving') ? 'selected' : '' ?>>Document Archiving</option>
+                                <option value="visitors" <?= (($_GET['module'] ?? '') === 'visitors') ? 'selected' : '' ?>>Visitor Management</option>
+                                <option value="legal" <?= (($_GET['module'] ?? '') === 'legal') ? 'selected' : '' ?>>Legal Management</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="align-self: flex-end;">
+                            <button class="btn btn-primary" style="padding: 10px 25px;"><i
+                                    class="fa-solid fa-filter"></i> Filter</button>
+                        </div>
+                    </form>
+
+                    <div style="margin-top: 15px; display: flex; justify-content: flex-start;">
+                        <form method="post">
+                            <input type="hidden" name="action" value="export_csv">
+                            <input type="hidden" name="module" value="<?= htmlspecialchars($_GET['module'] ?? 'all') ?>">
+                            <input type="hidden" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>">
+                            <input type="hidden" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>">
+                            <input type="hidden" name="status" value="<?= htmlspecialchars($_GET['status'] ?? 'all') ?>">
+                            <button class="btn btn-success"
+                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                                <i class="fa-solid fa-file-csv"></i> Export CSV
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="d-flex align-center gap-1 mb-1">
+                    <i class="fa-solid fa-calendar-days" style="font-size: 1.5rem; color: #3182ce;"></i>
+                    <h2 style="margin: 0;">Reports Dates</h2>
+                </div>
+
+                <div class="table-container premium-white-card"
+                    style="border:none; background: #ffffff;">
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>MODULE</th>
+                                    <th>ID</th>
+                                    <th>REPORT TOPIC</th>
+                                    <th>REFERENCE</th>
+                                    <th>DATE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Get filter parameters
+                                $rd_from = $_GET['from_date'] ?? '';
+                                $rd_to = $_GET['to_date'] ?? '';
+                                $rd_status = $_GET['status'] ?? 'all';
+                                $rd_module = $_GET['module'] ?? 'all';
+                                
+                                $db = get_pdo();
+                                $rd_rows = [];
+                                
+                                // Build the same query as the reports tab but with date filtering
+                                if ($rd_module === 'all' || $rd_module === 'reservations') {
+                                    $where_status_res = ($rd_status !== 'all') ? " AND r.status = " . $db->quote($rd_status) : "";
+                                    $where_date_res = ($rd_from ? " AND r.event_date >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND r.event_date <= " . $db->quote($rd_to) : "");
+                                    
+                                    $sql = "SELECT 'Reservation' as module, r.id, CONVERT(r.customer_name USING utf8mb4) as name, CONVERT(f.name USING utf8mb4) as ref, CAST(r.event_date AS CHAR) as date, CONVERT(r.status USING utf8mb4) as status 
+                                            FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1 $where_status_res $where_date_res";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+                                }
+                                
+                                if ($rd_module === 'all' || $rd_module === 'facilities') {
+                                    $where_status = ($rd_status !== 'all') ? " AND status = " . $db->quote($rd_status) : "";
+                                    $sql = "SELECT 'Facility' as module, id, CONVERT(name USING utf8mb4), CONVERT(location USING utf8mb4), 'N/A' as date, CONVERT(status USING utf8mb4) FROM facilities WHERE 1=1 $where_status";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+                                }
+                                
+                                if ($rd_module === 'all' || $rd_module === 'archiving') {
+                                    $where_date_doc = ($rd_from ? " AND DATE(uploaded_at) >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND DATE(uploaded_at) <= " . $db->quote($rd_to) : "");
+                                    $sql = "SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+                                }
+                                
+                                if ($rd_module === 'all' || $rd_module === 'visitors') {
+                                    $v_cols = $db->query("SHOW COLUMNS FROM direct_checkins")->fetchAll(PDO::FETCH_COLUMN);
+                                    $v_status_col = in_array('status', $v_cols) ? 'status' : "'N/A'";
+                                    $where_status = ($rd_status !== 'all') ? " AND status = " . $db->quote($rd_status) : "";
+                                    $where_date_vis = ($rd_from ? " AND DATE(checkin_date) >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND DATE(checkin_date) <= " . $db->quote($rd_to) : "");
+                                    $sql = "SELECT 'Visitor' as module, id, CONVERT(full_name USING utf8mb4), CONVERT(room_number USING utf8mb4), CAST(checkin_date AS CHAR) as date, CONVERT(CASE WHEN status = 'active' THEN 'Checked In' ELSE status END USING utf8mb4) as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+                                }
+                                
+                                if ($rd_module === 'all' || $rd_module === 'legal') {
+                                    $where_date_leg = ($rd_from ? " AND DATE(created_at) >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND DATE(created_at) <= " . $db->quote($rd_to) : "");
+                                    $sql = "SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, CONVERT(risk_score USING utf8mb4) as status FROM contracts WHERE 1=1 $where_date_leg";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+                                }
+                                
+                                // Sort by date
+                                usort($rd_rows, function($a, $b) {
+                                    return strtotime($b['date']) - strtotime($a['date']);
+                                });
+                                
+                                if (empty($rd_rows)): ?>
+                                    <tr>
+                                        <td colspan="6"
+                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                            No records found for the selected module and filters.
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($rd_rows as $rr): ?>
+                                        <tr style="border-bottom: 1px solid #edf2f7;">
+                                            <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
+                                                <?= htmlspecialchars($rr['module']) ?>
+                                            </td>
+                                            <td style="font-weight: 600; color: #475569;">
+                                                <?= htmlspecialchars($rr['id']) ?>
+                                            </td>
+                                            <td style="color: #334155;">
+                                                <?= htmlspecialchars($rr['name'] ?? $rr['topic'] ?? 'N/A') ?>
+                                            </td>
+                                            <td style="color: #64748b;">
+                                                <?= htmlspecialchars($rr['ref'] ?? $rr['reference'] ?? 'N/A') ?>
+                                            </td>
+                                            <td style="color: #64748b; font-size: 0.9rem;">
+                                                <?= htmlspecialchars($rr['date']) ?>
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="
+                                                    <?php
+                                                    $status = strtolower($rr['status']);
+                                                    if ($status === 'confirmed' || $status === 'completed') {
+                                                        echo 'background: #dcfce7; color: #166534;';
+                                                    } elseif ($status === 'pending') {
+                                                        echo 'background: #fef3c7; color: #92400e;';
+                                                    } elseif ($status === 'cancelled') {
+                                                        echo 'background: #fee2e2; color: #991b1b;';
+                                                    } else {
+                                                        echo 'background: #f1f5f9; color: #475569;';
+                                                    }
+                                                    ?>
+                                                    padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                                                    <?= htmlspecialchars($rr['status']) ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div id="calendar"
                 class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>">
 
