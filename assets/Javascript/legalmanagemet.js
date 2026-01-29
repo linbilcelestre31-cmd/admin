@@ -796,4 +796,76 @@ document.addEventListener('DOMContentLoaded', function() {
             filterByRiskLevel('All');
         });
     }
+    
+    // Add search functionality for contracts
+    const searchInput = document.getElementById('contractSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            searchContracts(this.value);
+        });
+    }
 });
+
+// Function to search contracts
+function searchContracts(searchTerm) {
+    const contractRows = document.querySelectorAll('.contract-row');
+    const term = searchTerm.toLowerCase().trim();
+    
+    if (term === '') {
+        // Show all contracts if search is empty
+        contractRows.forEach(row => {
+            row.style.display = '';
+        });
+        return;
+    }
+    
+    let visibleCount = 0;
+    
+    contractRows.forEach(row => {
+        const contractName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+        const caseId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const riskScore = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+        const riskLevel = row.getAttribute('data-risk').toLowerCase();
+        
+        // Check if search term matches any field
+        const matchesName = contractName.includes(term);
+        const matchesCaseId = caseId.includes(term);
+        const matchesRiskScore = riskScore.includes(term);
+        const matchesRiskLevel = riskLevel.includes(term);
+        
+        if (matchesName || matchesCaseId || matchesRiskScore || matchesRiskLevel) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Show message if no results found
+    const tbody = document.getElementById('contractsTableBody');
+    const existingMessage = tbody.querySelector('.no-search-results');
+    
+    if (visibleCount === 0 && !existingMessage) {
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.className = 'no-search-results';
+        noResultsRow.innerHTML = `
+            <td colspan="5" style="text-align: center; padding: 30px; color: #64748b; background: #f8fafc; border-radius: 12px;">
+                <i class="fa-solid fa-search" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #cbd5e1;"></i>
+                <strong>No contracts found</strong> for "${searchTerm}"
+                <br><small>Try searching by contract name, case ID, or risk level</small>
+            </td>
+        `;
+        tbody.appendChild(noResultsRow);
+    } else if (visibleCount > 0 && existingMessage) {
+        existingMessage.remove();
+    }
+}
+
+// Function to clear contract search
+function clearContractSearch() {
+    const searchInput = document.getElementById('contractSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+        searchContracts('');
+    }
+}

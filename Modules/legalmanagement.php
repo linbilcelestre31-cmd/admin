@@ -652,6 +652,13 @@ try {
     $stmt = $db->prepare($query);
     $stmt->execute();
     $contracts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fix case IDs for existing contracts
+    foreach ($contracts as &$contract) {
+        if (empty($contract['case_id']) || $contract['case_id'] === 'C-001') {
+            $contract['case_id'] = 'C-' . str_pad($contract['id'], 3, '0', STR_PAD_LEFT);
+        }
+    }
 } catch (PDOException $exception) {
     $error_message = "Error fetching contracts: " . $exception->getMessage();
 }
@@ -1510,6 +1517,18 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </button>
                         </div>
                     </form>
+                </div>
+
+                <!-- Find/Locate Contracts Search Bar -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                    <div style="flex: 1; position: relative;">
+                        <input type="text" id="contractSearchInput" placeholder="Find/Locate contracts by name, case ID, or risk level..." 
+                            style="width: 100%; padding: 12px 16px 12px 45px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; transition: all 0.3s;">
+                        <i class="fa-solid fa-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                    </div>
+                    <button onclick="clearContractSearch()" style="padding: 12px 20px; background: #ef4444; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                        <i class="fa-solid fa-times"></i> Clear
+                    </button>
                 </div>
 
                 <!-- Contracts Table -->
