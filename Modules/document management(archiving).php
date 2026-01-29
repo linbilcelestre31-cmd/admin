@@ -1559,7 +1559,7 @@ function formatFileSize($bytes)
             const fallbackFinancialData = [];
 
             // Attempt to fetch from API, but default to fallback on ANY error (CORS, 404, etc.)
-            fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')
+            fetch('https://financial.atierahotelandrestaurant.com/api/users.php')
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
