@@ -2486,8 +2486,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </button>
                         </div>
                     </div>
-                        <i class="fa-solid fa-lock"></i> Enter PIN to View Analysis
-                    </button>
                 </div>
             </div>
         </div>
