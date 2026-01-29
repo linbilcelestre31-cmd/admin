@@ -1556,13 +1556,7 @@ function formatFileSize($bytes)
             if (!grid) return;
             grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
 
-            const fallbackFinancialData = [
-                { id: 1001, full_name: 'Alicia Keys', username: 'alicia.k', role: 'Chief Accountant', department: 'Finance', status: 'Active' },
-                { id: 1002, full_name: 'John Smith', username: 'jsmith_finance', role: 'Auditor', department: 'Internal Audit', status: 'Active' },
-                { id: 1003, full_name: 'Maria Cruz', username: 'mcruz_payroll', role: 'Payroll Master', department: 'HR/Finance', status: 'Active' },
-                { id: 1004, full_name: 'Robert Tan', username: 'rtan_cfo', role: 'CFO', department: 'Executive', status: 'Active' },
-                { id: 1005, full_name: 'Emily Blunt', username: 'eblunt_cashier', role: 'Head Cashier', department: 'Treasury', status: 'On Leave' }
-            ];
+            const fallbackFinancialData = [];
 
             // Attempt to fetch from API, but default to fallback on ANY error (CORS, 404, etc.)
             fetch('https://financial.atierahotelandrestaurant.com/admin/api/users.php')

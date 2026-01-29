@@ -5,7 +5,7 @@
  */
 
 // External API endpoint for Financial Records (Users)
-$financialRecordsApiUrl = 'https://financial.atierahotelandrestaurant.com/admin/api/users.php';
+$financialRecordsApiUrl = 'https://financial.atierahotelandrestaurant.com/api/users.php';
 
 /**
  * Fetches all records from the Financial system
@@ -27,30 +27,8 @@ function fetchFinancialRecords()
     curl_close($ch);
 
     if ($response === false || $httpCode !== 200) {
-        // Fallback data if API fails
-        return [
-            [
-                'id' => 1,
-                'username' => 'fin_admin',
-                'email' => 'finance@atiera.com',
-                'role' => 'Administrator',
-                'status' => 'Active'
-            ],
-            [
-                'id' => 2,
-                'username' => 'accountant_01',
-                'email' => 'acc01@atiera.com',
-                'role' => 'Accountant',
-                'status' => 'Active'
-            ],
-            [
-                'id' => 3,
-                'username' => 'audit_user',
-                'email' => 'audit@atiera.com',
-                'role' => 'Auditor',
-                'status' => 'Active'
-            ]
-        ];
+        // Return empty array if API fails - no dummy data
+        return [];
     }
 
     $data = json_decode($response, true);
