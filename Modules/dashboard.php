@@ -772,6 +772,14 @@ $dashboard_data = $reservationSystem->fetchDashboardData();
 if (isset($dashboard_data['error'])) {
     $error_message = $dashboard_data['error'];
 }
+
+// Global Filter Variables Initialization to prevent warnings
+$r_from = $_GET['from_date'] ?? '';
+$r_to = $_GET['to_date'] ?? '';
+$r_status = $_GET['status'] ?? 'all';
+$r_module = $_GET['module'] ?? 'reservations';
+$r_headers = [];
+$r_rows = [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1467,13 +1475,15 @@ if (isset($dashboard_data['error'])) {
                     // But based on Vistor.php, it should be checkin_date. 
                     // Let's ensure the table exists and has correct columns if we are querying it.
                 }
-                ?>
 
                 // Server-side: handle GET filters for reports view
                 $r_from = $_GET['from_date'] ?? '';
                 $r_to = $_GET['to_date'] ?? '';
                 $r_status = $_GET['status'] ?? 'all';
                 $r_module = $_GET['module'] ?? 'reservations';
+
+                $r_headers = [];
+                $r_rows = [];
 
                 $q_from = $r_from;
                 $q_to = $r_to;
@@ -1484,8 +1494,6 @@ if (isset($dashboard_data['error'])) {
                     $q_to = $temp;
                 }
 
-                $r_headers = [];
-                $r_rows = [];
                 $is_premium_report = true;
                 switch ($r_module) {
                     case 'all':
@@ -1533,13 +1541,19 @@ if (isset($dashboard_data['error'])) {
                                 ['module' => 'Legal', 'id' => 1, 'name' => 'Hotel Lease Agreement.pdf', 'ref' => 'C-001', 'date' => date('Y-m-d'), 'status' => 'High']
                             ];
                             if ($q_from) {
-                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($q_from) { return date('Y-m-d', strtotime($entry['date'])) >= $q_from; });
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($q_from) {
+                                    return date('Y-m-d', strtotime($entry['date'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
-                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($q_to) { return date('Y-m-d', strtotime($entry['date'])) <= $q_to; });
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($q_to) {
+                                    return date('Y-m-d', strtotime($entry['date'])) <= $q_to;
+                                });
                             }
                             if ($r_status !== 'all') {
-                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($r_status) { return strtolower($entry['status']) === strtolower($r_status); });
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($r_status) {
+                                    return strtolower($entry['status']) === strtolower($r_status);
+                                });
                             }
                             $r_rows = array_merge($r_rows, $mock_all_data);
                         }
@@ -1548,9 +1562,12 @@ if (isset($dashboard_data['error'])) {
 
                     case 'facilities':
                         $r_sql = "SELECT id, name, type, capacity, location, CONCAT('₱', FORMAT(hourly_rate, 2)) as rate, created_at, status FROM facilities WHERE 1=1";
-                        if ($q_from) $r_sql .= " AND DATE(created_at) >= " . $db->quote($q_from);
-                        if ($q_to)   $r_sql .= " AND DATE(created_at) <= " . $db->quote($q_to);
-                        if ($r_status !== 'all') $r_sql .= " AND status=" . $db->quote($r_status);
+                        if ($q_from)
+                            $r_sql .= " AND DATE(created_at) >= " . $db->quote($q_from);
+                        if ($q_to)
+                            $r_sql .= " AND DATE(created_at) <= " . $db->quote($q_to);
+                        if ($r_status !== 'all')
+                            $r_sql .= " AND status=" . $db->quote($r_status);
                         $r_headers = ['ID', 'NAME', 'TYPE', 'CAPACITY', 'LOCATION', 'RATE', 'DATE', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
@@ -1559,9 +1576,12 @@ if (isset($dashboard_data['error'])) {
 
                     case 'archiving':
                         $r_sql = "SELECT id, name, case_id, file_path, uploaded_at, 'Archived' as status FROM documents WHERE is_deleted=0";
-                        if ($q_from) $r_sql .= " AND DATE(uploaded_at) >= " . $db->quote($q_from);
-                        if ($q_to)   $r_sql .= " AND DATE(uploaded_at) <= " . $db->quote($q_to);
-                        if ($r_status !== 'all' && strtolower($r_status) !== 'archived') $r_sql .= " AND 1=0";
+                        if ($q_from)
+                            $r_sql .= " AND DATE(uploaded_at) >= " . $db->quote($q_from);
+                        if ($q_to)
+                            $r_sql .= " AND DATE(uploaded_at) <= " . $db->quote($q_to);
+                        if ($r_status !== 'all' && strtolower($r_status) !== 'archived')
+                            $r_sql .= " AND 1=0";
                         $r_headers = ['ID', 'DOCUMENT NAME', 'CASE ID', 'FILE PATH', 'UPLOADED AT', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
@@ -1582,8 +1602,10 @@ if (isset($dashboard_data['error'])) {
                             $v_phone = in_array('phone_number', $v_cols) ? 'phone_number' : 'phone';
 
                             $r_sql = "SELECT id, full_name, email, $v_phone as phone, room_number as facility, $v_checkin as checkin_date, $v_checkin as time_in, $v_checkout as time_out, CASE WHEN status = 'active' THEN 'Checked In' ELSE status END as status FROM direct_checkins WHERE 1=1";
-                            if ($q_from) $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($q_from);
-                            if ($q_to)   $r_sql .= " AND DATE($v_checkin) <= " . get_pdo()->quote($q_to);
+                            if ($q_from)
+                                $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($q_from);
+                            if ($q_to)
+                                $r_sql .= " AND DATE($v_checkin) <= " . get_pdo()->quote($q_to);
                             if ($r_status !== 'all') {
                                 $mapped_status = ($r_status === 'Checked In' || $r_status === 'active') ? 'active' : $r_status;
                                 $r_sql .= " AND status=" . get_pdo()->quote($mapped_status);
@@ -1592,7 +1614,9 @@ if (isset($dashboard_data['error'])) {
                             $r_stmt = get_pdo()->prepare($r_sql);
                             $r_stmt->execute();
                             $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
-                        } catch (Exception $e) { $r_rows = []; }
+                        } catch (Exception $e) {
+                            $r_rows = [];
+                        }
 
                         if (empty($r_rows)) {
                             $r_rows = [
@@ -1600,22 +1624,34 @@ if (isset($dashboard_data['error'])) {
                                 ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'checkin_date' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out']
                             ];
                             if ($q_from) {
-                                $r_rows = array_filter($r_rows, function ($entry) use ($q_from) { return date('Y-m-d', strtotime($entry['checkin_date'])) >= $q_from; });
+                                $r_rows = array_filter($r_rows, function ($entry) use ($q_from) {
+                                    return date('Y-m-d', strtotime($entry['checkin_date'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
-                                $r_rows = array_filter($r_rows, function ($entry) use ($q_to) { return date('Y-m-d', strtotime($entry['checkin_date'])) <= $q_to; });
+                                $r_rows = array_filter($r_rows, function ($entry) use ($q_to) {
+                                    return date('Y-m-d', strtotime($entry['checkin_date'])) <= $q_to;
+                                });
                             }
                             if ($r_status !== 'all') {
-                                $r_rows = array_filter($r_rows, function ($entry) use ($r_status) { $s = strtolower($entry['status']); if ($s === 'checked in') $s = 'active'; return $s === strtolower($r_status); });
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_status) {
+                                    $s = strtolower($entry['status']);
+                                    if ($s === 'checked in')
+                                        $s = 'active';
+                                    return $s === strtolower($r_status);
+                                });
                             }
                         }
                         break;
 
                     case 'legal':
                         $r_sql = "SELECT id, name, case_id, contract_type, risk_score, created_at, 'Active' as status FROM contracts WHERE 1=1";
-                        if ($q_from) $r_sql .= " AND DATE(created_at) >= " . $db->quote($q_from);
-                        if ($q_to)   $r_sql .= " AND DATE(created_at) <= " . $db->quote($q_to);
-                        if ($r_status !== 'all' && !in_array(strtolower($r_status), ['active', 'confirmed', 'high'])) $r_sql .= " AND 1=0";
+                        if ($q_from)
+                            $r_sql .= " AND DATE(created_at) >= " . $db->quote($q_from);
+                        if ($q_to)
+                            $r_sql .= " AND DATE(created_at) <= " . $db->quote($q_to);
+                        if ($r_status !== 'all' && !in_array(strtolower($r_status), ['active', 'confirmed', 'high']))
+                            $r_sql .= " AND 1=0";
                         $r_headers = ['ID', 'CONTRACT NAME', 'CASE ID', 'TYPE', 'RISK SCORE', 'CREATED AT', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
@@ -1626,10 +1662,14 @@ if (isset($dashboard_data['error'])) {
                                 ['id' => 2, 'name' => 'Employment Contract.pdf', 'case_id' => 'C-003', 'contract_type' => 'Internal', 'risk_score' => 'Low', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 day')), 'status' => 'Active']
                             ];
                             if ($q_from) {
-                                $r_rows = array_filter($r_rows, function ($entry) use ($q_from) { return date('Y-m-d', strtotime($entry['created_at'])) >= $q_from; });
+                                $r_rows = array_filter($r_rows, function ($entry) use ($q_from) {
+                                    return date('Y-m-d', strtotime($entry['created_at'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
-                                $r_rows = array_filter($r_rows, function ($entry) use ($q_to) { return date('Y-m-d', strtotime($entry['created_at'])) <= $q_to; });
+                                $r_rows = array_filter($r_rows, function ($entry) use ($q_to) {
+                                    return date('Y-m-d', strtotime($entry['created_at'])) <= $q_to;
+                                });
                             }
                         }
                         break;
@@ -1637,9 +1677,12 @@ if (isset($dashboard_data['error'])) {
                     case 'reservations':
                     default:
                         $r_sql = "SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1";
-                        if ($q_from) $r_sql .= " AND r.event_date >= " . get_pdo()->quote($q_from);
-                        if ($q_to)   $r_sql .= " AND r.event_date <= " . get_pdo()->quote($q_to);
-                        if ($r_status !== 'all') $r_sql .= " AND r.status=" . get_pdo()->quote($r_status);
+                        if ($q_from)
+                            $r_sql .= " AND r.event_date >= " . get_pdo()->quote($q_from);
+                        if ($q_to)
+                            $r_sql .= " AND r.event_date <= " . get_pdo()->quote($q_to);
+                        if ($r_status !== 'all')
+                            $r_sql .= " AND r.status=" . get_pdo()->quote($r_status);
                         $r_sql .= ' ORDER BY r.event_date DESC, r.start_time DESC';
 
                         $r_headers = ['ID', 'DATE', 'TIME', 'GUESTS', 'PACKAGE', 'TOTAL AMOUNT', 'DEPOSIT PAID', 'BALANCE DUE', 'PAYMENT METHOD', 'COORDINATOR', 'STATUS', 'ACTIONS'];
@@ -1655,13 +1698,19 @@ if (isset($dashboard_data['error'])) {
                             ];
                             // Apply filters to mock data
                             if ($q_from) {
-                                $mock_entries = array_filter($mock_entries, function($entry) use ($q_from) { return date('Y-m-d', strtotime($entry['event_date'])) >= $q_from; });
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($q_from) {
+                                    return date('Y-m-d', strtotime($entry['event_date'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
-                                $mock_entries = array_filter($mock_entries, function($entry) use ($q_to) { return date('Y-m-d', strtotime($entry['event_date'])) <= $q_to; });
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($q_to) {
+                                    return date('Y-m-d', strtotime($entry['event_date'])) <= $q_to;
+                                });
                             }
                             if ($r_status !== 'all') {
-                                $mock_entries = array_filter($mock_entries, function($entry) use ($r_status) { return strtolower($entry['status']) === strtolower($r_status); });
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($r_status) {
+                                    return strtolower($entry['status']) === strtolower($r_status);
+                                });
                             }
                             $r_rows = array_merge($r_rows, $mock_entries);
                         }
@@ -1669,215 +1718,215 @@ if (isset($dashboard_data['error'])) {
                 }
 
                 // Set a flag to use premium light look for reports
-                                                                $is_premium_report=true; break; } ?>
+                $is_premium_report = true;
+                ?>
 
 
 
-                                                                <div class="filters-container" style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+                <div class="filters-container"
+                    style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
                     <form method="get" class="d-flex flex-wrap gap-1 align-center">
                         <input type="hidden" name="tab" value="reports">
                         <div class="filter-group">
-                            <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label><br>
-                            <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>" class="btn-outline" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label><br>
+                            <input type="date" name="from_date" value="<?= htmlspecialchars($r_from) ?>"
+                                class="btn-outline"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
                         </div>
                         <div class="filter-group">
-                            <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label><br>
-                            <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>" class="btn-outline" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label><br>
+                            <input type="date" name="to_date" value="<?= htmlspecialchars($r_to) ?>" class="btn-outline"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
                         </div>
                         <div class="filter-group">
-                            <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status</label><br>
-                            <select name="status" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 13px; min-width: 150px;">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status</label><br>
+                            <select name="status"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 13px; min-width: 150px;">
                                 <option value="all" <?= $r_status === 'all' ? 'selected' : '' ?>>All Status</option>
                                 <optgroup label="Reservations">
-                                    <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                                    <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                                    <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                    <option value="pending" <?= $r_status === 'pending' ? 'selected' : '' ?>>Pending
+                                    </option>
+                                    <option value="confirmed" <?= $r_status === 'confirmed' ? 'selected' : '' ?>>Confirmed
+                                    </option>
+                                    <option value="cancelled" <?= $r_status === 'cancelled' ? 'selected' : '' ?>>Cancelled
+                                    </option>
+                                    <option value="completed" <?= $r_status === 'completed' ? 'selected' : '' ?>>Completed
+                                    </option>
                                 </optgroup>
                                 <optgroup label="Visitors">
                                     <option value="Checked In" <?= ($r_status === 'Checked In' || $r_status === 'active') ? 'selected' : '' ?>>Checked In</option>
-                                    <option value="Checked Out" <?= $r_status === 'Checked Out' ? 'selected' : '' ?>>Checked Out</option>
+                                    <option value="Checked Out" <?= $r_status === 'Checked Out' ? 'selected' : '' ?>>
+                                        Checked Out</option>
                                 </optgroup>
                                 <optgroup label="Management">
                                     <option value="active" <?= $r_status === 'active' ? 'selected' : '' ?>>Active</option>
-                                    <option value="maintenance" <?= $r_status === 'maintenance' ? 'selected' : '' ?>>Maintenance</option>
-                                    <option value="Archived" <?= $r_status === 'Archived' ? 'selected' : '' ?>>Archived</option>
+                                    <option value="maintenance" <?= $r_status === 'maintenance' ? 'selected' : '' ?>>
+                                        Maintenance</option>
+                                    <option value="Archived" <?= $r_status === 'Archived' ? 'selected' : '' ?>>Archived
+                                    </option>
                                 </optgroup>
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Modules</label><br>
-                            <select name="module" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 13px;">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Modules</label><br>
+                            <select name="module"
+                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 13px;">
                                 <option value="all" <?= $r_module === 'all' ? 'selected' : '' ?>>All Records</option>
-                                <option value="reservations" <?= $r_module === 'reservations' ? 'selected' : '' ?>>Reservations</option>
-                                <option value="facilities" <?= $r_module === 'facilities' ? 'selected' : '' ?>>Facilities</option>
-                                <option value="archiving" <?= $r_module === 'archiving' ? 'selected' : '' ?>>Document Archiving</option>
-                                <option value="visitors" <?= $r_module === 'visitors' ? 'selected' : '' ?>>Visitor Management</option>
-                                <option value="legal" <?= $r_module === 'legal' ? 'selected' : '' ?>>Legal Management</option>
+                                <option value="reservations" <?= $r_module === 'reservations' ? 'selected' : '' ?>>
+                                    Reservations</option>
+                                <option value="facilities" <?= $r_module === 'facilities' ? 'selected' : '' ?>>Facilities
+                                </option>
+                                <option value="archiving" <?= $r_module === 'archiving' ? 'selected' : '' ?>>Document
+                                    Archiving</option>
+                                <option value="visitors" <?= $r_module === 'visitors' ? 'selected' : '' ?>>Visitor
+                                    Management</option>
+                                <option value="legal" <?= $r_module === 'legal' ? 'selected' : '' ?>>Legal Management
+                                </option>
                             </select>
                         </div>
                         <div class="filter-group" style="align-self: flex-end;">
-                            <button class="btn btn-primary" style="padding: 10px 25px;"><i class="fa-solid fa-filter"></i> Filter</button>
+                            <button class="btn btn-primary" style="padding: 10px 25px;"><i
+                                    class="fa-solid fa-filter"></i> Filter</button>
                         </div>
                     </form>
 
-                                                                    <div
-                                                                        style="margin-top: 15px; display: flex; justify-content: flex-start;">
-                                                                        <form method="post">
-                                                                            <input type="hidden" name="action"
-                                                                                value="export_csv">
-                                                                            <input type="hidden" name="module"
-                                                                                value="<?= htmlspecialchars($r_module) ?>">
-                                                                            <input type="hidden" name="from_date"
-                                                                                value="<?= htmlspecialchars($r_from) ?>">
-                                                                            <input type="hidden" name="to_date"
-                                                                                value="<?= htmlspecialchars($r_to) ?>">
-                                                                            <input type="hidden" name="status"
-                                                                                value="<?= htmlspecialchars($r_status) ?>">
-                                                                            <button class="btn btn-success"
-                                                                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                                                                                <i class="fa-solid fa-file-csv"></i>
-                                                                                Export CSV
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
+                    <div style="margin-top: 15px; display: flex; justify-content: flex-start;">
+                        <form method="post">
+                            <input type="hidden" name="action" value="export_csv">
+                            <input type="hidden" name="module" value="<?= htmlspecialchars($r_module) ?>">
+                            <input type="hidden" name="from_date" value="<?= htmlspecialchars($r_from) ?>">
+                            <input type="hidden" name="to_date" value="<?= htmlspecialchars($r_to) ?>">
+                            <input type="hidden" name="status" value="<?= htmlspecialchars($r_status) ?>">
+                            <button class="btn btn-success"
+                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                                <i class="fa-solid fa-file-csv"></i>
+                                Export CSV
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
-                                                                <div class="d-flex align-center gap-1 mb-1"
-                                                                    style="background: #3b82f6; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
-                                                                    <i class="fa-solid fa-file-invoice"
-                                                                        style="font-size: 1.5rem; color: #ffffff;"></i>
-                                                                    <h2
-                                                                        style="margin: 0; color: #ffffff; font-weight: 700;">
+                <div class="d-flex align-center gap-1 mb-1"
+                    style="background: #3b82f6; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+                    <i class="fa-solid fa-file-invoice" style="font-size: 1.5rem; color: #ffffff;"></i>
+                    <h2 style="margin: 0; color: #ffffff; font-weight: 700;">
+                        <?php
+                        $title_module = ($r_module === 'all') ? 'All Records' : ucfirst($r_module);
+                        echo $title_module . ' Result';
+                        if ($r_from || $r_to || $r_status !== 'all')
+                            echo ' (Filtered)';
+                        ?>
+                    </h2>
+                </div>
+
+                <div class="table-container <?= isset($is_premium_report) ? 'premium-white-card' : '' ?>"
+                    style="border:none; background: #ffffff;">
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <?php foreach ($r_headers as $h): ?>
+                                            <th><?= $h ?></th>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($r_rows)): ?>
+                                        <tr>
+                                            <td colspan="<?= count($r_headers) + 1 ?>"
+                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                                No records found for the
+                                                selected module and filters.
+                                            </td>
+                                        </tr>
+                                <?php else: ?>
+                                        <?php foreach ($r_rows as $rr): ?>
+                                                <tr style="border-bottom: 1px solid #edf2f7;">
+                                                    <?php if ($r_module === 'reservations'): ?>
+                                                            <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
+                                                                #BK-<?= $rr['id'] ?></td>
+                                                            <td style="font-size: 13px; color: #64748b;">
+                                                                <?= date('Y-m-d', strtotime($rr['event_date'] ?? 'now')) ?>
+                                                            </td>
+                                                            <td style="font-size: 13px;">
+                                                                <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?>
+                                                            </td>
+                                                            <td style="font-size: 13px; font-weight: 600;">
+                                                                <?= $rr['guests_count'] ?>
+                                                            </td>
+                                                            <td style="font-size: 13px; font-weight: 500;">
+                                                                <?= htmlspecialchars($rr['package'] ?? 'Standard') ?>
+                                                            </td>
+                                                            <td style="font-weight: 700; font-size: 13px; color: #0f172a;">
+                                                                ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?>
+                                                            </td>
+                                                            <td style="color: #059669; font-weight: 700; font-size: 13px;">
+                                                                ₱<?= number_format($rr['deposit_paid'] ?? ($rr['total_amount'] * 0.4), 2) ?>
+                                                            </td>
+                                                            <td style="color: #dc2626; font-weight: 700; font-size: 13px;">
+                                                                ₱<?= number_format($rr['balance_due'] ?? ($rr['total_amount'] * 0.6), 2) ?>
+                                                            </td>
+                                                            <td style="font-size: 13px;">
+                                                                <span
+                                                                    style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">
+                                                                    <?= strtoupper(htmlspecialchars($rr['payment_method'] ?? 'GCash')) ?>
+                                                                </span>
+                                                            </td>
+                                                            <td style="font-size: 13px; color: #64748b;">
+                                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
+                                                            </td>
+                                                            <td style="font-size: 13px;">
+                                                                <span class="status-badge status-<?= $rr['status'] ?>"
+                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
+                                                                    <?= strtoupper(htmlspecialchars($rr['status'])) ?>
+                                                                </span>
+                                                            </td>
+                                                            <td style="padding: 14px 15px;">
+                                                                <div class="d-flex gap-1" style="justify-content: center;">
+                                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                                        style="color: #60a5fa; border-color: #3b82f6;" title="View Details">
+                                                                        <i class="fa-solid fa-eye"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                    <?php else: ?>
+                                                            <!-- Generic display for other modules -->
+                                                            <?php foreach ($rr as $key => $val): ?>
+                                                                    <td style="color: #1e293b; font-size: 13px; padding: 14px 15px;">
                                                                         <?php
-                                                                        $title_module = ($r_module === 'all') ? 'All Records' : ucfirst($r_module);
-                                                                        echo $title_module . ' Result';
-                                                                        if ($r_from || $r_to || $r_status !== 'all')
-                                                                            echo ' (Filtered)';
-                                                                        ?>
-                                                                    </h2>
-                                                                </div>
+                                                                        $display_val = $val;
+                                                                        $date_keys = ['date', 'created_at', 'uploaded_at', 'checkin_date', 'event_date'];
 
-                                                                <div class="table-container <?= isset($is_premium_report) ? 'premium-white-card' : '' ?>"
-                                                                    style="border:none; background: #ffffff;">
-                                                                    <div class="table-wrapper">
-                                                                        <table class="table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <?php foreach ($r_headers as $h): ?>
-                                                                                            <th><?= $h ?></th>
-                                                                                    <?php endforeach; ?>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <?php if (empty($r_rows)): ?>
-                                                                                        <tr>
-                                                                                            <td colspan="<?= count($r_headers) + 1 ?>"
-                                                                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                                                                No records found for the
-                                                                                                selected module and filters.
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                <?php else: ?>
-                                                                                        <?php foreach ($r_rows as $rr): ?>
-                                                                                                <tr
-                                                                                                    style="border-bottom: 1px solid #edf2f7;">
-                                                                                                    <?php if ($r_module === 'reservations'): ?>
-                                                                                                            <td
-                                                                                                                style="font-weight: 700; font-size: 13px; color: #1e293b;">
-                                                                                                                #BK-<?= $rr['id'] ?></td>
-                                                                                                            <td
-                                                                                                                style="font-size: 13px; color: #64748b;">
-                                                                                                                <?= date('Y-m-d', strtotime($rr['event_date'] ?? 'now')) ?>
-                                                                                                            </td>
-                                                                                                            <td style="font-size: 13px;">
-                                                                                                                <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="font-size: 13px; font-weight: 600;">
-                                                                                                                <?= $rr['guests_count'] ?>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="font-size: 13px; font-weight: 500;">
-                                                                                                                <?= htmlspecialchars($rr['package'] ?? 'Standard') ?>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="font-weight: 700; font-size: 13px; color: #0f172a;">
-                                                                                                                ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="color: #059669; font-weight: 700; font-size: 13px;">
-                                                                                                                ₱<?= number_format($rr['deposit_paid'] ?? ($rr['total_amount'] * 0.4), 2) ?>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="color: #dc2626; font-weight: 700; font-size: 13px;">
-                                                                                                                ₱<?= number_format($rr['balance_due'] ?? ($rr['total_amount'] * 0.6), 2) ?>
-                                                                                                            </td>
-                                                                                                            <td style="font-size: 13px;">
-                                                                                                                <span
-                                                                                                                    style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">
-                                                                                                                    <?= strtoupper(htmlspecialchars($rr['payment_method'] ?? 'GCash')) ?>
-                                                                                                                </span>
-                                                                                                            </td>
-                                                                                                            <td
-                                                                                                                style="font-size: 13px; color: #64748b;">
-                                                                                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
-                                                                                                            </td>
-                                                                                                            <td style="font-size: 13px;">
-                                                                                                                <span
-                                                                                                                    class="status-badge status-<?= $rr['status'] ?>"
-                                                                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
-                                                                                                                    <?= strtoupper(htmlspecialchars($rr['status'])) ?>
-                                                                                                                </span>
-                                                                                                            </td>
-                                                                                                            <td style="padding: 14px 15px;">
-                                                                                                                <div class="d-flex gap-1"
-                                                                                                                    style="justify-content: center;">
-                                                                                                                    <button type="button"
-                                                                                                                        class="btn btn-outline btn-sm btn-icon"
-                                                                                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                                                                                        style="color: #60a5fa; border-color: #3b82f6;"
-                                                                                                                        title="View Details">
-                                                                                                                        <i
-                                                                                                                            class="fa-solid fa-eye"></i>
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </td>
-                                                                                                    <?php else: ?>
-                                                                                                            <!-- Generic display for other modules -->
-                                                                                                            <?php foreach ($rr as $key => $val): ?>
-                                                                                                                    <td
-                                                                                                                        style="color: #1e293b; font-size: 13px; padding: 14px 15px;">
-                                                                                                                        <?php
-                                                                                                                        $display_val = $val;
-                                                                                                                        $date_keys = ['date', 'created_at', 'uploaded_at', 'checkin_date', 'event_date'];
-
-                                                                                                                        if (strtolower($key) === 'status'):
-                                                                                                                            ?>
-                                                                                                                                <span
-                                                                                                                                    class="status-badge status-<?= strtolower($val) ?>"
-                                                                                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
-                                                                                                                                    <?php
-                                                                                                                                    if (strtolower($val) === 'active')
-                                                                                                                                        $display_val = 'Checked In';
-                                                                                                                                    echo strtoupper(htmlspecialchars($display_val));
-                                                                                                                                    ?>
-                                                                                                                                </span>
-                                                                                                                        <?php elseif (in_array(strtolower($key), $date_keys) && $val !== 'N/A' && !empty($val)): ?>
-                                                                                                                                <?= date('Y-m-d', strtotime($val)) ?>
-                                                                                                                        <?php else: ?>
-                                                                                                                                <?= htmlspecialchars($val) ?>
-                                                                                                                        <?php endif; ?>
-                                                                                                                    </td>
-                                                                                                            <?php endforeach; ?>
-                                                                                                    <?php endif; ?>
-                                                                                                </tr>
-                                                                                        <?php endforeach; ?>
-                                                                                <?php endif; ?>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                </div>
+                                                                        if (strtolower($key) === 'status'):
+                                                                            ?>
+                                                                                <span class="status-badge status-<?= strtolower($val) ?>"
+                                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
+                                                                                    <?php
+                                                                                    if (strtolower($val) === 'active')
+                                                                                        $display_val = 'Checked In';
+                                                                                    echo strtoupper(htmlspecialchars($display_val));
+                                                                                    ?>
+                                                                                </span>
+                                                                        <?php elseif (in_array(strtolower($key), $date_keys) && $val !== 'N/A' && !empty($val)): ?>
+                                                                                <?= date('Y-m-d', strtotime($val)) ?>
+                                                                        <?php else: ?>
+                                                                                <?= htmlspecialchars($val) ?>
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                            <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </tr>
+                                        <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Reports Dates Tab -->
