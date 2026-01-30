@@ -1475,45 +1475,6 @@ if (isset($dashboard_data['error'])) {
                 $r_to = $_GET['to_date'] ?? '';
                 $r_status = $_GET['status'] ?? 'all';
                 $r_module = $_GET['module'] ?? 'reservations';
-                $r_date_range = $_GET['date_range'] ?? '';
-                
-                // Handle date_range parameter to auto-set from_date and to_date
-                if ($r_date_range && !$r_from && !$r_to) {
-                    $today = date('Y-m-d');
-                    switch($r_date_range) {
-                        case 'today':
-                            $r_from = $r_to = $today;
-                            break;
-                        case 'yesterday':
-                            $r_from = $r_to = date('Y-m-d', strtotime('-1 day'));
-                            break;
-                        case 'this_week':
-                            $r_from = date('Y-m-d', strtotime('monday this week'));
-                            $r_to = date('Y-m-d', strtotime('sunday this week'));
-                            break;
-                        case 'last_week':
-                            $r_from = date('Y-m-d', strtotime('monday last week'));
-                            $r_to = date('Y-m-d', strtotime('sunday last week'));
-                            break;
-                        case 'this_month':
-                            $r_from = date('Y-m-01');
-                            $r_to = date('Y-m-t');
-                            break;
-                        case 'last_month':
-                            $r_from = date('Y-m-01', strtotime('-1 month'));
-                            $r_to = date('Y-m-t', strtotime('-1 month'));
-                            break;
-                        case 'this_quarter':
-                            $current_quarter = ceil(date('n') / 3);
-                            $r_from = date('Y-m-d', mktime(0, 0, 0, ($current_quarter - 1) * 3 + 1, 1, date('Y')));
-                            $r_to = date('Y-m-d', mktime(0, 0, 0, $current_quarter * 3 + 1, 0, date('Y')));
-                            break;
-                        case 'this_year':
-                            $r_from = date('Y-01-01');
-                            $r_to = date('Y-12-31');
-                            break;
-                    }
-                }
 
                 $r_headers = [];
                 $r_rows = [];
@@ -1548,7 +1509,7 @@ if (isset($dashboard_data['error'])) {
                         $r_stmt = get_pdo()->prepare($all_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
-                        
+
                         // Add mock data for All Records if no results found
                         if (empty($r_rows)) {
                             $mock_all_data = [
@@ -1617,17 +1578,29 @@ if (isset($dashboard_data['error'])) {
                                     'status' => 'High'
                                 ]
                             ];
-                            
+
+                            // Apply date range filter to mock data
+                            if ($r_from) {
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($r_from) {
+                                    return $entry['date'] === 'N/A' || date('Y-m-d', strtotime($entry['date'])) >= $r_from;
+                                });
+                            }
+                            if ($r_to) {
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($r_to) {
+                                    return $entry['date'] === 'N/A' || date('Y-m-d', strtotime($entry['date'])) <= $r_to;
+                                });
+                            }
+
                             // Apply status filter to mock data if status is not 'all'
                             if ($r_status !== 'all') {
-                                $mock_all_data = array_filter($mock_all_data, function($entry) use ($r_status) {
+                                $mock_all_data = array_filter($mock_all_data, function ($entry) use ($r_status) {
                                     return strtolower($entry['status']) === strtolower($r_status);
                                 });
                             }
-                            
+
                             $r_rows = array_merge($r_rows, $mock_all_data);
                         }
-                        
+
                         $is_premium_report = true;
                         break;
 
@@ -1682,6 +1655,9 @@ if (isset($dashboard_data['error'])) {
                             $is_premium_report = true;
                         } catch (Exception $e) {
                             $r_rows = [];
+                            $is_premium_report = true;
+                        } catch (Exception $e) {
+                            $r_rows = [];
                         }
 
                         // Robust Mock visitors if still empty
@@ -1691,6 +1667,29 @@ if (isset($dashboard_data['error'])) {
                                 ['id' => 2, 'full_name' => 'Maria Clara', 'email' => 'maria@example.com', 'phone' => '09187654321', 'facility' => 'Function Hall', 'checkin_date' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_in' => date('Y-m-d 09:30:00', strtotime('-1 day')), 'time_out' => date('Y-m-d 15:00:00', strtotime('-1 day')), 'status' => 'Checked Out'],
                                 ['id' => 3, 'full_name' => 'Marvin Quiriado', 'email' => 'marvin@example.com', 'phone' => '09221239876', 'facility' => 'Main Ballroom', 'checkin_date' => date('Y-m-d 11:45:00'), 'time_in' => date('Y-m-d 11:45:00'), 'time_out' => '...', 'status' => 'Checked In']
                             ];
+
+                            // Apply date range filter to mock data
+                            if ($r_from) {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_from) {
+                                    return date('Y-m-d', strtotime($entry['checkin_date'])) >= $r_from;
+                                });
+                            }
+                            if ($r_to) {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_to) {
+                                    return date('Y-m-d', strtotime($entry['checkin_date'])) <= $r_to;
+                                });
+                            }
+
+                            // Apply status filter to mock data
+                            if ($r_status !== 'all') {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_status) {
+                                    $s = strtolower($entry['status']);
+                                    if ($s === 'checked in')
+                                        $s = 'active';
+                                    return $s === strtolower($r_status);
+                                });
+                            }
+
                             $is_premium_report = true;
                         }
                         break;
@@ -1710,10 +1709,29 @@ if (isset($dashboard_data['error'])) {
                         // Mock data for Legal Management if empty
                         if (empty($r_rows)) {
                             $r_rows = [
-                                ['id' => 1, 'name' => 'Hotel Lease Agreement.pdf', 'case_id' => 'C-001', 'type' => 'External', 'risk_score' => 'High', 'created_at' => date('Y-m-d H:i:s')],
-                                ['id' => 2, 'name' => 'Supplier Contract.docx', 'case_id' => 'C-002', 'type' => 'Internal', 'risk_score' => 'Medium', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 month'))],
-                                ['id' => 3, 'name' => 'Employment Contract - Celestre', 'case_id' => 'C-003', 'type' => 'Internal', 'risk_score' => 'Low', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 day'))]
+                                ['id' => 1, 'name' => 'Hotel Lease Agreement.pdf', 'case_id' => 'C-001', 'type' => 'External', 'risk_score' => 'High', 'created_at' => date('Y-m-d H:i:s'), 'status' => 'confirmed'],
+                                ['id' => 2, 'name' => 'Supplier Contract.docx', 'case_id' => 'C-002', 'type' => 'Internal', 'risk_score' => 'Medium', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 month')), 'status' => 'completed'],
+                                ['id' => 3, 'name' => 'Employment Contract - Celestre', 'case_id' => 'C-003', 'type' => 'Internal', 'risk_score' => 'Low', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 day')), 'status' => 'pending']
                             ];
+
+                            // Apply date range filter to mock data
+                            if ($r_from) {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_from) {
+                                    return date('Y-m-d', strtotime($entry['created_at'])) >= $r_from;
+                                });
+                            }
+                            if ($r_to) {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_to) {
+                                    return date('Y-m-d', strtotime($entry['created_at'])) <= $r_to;
+                                });
+                            }
+
+                            // Apply status filter to mock data
+                            if ($r_status !== 'all') {
+                                $r_rows = array_filter($r_rows, function ($entry) use ($r_status) {
+                                    return strtolower($entry['status'] ?? '') === strtolower($r_status);
+                                });
+                            }
                         }
                         break;
 
@@ -1851,14 +1869,26 @@ if (isset($dashboard_data['error'])) {
                                     'facility_name' => 'Function Hall A'
                                 ]
                             ];
-                            
-                            // Apply status filter to mock data if status is not 'all'
-                            if ($r_status !== 'all') {
-                                $mock_entries = array_filter($mock_entries, function($entry) use ($r_status) {
-                                    return $entry['status'] === $r_status;
+
+                            // Apply date range filter to mock data
+                            if ($r_from) {
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($r_from) {
+                                    return date('Y-m-d', strtotime($entry['event_date'])) >= $r_from;
                                 });
                             }
-                            
+                            if ($r_to) {
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($r_to) {
+                                    return date('Y-m-d', strtotime($entry['event_date'])) <= $r_to;
+                                });
+                            }
+
+                            // Apply status filter to mock data if status is not 'all'
+                            if ($r_status !== 'all') {
+                                $mock_entries = array_filter($mock_entries, function ($entry) use ($r_status) {
+                                    return strtolower($entry['status']) === strtolower($r_status);
+                                });
+                            }
+
                             $r_rows = array_merge($r_rows, $mock_entries);
                         }
                         // Set a flag to use premium light look for reports
@@ -1917,23 +1947,6 @@ if (isset($dashboard_data['error'])) {
                                     Management</option>
                                 <option value="legal" <?= $r_module === 'legal' ? 'selected' : '' ?>>Legal Management
                                 </option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label
-                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
-                            <select name="date_range"
-                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;"
-                                onchange="setDateRange(this.value)">
-                                <option value="">Custom Range</option>
-                                <option value="today" <?= ($r_date_range === 'today') ? 'selected' : '' ?>>Today</option>
-                                <option value="yesterday" <?= ($r_date_range === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
-                                <option value="this_week" <?= ($r_date_range === 'this_week') ? 'selected' : '' ?>>This Week</option>
-                                <option value="last_week" <?= ($r_date_range === 'last_week') ? 'selected' : '' ?>>Last Week</option>
-                                <option value="this_month" <?= ($r_date_range === 'this_month') ? 'selected' : '' ?>>This Month</option>
-                                <option value="last_month" <?= ($r_date_range === 'last_month') ? 'selected' : '' ?>>Last Month</option>
-                                <option value="this_quarter" <?= ($r_date_range === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
-                                <option value="this_year" <?= ($r_date_range === 'this_year') ? 'selected' : '' ?>>This Year</option>
                             </select>
                         </div>
                         <div class="filter-group" style="align-self: flex-end;">
@@ -2062,7 +2075,7 @@ if (isset($dashboard_data['error'])) {
             <div id="reports_dates"
                 class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reports_dates') ? 'active' : '' ?>"
                 style="padding-top: 0; margin-top: -25px; margin-left: 20px; padding-right: 40px; margin-right: 15px;">
-                
+
                 <div class="filters-container"
                     style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
                     <form method="get" class="d-flex flex-wrap gap-1 align-center">
@@ -2070,14 +2083,15 @@ if (isset($dashboard_data['error'])) {
                         <div class="filter-group">
                             <label
                                 style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label><br>
-                            <input type="date" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>"
-                                class="btn-outline"
+                            <input type="date" name="from_date"
+                                value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>" class="btn-outline"
                                 style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
                         </div>
                         <div class="filter-group">
                             <label
                                 style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label><br>
-                            <input type="date" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>" class="btn-outline"
+                            <input type="date" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>"
+                                class="btn-outline"
                                 style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
                         </div>
                         <div class="filter-group">
@@ -2085,8 +2099,10 @@ if (isset($dashboard_data['error'])) {
                                 style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status</label><br>
                             <select name="status"
                                 style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
-                                <option value="all" <?= (($_GET['status'] ?? 'all') === 'all') ? 'selected' : '' ?>>All</option>
-                                <option value="pending" <?= (($_GET['status'] ?? '') === 'pending') ? 'selected' : '' ?>>Pending</option>
+                                <option value="all" <?= (($_GET['status'] ?? 'all') === 'all') ? 'selected' : '' ?>>All
+                                </option>
+                                <option value="pending" <?= (($_GET['status'] ?? '') === 'pending') ? 'selected' : '' ?>>
+                                    Pending</option>
                                 <option value="confirmed" <?= (($_GET['status'] ?? '') === 'confirmed') ? 'selected' : '' ?>>Confirmed</option>
                                 <option value="cancelled" <?= (($_GET['status'] ?? '') === 'cancelled') ? 'selected' : '' ?>>Cancelled</option>
                                 <option value="completed" <?= (($_GET['status'] ?? '') === 'completed') ? 'selected' : '' ?>>Completed</option>
@@ -2097,29 +2113,15 @@ if (isset($dashboard_data['error'])) {
                                 style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Modules</label><br>
                             <select name="module"
                                 style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
-                                <option value="all" <?= (($_GET['module'] ?? 'all') === 'all') ? 'selected' : '' ?>>All Records</option>
+                                <option value="all" <?= (($_GET['module'] ?? 'all') === 'all') ? 'selected' : '' ?>>All
+                                    Records</option>
                                 <option value="reservations" <?= (($_GET['module'] ?? '') === 'reservations') ? 'selected' : '' ?>>Reservations</option>
                                 <option value="facilities" <?= (($_GET['module'] ?? '') === 'facilities') ? 'selected' : '' ?>>Facilities</option>
                                 <option value="archiving" <?= (($_GET['module'] ?? '') === 'archiving') ? 'selected' : '' ?>>Document Archiving</option>
-                                <option value="visitors" <?= (($_GET['module'] ?? '') === 'visitors') ? 'selected' : '' ?>>Visitor Management</option>
-                                <option value="legal" <?= (($_GET['module'] ?? '') === 'legal') ? 'selected' : '' ?>>Legal Management</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label
-                                style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
-                            <select name="date_range"
-                                style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;"
-                                onchange="setDateRange(this.value)">
-                                <option value="">Custom Range</option>
-                                <option value="today" <?= (($_GET['date_range'] ?? '') === 'today') ? 'selected' : '' ?>>Today</option>
-                                <option value="yesterday" <?= (($_GET['date_range'] ?? '') === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
-                                <option value="this_week" <?= (($_GET['date_range'] ?? '') === 'this_week') ? 'selected' : '' ?>>This Week</option>
-                                <option value="last_week" <?= (($_GET['date_range'] ?? '') === 'last_week') ? 'selected' : '' ?>>Last Week</option>
-                                <option value="this_month" <?= (($_GET['date_range'] ?? '') === 'this_month') ? 'selected' : '' ?>>This Month</option>
-                                <option value="last_month" <?= (($_GET['date_range'] ?? '') === 'last_month') ? 'selected' : '' ?>>Last Month</option>
-                                <option value="this_quarter" <?= (($_GET['date_range'] ?? '') === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
-                                <option value="this_year" <?= (($_GET['date_range'] ?? '') === 'this_year') ? 'selected' : '' ?>>This Year</option>
+                                <option value="visitors" <?= (($_GET['module'] ?? '') === 'visitors') ? 'selected' : '' ?>>
+                                    Visitor Management</option>
+                                <option value="legal" <?= (($_GET['module'] ?? '') === 'legal') ? 'selected' : '' ?>>Legal
+                                    Management</option>
                             </select>
                         </div>
                         <div class="filter-group" style="align-self: flex-end;">
@@ -2131,10 +2133,13 @@ if (isset($dashboard_data['error'])) {
                     <div style="margin-top: 15px; display: flex; justify-content: flex-start;">
                         <form method="post">
                             <input type="hidden" name="action" value="export_csv">
-                            <input type="hidden" name="module" value="<?= htmlspecialchars($_GET['module'] ?? 'all') ?>">
-                            <input type="hidden" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>">
+                            <input type="hidden" name="module"
+                                value="<?= htmlspecialchars($_GET['module'] ?? 'all') ?>">
+                            <input type="hidden" name="from_date"
+                                value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>">
                             <input type="hidden" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>">
-                            <input type="hidden" name="status" value="<?= htmlspecialchars($_GET['status'] ?? 'all') ?>">
+                            <input type="hidden" name="status"
+                                value="<?= htmlspecialchars($_GET['status'] ?? 'all') ?>">
                             <button class="btn btn-success"
                                 style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;">
                                 <i class="fa-solid fa-file-csv"></i> Export CSV
@@ -2148,8 +2153,7 @@ if (isset($dashboard_data['error'])) {
                     <h2 style="margin: 0;">Reports Dates</h2>
                 </div>
 
-                <div class="table-container premium-white-card"
-                    style="border:none; background: #ffffff;">
+                <div class="table-container premium-white-card" style="border:none; background: #ffffff;">
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
@@ -2170,11 +2174,11 @@ if (isset($dashboard_data['error'])) {
                                 $rd_status = $_GET['status'] ?? 'all';
                                 $rd_module = $_GET['module'] ?? 'all';
                                 $rd_date_range = $_GET['date_range'] ?? '';
-                                
+
                                 // Handle date_range parameter to auto-set from_date and to_date
                                 if ($rd_date_range && !$rd_from && !$rd_to) {
                                     $today = date('Y-m-d');
-                                    switch($rd_date_range) {
+                                    switch ($rd_date_range) {
                                         case 'today':
                                             $rd_from = $rd_to = $today;
                                             break;
@@ -2208,22 +2212,22 @@ if (isset($dashboard_data['error'])) {
                                             break;
                                     }
                                 }
-                                
+
                                 $db = get_pdo();
                                 $rd_rows = [];
-                                
+
                                 // Build the same query as the reports tab but with date filtering
                                 if ($rd_module === 'all' || $rd_module === 'reservations') {
                                     $where_status_res = ($rd_status !== 'all') ? " AND r.status = " . $db->quote($rd_status) : "";
                                     $where_date_res = ($rd_from ? " AND r.event_date >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND r.event_date <= " . $db->quote($rd_to) : "");
-                                    
+
                                     $sql = "SELECT 'Reservation' as module, r.id, CONVERT(r.customer_name USING utf8mb4) as name, CONVERT(f.name USING utf8mb4) as ref, CAST(r.event_date AS CHAR) as date, CONVERT(r.status USING utf8mb4) as status 
                                             FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE 1=1 $where_status_res $where_date_res";
                                     $stmt = $db->prepare($sql);
                                     $stmt->execute();
                                     $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
                                 }
-                                
+
                                 if ($rd_module === 'all' || $rd_module === 'facilities') {
                                     $where_status = ($rd_status !== 'all') ? " AND status = " . $db->quote($rd_status) : "";
                                     $sql = "SELECT 'Facility' as module, id, CONVERT(name USING utf8mb4), CONVERT(location USING utf8mb4), 'N/A' as date, CONVERT(status USING utf8mb4) FROM facilities WHERE 1=1 $where_status";
@@ -2231,7 +2235,7 @@ if (isset($dashboard_data['error'])) {
                                     $stmt->execute();
                                     $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
                                 }
-                                
+
                                 if ($rd_module === 'all' || $rd_module === 'archiving') {
                                     $where_date_doc = ($rd_from ? " AND DATE(uploaded_at) >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND DATE(uploaded_at) <= " . $db->quote($rd_to) : "");
                                     $sql = "SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc";
@@ -2239,7 +2243,7 @@ if (isset($dashboard_data['error'])) {
                                     $stmt->execute();
                                     $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
                                 }
-                                
+
                                 if ($rd_module === 'all' || $rd_module === 'visitors') {
                                     $v_cols = $db->query("SHOW COLUMNS FROM direct_checkins")->fetchAll(PDO::FETCH_COLUMN);
                                     $v_status_col = in_array('status', $v_cols) ? 'status' : "'N/A'";
@@ -2250,7 +2254,7 @@ if (isset($dashboard_data['error'])) {
                                     $stmt->execute();
                                     $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
                                 }
-                                
+
                                 if ($rd_module === 'all' || $rd_module === 'legal') {
                                     $where_date_leg = ($rd_from ? " AND DATE(created_at) >= " . $db->quote($rd_from) : "") . ($rd_to ? " AND DATE(created_at) <= " . $db->quote($rd_to) : "");
                                     $sql = "SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, CONVERT(risk_score USING utf8mb4) as status FROM contracts WHERE 1=1 $where_date_leg";
@@ -2258,12 +2262,12 @@ if (isset($dashboard_data['error'])) {
                                     $stmt->execute();
                                     $rd_rows = array_merge($rd_rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
                                 }
-                                
+
                                 // Sort by date
-                                usort($rd_rows, function($a, $b) {
+                                usort($rd_rows, function ($a, $b) {
                                     return strtotime($b['date']) - strtotime($a['date']);
                                 });
-                                
+
                                 if (empty($rd_rows)): ?>
                                     <tr>
                                         <td colspan="6"
@@ -2290,7 +2294,8 @@ if (isset($dashboard_data['error'])) {
                                                 <?= htmlspecialchars($rr['date']) ?>
                                             </td>
                                             <td>
-                                                <span class="badge" style="
+                                                <span class="badge"
+                                                    style="
                                                     <?php
                                                     $status = strtolower($rr['status']);
                                                     if ($status === 'confirmed' || $status === 'completed') {
@@ -3057,42 +3062,33 @@ if (isset($dashboard_data['error'])) {
 
                 <div id="maintenance-trash-section" style="display: none;">
                     <!-- Date Range Filter for Deleted Table -->
-                    <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <form method="get" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                             <input type="hidden" name="tab" value="maintenance">
                             <div class="filter-group">
-                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">FROM</label><br>
-                                <input type="date" name="deleted_from_date" value="<?= htmlspecialchars($_GET['deleted_from_date'] ?? '') ?>" 
-                                       style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                                <label
+                                    style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">FROM</label><br>
+                                <input type="date" name="deleted_from_date"
+                                    value="<?= htmlspecialchars($_GET['deleted_from_date'] ?? '') ?>"
+                                    style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
                             </div>
                             <div class="filter-group">
-                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">TO</label><br>
-                                <input type="date" name="deleted_to_date" value="<?= htmlspecialchars($_GET['deleted_to_date'] ?? '') ?>" 
-                                       style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
-                            </div>
-                            <div class="filter-group">
-                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
-                                <select name="deleted_date_range" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;" 
-                                        onchange="setDeletedDateRange(this.value)">
-                                    <option value="">Custom Range</option>
-                                    <option value="today" <?= ($_GET['deleted_date_range'] === 'today') ? 'selected' : '' ?>>Today</option>
-                                    <option value="yesterday" <?= ($_GET['deleted_date_range'] === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
-                                    <option value="this_week" <?= ($_GET['deleted_date_range'] === 'this_week') ? 'selected' : '' ?>>This Week</option>
-                                    <option value="last_week" <?= ($_GET['deleted_date_range'] === 'last_week') ? 'selected' : '' ?>>Last Week</option>
-                                    <option value="this_month" <?= ($_GET['deleted_date_range'] === 'this_month') ? 'selected' : '' ?>>This Month</option>
-                                    <option value="last_month" <?= ($_GET['deleted_date_range'] === 'last_month') ? 'selected' : '' ?>>Last Month</option>
-                                    <option value="this_quarter" <?= ($_GET['deleted_date_range'] === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
-                                    <option value="this_year" <?= ($_GET['deleted_date_range'] === 'this_year') ? 'selected' : '' ?>>This Year</option>
-                                </select>
+                                <label
+                                    style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">TO</label><br>
+                                <input type="date" name="deleted_to_date"
+                                    value="<?= htmlspecialchars($_GET['deleted_to_date'] ?? '') ?>"
+                                    style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
                             </div>
                             <div class="filter-group" style="align-self: flex-end;">
-                                <button class="btn btn-primary" style="padding: 10px 25px; background: #3182ce; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                <button class="btn btn-primary"
+                                    style="padding: 10px 25px; background: #3182ce; color: white; border: none; border-radius: 8px; cursor: pointer;">
                                     <i class="fa-solid fa-filter"></i> Filter
                                 </button>
                             </div>
                         </form>
                     </div>
-                    
+
                     <div class="card management-card management-trash premium-dark-card"
                         style="margin-top: -10px; background: #CEB15E !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
                         <div class="card-header"
@@ -3106,16 +3102,16 @@ if (isset($dashboard_data['error'])) {
                             </div>
                         </div>
                         <div class="card-content" style="padding: 0;">
-                            <?php 
+                            <?php
                             // Handle date filtering for deleted logs
                             $deleted_from_date = $_GET['deleted_from_date'] ?? '';
                             $deleted_to_date = $_GET['deleted_to_date'] ?? '';
                             $deleted_date_range = $_GET['deleted_date_range'] ?? '';
-                            
+
                             // Handle date_range parameter to auto-set from_date and to_date for deleted logs
                             if ($deleted_date_range && !$deleted_from_date && !$deleted_to_date) {
                                 $today = date('Y-m-d');
-                                switch($deleted_date_range) {
+                                switch ($deleted_date_range) {
                                     case 'today':
                                         $deleted_from_date = $deleted_to_date = $today;
                                         break;
@@ -3149,23 +3145,23 @@ if (isset($dashboard_data['error'])) {
                                         break;
                                 }
                             }
-                            
+
                             $deleted_logs = $reservationSystem->fetchMaintenanceLogs(true);
-                            
+
                             // Apply date filtering to deleted logs
                             if (!empty($deleted_logs) && ($deleted_from_date || $deleted_to_date)) {
                                 $filtered_deleted_logs = [];
                                 foreach ($deleted_logs as $dlog) {
                                     $log_date = $dlog['maintenance_date'];
                                     $show_log = true;
-                                    
+
                                     if ($deleted_from_date && $log_date < $deleted_from_date) {
                                         $show_log = false;
                                     }
                                     if ($deleted_to_date && $log_date > $deleted_to_date) {
                                         $show_log = false;
                                     }
-                                    
+
                                     if ($show_log) {
                                         $filtered_deleted_logs[] = $dlog;
                                     }
@@ -3661,8 +3657,8 @@ if (isset($dashboard_data['error'])) {
             const today = new Date();
             let fromDate = '';
             let toDate = '';
-            
-            switch(range) {
+
+            switch (range) {
                 case 'today':
                     fromDate = toDate = today.toISOString().split('T')[0];
                     break;
@@ -3713,11 +3709,11 @@ if (isset($dashboard_data['error'])) {
                     toDate = endOfYear.toISOString().split('T')[0];
                     break;
             }
-            
+
             // Update the date input fields
             const fromInput = document.querySelector('input[name="from_date"]');
             const toInput = document.querySelector('input[name="to_date"]');
-            
+
             if (fromInput) fromInput.value = fromDate;
             if (toInput) toInput.value = toDate;
         }
@@ -3727,8 +3723,8 @@ if (isset($dashboard_data['error'])) {
             const today = new Date();
             let fromDate = '';
             let toDate = '';
-            
-            switch(range) {
+
+            switch (range) {
                 case 'today':
                     fromDate = toDate = today.toISOString().split('T')[0];
                     break;
@@ -3779,11 +3775,11 @@ if (isset($dashboard_data['error'])) {
                     toDate = endOfYear.toISOString().split('T')[0];
                     break;
             }
-            
+
             // Update the deleted date input fields
             const fromInput = document.querySelector('input[name="deleted_from_date"]');
             const toInput = document.querySelector('input[name="deleted_to_date"]');
-            
+
             if (fromInput) fromInput.value = fromDate;
             if (toInput) toInput.value = toDate;
         }

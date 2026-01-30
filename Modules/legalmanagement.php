@@ -652,7 +652,7 @@ try {
     $stmt = $db->prepare($query);
     $stmt->execute();
     $contracts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Fix case IDs for existing contracts
     foreach ($contracts as &$contract) {
         if (empty($contract['case_id']) || $contract['case_id'] === 'C-001') {
@@ -687,12 +687,30 @@ foreach ($contracts as &$c) {
         // Assign varied risk scores based on contract ID for demo purposes
         $contractId = $c['id'] ?? 0;
         $scorePatterns = [
-            85, 78, 92, 45, 67, 23, 88, 34, 76, 55, // Mixed risks
-            15, 82, 39, 71, 28, 94, 41, 63, 19, 87  // More variety
+            85,
+            78,
+            92,
+            45,
+            67,
+            23,
+            88,
+            34,
+            76,
+            55, // Mixed risks
+            15,
+            82,
+            39,
+            71,
+            28,
+            94,
+            41,
+            63,
+            19,
+            87  // More variety
         ];
         $c['risk_score'] = $scorePatterns[$contractId % count($scorePatterns)];
     }
-    
+
     // Determine risk level based on score only
     $score = $c['risk_score'] ?? 0;
     if ($score >= 70) {
@@ -912,7 +930,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -944,13 +962,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         @keyframes pulse-red {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @keyframes pulse-orange {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+            }
         }
 
         /* Enhanced Contract Row Styling */
@@ -1033,7 +1065,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transform: rotate(45deg);
             transition: all 0.5s;
         }
@@ -1043,8 +1075,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
         }
 
         .stat-card:hover {
@@ -1069,749 +1106,220 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         /* AI Risk Analysis Modal Animations */
         @keyframes float {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 0.4; }
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.4;
+            }
         }
 
         @keyframes float-icon {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
         }
 
         @keyframes progress {
-            0% { width: 0%; }
-            100% { width: 94%; }
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 94%;
+            }
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
     </style>
 </head>
 
-    <!-- Login Screen -->
-    <div class="login-container" id="loginScreen">
-        <div class="login-form">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <img src="../assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
-            </div>
-            <h2>Legal Management System</h2>
-            <p>Enter your PIN to access the system</p>
-            <div class="pin-input">
-                <input type="password" maxlength="1" class="pin-digit" id="pin1" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin2" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin3" disabled>
-                <input type="password" maxlength="1" class="pin-digit" id="pin4" disabled>
-            </div>
-            <button class="login-btn" id="loginBtn" disabled>Login</button>
-            <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
+<!-- Login Screen -->
+<div class="login-container" id="loginScreen">
+    <div class="login-form">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <img src="../assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
         </div>
-    </div>
-    </div>
-
-    <!-- Dashboard -->
-    <div class="dashboard" id="dashboard">
-        <div class="header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">Legal Management System</div>
-                    <div class="user-info">
-                        <span>Welcome, Admin</span>
-                        <?php if ($isSuperAdmin): ?>
-                            <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
-                                style="text-decoration: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Back
-                            </a>
-                        <?php else: ?>
-                            <button type="button" class="logout-btn" id="backDashboardBtn"
-                                onclick="window.location.replace('../Modules/dashboard.php')">
-                                <span class="icon-img-placeholder">⏻</span>
-                                logout
-                            </button>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
+        <h2>Legal Management System</h2>
+        <p>Enter your PIN to access the system</p>
+        <div class="pin-input">
+            <input type="password" maxlength="1" class="pin-digit" id="pin1" disabled>
+            <input type="password" maxlength="1" class="pin-digit" id="pin2" disabled>
+            <input type="password" maxlength="1" class="pin-digit" id="pin3" disabled>
+            <input type="password" maxlength="1" class="pin-digit" id="pin4" disabled>
         </div>
+        <button class="login-btn" id="loginBtn" disabled>Login</button>
+        <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
+    </div>
+</div>
+</div>
 
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+    <div class="header">
         <div class="container">
-            <!-- Success/Error Messages -->
-            <?php if (isset($success_message)): ?>
-                <div class="alert alert-success"><?php echo $success_message; ?></div>
-            <?php endif; ?>
-
-            <?php if (isset($error_message)): ?>
-                <div class="alert alert-error"><?php echo $error_message; ?></div>
-            <?php endif; ?>
-
-            <div class="nav-tabs">
-                <div class="nav-tab active" data-target="employees">Employees</div>
-                <div class="nav-tab" data-target="internal">Internal</div>
-                <div class="nav-tab" data-target="external">External</div>
-                <div class="nav-tab" data-target="documents">Documents</div>
-                <div class="nav-tab" data-target="contracts">Contracts</div>
-                <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
-            </div>
-
-            <!-- Employees Section -->
-            <div class="content-section active" id="employees">
-                <div class="section-header">
-                    <h2 class="section-title">Employee Information</h2>
-                    <button class="add-btn" id="addEmployeeBtn">
-                        <i>+</i> Add Employee
-                    </button>
-                </div>
-
-                <!-- Add Employee Form -->
-                <div class="form-container" id="employeeForm">
-                    <h3>Add Employee</h3>
-                    <form method="POST" id="employeeFormData">
-                        <div class="form-group">
-                            <label for="employeeName">Name</label>
-                            <input type="text" id="employeeName" name="employee_name" class="form-control"
-                                placeholder="Enter employee name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeePosition">Position</label>
-                            <input type="text" id="employeePosition" name="employee_position" class="form-control"
-                                placeholder="Enter position" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeeEmail">Email</label>
-                            <input type="email" id="employeeEmail" name="employee_email" class="form-control"
-                                placeholder="Enter email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="employeePhone">Phone</label>
-                            <input type="text" id="employeePhone" name="employee_phone" class="form-control"
-                                placeholder="Enter phone number" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
-                                Employee</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Employees Table wrapped in scroll container -->
-                <div class="table-scroll-container">
-                    <table class="data-table premium-table">
-                        <thead>
-                            <tr>
-                                <th>Employee ID</th>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employeesTableBody">
-                            <?php foreach ($employees as $employee): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                    <td>
-                                        <div class="action-container">
-                                            <button class="action-btn view-btn"
-                                                data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
-                                                <i class="fa-solid fa-eye"></i> View
-                                            </button>
-                                            <?php if ($isSuperAdmin): ?>
-                                                <button class="action-btn edit-btn"
-                                                    style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                    onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
-                                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                </button>
-                                                <form method="POST"
-                                                    onsubmit="return confirm('Are you sure you want to delete this employee?');">
-                                                    <input type="hidden" name="employee_id"
-                                                        value="<?php echo $employee['id']; ?>">
-                                                    <button type="submit" name="delete_employee" class="action-btn delete-btn"
-                                                        style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                        <i class="fa-solid fa-trash"></i> Delete
-                                                    </button>
-                                                </form>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+            <div class="header-content">
+                <div class="logo">Legal Management System</div>
+                <div class="user-info">
+                    <span>Welcome, Admin</span>
+                    <?php if ($isSuperAdmin): ?>
+                        <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
+                            style="text-decoration: none;">
+                            <i class="fas fa-arrow-left"></i>
+                            Back
+                        </a>
+                    <?php else: ?>
+                        <button type="button" class="logout-btn" id="backDashboardBtn"
+                            onclick="window.location.replace('../Modules/dashboard.php')">
+                            <span class="icon-img-placeholder">⏻</span>
+                            logout
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Internal Section -->
-            <div class="content-section" id="internal">
-                <div class="section-header">
-                    <h2 class="section-title">Internal Documents & Policies</h2>
-                    <button class="add-btn" onclick="document.getElementById('addDocumentBtn').click()">
-                        <i>+</i> Add Internal Doc
-                    </button>
-                </div>
-                <!-- Internal Legal Management Tabs -->
-                <div class="internal-tabs-container" style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                        <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Policies & Handbook
-                        </button>
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-users" style="margin-right: 8px;"></i> Labor Relations
-                        </button>
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
-                        </button>
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <?php if (isset($success_message)): ?>
+            <div class="alert alert-success"><?php echo $success_message; ?></div>
+        <?php endif; ?>
 
-                        <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
-                        </button>
-                    </div>
-                </div>
+        <?php if (isset($error_message)): ?>
+            <div class="alert alert-error"><?php echo $error_message; ?></div>
+        <?php endif; ?>
 
-                <script>
-                    function filterLegalDocs(btn, category) {
-                        // Update Tab Styles
-                        const container = btn.closest('.internal-tabs-container');
-                        const buttons = container.querySelectorAll('.legal-tab-btn');
-                        buttons.forEach(b => {
-                            b.classList.remove('active');
-                            b.style.background = 'white';
-                            b.style.color = '#64748b';
-                        });
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-target="employees">Employees</div>
+            <div class="nav-tab" data-target="internal">Internal</div>
+            <div class="nav-tab" data-target="external">External</div>
+            <div class="nav-tab" data-target="documents">Documents</div>
+            <div class="nav-tab" data-target="contracts">Contracts</div>
+            <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
+        </div>
 
-                        btn.classList.add('active');
-                        btn.style.background = '#3b82f6';
-                        btn.style.color = 'white';
-
-                        // Filter Rows
-                        const rows = document.querySelectorAll('.internal-doc-row');
-                        rows.forEach(row => {
-                            if (row.dataset.category === category) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    }
-
-                    // Initialize Default Tab (Policies) on Load
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const firstTab = document.querySelector('.legal-tab-btn.active');
-                        if (firstTab) {
-                            // Manually trigger the filter logic for the first tab
-                            // Extract category from onclick string 'filterLegalDocs(this, 'policies')'
-                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
-                            if (match && match[1]) {
-                                filterLegalDocs(firstTab, match[1]);
-                            }
-                        }
-                    });
-                </script>
-                <div style="position: relative;">
-                    <div id="internalSectionContent" class="blurred-content">
-                        <div class="table-scroll-container">
-                            <table class="data-table premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>Policy Name</th>
-                                        <th>Case ID</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $internalDocs = array_filter($contracts, function ($c) {
-                                        return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
-                                    });
-                                    if (!empty($internalDocs)):
-                                        foreach ($internalDocs as $doc):
-                                            // Auto-categorize based on name
-                                            $nameLower = strtolower($doc['name']);
-                                            $docCategory = 'policies'; // Default
-                                    
-                                            if (strpos($nameLower, 'policy') !== false || strpos($nameLower, 'handbook') !== false) {
-                                                $docCategory = 'policies';
-                                            } elseif (strpos($nameLower, 'labor') !== false || strpos($nameLower, 'contract') !== false || strpos($nameLower, 'disciplinary') !== false || strpos($nameLower, 'employee') !== false) {
-                                                $docCategory = 'labor';
-                                            } elseif (strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'rule') !== false || strpos($nameLower, 'guide') !== false || strpos($nameLower, 'procedure') !== false) {
-                                                $docCategory = 'compliance';
-                                            } elseif (strpos($nameLower, 'governance') !== false || strpos($nameLower, 'board') !== false || strpos($nameLower, 'bylaw') !== false || strpos($nameLower, 'resolution') !== false) {
-                                                $docCategory = 'governance';
-                                            } elseif (strpos($nameLower, 'risk') !== false || strpos($nameLower, 'audit') !== false) {
-                                                $docCategory = 'risk';
-                                            }
-                                            ?>
-                                            <tr class="internal-doc-row" data-category="<?php echo $docCategory; ?>">
-                                                <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                <td>
-                                                    <div class="action-container">
-                                                        <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
-                                                                class="fa-solid fa-eye"></i> View</button>
-
-                                                        <?php if ($isSuperAdmin): ?>
-                                                            <button class="action-btn edit-btn"
-                                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                                onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                            </button>
-                                                            <form method="POST"
-                                                                onsubmit="return confirm('Delete this internal document?');">
-                                                                <input type="hidden" name="contract_id"
-                                                                    value="<?php echo $doc['id']; ?>">
-                                                                <button type="submit" name="delete_contract"
-                                                                    class="action-btn delete-btn"
-                                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                    <i class="fa-solid fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach;
-                                    else: ?>
-                                        <tr>
-                                            <td colspan="4">No internal documents found.</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="internalRevealOverlay" class="reveal-overlay">
-                        <button class="reveal-btn"
-                            onclick="withPasswordGate(() => { document.getElementById('internalSectionContent').classList.remove('blurred-content'); document.getElementById('internalRevealOverlay').style.display='none'; })">
-                            <i class="fa-solid fa-lock"></i> Click to Reveal Documents
-                        </button>
-                    </div>
-                </div>
+        <!-- Employees Section -->
+        <div class="content-section active" id="employees">
+            <div class="section-header">
+                <h2 class="section-title">Employee Information</h2>
+                <button class="add-btn" id="addEmployeeBtn">
+                    <i>+</i> Add Employee
+                </button>
             </div>
 
-            <!-- External Section -->
-            <div class="content-section" id="external">
-                <div class="section-header">
-                    <h2 class="section-title">External Agreements</h2>
-                    <button class="add-btn" onclick="document.getElementById('addContractBtn').click()">
-                        <i>+</i> Add External Contract
-                    </button>
-                </div>
-                <!-- External Legal Management Tabs -->
-                <div class="external-tabs-container" style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                        <button class="ext-tab-btn active" onclick="filterExternalDocs(this, 'supplier')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-file-contract" style="margin-right: 8px;"></i> Supplier Contracts
-                        </button>
-                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'govt')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-landmark" style="margin-right: 8px;"></i> Govt Relations
-                        </button>
-                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'lawsuits')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-gavel" style="margin-right: 8px;"></i> Lawsuits & Disputes
-                        </button>
-                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'compliance')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-clipboard-check" style="margin-right: 8px;"></i> Regulatory Compliance
-                        </button>
-                        <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'consumer')"
-                            style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                            <i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i> Consumer Protection
-                        </button>
+            <!-- Add Employee Form -->
+            <div class="form-container" id="employeeForm">
+                <h3>Add Employee</h3>
+                <form method="POST" id="employeeFormData">
+                    <div class="form-group">
+                        <label for="employeeName">Name</label>
+                        <input type="text" id="employeeName" name="employee_name" class="form-control"
+                            placeholder="Enter employee name" required>
                     </div>
-                </div>
-
-                <script>
-                    function filterExternalDocs(btn, category) {
-                        // Update Tab Styles
-                        const container = btn.closest('.external-tabs-container');
-                        const buttons = container.querySelectorAll('.ext-tab-btn');
-                        buttons.forEach(b => {
-                            b.classList.remove('active');
-                            b.style.background = 'white';
-                            b.style.color = '#64748b';
-                        });
-
-                        // Set active style for clicked button
-                        btn.classList.add('active');
-                        btn.style.background = '#10b981';
-                        btn.style.color = 'white';
-
-                        // Filter Rows
-                        const rows = document.querySelectorAll('.external-doc-row');
-                        rows.forEach(row => {
-                            if (row.dataset.category === category) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    }
-
-                    // Initialize Default Tab (Supplier) on Load
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const firstTab = document.querySelector('.ext-tab-btn.active');
-                        if (firstTab) {
-                            const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
-                            if (match && match[1]) {
-                                filterExternalDocs(firstTab, match[1]);
-                            }
-                        }
-                    });
-                </script>
-                <div style="position: relative;">
-                    <div id="externalSectionContent" class="blurred-content">
-                        <div class="table-scroll-container">
-                            <table class="data-table premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>Agreement Name</th>
-                                        <th>Case ID</th>
-                                        <th>Expiry Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $externalDocs = array_filter($contracts, function ($c) {
-                                        return (isset($c['contract_type']) && $c['contract_type'] === 'External');
-                                    });
-                                    if (!empty($externalDocs)):
-                                        foreach ($externalDocs as $doc):
-                                            // Auto-categorize based on name
-                                            $nameLower = strtolower($doc['name']);
-                                            $docCategory = 'supplier'; // Default
-                                    
-                                            if (strpos($nameLower, 'supplier') !== false || strpos($nameLower, 'supply') !== false || strpos($nameLower, 'partner') !== false || strpos($nameLower, 'agreement') !== false || strpos($nameLower, 'nda') !== false) {
-                                                $docCategory = 'supplier';
-                                            } elseif (strpos($nameLower, 'govt') !== false || strpos($nameLower, 'bir') !== false || strpos($nameLower, 'sec') !== false || strpos($nameLower, 'dole') !== false || strpos($nameLower, 'permit') !== false || strpos($nameLower, 'tax') !== false) {
-                                                $docCategory = 'govt';
-                                            } elseif (strpos($nameLower, 'lawsuit') !== false || strpos($nameLower, 'dispute') !== false || strpos($nameLower, 'case') !== false || strpos($nameLower, 'settlement') !== false || strpos($nameLower, 'litigation') !== false) {
-                                                $docCategory = 'lawsuits';
-                                            } elseif (strpos($nameLower, 'regulatory') !== false || strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'privacy') !== false || strpos($nameLower, 'dpa') !== false) {
-                                                $docCategory = 'compliance';
-                                            } elseif (strpos($nameLower, 'consumer') !== false || strpos($nameLower, 'customer') !== false || strpos($nameLower, 'waiver') !== false || strpos($nameLower, 'guest') !== false) {
-                                                $docCategory = 'consumer';
-                                            }
-
-                                            $score = $doc['risk_score'] ?? 0;
-                                            $docRisk = 'Low';
-                                            if ($score >= 70)
-                                                $docRisk = 'High';
-                                            elseif ($score >= 31)
-                                                $docRisk = 'Medium';
-                                            ?>
-                                            <tr class="external-doc-row contract-row"
-                                                data-category="<?php echo $docCategory; ?>" data-risk="<?php echo $docRisk; ?>">
-                                                <td><a href="javascript:void(0)" class="clickable-name"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                                <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
-                                                </td>
-                                                <td>
-                                                    <div class="action-container">
-                                                        <button class="action-btn view-btn"
-                                                            onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
-                                                                class="fa-solid fa-eye"></i> View</button>
-
-                                                        <?php if ($isSuperAdmin): ?>
-                                                            <button class="action-btn edit-btn"
-                                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                                onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                            </button>
-                                                            <form method="POST"
-                                                                onsubmit="return confirm('Delete this external agreement?');">
-                                                                <input type="hidden" name="contract_id"
-                                                                    value="<?php echo $doc['id']; ?>">
-                                                                <button type="submit" name="delete_contract"
-                                                                    class="action-btn delete-btn"
-                                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                    <i class="fa-solid fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach;
-                                    else: ?>
-                                        <tr>
-                                            <td colspan="4">No external agreements found.</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="form-group">
+                        <label for="employeePosition">Position</label>
+                        <input type="text" id="employeePosition" name="employee_position" class="form-control"
+                            placeholder="Enter position" required>
                     </div>
-                    <div id="externalRevealOverlay" class="reveal-overlay">
-                        <button class="reveal-btn"
-                            onclick="withPasswordGate(() => { document.getElementById('externalSectionContent').classList.remove('blurred-content'); document.getElementById('externalRevealOverlay').style.display='none'; })">
-                            <i class="fa-solid fa-lock"></i> Click to Reveal Agreements
-                        </button>
+                    <div class="form-group">
+                        <label for="employeeEmail">Email</label>
+                        <input type="email" id="employeeEmail" name="employee_email" class="form-control"
+                            placeholder="Enter email" required>
                     </div>
-                </div>
-            </div>
-
-            <!-- Documents Section -->
-            <div class="content-section" id="documents">
-                <div class="section-header">
-                    <h2 class="section-title">Case Documents</h2>
-                    <button class="add-btn" id="addDocumentBtn">
-                        <i>+</i> Upload Document
-                    </button>
-                </div>
-                <div class="table-scroll-container">
-                    <table class="data-table premium-table">
-                        <thead>
-                            <tr>
-                                <th>Document Name</th>
-                                <th>Case</th>
-                                <th>Date Uploaded</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="documentsTableBody">
-                            <?php if (!empty($documents)): ?>
-                                <?php foreach ($documents as $doc): ?>
-                                    <tr>
-                                        <td>
-                                            <?php if (!empty($doc['file_path'])): ?>
-                                                <a href="#" class="view-pdf-link text-blue-600 hover:underline"
-                                                    data-pdf-type="document"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
-                                            <?php else: ?>
-                                                <?php echo htmlspecialchars($doc['name']); ?>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
-                                        </td>
-                                        <td>
-                                            <div class="action-container">
-                                                <button class="action-btn download-btn" data-type="doc-download"
-                                                    data-pdf-type="document"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                                    style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
-                                                    <i class="fa-solid fa-file-pdf"></i> Download
-                                                </button>
-                                                <?php if ($isSuperAdmin): ?>
-                                                    <form method="POST"
-                                                        onsubmit="return confirm('Permanently delete this document?');">
-                                                        <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
-                                                        <button type="submit" name="delete_document" class="action-btn delete-btn"
-                                                            style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;">
-                                                            <i class="fa-solid fa-trash"></i> Delete
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-            <!-- Contracts Section -->
-            <div class="content-section" id="contracts" style="display:none;">
-                <div class="section-header">
-                    <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
-                    <div style="display: flex; gap: 10px;">
-                        <!-- Button para sa Secured PDF Report (Idinagdag) -->
-                        <button class="add-btn" id="exportPdfBtn" style="background: #e74c3c; /* Pula para sa ulat */">
-                            &#x1F4C4; Generate Secured PDF
-                        </button>
-                        <button class="add-btn" id="addContractBtn">
-                            <i>+</i> Upload Contract
-                        </button>
+                    <div class="form-group">
+                        <label for="employeePhone">Phone</label>
+                        <input type="text" id="employeePhone" name="employee_phone" class="form-control"
+                            placeholder="Enter phone number" required>
                     </div>
-                </div>
-                <!-- Hidden form to trigger secured PDF generation via POST -->
-                <form id="exportPdfForm" method="POST" style="display:none">
-                    <input type="hidden" name="action" value="export_pdf">
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelEmployeeBtn">Cancel</button>
+                        <button type="submit" class="save-btn" name="add_employee" id="saveEmployeeBtn">Save
+                            Employee</button>
+                    </div>
                 </form>
+            </div>
 
-                <!-- Add Contract Form -->
-                <div class="form-container" id="contractForm">
-                    <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
-                    <form method="POST" enctype="multipart/form-data" id="contractFormData">
-                        <div class="form-group">
-                            <label for="contractName">Contract Name</label>
-                            <input type="text" id="contractName" name="contract_name" class="form-control"
-                                placeholder="Enter contract name" required>
-                        </div>
-                        <div class="form-group" style="display:none;">
-                            <label for="contractCase">Case ID</label>
-                            <input type="text" id="contractCase" name="contract_case" class="form-control"
-                                placeholder="Auto-generated">
-                        </div>
-                        <div class="form-group">
-                            <label for="contractType">Contract Type</label>
-                            <select id="contractType" name="contract_type" class="form-control" required>
-                                <option value="Internal">Internal (Policies, SOPs)</option>
-                                <option value="External">External (Vendors, Clients)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractDescription">Contract Description</label>
-                            <textarea id="contractDescription" name="contract_description" class="form-control"
-                                placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
-                                rows="4"></textarea>
-                            <div class="file-info">AI will analyze this description to detect risk factors</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractFile">Contract File</label>
-                            <input type="file" id="contractFile" name="contract_file" class="form-control"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
-                            <input type="file" id="contractImage" name="contract_image" class="form-control"
-                                accept="image/*">
-                            <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
-                        </div>
-
-                        <div class="ai-analysis-section">
-                            <h4><i class="fa-solid fa-wand-magic-sparkles"
-                                    style="color: #4a6cf7; margin-right: 8px;"></i> AI Risk Assessment</h4>
-                            <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
-                                automatically analyze your contract for:</p>
-                            <ul class="ai-features-list">
-                                <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
-                                    rent
-                                    structure)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
-                                    suppliers,
-                                    staffing)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
-                                    guarantees)</li>
-                                <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
-                            </ul>
-                            <div class="ai-note">
-                                <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
-                                calculated
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
-                            <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
-                                <i>+</i> Upload & Analyze Contract
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Find/Locate Contracts Search Bar -->
-                <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-                    <div style="flex: 1; position: relative;">
-                        <input type="text" id="contractSearchInput" placeholder="Find/Locate contracts by name, case ID, or risk level..." 
-                            style="width: 100%; padding: 12px 16px 12px 45px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; transition: all 0.3s;">
-                        <i class="fa-solid fa-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
-                    </div>
-                    <button onclick="clearContractSearch()" style="padding: 12px 20px; background: #ef4444; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
-                        <i class="fa-solid fa-times"></i> Clear
-                    </button>
-                </div>
-
-                <!-- Contracts Table -->
+            <!-- Employees Table wrapped in scroll container -->
+            <div class="table-scroll-container">
                 <table class="data-table premium-table">
                     <thead>
                         <tr>
-                            <th>Contract Name</th>
-                            <th>Case</th>
-                            <th>Date</th>
-                            <th>Risk Score</th>
-                            <th>Upload Date</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Email</th>
+                            <th>Phone</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="contractsTableBody">
-                        <?php foreach ($contracts as $contract):
-                            $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
-                            $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
-                            $score = $contract['risk_score'] ?? 0;
-                            $rowRisk = 'Low';
-                            if ($score >= 70)
-                                $rowRisk = 'High';
-                            elseif ($score >= 31)
-                                $rowRisk = 'Medium';
-                            ?>
-                            <tr class="contract-row" data-risk="<?php echo $rowRisk; ?>">
-                                <td>
-                                    <?php if (!empty($contract['file_path'])): ?>
-                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                    <?php endif; ?>
+                    <tbody id="employeesTableBody">
+                        <?php foreach ($employees as $employee): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                                <td>
-                                    <?php 
-                                    $score = $contract['risk_score'] ?? 0;
-                                    $riskClass = ($score >= 70) ? 'high' : (($score >= 31) ? 'medium' : 'low');
-                                    ?>
-                                    <span class="risk-score-display <?php echo $riskClass; ?>">
-                                        <?php echo htmlspecialchars($score); ?>/100
-                                    </span>
-                                </td>
-                                <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
                                 <td>
                                     <div class="action-container">
-                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
-                                            <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
-                                        </button>
-                                        <button class="action-btn download-btn" data-type="contract-download"
-                                            data-pdf-type="contract"
-                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        <button class="action-btn view-btn"
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
+                                            <i class="fa-solid fa-eye"></i> View
                                         </button>
                                         <?php if ($isSuperAdmin): ?>
+                                            <button class="action-btn edit-btn"
+                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
+                                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                                            </button>
                                             <form method="POST"
-                                                onsubmit="return confirm('Are you sure you want to delete this contract?');">
-                                                <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
-                                                <button type="submit" name="delete_contract" class="action-btn delete-btn"
-                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                                onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                                <input type="hidden" name="employee_id" value="<?php echo $employee['id']; ?>">
+                                                <button type="submit" name="delete_employee" class="action-btn delete-btn"
+                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
                                                     <i class="fa-solid fa-trash"></i> Delete
                                                 </button>
                                             </form>
@@ -1823,978 +1331,1621 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     </tbody>
                 </table>
             </div>
-
-            <div class="content-section" id="risk_analysis">
-                <div class="section-header">
-                    <h2 class="section-title">Contract Risk Analysis</h2>
-                </div>
-
-                <!-- Stats Cards Grid -->
-                <div class="risk-stats-grid">
-                    <div class="stat-card total">
-                        <div class="stat-icon"><i class="fa-solid fa-file-contract"></i></div>
-                        <div class="stat-info">
-                            <span class="stat-label">Total Contracts</span>
-                            <span class="stat-value"><?php echo $totalContracts; ?></span>
-                        </div>
-                    </div>
-                    <div class="stat-card high" onclick="filterByRiskLevel('High')"
-                        style="cursor: pointer; transition: all 0.3s ease;">
-                        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="stat-info">
-                            <span class="stat-label">High Risk</span>
-                            <span class="stat-value"><?php echo $riskCounts['High']; ?></span>
-                            <span class="stat-meta"><?php echo $highPct; ?>% of total</span>
-                        </div>
-                    </div>
-                    <div class="stat-card medium" onclick="filterByRiskLevel('Medium')"
-                        style="cursor: pointer; transition: all 0.3s ease;">
-                        <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
-                        <div class="stat-info">
-                            <span class="stat-label">Medium Risk</span>
-                            <span class="stat-value"><?php echo $riskCounts['Medium']; ?></span>
-                            <span class="stat-meta"><?php echo $mediumPct; ?>% of total</span>
-                        </div>
-                    </div>
-                    <div class="stat-card low" onclick="filterByRiskLevel('Low')"
-                        style="cursor: pointer; transition: all 0.3s ease;">
-                        <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
-                        <div class="stat-info">
-                            <span class="stat-label">Low Risk</span>
-                            <span class="stat-value"><?php echo $riskCounts['Low']; ?></span>
-                            <span class="stat-meta"><?php echo $lowPct; ?>% of total</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="risk-analysis-layout">
-                    <div class="chart-container-wrapper">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                            <h3 class="subsection-title"
-                                style="margin: 0; display: flex; align-items: center; gap: 12px;">
-                                <div
-                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                                    <i class="fa-solid fa-chart-simple" style="color: white; font-size: 18px;"></i>
-                                </div>
-                                <span
-                                    style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk
-                                    Distribution Analysis</span>
-                            </h3>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="button" onclick="window.location.reload()"
-                                    style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
-                                    <i class="fa-solid fa-sync-alt"></i> Refresh
-                                </button>
-                                <button onclick="window.downloadChart()"
-                                    style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: flex; align-items: center; gap: 8px;">
-                                    <i class="fa-solid fa-download"></i> Export
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-area" id="chartArea"
-                            style="height: 400px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 24px; border: 2px solid #e2e8f0; padding: 30px; display: block; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;">
-                            <div
-                                style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                <span
-                                    style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live
-                                    Data</span>
-                            </div>
-                            <canvas id="riskDistributionChart" width="600" height="400"
-                                style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
-                        </div>
-                        <div
-                            style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <div style="display: flex; gap: 20px;">
-                                <div
-                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
-                                    <div
-                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
-                                    </div>
-                                    <span style="font-size: 0.9rem; color: #ef4444; font-weight: 700;">High Risk</span>
-                                </div>
-                                <div
-                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
-                                    <div
-                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);">
-                                    </div>
-                                    <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium
-                                        Risk</span>
-                                </div>
-                                <div
-                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                                    <div
-                                        style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
-                                    </div>
-                                    <span style="font-size: 0.9rem; color: #10b981; font-weight: 700;">Low Risk</span>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Last Updated</div>
-                                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;">
-                                    <?php echo date('M j, Y g:i A'); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="high-risk-list-wrapper">
-                        <h3 class="subsection-title">Top High-Risk Contracts</h3>
-                        <div id="analysisResults">
-                            <?php
-                            $highContracts = array_filter($contracts, function ($c) {
-                                return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
-                            });
-                            if (!empty($highContracts)): ?>
-                                <div class="high-risk-items">
-                                    <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
-                                        <div class="risk-item"
-                                            style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
-                                            <div
-                                                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                                <div class="risk-item-info">
-                                                    <span class="risk-item-name"
-                                                        style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
-                                                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                                                        <span
-                                                            style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
-                                                    </div>
-                                                </div>
-                                                <div class="risk-item-score">
-                                                    <span class="score-badge"
-                                                        style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
-                                                </div>
-                                            </div>
-
-                                            <?php if (!empty($hc['analysis_summary'])): ?>
-                                                <div class="risk-ai-summary"
-                                                    style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
-                                                    <p
-                                                        style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
-                                                        <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
-                                                        <strong>AI Result:</strong>
-                                                        <?php echo htmlspecialchars($hc['analysis_summary']); ?>
-                                                    </p>
-                                                </div>
-                                            <?php endif; ?>
-
-                                            <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
-                                                <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                                    data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
-                                                    Full Report
-                                                </button>
-                                                <button class="action-btn download-btn" data-type="contract-download"
-                                                    data-pdf-type="contract"
-                                                    data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
-                                                    style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
-                                                    Download PDF
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="no-risk-data">
-                                    <i class="fa-solid fa-shield-check"></i>
-                                    <p>No high-risk contracts detected.</p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </div>
 
-
-
-    <!-- Modals Section -->
-    <!-- Details Modal -->
-    <div id="detailsModal"
-        style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items:center; justify-content:center; z-index:1000;">
-        <div
-            style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
-            <div
-                style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); position: relative; z-index: 10;">
-                <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">Details
-                </h3>
-                <button id="closeDetails"
-                    style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="detailsBody" style="padding: 24px; overflow-y: auto;"></div>
-        </div>
-    </div>
-
-    <!-- Password Gate Modal -->
-    <div id="passwordModal"
-        style="display:none; position:fixed; inset:0; background: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); align-items:center; justify-content:center; z-index:99999;">
-        <div
-            style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.3); border:1px solid #e2e8f0; overflow: hidden; text-align: center;">
-            <div style="margin-bottom: 25px;"><img src="../assets/image/logo.png" alt="Logo"
-                    style="width: 180px; height: auto;"></div>
-            <div style="position: relative; z-index: 1;">
-                <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
-                    Security Check</h2>
-                <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
-                <form id="passwordForm">
-                    <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                        <input type="password" maxlength="1" class="pin-digit"
-                            style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
-                    </div>
-                    <div id="pwdError"
-                        style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
-                        Incorrect PIN. Please try again.</div>
-                    <div style="display:flex; gap:12px; justify-content:center;">
-                        <button type="button" class="cancel-btn" id="pwdCancel"
-                            style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
-                        <button type="submit" class="save-btn"
-                            style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contract Form Modal -->
-    <div id="contractFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
-            <button type="button" id="closeContractFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="contractFormContainer"></div>
-        </div>
-    </div>
-
-    <!-- Employee Form Modal wrapper -->
-    <div id="employeeFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); overflow: hidden;">
-            <!-- Internal Logo Watermark -->
-            <img src="../assets/image/logo.png" alt="Logo Watermark"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
-            <button type="button" id="closeEmployeeFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="employeeFormContainer" style="position: relative; z-index: 1;"></div>
-        </div>
-    </div>
-
-    <!-- Employee Info Modal (Revamped Premium View) -->
-    <div id="employeeInfoModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:550px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-
-        <!-- Modal Header with Gradient -->
-            <div
-                style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
-                <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                    <div id="genderImageContainer"
-                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
-                        <img src="../assets/image/Women.png" alt="Gender"
-                            style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <div style="text-align: center;">
-                        <h2 id="employeeInfoTitle"
-                            style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            Employee
-                            Profile</h2>
-                        <span id="employeeRoleBadge"
-                            style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
-                            Team</span>
-                    </div>
-                </div>
-                <button type="button" id="closeEmployeeInfoTop"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20;">
-                    <i class="fa-solid fa-xmark"></i>
+        <!-- Internal Section -->
+        <div class="content-section" id="internal">
+            <div class="section-header">
+                <h2 class="section-title">Internal Documents & Policies</h2>
+                <button class="add-btn" onclick="document.getElementById('addDocumentBtn').click()">
+                    <i>+</i> Add Internal Doc
                 </button>
             </div>
+            <!-- Internal Legal Management Tabs -->
+            <div class="internal-tabs-container" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Policies & Handbook
+                    </button>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-users" style="margin-right: 8px;"></i> Labor Relations
+                    </button>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
+                    </button>
 
-            <!-- Modal Body with Circular Design -->
-            <div id="employeeInfoBody"
-                style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
-                <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 320px;">
-                    <!-- Circular Container -->
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                        <!-- Circular Profile Section -->
-                        <div
-                            style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
-                            <div
-                                style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
-                                <i class="fa-solid fa-id-card" style="color: white; font-size: 12px;"></i>
-                            </div>
-                            <div style="text-align: center; padding: 15px;">
-                                <div
-                                    style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
-                                    <i class="fa-solid fa-user" style="color: white; font-size: 24px;"></i>
-                                </div>
-                                <h3 id="display_emp_name"
-                                    style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
-                                <span id="display_emp_position"
-                                    style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
-                            </div>
-                        </div>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
+                    </button>
+                </div>
+            </div>
 
-                        <!-- Contact Information Circles -->
-                        <div style="display: flex; gap: 15px; justify-content: center;">
-                            <!-- Email Circle -->
-                            <div
-                                style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
-                                <div
-                                    style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
-                                    <i class="fa-solid fa-envelope" style="color: white; font-size: 14px;"></i>
-                                </div>
-                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
-                                    Email</div>
-                                <div id="display_emp_email"
-                                    style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">
-                                    -</div>
-                            </div>
+            <script>
+                function filterLegalDocs(btn, category) {
+                    // Update Tab Styles
+                    const container = btn.closest('.internal-tabs-container');
+                    const buttons = container.querySelectorAll('.legal-tab-btn');
+                    buttons.forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'white';
+                        b.style.color = '#64748b';
+                    });
 
-                            <!-- Phone Circle -->
-                            <div
-                                style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
-                                <div
-                                    style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
-                                    <i class="fa-solid fa-phone" style="color: white; font-size: 14px;"></i>
-                                </div>
-                                <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
-                                    Phone</div>
-                                <div id="display_emp_phone"
-                                    style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-
-                                </div>
-                            </div>
-                        </div>
+                    btn.classList.add('active');
+                    btn.style.background = '#3b82f6';
+                    btn.style.color = 'white';
 
-                        <!-- Action Buttons -->
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button id="modalDownloadEmpPdf"
-                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
-                                <i class="fa-solid fa-download"></i>
-                            </button>
-                            <button id="closeEmployeeInfoBottom"
-                                style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
-                                <i class="fa-solid fa-times"></i>
-                            </button>
-                        </div>
+                    // Filter Rows
+                    const rows = document.querySelectorAll('.internal-doc-row');
+                    rows.forEach(row => {
+                        if (row.dataset.category === category) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Initialize Default Tab (Policies) on Load
+                document.addEventListener('DOMContentLoaded', () => {
+                    const firstTab = document.querySelector('.legal-tab-btn.active');
+                    if (firstTab) {
+                        // Manually trigger the filter logic for the first tab
+                        // Extract category from onclick string 'filterLegalDocs(this, 'policies')'
+                        const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
+                        if (match && match[1]) {
+                            filterLegalDocs(firstTab, match[1]);
+                        }
+                    }
+                });
+            </script>
+            <div style="position: relative;">
+                <div id="internalSectionContent" class="blurred-content">
+                    <div class="table-scroll-container">
+                        <table class="data-table premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Policy Name</th>
+                                    <th>Case ID</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $internalDocs = array_filter($contracts, function ($c) {
+                                    return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
+                                });
+                                if (!empty($internalDocs)):
+                                    foreach ($internalDocs as $doc):
+                                        // Auto-categorize based on name
+                                        $nameLower = strtolower($doc['name']);
+                                        $docCategory = 'policies'; // Default
+                                
+                                        if (strpos($nameLower, 'policy') !== false || strpos($nameLower, 'handbook') !== false) {
+                                            $docCategory = 'policies';
+                                        } elseif (strpos($nameLower, 'labor') !== false || strpos($nameLower, 'contract') !== false || strpos($nameLower, 'disciplinary') !== false || strpos($nameLower, 'employee') !== false) {
+                                            $docCategory = 'labor';
+                                        } elseif (strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'rule') !== false || strpos($nameLower, 'guide') !== false || strpos($nameLower, 'procedure') !== false) {
+                                            $docCategory = 'compliance';
+                                        } elseif (strpos($nameLower, 'governance') !== false || strpos($nameLower, 'board') !== false || strpos($nameLower, 'bylaw') !== false || strpos($nameLower, 'resolution') !== false) {
+                                            $docCategory = 'governance';
+                                        } elseif (strpos($nameLower, 'risk') !== false || strpos($nameLower, 'audit') !== false) {
+                                            $docCategory = 'risk';
+                                        }
+                                        ?>
+                                        <tr class="internal-doc-row" data-category="<?php echo $docCategory; ?>">
+                                            <td><a href="javascript:void(0)" class="clickable-name"
+                                                    onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                            <td>
+                                                <div class="action-container">
+                                                    <button class="action-btn view-btn"
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
+                                                            class="fa-solid fa-eye"></i> View</button>
+
+                                                    <?php if ($isSuperAdmin): ?>
+                                                        <button class="action-btn edit-btn"
+                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
+                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                        </button>
+                                                        <form method="POST"
+                                                            onsubmit="return confirm('Delete this internal document?');">
+                                                            <input type="hidden" name="contract_id"
+                                                                value="<?php echo $doc['id']; ?>">
+                                                            <button type="submit" name="delete_contract"
+                                                                class="action-btn delete-btn"
+                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="4">No internal documents found.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <div id="employeeRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
-                        Reveal</button>
+                <div id="internalRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn"
+                        onclick="withPasswordGate(() => { document.getElementById('internalSectionContent').classList.remove('blurred-content'); document.getElementById('internalRevealOverlay').style.display='none'; })">
+                        <i class="fa-solid fa-lock"></i> Click to Reveal Documents
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Document Form Modal -->
-    <div id="documentFormModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
-        <div
-            style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
-            <button type="button" id="closeDocumentFormModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="documentFormContainer">
-                <h3>Upload Document</h3>
-                <form method="POST" enctype="multipart/form-data" id="documentFormData">
-                    <input type="hidden" name="add_document" value="1">
-                    <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
-                            class="form-control" required></div>
-                    <div class="form-group" style="display:none;"><label>Case ID</label><input type="text"
-                            name="doc_case" class="form-control" placeholder="Auto-generated"></div>
-                    <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
-                            accept=".pdf,.doc,.docx" required></div>
-                    <div class="form-actions"><button type="button" class="cancel-btn"
-                            id="cancelDocumentBtn">Cancel</button><button type="submit" class="save-btn">Upload</button>
+        <!-- External Section -->
+        <div class="content-section" id="external">
+            <div class="section-header">
+                <h2 class="section-title">External Agreements</h2>
+                <button class="add-btn" onclick="document.getElementById('addContractBtn').click()">
+                    <i>+</i> Add External Contract
+                </button>
+            </div>
+            <!-- External Legal Management Tabs -->
+            <div class="external-tabs-container" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <button class="ext-tab-btn active" onclick="filterExternalDocs(this, 'supplier')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-file-contract" style="margin-right: 8px;"></i> Supplier Contracts
+                    </button>
+                    <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'govt')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-landmark" style="margin-right: 8px;"></i> Govt Relations
+                    </button>
+                    <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'lawsuits')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-gavel" style="margin-right: 8px;"></i> Lawsuits & Disputes
+                    </button>
+                    <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'compliance')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-clipboard-check" style="margin-right: 8px;"></i> Regulatory Compliance
+                    </button>
+                    <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'consumer')"
+                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                        <i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i> Consumer Protection
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                function filterExternalDocs(btn, category) {
+                    // Update Tab Styles
+                    const container = btn.closest('.external-tabs-container');
+                    const buttons = container.querySelectorAll('.ext-tab-btn');
+                    buttons.forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'white';
+                        b.style.color = '#64748b';
+                    });
+
+                    // Set active style for clicked button
+                    btn.classList.add('active');
+                    btn.style.background = '#10b981';
+                    btn.style.color = 'white';
+
+                    // Filter Rows
+                    const rows = document.querySelectorAll('.external-doc-row');
+                    rows.forEach(row => {
+                        if (row.dataset.category === category) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Initialize Default Tab (Supplier) on Load
+                document.addEventListener('DOMContentLoaded', () => {
+                    const firstTab = document.querySelector('.ext-tab-btn.active');
+                    if (firstTab) {
+                        const match = firstTab.getAttribute('onclick').match(/, '([^']+)'/);
+                        if (match && match[1]) {
+                            filterExternalDocs(firstTab, match[1]);
+                        }
+                    }
+                });
+            </script>
+            <div style="position: relative;">
+                <div id="externalSectionContent" class="blurred-content">
+                    <div class="table-scroll-container">
+                        <table class="data-table premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Agreement Name</th>
+                                    <th>Case ID</th>
+                                    <th>Expiry Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $externalDocs = array_filter($contracts, function ($c) {
+                                    return (isset($c['contract_type']) && $c['contract_type'] === 'External');
+                                });
+                                if (!empty($externalDocs)):
+                                    foreach ($externalDocs as $doc):
+                                        // Auto-categorize based on name
+                                        $nameLower = strtolower($doc['name']);
+                                        $docCategory = 'supplier'; // Default
+                                
+                                        if (strpos($nameLower, 'supplier') !== false || strpos($nameLower, 'supply') !== false || strpos($nameLower, 'partner') !== false || strpos($nameLower, 'agreement') !== false || strpos($nameLower, 'nda') !== false) {
+                                            $docCategory = 'supplier';
+                                        } elseif (strpos($nameLower, 'govt') !== false || strpos($nameLower, 'bir') !== false || strpos($nameLower, 'sec') !== false || strpos($nameLower, 'dole') !== false || strpos($nameLower, 'permit') !== false || strpos($nameLower, 'tax') !== false) {
+                                            $docCategory = 'govt';
+                                        } elseif (strpos($nameLower, 'lawsuit') !== false || strpos($nameLower, 'dispute') !== false || strpos($nameLower, 'case') !== false || strpos($nameLower, 'settlement') !== false || strpos($nameLower, 'litigation') !== false) {
+                                            $docCategory = 'lawsuits';
+                                        } elseif (strpos($nameLower, 'regulatory') !== false || strpos($nameLower, 'compliance') !== false || strpos($nameLower, 'privacy') !== false || strpos($nameLower, 'dpa') !== false) {
+                                            $docCategory = 'compliance';
+                                        } elseif (strpos($nameLower, 'consumer') !== false || strpos($nameLower, 'customer') !== false || strpos($nameLower, 'waiver') !== false || strpos($nameLower, 'guest') !== false) {
+                                            $docCategory = 'consumer';
+                                        }
+
+                                        $score = $doc['risk_score'] ?? 0;
+                                        $docRisk = 'Low';
+                                        if ($score >= 70)
+                                            $docRisk = 'High';
+                                        elseif ($score >= 31)
+                                            $docRisk = 'Medium';
+                                        ?>
+                                        <tr class="external-doc-row contract-row" data-category="<?php echo $docCategory; ?>"
+                                            data-risk="<?php echo $docRisk; ?>">
+                                            <td><a href="javascript:void(0)" class="clickable-name"
+                                                    onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                            <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
+                                            </td>
+                                            <td>
+                                                <div class="action-container">
+                                                    <button class="action-btn view-btn"
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
+                                                            class="fa-solid fa-eye"></i> View</button>
+
+                                                    <?php if ($isSuperAdmin): ?>
+                                                        <button class="action-btn edit-btn"
+                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
+                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                        </button>
+                                                        <form method="POST"
+                                                            onsubmit="return confirm('Delete this external agreement?');">
+                                                            <input type="hidden" name="contract_id"
+                                                                value="<?php echo $doc['id']; ?>">
+                                                            <button type="submit" name="delete_contract"
+                                                                class="action-btn delete-btn"
+                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="4">No external agreements found.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="externalRevealOverlay" class="reveal-overlay">
+                    <button class="reveal-btn"
+                        onclick="withPasswordGate(() => { document.getElementById('externalSectionContent').classList.remove('blurred-content'); document.getElementById('externalRevealOverlay').style.display='none'; })">
+                        <i class="fa-solid fa-lock"></i> Click to Reveal Agreements
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="content-section" id="documents">
+            <div class="section-header">
+                <h2 class="section-title">Case Documents</h2>
+                <button class="add-btn" id="addDocumentBtn">
+                    <i>+</i> Upload Document
+                </button>
+            </div>
+            <div class="table-scroll-container">
+                <table class="data-table premium-table">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Case</th>
+                            <th>Date Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsTableBody">
+                        <?php if (!empty($documents)): ?>
+                            <?php foreach ($documents as $doc): ?>
+                                <tr>
+                                    <td>
+                                        <?php if (!empty($doc['file_path'])): ?>
+                                            <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="document"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'><?php echo htmlspecialchars($doc['name']); ?></a>
+                                        <?php else: ?>
+                                            <?php echo htmlspecialchars($doc['name']); ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($doc['case_id'] ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($doc['uploaded_at'] ?? 'now'))); ?>
+                                    </td>
+                                    <td>
+                                        <div class="action-container">
+                                            <button class="action-btn download-btn" data-type="doc-download"
+                                                data-pdf-type="document"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
+                                                style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+                                                <i class="fa-solid fa-file-pdf"></i> Download
+                                            </button>
+                                            <?php if ($isSuperAdmin): ?>
+                                                <form method="POST" onsubmit="return confirm('Permanently delete this document?');">
+                                                    <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
+                                                    <button type="submit" name="delete_document" class="action-btn delete-btn"
+                                                        style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;">
+                                                        <i class="fa-solid fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:#666;padding:20px;">No documents found.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Contracts Section -->
+        <div class="content-section" id="contracts" style="display:none;">
+            <div class="section-header">
+                <h2 class="section-title">Contracts <span class="ai-badge">AI-Powered Analysis</span></h2>
+                <div style="display: flex; gap: 10px;">
+                    <!-- Button para sa Secured PDF Report (Idinagdag) -->
+                    <button class="add-btn" id="exportPdfBtn" style="background: #e74c3c; /* Pula para sa ulat */">
+                        &#x1F4C4; Generate Secured PDF
+                    </button>
+                    <button class="add-btn" id="addContractBtn">
+                        <i>+</i> Upload Contract
+                    </button>
+                </div>
+            </div>
+            <!-- Hidden form to trigger secured PDF generation via POST -->
+            <form id="exportPdfForm" method="POST" style="display:none">
+                <input type="hidden" name="action" value="export_pdf">
+            </form>
+
+            <!-- Add Contract Form -->
+            <div class="form-container" id="contractForm">
+                <h3>Upload Contract <span class="ai-badge">AI Risk Analysis</span></h3>
+                <form method="POST" enctype="multipart/form-data" id="contractFormData">
+                    <div class="form-group">
+                        <label for="contractName">Contract Name</label>
+                        <input type="text" id="contractName" name="contract_name" class="form-control"
+                            placeholder="Enter contract name" required>
+                    </div>
+                    <div class="form-group" style="display:none;">
+                        <label for="contractCase">Case ID</label>
+                        <input type="text" id="contractCase" name="contract_case" class="form-control"
+                            placeholder="Auto-generated">
+                    </div>
+                    <div class="form-group">
+                        <label for="contractType">Contract Type</label>
+                        <select id="contractType" name="contract_type" class="form-control" required>
+                            <option value="Internal">Internal (Policies, SOPs)</option>
+                            <option value="External">External (Vendors, Clients)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contractDescription">Contract Description</label>
+                        <textarea id="contractDescription" name="contract_description" class="form-control"
+                            placeholder="Describe the contract terms, key clauses, and important details for AI analysis"
+                            rows="4"></textarea>
+                        <div class="file-info">AI will analyze this description to detect risk factors</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contractFile">Contract File</label>
+                        <input type="file" id="contractFile" name="contract_file" class="form-control"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                        <div class="file-info">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contractImage">Larawang Pang-cover (opsyonal)</label>
+                        <input type="file" id="contractImage" name="contract_image" class="form-control"
+                            accept="image/*">
+                        <div class="file-info">Mga pinapayagang format: JPG, PNG, JPEG (Max: 5MB)</div>
+                    </div>
+
+                    <div class="ai-analysis-section">
+                        <h4><i class="fa-solid fa-wand-magic-sparkles" style="color: #4a6cf7; margin-right: 8px;"></i>
+                            AI Risk Assessment</h4>
+                        <p style="margin-bottom:10px; color:#475569;"><strong>Note:</strong> Our AI system will
+                            automatically analyze your contract for:</p>
+                        <ul class="ai-features-list">
+                            <li><i class="fa-solid fa-check-circle"></i> Financial risk factors (lease terms,
+                                rent
+                                structure)</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Operational restrictions (hours,
+                                suppliers,
+                                staffing)</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Legal protection issues (liability,
+                                guarantees)</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Flexibility and exit concerns</li>
+                        </ul>
+                        <div class="ai-note">
+                            <i class="fa-solid fa-circle-info"></i> Risk score and level will be automatically
+                            calculated
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelContractBtn">Cancel</button>
+                        <button type="submit" class="save-btn" name="add_contract" id="saveContractBtn">
+                            <i>+</i> Upload & Analyze Contract
+                        </button>
                     </div>
                 </form>
             </div>
+
+            <!-- Filter Bar -->
+            <div class="filters-container"
+                style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                    <div class="filter-group" style="flex: 1; min-width: 200px;">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Search</label><br>
+                        <div style="position: relative; margin-top: 5px;">
+                            <input type="text" id="contractSearchInput" placeholder="Name or Case ID..."
+                                style="width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                            <i class="fa-solid fa-search"
+                                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">From</label><br>
+                        <input type="date" id="contractFromDate"
+                            style="margin-top: 5px; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                    </div>
+                    <div class="filter-group">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">To</label><br>
+                        <input type="date" id="contractToDate"
+                            style="margin-top: 5px; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                    </div>
+                    <div class="filter-group">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status</label><br>
+                        <select id="contractStatusFilter"
+                            style="margin-top: 5px; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                            <option value="all">All Status</option>
+                            <option value="High">High Risk</option>
+                            <option value="Medium">Medium Risk</option>
+                            <option value="Low">Low Risk</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="display: flex; gap: 10px;">
+                        <button onclick="applyContractFilters()"
+                            style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600;">
+                            <i class="fa-solid fa-filter"></i> Filter
+                        </button>
+                        <button onclick="clearContractFilters()"
+                            style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600;">
+                            <i class="fa-solid fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contracts Table -->
+            <table class="data-table premium-table">
+                <thead>
+                    <tr>
+                        <th>Contract Name</th>
+                        <th>Case</th>
+                        <th>Status</th>
+                        <th>Risk Score</th>
+                        <th>Upload Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contractsTableBody">
+                    <?php foreach ($contracts as $contract):
+                        $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
+                        $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
+                        $score = $contract['risk_score'] ?? 0;
+                        $rowRisk = 'Low';
+                        if ($score >= 70)
+                            $rowRisk = 'High';
+                        elseif ($score >= 31)
+                            $rowRisk = 'Medium';
+                        ?>
+                        <tr class="contract-row" data-risk="<?php echo $rowRisk; ?>"
+                            data-name="<?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? ''); ?>"
+                            data-case="<?php echo htmlspecialchars($contract['case_id']); ?>"
+                            data-date="<?php echo date('Y-m-d', strtotime($contract['created_at'])); ?>">
+                            <td>
+                                <?php if (!empty($contract['file_path'])): ?>
+                                    <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                <?php else: ?>
+                                    <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                <?php endif; ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                            <td>
+                                <span class="risk-badge risk-<?php echo strtolower($rowRisk); ?>" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+                                        <?php if ($rowRisk === 'High')
+                                            echo 'background: #fee2e2; color: #ef4444;';
+                                        elseif ($rowRisk === 'Medium')
+                                            echo 'background: #fef3c7; color: #f59e0b;';
+                                        else
+                                            echo 'background: #dcfce7; color: #22c55e;'; ?>">
+                                    <?php echo $rowRisk; ?>
+                                </span>
+                            </td>
+                            <td>
+                                <?php
+                                $score = $contract['risk_score'] ?? 0;
+                                $riskClass = ($score >= 70) ? 'high' : (($score >= 31) ? 'medium' : 'low');
+                                ?>
+                                <span class="risk-score-display <?php echo $riskClass; ?>">
+                                    <?php echo htmlspecialchars($score); ?>/100
+                                </span>
+                            </td>
+                            <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                            <td>
+                                <div class="action-container">
+                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
+                                        <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
+                                    </button>
+                                    <button class="action-btn download-btn" data-type="contract-download"
+                                        data-pdf-type="contract"
+                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </button>
+                                    <?php if ($isSuperAdmin): ?>
+                                        <form method="POST"
+                                            onsubmit="return confirm('Are you sure you want to delete this contract?');">
+                                            <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
+                                            <button type="submit" name="delete_contract" class="action-btn delete-btn"
+                                                style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
+
+        <div class="content-section" id="risk_analysis">
+            <div class="section-header">
+                <h2 class="section-title">Contract Risk Analysis</h2>
+            </div>
+
+            <!-- Stats Cards Grid -->
+            <div class="risk-stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-icon"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Contracts</span>
+                        <span class="stat-value"><?php echo $totalContracts; ?></span>
+                    </div>
+                </div>
+                <div class="stat-card high" onclick="filterByRiskLevel('High')"
+                    style="cursor: pointer; transition: all 0.3s ease;">
+                    <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">High Risk</span>
+                        <span class="stat-value"><?php echo $riskCounts['High']; ?></span>
+                        <span class="stat-meta"><?php echo $highPct; ?>% of total</span>
+                    </div>
+                </div>
+                <div class="stat-card medium" onclick="filterByRiskLevel('Medium')"
+                    style="cursor: pointer; transition: all 0.3s ease;">
+                    <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Medium Risk</span>
+                        <span class="stat-value"><?php echo $riskCounts['Medium']; ?></span>
+                        <span class="stat-meta"><?php echo $mediumPct; ?>% of total</span>
+                    </div>
+                </div>
+                <div class="stat-card low" onclick="filterByRiskLevel('Low')"
+                    style="cursor: pointer; transition: all 0.3s ease;">
+                    <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Low Risk</span>
+                        <span class="stat-value"><?php echo $riskCounts['Low']; ?></span>
+                        <span class="stat-meta"><?php echo $lowPct; ?>% of total</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-analysis-layout">
+                <div class="chart-container-wrapper">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <h3 class="subsection-title" style="margin: 0; display: flex; align-items: center; gap: 12px;">
+                            <div
+                                style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                                <i class="fa-solid fa-chart-simple" style="color: white; font-size: 18px;"></i>
+                            </div>
+                            <span
+                                style="font-size: 1.3rem; font-weight: 700; color: #1e293b; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Risk
+                                Distribution Analysis</span>
+                        </h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" onclick="window.location.reload()"
+                                style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-sync-alt"></i> Refresh
+                            </button>
+                            <button onclick="window.downloadChart()"
+                                style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-area" id="chartArea"
+                        style="height: 400px; width: 100%; position: relative; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 24px; border: 2px solid #e2e8f0; padding: 30px; display: block; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;">
+                        <div
+                            style="position: absolute; top: 15px; right: 15px; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <span
+                                style="font-size: 0.75rem; color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Live
+                                Data</span>
+                        </div>
+                        <canvas id="riskDistributionChart" width="600" height="400"
+                            style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
+                    </div>
+                    <div
+                        style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div style="display: flex; gap: 20px;">
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                <div
+                                    style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                </div>
+                                <span style="font-size: 0.9rem; color: #ef4444; font-weight: 700;">High Risk</span>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <div
+                                    style="width: 16px; height: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);">
+                                </div>
+                                <span style="font-size: 0.9rem; color: #f59e0b; font-weight: 700;">Medium
+                                    Risk</span>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <div
+                                    style="width: 16px; height: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                </div>
+                                <span style="font-size: 0.9rem; color: #10b981; font-weight: 700;">Low Risk</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Last Updated</div>
+                            <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600;">
+                                <?php echo date('M j, Y g:i A'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="high-risk-list-wrapper">
+                    <h3 class="subsection-title">Top High-Risk Contracts</h3>
+                    <div id="analysisResults">
+                        <?php
+                        $highContracts = array_filter($contracts, function ($c) {
+                            return (isset($c['risk_level']) && strtolower($c['risk_level']) === 'high');
+                        });
+                        if (!empty($highContracts)): ?>
+                            <div class="high-risk-items">
+                                <?php foreach (array_slice($highContracts, 0, 5) as $hc): ?>
+                                    <div class="risk-item"
+                                        style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; margin-bottom: 20px;">
+                                        <div
+                                            style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                            <div class="risk-item-info">
+                                                <span class="risk-item-name"
+                                                    style="font-size: 1.05rem; color: #0f172a; font-weight: 700; display: block; text-align: left !important;"><?php echo htmlspecialchars($hc['contract_name'] ?? $hc['name'] ?? 'Untitled'); ?></span>
+                                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                                    <span
+                                                        style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 3px 10px; border-radius: 6px; font-weight: 600;"><?php echo htmlspecialchars($hc['case_id'] ?? 'N/A'); ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="risk-item-score">
+                                                <span class="score-badge"
+                                                    style="padding: 6px 14px; font-size: 0.85rem; background: #fee2e2; color: #ef4444; font-weight: 800; border: 1px solid #fecaca; border-radius: 8px;"><?php echo htmlspecialchars($hc['risk_score'] ?? 'N/A'); ?>/100</span>
+                                            </div>
+                                        </div>
+
+                                        <?php if (!empty($hc['analysis_summary'])): ?>
+                                            <div class="risk-ai-summary"
+                                                style="background: #f8fafc; padding: 14px; border-radius: 12px; width: 100%; border-left: 4px solid #ef4444; margin-top: 4px; text-align: left !important;">
+                                                <p
+                                                    style="margin: 0; font-size: 0.85rem; color: #334155; line-height: 1.6; text-align: left !important;">
+                                                    <i class="fa-solid fa-robot" style="color: #6366f1; margin-right: 8px;"></i>
+                                                    <strong>AI Result:</strong>
+                                                    <?php echo htmlspecialchars($hc['analysis_summary']); ?>
+                                                </p>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div style="display: flex; gap: 10px; margin-top: 8px; width: 100%;">
+                                            <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                                data-contract='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                style="flex: 1; padding: 8px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; border-radius: 8px; cursor: pointer;">
+                                                Full Report
+                                            </button>
+                                            <button class="action-btn download-btn" data-type="contract-download"
+                                                data-pdf-type="contract"
+                                                data-pdf-content='<?php echo htmlspecialchars(json_encode($hc)); ?>'
+                                                style="flex: 1; background: #059669; color: #fff; border: none; border-radius: 8px; padding: 8px; font-weight: 600; font-size: 12px; cursor: pointer;">
+                                                Download PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="no-risk-data">
+                                <i class="fa-solid fa-shield-check"></i>
+                                <p>No high-risk contracts detected.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 
 
-    <!-- Supporting Document Modal -->
-    <div id="contractDocsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1500;">
+
+<!-- Modals Section -->
+<!-- Details Modal -->
+<div id="detailsModal"
+    style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(2,6,23,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items:center; justify-content:center; z-index:1000;">
+    <div
+        style="background:#ffffff; width:90%; max-width:700px; border-radius:24px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+        <img src="../assets/image/logo.png" alt="Logo Watermark"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
         <div
-            style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1);">
-            <button type="button" id="closeContractDocsModal"
-                style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
-                onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
-                onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 style="margin-top:0;">Upload Contract Document</h3>
-            <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
-                <input type="hidden" name="add_contract_document" value="1">
-                <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
-                <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
-                        class="form-control" placeholder="e.g., Annex A" required></div>
-                <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required></div>
-                <div class="form-actions"><button type="button" class="cancel-btn"
-                        id="cancelContractDocsBtn">Cancel</button><button type="submit" class="save-btn">Upload
-                        Document</button></div>
+            style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); position: relative; z-index: 10;">
+            <h3 id="detailsTitle" style="margin:0; font-size: 1.25rem; color: #1e293b; font-weight: 700;">Details
+            </h3>
+            <button id="closeDetails"
+                style="background:#f1f5f9; color:#64748b; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; font-size: 1.1rem;"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="detailsBody" style="padding: 24px; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<!-- Password Gate Modal -->
+<div id="passwordModal"
+    style="display:none; position:fixed; inset:0; background: linear-gradient(115deg, #0d1b3e 50%, #ffffff 50%); align-items:center; justify-content:center; z-index:99999;">
+    <div
+        style="background:#ffffff; width:92%; max-width:440px; border-radius:32px; padding:40px 30px; position:relative; box-shadow:0 30px 80px rgba(2,6,23,0.3); border:1px solid #e2e8f0; overflow: hidden; text-align: center;">
+        <div style="margin-bottom: 25px;"><img src="../assets/image/logo.png" alt="Logo"
+                style="width: 180px; height: auto;"></div>
+        <div style="position: relative; z-index: 1;">
+            <h2 style="margin:0 0 10px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; text-align:center;">
+                Security Check</h2>
+            <p style="margin:0 0 30px; color:#64748b; text-align:center;">Enter your PIN to access this system</p>
+            <form id="passwordForm">
+                <div class="pin-input" style="display:flex; justify-content:center; margin-bottom:30px;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                    <input type="password" maxlength="1" class="pin-digit"
+                        style="width:60px; height:60px; margin:0 8px; text-align:center; font-size:28px; border:2px solid #e2e8f0; border-radius:14px; background:#f8fafc;">
+                </div>
+                <div id="pwdError"
+                    style="color:#e11d48; font-size:.9rem; margin-top:-15px; margin-bottom:20px; text-align:center; display:none; font-weight:600;">
+                    Incorrect PIN. Please try again.</div>
+                <div style="display:flex; gap:12px; justify-content:center;">
+                    <button type="button" class="cancel-btn" id="pwdCancel"
+                        style="padding:12px 24px; border-radius:12px; font-weight:600;">Cancel</button>
+                    <button type="submit" class="save-btn"
+                        style="padding:12px 24px; border-radius:12px; font-weight:700;">Continue</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Internal/External Info Modal -->
-    <div id="legalDetailModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:600px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
-            <div
-                style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
-                <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 20;">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div
-                        style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; backdrop-filter: blur(5px);">
-                        <i class="fa-solid fa-file-contract"></i>
-                    </div>
-                    <div>
-                        <h2 id="legalDetailTitle" style="margin:0; font-size: 1.3rem; font-weight: 800;">Document
-                            Details</h2>
-                        <span id="legalDetailCategory"
-                            style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">CATEGORY</span>
-                    </div>
-                </div>
-            </div>
-            <div style="padding: 40px; background: white; position: relative;">
-                <div id="legalDetailContent" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 20px;">
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
-                                Name</label>
-                            <div id="legalDetailName"
-                                style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                -</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label
-                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
-                                    id="legalDetailSecondaryLabel">Secondary</label>
-                                <div id="legalDetailSecondary"
-                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
-                            <div>
-                                <label
-                                    style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
-                                    Date</label>
-                                <div id="legalDetailDate"
-                                    style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                    -</div>
-                            </div>
-                        </div>
-                        <div class="info-row">
-                            <label
-                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
-                                Document Content</label>
-                            <div id="legalDetailDescription"
-                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap; max-height: 250px; overflow-y: auto;">
-                                -</div>
-                        </div>
-                        <div style="margin-top: 20px;">
-                            <button type="button"
-                                onclick="document.getElementById('legalDetailModal').style.display='none'"
-                                style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
-                                Close Window
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Reveal Overlay for Modal -->
-                <div id="legalDetailRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn"
-                        onclick="withPasswordGate(() => { document.getElementById('legalDetailContent').classList.remove('blurred-content'); document.getElementById('legalDetailRevealOverlay').style.display='none'; })">
-                        <i class="fa-solid fa-lock"></i> Enter PIN to View Details
-                    </button>
-                </div>
-            </div>
-        </div>
+<!-- Contract Form Modal -->
+<div id="contractFormModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+    <div
+        style="background:#ffffff; width:94%; max-width:500px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 70px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
+        <button type="button" id="closeContractFormModal"
+            style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+            onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+            onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="contractFormContainer"></div>
     </div>
+</div>
 
-    <!-- legalAnalysisModal -->
-    <div id="legalAnalysisModal"
-        style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
-        <div class="premium-modal modal-animate-in"
-            style="width:94%; max-width:700px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
-            
-            <!-- Enhanced Modal Header with Animated Background -->
-            <div
-                style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); padding: 40px; color: white; position: relative; overflow: hidden;">
-                
-                <!-- Animated Background Elements -->
-                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; animation: float 20s linear infinite;"></div>
-                <div style="position: absolute; top: 20px; right: 20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 3s ease-in-out infinite;"></div>
-                <div style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255,255,255,0.08); border-radius: 50%; animation: pulse 3s ease-in-out infinite 1s;"></div>
-                
-                <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                    style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 40px; height: 40px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 10; backdrop-filter: blur(10px);">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                
-                <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 5;">
-                    <div
-                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.2rem; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.1); animation: float-icon 3s ease-in-out infinite;">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <div>
-                        <h2 style="margin:0; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Risk Analysis</h2>
-                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <span id="analysisTargetType"
-                                style="display: inline-block; background: rgba(255,255,255,0.3); color: white; padding: 6px 16px; border-radius: 25px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">CONTRACT</span>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: blink 2s infinite;"></div>
-                                <span style="font-size: 0.75rem; font-weight: 600; opacity: 0.9;">AI Powered</span>
-                            </div>
-                        </div>
-                    </div>
+<!-- Employee Form Modal wrapper -->
+<div id="employeeFormModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+    <div
+        style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2); overflow: hidden;">
+        <!-- Internal Logo Watermark -->
+        <img src="../assets/image/logo.png" alt="Logo Watermark"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.03; pointer-events: none; z-index: 0;">
+        <button type="button" id="closeEmployeeFormModal"
+            style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+            onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+            onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="employeeFormContainer" style="position: relative; z-index: 1;"></div>
+    </div>
+</div>
+
+<!-- Employee Info Modal (Revamped Premium View) -->
+<div id="employeeInfoModal"
+    style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+    <div class="premium-modal modal-animate-in"
+        style="width:94%; max-width:550px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
+
+        <!-- Modal Header with Gradient -->
+        <div
+            style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                <div id="genderImageContainer"
+                    style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.25); overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
+                    <img src="../assets/image/Women.png" alt="Gender"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="text-align: center;">
+                    <h2 id="employeeInfoTitle"
+                        style="margin:0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        Employee
+                        Profile</h2>
+                    <span id="employeeRoleBadge"
+                        style="display: inline-block; margin-top: 8px; background: rgba(59, 130, 246, 0.4); color: #ffffff; padding: 6px 16px; border-radius: 25px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Legal
+                        Team</span>
                 </div>
             </div>
-            
-            <!-- Enhanced Modal Body -->
-            <div style="padding: 40px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); max-height: 70vh; overflow-y: auto; position: relative;">
-                
-                <!-- Reveal Overlay -->
-                <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
-                    <button class="reveal-btn" onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
-                        <i class="fa-solid fa-lock"></i> Enter PIN to Reveal Analysis
-                    </button>
-                </div>
-                
-                <div id="legalAnalysisContent" class="blurred-content">
-                    <div style="display: flex; flex-direction: column; gap: 30px;">
-                        
-                        <!-- Enhanced Confidence Score Section -->
+            <button type="button" id="closeEmployeeInfoTop"
+                style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body with Circular Design -->
+        <div id="employeeInfoBody"
+            style="padding: 30px; background: white; position: relative; display: flex; justify-content: center; align-items: center;">
+            <div id="employeeSensitiveData" class="blurred-content" style="width: 100%; max-width: 320px;">
+                <!-- Circular Container -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                    <!-- Circular Profile Section -->
+                    <div
+                        style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08); border: 3px solid white; position: relative;">
                         <div
-                            style="text-align: center; padding: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 24px; border: 2px solid #0ea5e9; position: relative; overflow: hidden;">
-                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6, #ec4899); animation: shimmer 2s infinite;"></div>
+                            style="position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
+                            <i class="fa-solid fa-id-card" style="color: white; font-size: 12px;"></i>
+                        </div>
+                        <div style="text-align: center; padding: 15px;">
                             <div
-                                style="font-size: 0.8rem; font-weight: 700; color: #0369a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
-                                AI Confidence Score</div>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                                <div style="font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #0ea5e9, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">94%</div>
-                                <div style="display: flex; flex-direction: column; gap: 5px;">
-                                    <div style="width: 120px; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
-                                        <div style="width: 94%; height: 100%; background: linear-gradient(90deg, #0ea5e9, #3b82f6); border-radius: 10px; animation: progress 2s ease-out;"></div>
-                                    </div>
-                                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 600;">HIGH ACCURACY</span>
-                                </div>
+                                style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);">
+                                <i class="fa-solid fa-user" style="color: white; font-size: 24px;"></i>
+                            </div>
+                            <h3 id="display_emp_name"
+                                style="margin: 0; font-size: 1rem; font-weight: 800; color: #1e293b;">-</h3>
+                            <span id="display_emp_position"
+                                style="display: block; margin-top: 3px; font-size: 0.75rem; color: #64748b; font-weight: 600;">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Circles -->
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <!-- Email Circle -->
+                        <div
+                            style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                            <div
+                                style="width: 30px; height: 30px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                <i class="fa-solid fa-envelope" style="color: white; font-size: 14px;"></i>
+                            </div>
+                            <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
+                                Email</div>
+                            <div id="display_emp_email"
+                                style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700; max-width: 80px; word-break: break-all;">
+                                -</div>
+                        </div>
+
+                        <!-- Phone Circle -->
+                        <div
+                            style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid white;">
+                            <div
+                                style="width: 30px; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                                <i class="fa-solid fa-phone" style="color: white; font-size: 14px;"></i>
+                            </div>
+                            <div style="text-align: center; font-size: 0.65rem; color: #64748b; font-weight: 600;">
+                                Phone</div>
+                            <div id="display_emp_phone"
+                                style="text-align: center; font-size: 0.65rem; color: #1e293b; font-weight: 700;">-
                             </div>
                         </div>
-                        
-                        <!-- Enhanced Analysis Summary -->
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="modalDownloadEmpPdf"
+                            style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s;">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                        <button id="closeEmployeeInfoBottom"
+                            style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="employeeRevealOverlay" class="reveal-overlay">
+                <button class="reveal-btn" id="employeeRevealBtn"><i class="fa-solid fa-lock"></i> Enter PIN to
+                    Reveal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Form Modal -->
+<div id="documentFormModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1150;">
+    <div
+        style="background:#ffffff; width:94%; max-width:720px; border-radius:32px; padding:40px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
+        <button type="button" id="closeDocumentFormModal"
+            style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+            onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+            onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="documentFormContainer">
+            <h3>Upload Document</h3>
+            <form method="POST" enctype="multipart/form-data" id="documentFormData">
+                <input type="hidden" name="add_document" value="1">
+                <div class="form-group"><label>Document Name</label><input type="text" name="doc_name"
+                        class="form-control" required></div>
+                <div class="form-group" style="display:none;"><label>Case ID</label><input type="text" name="doc_case"
+                        class="form-control" placeholder="Auto-generated"></div>
+                <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
+                        accept=".pdf,.doc,.docx" required></div>
+                <div class="form-actions"><button type="button" class="cancel-btn"
+                        id="cancelDocumentBtn">Cancel</button><button type="submit" class="save-btn">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Supporting Document Modal -->
+<div id="contractDocsModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1500;">
+    <div
+        style="background:#ffffff; width:94%; max-width:640px; border-radius:24px; padding:30px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.1);">
+        <button type="button" id="closeContractDocsModal"
+            style="position:absolute; right:16px; top:16px; background:#ef4444; color:white; border:none; width: 32px; height: 32px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.2s; z-index: 20;"
+            onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.1)'"
+            onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)'">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h3 style="margin-top:0;">Upload Contract Document</h3>
+        <form method="POST" enctype="multipart/form-data" id="contractDocsForm">
+            <input type="hidden" name="add_contract_document" value="1">
+            <input type="hidden" name="contract_id" id="contract_docs_contract_id" value="">
+            <div class="form-group"><label>Document Name</label><input type="text" name="doc_name" class="form-control"
+                    placeholder="e.g., Annex A" required></div>
+            <div class="form-group"><label>File</label><input type="file" name="doc_file" class="form-control"
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required></div>
+            <div class="form-actions"><button type="button" class="cancel-btn"
+                    id="cancelContractDocsBtn">Cancel</button><button type="submit" class="save-btn">Upload
+                    Document</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Internal/External Info Modal -->
+<div id="legalDetailModal"
+    style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+    <div class="premium-modal modal-animate-in"
+        style="width:94%; max-width:600px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column;">
+        <div
+            style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); padding: 30px 40px; color: white; position: relative;">
+            <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
+                style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 36px; height: 36px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 20;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div
+                    style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 18px; display: grid; place-items: center; font-size: 1.8rem; backdrop-filter: blur(5px);">
+                    <i class="fa-solid fa-file-contract"></i>
+                </div>
+                <div>
+                    <h2 id="legalDetailTitle" style="margin:0; font-size: 1.3rem; font-weight: 800;">Document
+                        Details</h2>
+                    <span id="legalDetailCategory"
+                        style="display: inline-block; margin-top: 5px; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">CATEGORY</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 40px; background: white; position: relative;">
+            <div id="legalDetailContent" class="blurred-content">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Document
+                            Name</label>
+                        <div id="legalDetailName"
+                            style="font-size: 1rem; font-weight: 600; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            -</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div>
-                            <h4 id="analysisTargetName"
-                                style="font-size: 1.3rem; color: #1e293b; margin-bottom: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
-                                <span style="width: 4px; height: 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 2px;"></span>
-                                Contract Analysis
-                            </h4>
-                            <div id="analysisSummaryText"
-                                style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 5px solid #22c55e; padding: 20px; border-radius: 16px; position: relative; overflow: hidden;">
-                                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%;"></div>
-                                <div style="display: flex; align-items: start; gap: 15px;">
-                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <i class="fa-solid fa-shield-check" style="color: white; font-size: 18px;"></i>
-                                    </div>
-                                    <div>
-                                        <p style="margin:0; font-size: 0.95rem; color: #166534; line-height: 1.7; font-weight: 500;">AI analysis
-                                            suggests this document is highly compliant with standard legal framework. Minimal
-                                            risk
-                                            exposure detected with strong protective clauses in place.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Enhanced Key Findings -->
-                        <div class="info-row">
                             <label
-                                style="display: block; font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">
-                                <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px; color: #3b82f6;"></i>
-                                Key Findings
-                            </label>
-                            <div id="analysisKeyFindings"
-                                style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 20px;">
-                                <ul style="padding-left: 0; margin: 0; list-style: none; color: #92400e; font-size: 0.9rem; line-height: 1.8;">
-                                    <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
-                                        </div>
-                                        <span>No restrictive clauses detected.</span>
-                                    </li>
-                                    <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
-                                        </div>
-                                        <span>Liability terms are clearly defined and balanced.</span>
-                                    </li>
-                                    <li style="display: flex; align-items: center; gap: 12px;">
-                                        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
-                                        </div>
-                                        <span>Renewal and termination policies are standard.</span>
-                                    </li>
-                                </ul>
-                            </div>
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;"
+                                id="legalDetailSecondaryLabel">Secondary</label>
+                            <div id="legalDetailSecondary"
+                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                -</div>
                         </div>
-                        
-                        <!-- Enhanced Action Buttons -->
-                        <div style="display: flex; gap: 15px; margin-top: 20px;">
-                            <button type="button"
-                                onclick="document.getElementById('legalAnalysisModal').style.display='none'"
-                                style="flex: 1; padding: 16px; border-radius: 16px; border: 2px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); color: #475569; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <i class="fa-solid fa-times"></i>
-                                Close Report
-                            </button>
-                            <button type="button"
-                                style="flex: 1; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
-                                <i class="fa-solid fa-download"></i>
-                                Export PDF
-                            </button>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Effective/Expiry
+                                Date</label>
+                            <div id="legalDetailDate"
+                                style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                -</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
+                            Document Content</label>
+                        <div id="legalDetailDescription"
+                            style="font-size: 0.9rem; font-weight: 500; color: #1e293b; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap; max-height: 250px; overflow-y: auto;">
+                            -</div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button type="button" onclick="document.getElementById('legalDetailModal').style.display='none'"
+                            style="width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-weight: 700; cursor: pointer;">
+                            Close Window
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Reveal Overlay for Modal -->
+            <div id="legalDetailRevealOverlay" class="reveal-overlay">
+                <button class="reveal-btn"
+                    onclick="withPasswordGate(() => { document.getElementById('legalDetailContent').classList.remove('blurred-content'); document.getElementById('legalDetailRevealOverlay').style.display='none'; })">
+                    <i class="fa-solid fa-lock"></i> Enter PIN to View Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- legalAnalysisModal -->
+<div id="legalAnalysisModal"
+    style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; z-index:1150;">
+    <div class="premium-modal modal-animate-in"
+        style="width:94%; max-width:700px; border-radius:32px; padding:0; position:relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+
+        <!-- Enhanced Modal Header with Animated Background -->
+        <div
+            style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); padding: 40px; color: white; position: relative; overflow: hidden;">
+
+            <!-- Animated Background Elements -->
+            <div
+                style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; animation: float 20s linear infinite;">
+            </div>
+            <div
+                style="position: absolute; top: 20px; right: 20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 3s ease-in-out infinite;">
+            </div>
+            <div
+                style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255,255,255,0.08); border-radius: 50%; animation: pulse 3s ease-in-out infinite 1s;">
+            </div>
+
+            <button type="button" onclick="document.getElementById('legalAnalysisModal').style.display='none'"
+                style="position:absolute; right:20px; top:20px; background:rgba(255,255,255,0.2); color:white; border:none; width: 40px; height: 40px; border-radius: 50%; cursor:pointer; display: grid; place-items: center; transition: all 0.3s; z-index: 10; backdrop-filter: blur(10px);">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 5;">
+                <div
+                    style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 24px; display: grid; place-items: center; font-size: 2.2rem; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.1); animation: float-icon 3s ease-in-out infinite;">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <h2 style="margin:0; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        AI Risk Analysis</h2>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                        <span id="analysisTargetType"
+                            style="display: inline-block; background: rgba(255,255,255,0.3); color: white; padding: 6px 16px; border-radius: 25px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">CONTRACT</span>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div
+                                style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: blink 2s infinite;">
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600; opacity: 0.9;">AI Powered</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Enhanced Modal Body -->
+        <div
+            style="padding: 40px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); max-height: 70vh; overflow-y: auto; position: relative;">
+
+            <!-- Reveal Overlay -->
+            <div id="legalAnalysisRevealOverlay" class="reveal-overlay">
+                <button class="reveal-btn"
+                    onclick="withPasswordGate(() => { document.getElementById('legalAnalysisContent').classList.remove('blurred-content'); document.getElementById('legalAnalysisRevealOverlay').style.display='none'; })">
+                    <i class="fa-solid fa-lock"></i> Enter PIN to Reveal Analysis
+                </button>
+            </div>
+
+            <div id="legalAnalysisContent" class="blurred-content">
+                <div style="display: flex; flex-direction: column; gap: 30px;">
+
+                    <!-- Enhanced Confidence Score Section -->
+                    <div
+                        style="text-align: center; padding: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 24px; border: 2px solid #0ea5e9; position: relative; overflow: hidden;">
+                        <div
+                            style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0ea5e9, #3b82f6, #8b5cf6, #ec4899); animation: shimmer 2s infinite;">
+                        </div>
+                        <div
+                            style="font-size: 0.8rem; font-weight: 700; color: #0369a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                            AI Confidence Score</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                            <div
+                                style="font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #0ea5e9, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                94%</div>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <div
+                                    style="width: 120px; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
+                                    <div
+                                        style="width: 94%; height: 100%; background: linear-gradient(90deg, #0ea5e9, #3b82f6); border-radius: 10px; animation: progress 2s ease-out;">
+                                    </div>
+                                </div>
+                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 600;">HIGH ACCURACY</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Analysis Summary -->
+                    <div>
+                        <h4 id="analysisTargetName"
+                            style="font-size: 1.3rem; color: #1e293b; margin-bottom: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                            <span
+                                style="width: 4px; height: 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 2px;"></span>
+                            Contract Analysis
+                        </h4>
+                        <div id="analysisSummaryText"
+                            style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 5px solid #22c55e; padding: 20px; border-radius: 16px; position: relative; overflow: hidden;">
+                            <div
+                                style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%;">
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 15px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fa-solid fa-shield-check" style="color: white; font-size: 18px;"></i>
+                                </div>
+                                <div>
+                                    <p
+                                        style="margin:0; font-size: 0.95rem; color: #166534; line-height: 1.7; font-weight: 500;">
+                                        AI analysis
+                                        suggests this document is highly compliant with standard legal framework.
+                                        Minimal
+                                        risk
+                                        exposure detected with strong protective clauses in place.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Key Findings -->
+                    <div class="info-row">
+                        <label
+                            style="display: block; font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px;">
+                            <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px; color: #3b82f6;"></i>
+                            Key Findings
+                        </label>
+                        <div id="analysisKeyFindings"
+                            style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 20px;">
+                            <ul
+                                style="padding-left: 0; margin: 0; list-style: none; color: #92400e; font-size: 0.9rem; line-height: 1.8;">
+                                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                    </div>
+                                    <span>No restrictive clauses detected.</span>
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                    </div>
+                                    <span>Liability terms are clearly defined and balanced.</span>
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 12px;">
+                                    <div
+                                        style="width: 24px; height: 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="fa-solid fa-check" style="color: white; font-size: 12px;"></i>
+                                    </div>
+                                    <span>Renewal and termination policies are standard.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Action Buttons -->
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button type="button"
+                            onclick="document.getElementById('legalAnalysisModal').style.display='none'"
+                            style="flex: 1; padding: 16px; border-radius: 16px; border: 2px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); color: #475569; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fa-solid fa-times"></i>
+                            Close Report
+                        </button>
+                        <button type="button"
+                            style="flex: 1; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+                            <i class="fa-solid fa-download"></i>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script>
-        const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
-    </script>
-    <script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
+<script>
+    const APP_CORRECT_PIN = '<?php echo $archivePin; ?>';
+</script>
+<script src="../assets/Javascript/legalmanagemet.js?v=<?php echo time(); ?>"></script>
 
-    <script>
-        (function () {
-            // GLOBALIZE CHART INIT FIRST (Ensures it's availab le for other scripts)
-            window.riskChartRef = null;
-            window.initRiskChart = function () {
-                const canvas = document.getElementById('riskDistributionChart');
-                if (!canvas) return;
+<script>
+    (function () {
+        // GLOBALIZE CHART INIT FIRST (Ensures it's availab le for other scripts)
+        window.riskChartRef = null;
+        window.initRiskChart = function () {
+            const canvas = document.getElementById('riskDistributionChart');
+            if (!canvas) return;
 
-                if (typeof Chart === 'undefined') {
-                    console.warn("Chart library missing. Retrying...");
-                    setTimeout(window.initRiskChart, 800);
-                    return;
-                }
+            if (typeof Chart === 'undefined') {
+                console.warn("Chart library missing. Retrying...");
+                setTimeout(window.initRiskChart, 800);
+                return;
+            }
 
-                const chartData = [
-                    <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
-                    <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
-                ];
+            const chartData = [
+                <?php echo (int) ($riskCounts['High'] ?? 0); ?>,
+                <?php echo (int) ($riskCounts['Medium'] ?? 0); ?>,
+                <?php echo (int) ($riskCounts['Low'] ?? 0); ?>
+            ];
 
-                try {
-                    const ctx = canvas.getContext('2d');
-                    if (window.riskChartRef) window.riskChartRef.destroy();
+            try {
+                const ctx = canvas.getContext('2d');
+                if (window.riskChartRef) window.riskChartRef.destroy();
 
-                    window.riskChartRef = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
-                            datasets: [{
-                                label: 'Contracts',
-                                data: chartData,
-                                backgroundColor: [
-                                    'rgba(239, 68, 68, 0.8)',
-                                    'rgba(245, 158, 11, 0.8)',
-                                    'rgba(16, 185, 129, 0.8)'
-                                ],
-                                borderColor: [
-                                    'rgba(239, 68, 68, 1)',
-                                    'rgba(245, 158, 11, 1)',
-                                    'rgba(16, 185, 129, 1)'
-                                ],
-                                borderWidth: 2,
-                                borderRadius: 8,
-                                barThickness: 60
-                            }]
+                window.riskChartRef = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                        datasets: [{
+                            label: 'Contracts',
+                            data: chartData,
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(16, 185, 129, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(16, 185, 129, 1)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            barThickness: 60
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1500,
+                            easing: 'easeInOutQuart',
+                            delay: (context) => {
+                                let delay = 0;
+                                if (context.type === 'data' && context.mode === 'default') {
+                                    delay = context.dataIndex * 200 + context.datasetIndex * 100;
+                                }
+                                return delay;
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            animation: {
-                                duration: 1500,
-                                easing: 'easeInOutQuart',
-                                delay: (context) => {
-                                    let delay = 0;
-                                    if (context.type === 'data' && context.mode === 'default') {
-                                        delay = context.dataIndex * 200 + context.datasetIndex * 100;
-                                    }
-                                    return delay;
-                                }
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                                    titleColor: '#ffffff',
-                                    bodyColor: '#ffffff',
-                                    padding: 12,
-                                    borderRadius: 8,
-                                    displayColors: true,
-                                    callbacks: {
-                                        label: function (context) {
-                                            const label = context.dataset.label || '';
-                                            const value = context.parsed.y;
-                                            const total = chartData.reduce((a, b) => a + b, 0);
-                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                            return `${label}: ${value} (${percentage}%)`;
-                                        }
+                            tooltip: {
+                                backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                padding: 12,
+                                borderRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.dataset.label || '';
+                                        const value = context.parsed.y;
+                                        const total = chartData.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} (${percentage}%)`;
                                     }
                                 }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    grid: {
-                                        color: 'rgba(226, 232, 240, 0.5)',
-                                        drawBorder: false
-                                    },
-                                    ticks: {
-                                        color: '#64748b',
-                                        font: {
-                                            weight: 600,
-                                            size: 12
-                                        },
-                                        stepSize: 1
-                                    }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(226, 232, 240, 0.5)',
+                                    drawBorder: false
                                 },
-                                x: {
-                                    grid: {
-                                        display: false,
-                                        drawBorder: false
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        weight: 600,
+                                        size: 12
                                     },
-                                    ticks: {
-                                        color: '#64748b',
-                                        font: {
-                                            weight: 700,
-                                            size: 13
-                                        }
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        weight: 700,
+                                        size: 13
                                     }
                                 }
                             }
                         }
-                    });
-                    console.log("Enhanced Chart Rendered:", chartData);
-                } catch (e) {
-                    console.error("Chart Error:", e);
-                }
-            };
-
-            // Force Re-check every few seconds
-            setInterval(() => {
-                if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
-                    window.initRiskChart();
-                }
-            }, 2000);
-
-            // Download Chart Function
-            window.downloadChart = function () {
-                const canvas = document.getElementById('riskDistributionChart');
-                if (canvas && window.riskChartRef) {
-                    const url = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0, 10) + '.png';
-                    link.href = url;
-                    link.click();
-                } else {
-                    alert('Please generate the chart first by clicking Refresh.');
-                }
-            };
-
-            // Security Gate Implementation
-            window.withPasswordGate = function (callback) {
-                const modal = document.getElementById('passwordModal');
-                const form = document.getElementById('passwordForm');
-                const error = document.getElementById('pwdError');
-                const cancel = document.getElementById('pwdCancel');
-                const digits = modal.querySelectorAll('.pin-digit');
-
-                if (!modal) {
-                    callback(); // Fallback if modal missing
-                    return;
-                }
-
-                // Reset modal
-                digits.forEach(d => d.value = '');
-                if (error) error.style.display = 'none';
-                modal.style.display = 'flex';
-                digits[0].focus();
-
-                // Focus management
-                digits.forEach((digit, idx) => {
-                    digit.oninput = (e) => {
-                        if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
-                    };
-                    digit.onkeydown = (e) => {
-                        if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
-                    };
-                });
-
-                // Handle submission
-                form.onsubmit = (e) => {
-                    e.preventDefault();
-                    const pin = Array.from(digits).map(d => d.value).join('');
-                    if (pin === '<?php echo $archivePin; ?>') { // Default PIN for demo
-                        modal.style.display = 'none';
-                        callback();
-                    } else {
-                        if (error) error.style.display = 'block';
-                        digits.forEach(d => d.value = '');
-                        digits[0].focus();
                     }
-                };
+                });
+                console.log("Enhanced Chart Rendered:", chartData);
+            } catch (e) {
+                console.error("Chart Error:", e);
+            }
+        };
 
-                cancel.onclick = () => {
+        // Force Re-check every few seconds
+        setInterval(() => {
+            if (!window.riskChartRef && document.getElementById('riskDistributionChart')) {
+                window.initRiskChart();
+            }
+        }, 2000);
+
+        // Download Chart Function
+        window.downloadChart = function () {
+            const canvas = document.getElementById('riskDistributionChart');
+            if (canvas && window.riskChartRef) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'Risk_Distribution_Chart_' + new Date().toISOString().slice(0, 10) + '.png';
+                link.href = url;
+                link.click();
+            } else {
+                alert('Please generate the chart first by clicking Refresh.');
+            }
+        };
+
+        // Security Gate Implementation
+        window.withPasswordGate = function (callback) {
+            const modal = document.getElementById('passwordModal');
+            const form = document.getElementById('passwordForm');
+            const error = document.getElementById('pwdError');
+            const cancel = document.getElementById('pwdCancel');
+            const digits = modal.querySelectorAll('.pin-digit');
+
+            if (!modal) {
+                callback(); // Fallback if modal missing
+                return;
+            }
+
+            // Reset modal
+            digits.forEach(d => d.value = '');
+            if (error) error.style.display = 'none';
+            modal.style.display = 'flex';
+            digits[0].focus();
+
+            // Focus management
+            digits.forEach((digit, idx) => {
+                digit.oninput = (e) => {
+                    if (digit.value && idx < digits.length - 1) digits[idx + 1].focus();
+                };
+                digit.onkeydown = (e) => {
+                    if (e.key === 'Backspace' && !digit.value && idx > 0) digits[idx - 1].focus();
+                };
+            });
+
+            // Handle submission
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const pin = Array.from(digits).map(d => d.value).join('');
+                if (pin === '<?php echo $archivePin; ?>') { // Default PIN for demo
                     modal.style.display = 'none';
-                };
+                    callback();
+                } else {
+                    if (error) error.style.display = 'block';
+                    digits.forEach(d => d.value = '');
+                    digits[0].focus();
+                }
             };
 
-            // Immediate Triggers
-            window.initRiskChart();
-            document.addEventListener('DOMContentLoaded', window.initRiskChart);
-            window.addEventListener('load', window.initRiskChart);
-
-            // Function to show Legal Details Modal
-            window.showLegalDetails = function (name, secondary, date, type, secondaryLabel, description) {
-                document.getElementById('legalDetailName').textContent = name;
-                document.getElementById('legalDetailCategory').textContent = type;
-                document.getElementById('legalDetailSecondary').textContent = secondary;
-                document.getElementById('legalDetailDate').textContent = date;
-                document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
-                document.getElementById('legalDetailDescription').innerText = description || 'No detailed content available.';
-
-                // Reset Blur State
-                document.getElementById('legalDetailContent').classList.add('blurred-content');
-                document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
-
-                document.getElementById('legalDetailModal').style.display = 'flex';
+            cancel.onclick = () => {
+                modal.style.display = 'none';
             };
+        };
 
-            // Function to show Legal Analysis Modal
-            window.showLegalAnalysis = function (name, type) {
-                document.getElementById('analysisTargetName').textContent = name;
-                document.getElementById('analysisTargetType').textContent = type;
+        // Immediate Triggers
+        window.initRiskChart();
+        document.addEventListener('DOMContentLoaded', window.initRiskChart);
+        window.addEventListener('load', window.initRiskChart);
 
-                const summaryText = document.getElementById('analysisSummaryText');
-                const findingsList = document.getElementById('analysisKeyFindings');
+        // Function to show Legal Details Modal
+        window.showLegalDetails = function (name, secondary, date, type, secondaryLabel, description) {
+            document.getElementById('legalDetailName').textContent = name;
+            document.getElementById('legalDetailCategory').textContent = type;
+            document.getElementById('legalDetailSecondary').textContent = secondary;
+            document.getElementById('legalDetailDate').textContent = date;
+            document.getElementById('legalDetailSecondaryLabel').textContent = secondaryLabel;
+            document.getElementById('legalDetailDescription').innerText = description || 'No detailed content available.';
 
-                if (type === 'Internal') {
-                    summaryText.style.background = '#f0fdf4';
-                    summaryText.style.borderLeftColor = '#22c55e';
-                    summaryText.querySelector('p').textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
-                    findingsList.innerHTML = `
+            // Reset Blur State
+            document.getElementById('legalDetailContent').classList.add('blurred-content');
+            document.getElementById('legalDetailRevealOverlay').style.display = 'flex';
+
+            document.getElementById('legalDetailModal').style.display = 'flex';
+        };
+
+        // Function to show Legal Analysis Modal
+        window.showLegalAnalysis = function (name, type) {
+            document.getElementById('analysisTargetName').textContent = name;
+            document.getElementById('analysisTargetType').textContent = type;
+
+            const summaryText = document.getElementById('analysisSummaryText');
+            const findingsList = document.getElementById('analysisKeyFindings');
+
+            if (type === 'Internal') {
+                summaryText.style.background = '#f0fdf4';
+                summaryText.style.borderLeftColor = '#22c55e';
+                summaryText.querySelector('p').textContent = 'Internal policy review: High alignment with organizational standards and compliance requirements.';
+                findingsList.innerHTML = `
                         <li>Clear definitions of employee responsibilities.</li>
                         <li>Compliance with local labor laws verified.</li>
                         <li>Update procedures are well-documented.</li>
                     `;
-                } else {
-                    summaryText.style.background = '#fffbeb';
-                    summaryText.style.borderLeftColor = '#f59e0b';
-                    summaryText.querySelector('p').textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
-                    findingsList.innerHTML = `
+            } else {
+                summaryText.style.background = '#fffbeb';
+                summaryText.style.borderLeftColor = '#f59e0b';
+                summaryText.querySelector('p').textContent = 'External agreement review: Moderate liability exposure identified. Recommendation: review section 4.2 for clarification.';
+                findingsList.innerHTML = `
                         <li>Standard vendor obligations met.</li>
                         <li>Liability cap slightly exceeds industry standard.</li>
                         <li>Indemnification clauses are broad.</li>
                     `;
-                }
+            }
 
-                // Reset Blur State
-                document.getElementById('legalAnalysisContent').classList.add('blurred-content');
-                document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
+            // Reset Blur State
+            document.getElementById('legalAnalysisContent').classList.add('blurred-content');
+            document.getElementById('legalAnalysisRevealOverlay').style.display = 'flex';
 
-                document.getElementById('legalAnalysisModal').style.display = 'flex';
-            };
+            document.getElementById('legalAnalysisModal').style.display = 'flex';
+        };
 
-            const employeeInfoTitle = document.getElementById('employeeInfoTitle');
-            const empInfoModal = document.getElementById('employeeInfoModal');
-            const closeEmployeeInfoTop = document.getElementById('closeEmployeeInfoTop');
-            const closeEmployeeInfoBottom = document.getElementById('closeEmployeeInfoBottom');
-            const cancelEmployeeBtn = document.getElementById('cancelEmployeeBtn');
+        const employeeInfoTitle = document.getElementById('employeeInfoTitle');
+        const empInfoModal = document.getElementById('employeeInfoModal');
+        const closeEmployeeInfoTop = document.getElementById('closeEmployeeInfoTop');
+        const closeEmployeeInfoBottom = document.getElementById('closeEmployeeInfoBottom');
+        const cancelEmployeeBtn = document.getElementById('cancelEmployeeBtn');
 
-            const detailsModal = document.getElementById('detailsModal');
-            const detailsTitle = document.getElementById('detailsTitle');
-            const detailsBody = document.getElementById('detailsBody');
-            const closeDetails = document.getElementById('closeDetails');
+        const detailsModal = document.getElementById('detailsModal');
+        const detailsTitle = document.getElementById('detailsTitle');
+        const detailsBody = document.getElementById('detailsBody');
+        const closeDetails = document.getElementById('closeDetails');
 
-            const contractForm = document.getElementById('contractForm');
-            const contractFormModal = document.getElementById('contractFormModal');
-            const contractFormContainer = document.getElementById('contractFormContainer');
-            const addContractBtn = document.getElementById('addContractBtn');
-            const cancelContractBtn = document.getElementById('cancelContractBtn');
-            const closeContractFormModal = document.getElementById('closeContractFormModal');
-            const exportPdfBtn = document.getElementById('exportPdfBtn');
-            const exportPdfForm = document.getElementById('exportPdfForm');
-            // Employee form modal
-            const employeeForm = document.getElementById('employeeForm');
-            const employeeFormModal = document.getElementById('employeeFormModal');
-            const employeeFormContainer = document.getElementById('employeeFormContainer');
-            const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-            const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
-            // Document form modal
-            const documentFormModal = document.getElementById('documentFormModal');
-            const documentFormContainer = document.getElementById('documentFormContainer');
-            const addDocumentBtn = document.getElementById('addDocumentBtn');
-            const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
-            const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
-            // Edit document modal
-            const editDocModal = document.getElementById('editDocumentModal');
-            const closeEditDocument = document.getElementById('closeEditDocument');
-            const cancelEditDocument = document.getElementById('cancelEditDocument');
-            const editDocForm = document.getElementById('editDocumentForm');
-            const editDocId = document.getElementById('edit_doc_id');
-            const editDocName = document.getElementById('edit_doc_name');
-            const editDocCase = document.getElementById('edit_doc_case');
-            // Contract docs modal
-            const contractDocsModal = document.getElementById('contractDocsModal');
-            const closeContractDocsModal = document.getElementById('closeContractDocsModal');
-            const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
-            const contractDocsContractId = document.getElementById('contract_docs_contract_id');
+        const contractForm = document.getElementById('contractForm');
+        const contractFormModal = document.getElementById('contractFormModal');
+        const contractFormContainer = document.getElementById('contractFormContainer');
+        const addContractBtn = document.getElementById('addContractBtn');
+        const cancelContractBtn = document.getElementById('cancelContractBtn');
+        const closeContractFormModal = document.getElementById('closeContractFormModal');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const exportPdfForm = document.getElementById('exportPdfForm');
+        // Employee form modal
+        const employeeForm = document.getElementById('employeeForm');
+        const employeeFormModal = document.getElementById('employeeFormModal');
+        const employeeFormContainer = document.getElementById('employeeFormContainer');
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        const closeEmployeeFormModal = document.getElementById('closeEmployeeFormModal');
+        // Document form modal
+        const documentFormModal = document.getElementById('documentFormModal');
+        const documentFormContainer = document.getElementById('documentFormContainer');
+        const addDocumentBtn = document.getElementById('addDocumentBtn');
+        const cancelDocumentBtn = document.getElementById('cancelDocumentBtn');
+        const closeDocumentFormModal = document.getElementById('closeDocumentFormModal');
+        // Edit document modal
+        const editDocModal = document.getElementById('editDocumentModal');
+        const closeEditDocument = document.getElementById('closeEditDocument');
+        const cancelEditDocument = document.getElementById('cancelEditDocument');
+        const editDocForm = document.getElementById('editDocumentForm');
+        const editDocId = document.getElementById('edit_doc_id');
+        const editDocName = document.getElementById('edit_doc_name');
+        const editDocCase = document.getElementById('edit_doc_case');
+        // Contract docs modal
+        const contractDocsModal = document.getElementById('contractDocsModal');
+        const closeContractDocsModal = document.getElementById('closeContractDocsModal');
+        const cancelContractDocsBtn = document.getElementById('cancelContractDocsBtn');
+        const contractDocsContractId = document.getElementById('contract_docs_contract_id');
 
-            function openModal(el) { el.style.display = 'flex'; }
-            function closeModal(el) { el.style.display = 'none'; }
+        function openModal(el) { el.style.display = 'flex'; }
+        function closeModal(el) { el.style.display = 'none'; }
 
-            // PDF Generation Utility
-            function generatePDFFromData(title, contentHTML, filename) {
-                const element = document.createElement('div');
-                element.style.padding = '20px';
-                element.style.fontFamily = 'Arial, sans-serif';
-                element.innerHTML = `
+        // PDF Generation Utility
+        function generatePDFFromData(title, contentHTML, filename) {
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.innerHTML = `
                 <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
                     <h1 style="color: #2c3e50; margin: 0;">Legal Management System</h1>
                     <h2 style="color: #3498db; margin: 5px 0 0;">${title}</h2>
@@ -2808,27 +2959,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </div>
             `;
 
-                const opt = {
-                    margin: 15,
-                    filename: filename || 'Legal_Document.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
+            const opt = {
+                margin: 15,
+                filename: filename || 'Legal_Document.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-                html2pdf().set(opt).from(element).save();
-            }
+            html2pdf().set(opt).from(element).save();
+        }
 
-            // Universal PDF Download Handler for various data types
-            window.downloadRecordAsPDF = function (type, data) {
-                let title = '';
-                let contentHTML = '';
-                let filename = '';
+        // Universal PDF Download Handler for various data types
+        window.downloadRecordAsPDF = function (type, data) {
+            let title = '';
+            let contentHTML = '';
+            let filename = '';
 
-                switch (type) {
-                    case 'employee':
-                        title = 'Employee Profile';
-                        contentHTML = `
+            switch (type) {
+                case 'employee':
+                    title = 'Employee Profile';
+                    contentHTML = `
                         <div style="margin-bottom: 20px;">
                             <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
                             <p><strong>Position:</strong> ${data.position || 'N/A'}</p>
@@ -2836,25 +2987,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
                         </div>
                     `;
-                        filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'document':
-                        title = 'Document Details';
-                        contentHTML = `
+                    filename = `Employee_${(data.name || 'Profile').replace(/\s+/g, '_')}.pdf`;
+                    break;
+                case 'document':
+                    title = 'Document Details';
+                    contentHTML = `
                         <div style="margin-bottom: 20px;">
                             <p><strong>Document Name:</strong> ${data.name || 'N/A'}</p>
                             <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
                             <p><strong>Date Uploaded:</strong> ${data.uploaded_at || 'N/A'}</p>
                         </div>
                     `;
-                        filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                    case 'contract':
-                        title = 'Contract Risk Analysis';
-                        const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
-                        const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
-                        const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
-                        const imageHTML = isImage ? `
+                    filename = `Document_${(data.name || 'File').replace(/\s+/g, '_')}.pdf`;
+                    break;
+                case 'contract':
+                    title = 'Contract Risk Analysis';
+                    const rf = (() => { try { return typeof data.risk_factors === 'string' ? JSON.parse(data.risk_factors || '[]') : data.risk_factors; } catch { return []; } })();
+                    const rec = (() => { try { return typeof data.recommendations === 'string' ? JSON.parse(data.recommendations || '[]') : data.recommendations; } catch { return []; } })();
+                    const isImage = data.file_path && /\.(jpg|jpeg|png|webp|gif)$/i.test(data.file_path);
+                    const imageHTML = isImage ? `
                         <div style="margin-top: 30px; border-top: 2px solid #f1f5f9; pt: 20px;">
                             <h4 style="margin-bottom: 15px; color: #1e293b;">Contract Image Attachment</h4>
                             <div style="text-align: center; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px dashed #cbd5e1;">
@@ -2863,7 +3014,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     ` : '';
 
-                        contentHTML = `
+                    contentHTML = `
                         <div style="margin-bottom: 20px;">
                             <p><strong>Contract Name:</strong> ${data.contract_name || data.name || 'N/A'}</p>
                             <p><strong>Case ID:</strong> ${data.case_id || 'N/A'}</p>
@@ -2885,145 +3036,145 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             ${imageHTML}
                         </div>
                     `;
-                        filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
-                        break;
-                }
-
-                generatePDFFromData(title, contentHTML, filename);
+                    filename = `Contract_Analysis_${(data.contract_name || 'Contract').replace(/\s+/g, '_')}.pdf`;
+                    break;
             }
 
-            // Consolidated Unified Event Delegation for Table Actions & PDF handling
-            document.body.addEventListener('click', function (e) {
-                const target = e.target.closest('button, a.view-pdf-link, .download-btn');
-                if (!target) return;
+            generatePDFFromData(title, contentHTML, filename);
+        }
 
-                const type = target.getAttribute('data-type') ||
-                    (target.classList.contains('download-btn') ? 'download' :
-                        (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
+        // Consolidated Unified Event Delegation for Table Actions & PDF handling
+        document.body.addEventListener('click', function (e) {
+            const target = e.target.closest('button, a.view-pdf-link, .download-btn');
+            if (!target) return;
 
-                // Handle employee-view specifically
-                if (target.classList.contains('view-btn') && target.getAttribute('data-emp')) {
-                    // Employee View
-                    withPasswordGate(() => {
-                        const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
-                        const modal = document.getElementById('employeeInfoModal');
+            const type = target.getAttribute('data-type') ||
+                (target.classList.contains('download-btn') ? 'download' :
+                    (target.classList.contains('view-pdf-link') ? 'pdf-view' : ''));
 
-                        // Update Display Fields
-                        document.getElementById('employeeInfoTitle').textContent = emp.name || 'Employee Profile';
-                        document.getElementById('display_emp_name').textContent = emp.name || 'N/A';
-                        document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
-                        document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
-                        document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
-
-                        // Update Gender Image Based on Name
-                        const genderImageContainer = document.getElementById('genderImageContainer');
-                        if (genderImageContainer && emp.name) {
-                            const employeeName = emp.name.toLowerCase();
-                            let genderImage = '../assets/image/Men.png'; // Default to male
-
-                            // Simple gender detection based on common Filipino names
-                            const femaleNames = ['maria', 'mary', 'ana', 'anna', 'juanita', 'carmela', 'rosa', 'rose', 'grace', 'joy', 'patricia', 'pat', 'christine', 'tin', 'elizabeth', 'beth', 'catherine', 'cathy', 'margarita', 'maggie', 'lourdes', 'lou', 'rebecca', 'becky', 'sophia', 'sophie', 'isabella', 'bella', 'angelica', 'angeli', 'micah', 'mika', 'sarah', 'sam', 'rachel', 'rach', 'diana', 'diane', 'hannah', 'anna', 'maria', 'mary', 'josephine', 'joyce', 'evelyn', 'lyn', 'eunice', 'cecille', 'cecil', 'charmaine', 'charm', 'kathleen', 'kath', 'maureen', 'mau', 'regina', 'reg', 'liza', 'elisa', 'victoria', 'vic', 'bianca', 'bianx', 'camille', 'cam', 'danielle', 'dan', 'frances', 'fran', 'gillian', 'gil', 'jacqueline', 'jackie', 'kristine', 'kris', 'lovelyn', 'love', 'michelle', 'mich', 'nicole', 'nic', 'pamela', 'pam', 'stephanie', 'steph', 'teresa', 'terry', 'vanessa', 'van', 'yvonne', 'von', 'alexis', 'lex', 'amber', 'brianna', 'bri', 'claudine', 'clau', 'fatima', 'faye', 'georgina', 'georg', 'helena', 'len', 'irish', 'janine', 'jan', 'katherine', 'kat', 'lilian', 'lil', 'monica', 'mon', 'natalie', 'nat', 'olivia', 'liv', 'princess', 'princ', 'queenie', 'queen', 'roxanne', 'rox', 'samantha', 'sam', 'tricia', 'trish', 'ursula', 'urs', 'valerie', 'val', 'winona', 'win', 'zara', 'zar'];
-
-                            // Check if name contains any female indicators
-                            const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) ||
-                                employeeName.includes('ms.') ||
-                                employeeName.includes('miss') ||
-                                employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
-
-                            if (isFemale) {
-                                genderImage = '../assets/image/Women.png';
-                            }
-
-                            genderImageContainer.innerHTML = `<img src="${genderImage}" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">`;
-                        }
-
-                        // Handle Role Badge Colors
-                        const badge = document.getElementById('employeeRoleBadge');
-                        if (badge) {
-                            badge.textContent = emp.position || 'Legal Team';
-                            if (emp.position && emp.position.toLowerCase().includes('senior')) {
-                                badge.style.background = 'rgba(16, 185, 129, 0.2)';
-                                badge.style.color = '#10b981';
-                                badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                            } else {
-                                badge.style.background = 'rgba(59, 130, 246, 0.2)';
-                                badge.style.color = '#3b82f6';
-                                badge.style.borderColor = 'rgba(59, 130, 246, 0.2)';
-                            }
-                        }
-
-                        // Reset Blur
-                        document.getElementById('employeeSensitiveData').classList.add('blurred-content');
-                        document.getElementById('employeeRevealOverlay').style.display = 'flex';
-
-                        document.getElementById('employeeRevealBtn').onclick = function () {
-                            withPasswordGate(() => {
-                                document.getElementById('employeeRevealOverlay').style.display = 'none';
-                                document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
-                            });
-                        };
-
-                        // Set up PDF download button
-                        const dlBtn = document.getElementById('modalDownloadEmpPdf');
-                        if (dlBtn) {
-                            dlBtn.onclick = () => {
-                                const originalText = dlBtn.innerHTML;
-                                dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                                window.downloadRecordAsPDF('employee', emp);
-                                setTimeout(() => { dlBtn.innerHTML = originalText; }, 2000);
-                            };
-                        }
-
-                        openModal(modal);
-
-                        // Add animation class to modal content
-                        const content = modal.querySelector('.premium-modal');
-                        if (content) {
-                            content.classList.remove('modal-animate-in');
-                            void content.offsetWidth; // Trigger reflow
-                            content.classList.add('modal-animate-in');
-                        }
-                    });
-                    return;
-                }
-
-                if (!type) return;
-
-                // 1. PDF DOWNLOAD HANDLING
-                if (target.classList.contains('download-btn') || type === 'download') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data);
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF generation failed:", err); }
-                    }
-                }
-
-                // 2. PDF VIEW HANDLING (Hijacked Name Links)
-                if (type === 'pdf-view') {
-                    const pdfType = target.getAttribute('data-pdf-type');
-                    const pdfContent = target.getAttribute('data-pdf-content');
-                    if (pdfType && pdfContent) {
-                        try {
-                            const data = JSON.parse(pdfContent);
-                            downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
-                            e.preventDefault();
-                            return;
-                        } catch (err) { console.error("PDF view failed:", err); }
-                    }
-                }
-
-                // 3. TABLE ACTION MODALS (Password Protected)
+            // Handle employee-view specifically
+            if (target.classList.contains('view-btn') && target.getAttribute('data-emp')) {
+                // Employee View
                 withPasswordGate(() => {
-                    // Document View
-                    if (type === 'doc-view') {
-                        const d = JSON.parse(target.getAttribute('data-doc') || '{}');
-                        detailsTitle.textContent = 'Document Details';
-                        detailsBody.innerHTML = `
+                    const emp = JSON.parse(target.getAttribute('data-emp') || '{}');
+                    const modal = document.getElementById('employeeInfoModal');
+
+                    // Update Display Fields
+                    document.getElementById('employeeInfoTitle').textContent = emp.name || 'Employee Profile';
+                    document.getElementById('display_emp_name').textContent = emp.name || 'N/A';
+                    document.getElementById('display_emp_position').textContent = emp.position || 'N/A';
+                    document.getElementById('display_emp_email').textContent = emp.email || 'N/A';
+                    document.getElementById('display_emp_phone').textContent = emp.phone || 'N/A';
+
+                    // Update Gender Image Based on Name
+                    const genderImageContainer = document.getElementById('genderImageContainer');
+                    if (genderImageContainer && emp.name) {
+                        const employeeName = emp.name.toLowerCase();
+                        let genderImage = '../assets/image/Men.png'; // Default to male
+
+                        // Simple gender detection based on common Filipino names
+                        const femaleNames = ['maria', 'mary', 'ana', 'anna', 'juanita', 'carmela', 'rosa', 'rose', 'grace', 'joy', 'patricia', 'pat', 'christine', 'tin', 'elizabeth', 'beth', 'catherine', 'cathy', 'margarita', 'maggie', 'lourdes', 'lou', 'rebecca', 'becky', 'sophia', 'sophie', 'isabella', 'bella', 'angelica', 'angeli', 'micah', 'mika', 'sarah', 'sam', 'rachel', 'rach', 'diana', 'diane', 'hannah', 'anna', 'maria', 'mary', 'josephine', 'joyce', 'evelyn', 'lyn', 'eunice', 'cecille', 'cecil', 'charmaine', 'charm', 'kathleen', 'kath', 'maureen', 'mau', 'regina', 'reg', 'liza', 'elisa', 'victoria', 'vic', 'bianca', 'bianx', 'camille', 'cam', 'danielle', 'dan', 'frances', 'fran', 'gillian', 'gil', 'jacqueline', 'jackie', 'kristine', 'kris', 'lovelyn', 'love', 'michelle', 'mich', 'nicole', 'nic', 'pamela', 'pam', 'stephanie', 'steph', 'teresa', 'terry', 'vanessa', 'van', 'yvonne', 'von', 'alexis', 'lex', 'amber', 'brianna', 'bri', 'claudine', 'clau', 'fatima', 'faye', 'georgina', 'georg', 'helena', 'len', 'irish', 'janine', 'jan', 'katherine', 'kat', 'lilian', 'lil', 'monica', 'mon', 'natalie', 'nat', 'olivia', 'liv', 'princess', 'princ', 'queenie', 'queen', 'roxanne', 'rox', 'samantha', 'sam', 'tricia', 'trish', 'ursula', 'urs', 'valerie', 'val', 'winona', 'win', 'zara', 'zar'];
+
+                        // Check if name contains any female indicators
+                        const isFemale = femaleNames.some(femaleName => employeeName.includes(femaleName)) ||
+                            employeeName.includes('ms.') ||
+                            employeeName.includes('miss') ||
+                            employeeName.endsWith('a') && !employeeName.includes('luisa') && !employeeName.includes('joshua');
+
+                        if (isFemale) {
+                            genderImage = '../assets/image/Women.png';
+                        }
+
+                        genderImageContainer.innerHTML = `<img src="${genderImage}" alt="Gender" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    }
+
+                    // Handle Role Badge Colors
+                    const badge = document.getElementById('employeeRoleBadge');
+                    if (badge) {
+                        badge.textContent = emp.position || 'Legal Team';
+                        if (emp.position && emp.position.toLowerCase().includes('senior')) {
+                            badge.style.background = 'rgba(16, 185, 129, 0.2)';
+                            badge.style.color = '#10b981';
+                            badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                        } else {
+                            badge.style.background = 'rgba(59, 130, 246, 0.2)';
+                            badge.style.color = '#3b82f6';
+                            badge.style.borderColor = 'rgba(59, 130, 246, 0.2)';
+                        }
+                    }
+
+                    // Reset Blur
+                    document.getElementById('employeeSensitiveData').classList.add('blurred-content');
+                    document.getElementById('employeeRevealOverlay').style.display = 'flex';
+
+                    document.getElementById('employeeRevealBtn').onclick = function () {
+                        withPasswordGate(() => {
+                            document.getElementById('employeeRevealOverlay').style.display = 'none';
+                            document.getElementById('employeeSensitiveData').classList.remove('blurred-content');
+                        });
+                    };
+
+                    // Set up PDF download button
+                    const dlBtn = document.getElementById('modalDownloadEmpPdf');
+                    if (dlBtn) {
+                        dlBtn.onclick = () => {
+                            const originalText = dlBtn.innerHTML;
+                            dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+                            window.downloadRecordAsPDF('employee', emp);
+                            setTimeout(() => { dlBtn.innerHTML = originalText; }, 2000);
+                        };
+                    }
+
+                    openModal(modal);
+
+                    // Add animation class to modal content
+                    const content = modal.querySelector('.premium-modal');
+                    if (content) {
+                        content.classList.remove('modal-animate-in');
+                        void content.offsetWidth; // Trigger reflow
+                        content.classList.add('modal-animate-in');
+                    }
+                });
+                return;
+            }
+
+            if (!type) return;
+
+            // 1. PDF DOWNLOAD HANDLING
+            if (target.classList.contains('download-btn') || type === 'download') {
+                const pdfType = target.getAttribute('data-pdf-type');
+                const pdfContent = target.getAttribute('data-pdf-content');
+                if (pdfType && pdfContent) {
+                    try {
+                        const data = JSON.parse(pdfContent);
+                        downloadRecordAsPDF(pdfType, data);
+                        e.preventDefault();
+                        return;
+                    } catch (err) { console.error("PDF generation failed:", err); }
+                }
+            }
+
+            // 2. PDF VIEW HANDLING (Hijacked Name Links)
+            if (type === 'pdf-view') {
+                const pdfType = target.getAttribute('data-pdf-type');
+                const pdfContent = target.getAttribute('data-pdf-content');
+                if (pdfType && pdfContent) {
+                    try {
+                        const data = JSON.parse(pdfContent);
+                        downloadRecordAsPDF(pdfType, data); // For now, we reuse download as "view", or we could customize
+                        e.preventDefault();
+                        return;
+                    } catch (err) { console.error("PDF view failed:", err); }
+                }
+            }
+
+            // 3. TABLE ACTION MODALS (Password Protected)
+            withPasswordGate(() => {
+                // Document View
+                if (type === 'doc-view') {
+                    const d = JSON.parse(target.getAttribute('data-doc') || '{}');
+                    detailsTitle.textContent = 'Document Details';
+                    detailsBody.innerHTML = `
                             <div style="position: relative;">
                                 <div id="docSensitive" class="blurred-content">
                                     <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8; position: relative; z-index: 1;">
@@ -3036,27 +3187,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     <button class="reveal-btn"><i class="fa-solid fa-lock"></i> Enter PIN to Reveal</button>
                                 </div>
                             </div>`;
-                        openModal(detailsModal);
+                    openModal(detailsModal);
 
-                        document.getElementById('docReveal').addEventListener('click', function () {
-                            const overlay = this;
-                            withPasswordGate(() => {
-                                overlay.style.display = 'none';
-                                document.getElementById('docSensitive').classList.remove('blurred-content');
-                            });
+                    document.getElementById('docReveal').addEventListener('click', function () {
+                        const overlay = this;
+                        withPasswordGate(() => {
+                            overlay.style.display = 'none';
+                            document.getElementById('docSensitive').classList.remove('blurred-content');
                         });
+                    });
 
-                        injectModalPdfButton(detailsBody, 'document', d);
-                    }
-                    // Contract View
-                    else if (type === 'contract-view') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'Contract Details';
-                        detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
-                        openModal(detailsModal);
-                        const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                        const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                        detailsBody.innerHTML = `
+                    injectModalPdfButton(detailsBody, 'document', d);
+                }
+                // Contract View
+                else if (type === 'contract-view') {
+                    const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                    detailsTitle.textContent = 'Contract Details';
+                    detailsBody.innerHTML = `<div style="padding:10px;color:#64748b;">Loading details…</div>`;
+                    openModal(detailsModal);
+                    const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                    const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                    detailsBody.innerHTML = `
                         <div style="position: relative;">
                             <div id="contractSensitive" class="blurred-content">
                                 <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; line-height:1.8;">
@@ -3073,31 +3224,31 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </div>
                         </div>`;
 
-                        document.getElementById('contractReveal').addEventListener('click', function () {
-                            const overlay = this;
-                            withPasswordGate(() => {
-                                overlay.style.display = 'none';
-                                document.getElementById('contractSensitive').classList.remove('blurred-content');
-                            });
+                    document.getElementById('contractReveal').addEventListener('click', function () {
+                        const overlay = this;
+                        withPasswordGate(() => {
+                            overlay.style.display = 'none';
+                            document.getElementById('contractSensitive').classList.remove('blurred-content');
                         });
+                    });
 
-                        injectModalPdfButton(detailsBody, 'contract', c);
-                    }
-                    // Contract Analyze
-                    else if (type === 'contract-analyze') {
-                        const c = JSON.parse(target.getAttribute('data-contract') || '{}');
-                        detailsTitle.textContent = 'AI Risk Analysis';
-                        detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
-                        openModal(detailsModal);
-                        setTimeout(() => {
-                            try {
-                                const score = c.risk_score ?? 'N/A';
-                                const level = c.risk_level ?? 'Unknown';
-                                const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
-                                const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
-                                let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
+                    injectModalPdfButton(detailsBody, 'contract', c);
+                }
+                // Contract Analyze
+                else if (type === 'contract-analyze') {
+                    const c = JSON.parse(target.getAttribute('data-contract') || '{}');
+                    detailsTitle.textContent = 'AI Risk Analysis';
+                    detailsBody.innerHTML = `<div style="padding:20px;text-align:center;color:#64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:10px;"></i><br>Generating analysis report...</div>`;
+                    openModal(detailsModal);
+                    setTimeout(() => {
+                        try {
+                            const score = c.risk_score ?? 'N/A';
+                            const level = c.risk_level ?? 'Unknown';
+                            const rf = (() => { try { return JSON.parse(c.risk_factors || '[]'); } catch { return []; } })();
+                            const rec = (() => { try { return JSON.parse(c.recommendations || '[]'); } catch { return []; } })();
+                            let color = level === 'High' ? '#ef4444' : (level === 'Medium' ? '#f59e0b' : '#22c55e');
 
-                                detailsBody.innerHTML = `
+                            detailsBody.innerHTML = `
                                 <div style="text-align: center; margin-bottom: 20px;">
                                     <h2 style="margin: 0; color: ${color};">${level} Risk Contract</h2>
                                     <p>Risk Score: <strong>${score}/100</strong></p>
@@ -3115,133 +3266,133 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                     </button>
                                 </div>
                             `;
-                            } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
-                        }, 500);
-                    }
-                });
-            });
-
-            function injectModalPdfButton(container, pdfType, pdfData) {
-                let downloadBtn = document.getElementById('modalDownloadPdf');
-                if (downloadBtn) downloadBtn.remove();
-
-                downloadBtn = document.createElement('button');
-                downloadBtn.id = 'modalDownloadPdf';
-                downloadBtn.type = 'button';
-                downloadBtn.className = 'save-btn';
-                downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
-                downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
-                downloadBtn.onclick = () => {
-                    const originalHTML = downloadBtn.innerHTML;
-                    downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-                    window.downloadRecordAsPDF(pdfType, pdfData);
-                    setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
-                };
-                container.appendChild(downloadBtn);
-            }
-
-
-            // ADDED: Contract Upload Modal Logic
-            if (addContractBtn) {
-                addContractBtn.addEventListener('click', () => {
-                    // Move the form into the modal container if not already there
-                    if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
-                        contractFormContainer.appendChild(contractForm);
-                        contractForm.style.display = 'block';
-                    }
-                    openModal(contractFormModal);
-                });
-            }
-
-            // ADDED: Edit Employee Logic
-            window.editEmployee = function (emp) {
-                // Populate form fields
-                document.getElementById('employeeName').value = emp.name || '';
-                document.getElementById('employeePosition').value = emp.position || '';
-                document.getElementById('employeeEmail').value = emp.email || '';
-                document.getElementById('employeePhone').value = emp.phone || '';
-
-                // Ensure hidden ID field exists
-                let idInput = document.querySelector('input[name="employee_id"]');
-                if (!idInput) {
-                    idInput = document.createElement('input');
-                    idInput.type = 'hidden';
-                    idInput.name = 'employee_id';
-                    document.getElementById('employeeFormData').appendChild(idInput);
+                        } catch (e) { detailsBody.innerHTML = "Error rendering analysis."; }
+                    }, 500);
                 }
-                idInput.value = emp.id;
+            });
+        });
 
-                // Change submit button text
+        function injectModalPdfButton(container, pdfType, pdfData) {
+            let downloadBtn = document.getElementById('modalDownloadPdf');
+            if (downloadBtn) downloadBtn.remove();
+
+            downloadBtn = document.createElement('button');
+            downloadBtn.id = 'modalDownloadPdf';
+            downloadBtn.type = 'button';
+            downloadBtn.className = 'save-btn';
+            downloadBtn.style.cssText = `width:auto; margin-top:25px; background:linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; padding:12px 24px; border-radius:12px; box-shadow:0 4px 12px rgba(5,150,105,0.2); display:inline-flex; align-items:center; gap:10px; font-weight:700; cursor:pointer;`;
+            downloadBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Convert & Download PDF';
+            downloadBtn.onclick = () => {
+                const originalHTML = downloadBtn.innerHTML;
+                downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+                window.downloadRecordAsPDF(pdfType, pdfData);
+                setTimeout(() => { downloadBtn.innerHTML = originalHTML; }, 2000);
+            };
+            container.appendChild(downloadBtn);
+        }
+
+
+        // ADDED: Contract Upload Modal Logic
+        if (addContractBtn) {
+            addContractBtn.addEventListener('click', () => {
+                // Move the form into the modal container if not already there
+                if (contractForm && contractFormContainer && !contractFormContainer.contains(contractForm)) {
+                    contractFormContainer.appendChild(contractForm);
+                    contractForm.style.display = 'block';
+                }
+                openModal(contractFormModal);
+            });
+        }
+
+        // ADDED: Edit Employee Logic
+        window.editEmployee = function (emp) {
+            // Populate form fields
+            document.getElementById('employeeName').value = emp.name || '';
+            document.getElementById('employeePosition').value = emp.position || '';
+            document.getElementById('employeeEmail').value = emp.email || '';
+            document.getElementById('employeePhone').value = emp.phone || '';
+
+            // Ensure hidden ID field exists
+            let idInput = document.querySelector('input[name="employee_id"]');
+            if (!idInput) {
+                idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'employee_id';
+                document.getElementById('employeeFormData').appendChild(idInput);
+            }
+            idInput.value = emp.id;
+
+            // Change submit button text
+            const saveBtn = document.getElementById('saveEmployeeBtn');
+            saveBtn.innerText = 'Update Employee';
+            saveBtn.name = 'update_employee';
+
+            // Open modal
+            if (employeeForm && employeeFormContainer && !employeeFormContainer.contains(employeeForm)) {
+                employeeFormContainer.appendChild(employeeForm);
+                employeeForm.style.display = 'block';
+            }
+            openModal(employeeFormModal);
+        };
+
+        // Enhanced Add Employee Button Logic (Reset form)
+        if (addEmployeeBtn) {
+            addEmployeeBtn.addEventListener('click', () => {
+                document.getElementById('employeeFormData').reset();
                 const saveBtn = document.getElementById('saveEmployeeBtn');
-                saveBtn.innerText = 'Update Employee';
-                saveBtn.name = 'update_employee';
+                saveBtn.innerText = 'Save Employee';
+                saveBtn.name = 'add_employee';
 
-                // Open modal
+                // Remove hidden ID if exists
+                const idInput = document.querySelector('input[name="employee_id"]');
+                if (idInput) idInput.remove();
+
                 if (employeeForm && employeeFormContainer && !employeeFormContainer.contains(employeeForm)) {
                     employeeFormContainer.appendChild(employeeForm);
                     employeeForm.style.display = 'block';
                 }
                 openModal(employeeFormModal);
-            };
-
-            // Enhanced Add Employee Button Logic (Reset form)
-            if (addEmployeeBtn) {
-                addEmployeeBtn.addEventListener('click', () => {
-                    document.getElementById('employeeFormData').reset();
-                    const saveBtn = document.getElementById('saveEmployeeBtn');
-                    saveBtn.innerText = 'Save Employee';
-                    saveBtn.name = 'add_employee';
-
-                    // Remove hidden ID if exists
-                    const idInput = document.querySelector('input[name="employee_id"]');
-                    if (idInput) idInput.remove();
-
-                    if (employeeForm && employeeFormContainer && !employeeFormContainer.contains(employeeForm)) {
-                        employeeFormContainer.appendChild(employeeForm);
-                        employeeForm.style.display = 'block';
-                    }
-                    openModal(employeeFormModal);
-                });
-            }
-
-            // Document Upload Button Logic
-            if (addDocumentBtn) {
-                addDocumentBtn.addEventListener('click', () => {
-                    openModal(documentFormModal);
-                });
-            }
-
-            // ADDED: Universal Close/Cancel Handlers for all Modals
-            if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
-            if (closeEmployeeInfoTop) closeEmployeeInfoTop.addEventListener('click', () => closeModal(empInfoModal));
-            if (closeEmployeeInfoBottom) closeEmployeeInfoBottom.addEventListener('click', () => closeModal(empInfoModal));
-            if (cancelEmployeeBtn) cancelEmployeeBtn.addEventListener('click', () => {
-                closeModal(empInfoModal);
-                closeModal(employeeFormModal);
             });
-            if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
-            if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
-            if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
-            if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
-            if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
-            if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
-            if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
-            if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
-            if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
-                closeModal(contractFormModal);
-                if (contractForm) contractForm.reset();
+        }
+
+        // Document Upload Button Logic
+        if (addDocumentBtn) {
+            addDocumentBtn.addEventListener('click', () => {
+                openModal(documentFormModal);
             });
+        }
+
+        // ADDED: Universal Close/Cancel Handlers for all Modals
+        if (closeDetails) closeDetails.addEventListener('click', () => closeModal(detailsModal));
+        if (closeEmployeeInfoTop) closeEmployeeInfoTop.addEventListener('click', () => closeModal(empInfoModal));
+        if (closeEmployeeInfoBottom) closeEmployeeInfoBottom.addEventListener('click', () => closeModal(empInfoModal));
+        if (cancelEmployeeBtn) cancelEmployeeBtn.addEventListener('click', () => {
+            closeModal(empInfoModal);
+            closeModal(employeeFormModal);
+        });
+        if (closeEmployeeFormModal) closeEmployeeFormModal.addEventListener('click', () => closeModal(employeeFormModal));
+        if (closeDocumentFormModal) closeDocumentFormModal.addEventListener('click', () => closeModal(documentFormModal));
+        if (cancelDocumentBtn) cancelDocumentBtn.addEventListener('click', () => closeModal(documentFormModal));
+        if (closeEditDocument) closeEditDocument.addEventListener('click', () => closeModal(editDocModal));
+        if (cancelEditDocument) cancelEditDocument.addEventListener('click', () => closeModal(editDocModal));
+        if (closeContractDocsModal) closeContractDocsModal.addEventListener('click', () => closeModal(contractDocsModal));
+        if (cancelContractDocsBtn) cancelContractDocsBtn.addEventListener('click', () => closeModal(contractDocsModal));
+        if (closeContractFormModal) closeContractFormModal.addEventListener('click', () => closeModal(contractFormModal));
+        if (cancelContractBtn) cancelContractBtn.addEventListener('click', () => {
+            closeModal(contractFormModal);
+            if (contractForm) contractForm.reset();
+        });
 
 
 
-            // Generate Secured PDF (password-gated) - Real PDF Implementation
-            exportPdfBtn?.addEventListener('click', (e) => {
-                e.preventDefault();
-                withPasswordGate(() => {
-                    // Data is injected from PHP
-                    const data = <?php echo json_encode($contracts); ?>;
+        // Generate Secured PDF (password-gated) - Real PDF Implementation
+        exportPdfBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            withPasswordGate(() => {
+                // Data is injected from PHP
+                const data = <?php echo json_encode($contracts); ?>;
 
-                    let contentHTML = `
+                let contentHTML = `
                         <div style="margin-top: 20px;">
                             <p>This is a secured legal report containing sensitive contract risk information.</p>
                             <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt;">
@@ -3271,184 +3422,198 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </div>
                     `;
 
-                    generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
-                });
-            });
-
-            // Find the back button handler and update it:
-            // Removed redundant JS listener for back button to prevent conflicts with <a> tag
-        })();
-    </script>
-
-    <!-- Loading Animation Script -->
-    <script>
-        // Select all elements with 'wave-text' class
-        const waveTexts = document.querySelectorAll('.wave-text');
-
-        waveTexts.forEach(textContainer => {
-            const text = textContainer.textContent;
-            textContainer.innerHTML = ''; // Clear existing text
-
-            // Split text into letters and create spans
-            [...text].forEach((letter, index) => {
-                const span = document.createElement('span');
-                span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
-                span.style.setProperty('--i', index); // Set custom property for delay
-                textContainer.appendChild(span);
+                generatePDFFromData('Secured Legal Contracts Report', contentHTML, 'Legal_Contracts_Report_Secured.pdf');
             });
         });
 
-        // Define Global Loader Function
-        window.runLoadingAnimation = function (callback, isRedirect = false) {
+        // Find the back button handler and update it:
+        // Removed redundant JS listener for back button to prevent conflicts with <a> tag
+    })();
+</script>
+
+<!-- Loading Animation Script -->
+<script>
+    // Select all elements with 'wave-text' class
+    const waveTexts = document.querySelectorAll('.wave-text');
+
+    waveTexts.forEach(textContainer => {
+        const text = textContainer.textContent;
+        textContainer.innerHTML = ''; // Clear existing text
+
+        // Split text into letters and create spans
+        [...text].forEach((letter, index) => {
+            const span = document.createElement('span');
+            span.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
+            span.style.setProperty('--i', index); // Set custom property for delay
+            textContainer.appendChild(span);
+        });
+    });
+
+    // Define Global Loader Function
+    window.runLoadingAnimation = function (callback, isRedirect = false) {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'block';
+            loader.style.opacity = '1';
+            const iframe = loader.querySelector('iframe');
+            if (iframe) iframe.src = iframe.src;
+
+            setTimeout(() => {
+                if (callback) callback();
+                if (!isRedirect) {
+                    // Fade out if staying on page
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                }
+            }, 5000); // 5s Duration
+        } else {
+            if (callback) callback();
+        }
+    };
+
+    // Hide loading screen after page loads
+    window.addEventListener('load', function () {
+        // Initially disable login screen interactions
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) loginScreen.style.pointerEvents = 'none';
+
+        setTimeout(function () {
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
-                loader.style.display = 'block';
-                loader.style.opacity = '1';
-                const iframe = loader.querySelector('iframe');
-                if (iframe) iframe.src = iframe.src;
-
+                loader.style.opacity = '0';
                 setTimeout(() => {
-                    if (callback) callback();
-                    if (!isRedirect) {
-                        // Fade out if staying on page
-                        loader.style.opacity = '0';
-                        setTimeout(() => { loader.style.display = 'none'; }, 500);
+                    loader.style.display = 'none';
+
+                    // Enable inputs and button after loader is gone
+                    const pinInputs = document.querySelectorAll('.pin-digit');
+                    const loginBtn = document.getElementById('loginBtn');
+
+                    if (pinInputs.length > 0) {
+                        pinInputs.forEach(input => input.disabled = false);
+                        pinInputs[0].focus(); // Focus after enabling
                     }
-                }, 5000); // 5s Duration
-            } else {
-                if (callback) callback();
+                    if (loginBtn) {
+                        loginBtn.disabled = false;
+                    }
+                    if (loginScreen) {
+                        loginScreen.style.pointerEvents = 'auto';
+                    }
+                }, 500);
             }
+            document.body.classList.add('loaded');
+        }, 3000); // 3 seconds total loading time
+
+        // Combined Contract Filter Logic
+        window.applyContractFilters = function () {
+            const searchTerm = document.getElementById('contractSearchInput').value.toLowerCase();
+            const fromDate = document.getElementById('contractFromDate').value;
+            const toDate = document.getElementById('contractToDate').value;
+            const statusFilter = document.getElementById('contractStatusFilter').value;
+
+            const rows = document.querySelectorAll('.contract-row');
+            rows.forEach(row => {
+                const name = row.dataset.name.toLowerCase();
+                const caseId = row.dataset.case.toLowerCase();
+                const risk = row.dataset.risk;
+                const date = row.dataset.date;
+
+                const matchesSearch = name.includes(searchTerm) || caseId.includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || risk === statusFilter;
+
+                let matchesDate = true;
+                if (fromDate && date < fromDate) matchesDate = false;
+                if (toDate && date > toDate) matchesDate = false;
+
+                if (matchesSearch && matchesStatus && matchesDate) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         };
 
-        // Hide loading screen after page loads
-        window.addEventListener('load', function () {
-            // Initially disable login screen interactions
-            const loginScreen = document.getElementById('loginScreen');
-            if (loginScreen) loginScreen.style.pointerEvents = 'none';
+        window.clearContractFilters = function () {
+            document.getElementById('contractSearchInput').value = '';
+            document.getElementById('contractFromDate').value = '';
+            document.getElementById('contractToDate').value = '';
+            document.getElementById('contractStatusFilter').value = 'all';
 
-            setTimeout(function () {
-                const loader = document.getElementById('loadingOverlay');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => {
-                        loader.style.display = 'none';
+            const rows = document.querySelectorAll('.contract-row');
+            rows.forEach(row => row.style.display = '');
+        };
 
-                        // Enable inputs and button after loader is gone
-                        const pinInputs = document.querySelectorAll('.pin-digit');
-                        const loginBtn = document.getElementById('loginBtn');
+        // Old Risk Filter Logic (Updated to use new system)
+        window.filterByRiskLevel = function (level) {
+            // Switch to contracts section if not already there
+            const contractsBtn = document.querySelector('[data-target="contracts"]');
+            if (contractsBtn) contractsBtn.click();
 
-                        if (pinInputs.length > 0) {
-                            pinInputs.forEach(input => input.disabled = false);
-                            pinInputs[0].focus(); // Focus after enabling
-                        }
-                        if (loginBtn) {
-                            loginBtn.disabled = false;
-                        }
-                        if (loginScreen) {
-                            loginScreen.style.pointerEvents = 'auto';
-                        }
-                    }, 500);
-                }
-                document.body.classList.add('loaded');
-            }, 3000); // 3 seconds total loading time
+            document.getElementById('contractStatusFilter').value = level;
+            applyContractFilters();
 
-            // Risk Filter Logic
-            window.filterByRiskLevel = function (level) {
-                // Switch to contracts section if not already there
-                const contractsBtn = document.querySelector('[data-target="contracts"]');
-                if (contractsBtn) contractsBtn.click();
+            // Scroll to table
+            document.getElementById('contracts').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+</script>
 
-                // Set the filter for all tables with contract-row class
-                const rows = document.querySelectorAll('.contract-row');
-                rows.forEach(row => {
-                    if (row.dataset.risk === level) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+<!-- Loading Overlay -->
+<div id="loadingOverlay"
+    style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 0;">
+    <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
+        allowtransparency="true"></iframe>
+</div>
+<!-- Edit Legal Modal -->
+<div id="editLegalModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
+    <div
+        style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
+        <button type="button" onclick="closeModal(document.getElementById('editLegalModal'))"
+            style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
+        <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
+        <form method="POST" id="editLegalForm">
+            <input type="hidden" name="edit_id" id="edit_legal_id">
+            <input type="hidden" name="edit_type" id="edit_legal_type">
 
-                // Add a "Show All" or "Reset" button if it doesn't exist
-                let resetBtn = document.getElementById('resetRiskFilter');
-                if (!resetBtn) {
-                    const header = document.querySelector('#contracts .section-header');
-                    resetBtn = document.createElement('button');
-                    resetBtn.id = 'resetRiskFilter';
-                    resetBtn.className = 'add-btn';
-                    resetBtn.style.background = '#64748b';
-                    resetBtn.style.marginLeft = '10px';
-                    resetBtn.innerHTML = '<i class="fa-solid fa-undo"></i> Show All Risk';
-                    resetBtn.onclick = function () {
-                        const allRows = document.querySelectorAll('.contract-row');
-                        allRows.forEach(r => r.style.display = '');
-                        this.remove();
-                    };
-                    header.appendChild(resetBtn);
-                }
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
+                <input type="text" name="edit_name" id="edit_legal_name" class="form-control"
+                    style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
+            </div>
 
-                // Scroll to table
-                document.getElementById('contracts').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    </script>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
+                <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
+                    style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
+            </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 0;">
-        <iframe src="../animation/loading.html" style="width:100%; height:100%; border:none;"
-            allowtransparency="true"></iframe>
+            <div id="dynamic_edit_fields"></div>
+
+            <div class="form-actions" style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="cancel-btn"
+                    style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
+                    onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
+                <button type="submit" name="update_legal_record" class="save-btn"
+                    style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
+                    Changes</button>
+            </div>
+        </form>
     </div>
-    <!-- Edit Legal Modal -->
-    <div id="editLegalModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(6px); align-items:center; justify-content:center; z-index:1200;">
-        <div
-            style="background:#ffffff; width:94%; max-width:600px; border-radius:24px; padding:30px; position:relative; box-shadow:0 30px 60px rgba(0,0,0,0.2);">
-            <button type="button" onclick="closeModal(document.getElementById('editLegalModal'))"
-                style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
-            <h2 style="font-size:24px; color:#0f172a; margin-bottom:20px;">Edit Legal Record</h2>
-            <form method="POST" id="editLegalForm">
-                <input type="hidden" name="edit_id" id="edit_legal_id">
-                <input type="hidden" name="edit_type" id="edit_legal_type">
+</div>
 
-                <div class="form-group" style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:600;">Record Name</label>
-                    <input type="text" name="edit_name" id="edit_legal_name" class="form-control"
-                        style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
-                </div>
+<script>
+    function editLegalRecord(data, type) {
+        const modal = document.getElementById('editLegalModal');
+        document.getElementById('edit_legal_id').value = data.id;
+        document.getElementById('edit_legal_type').value = type;
+        document.getElementById('edit_legal_name').value = data.name || data.contract_name || '';
+        document.getElementById('edit_legal_case_id').value = data.case_id || '';
 
-                <div class="form-group" style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:600;">Case ID Reference</label>
-                    <input type="text" name="edit_case_id" id="edit_legal_case_id" class="form-control"
-                        style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" required>
-                </div>
+        const dynamicFields = document.getElementById('dynamic_edit_fields');
+        dynamicFields.innerHTML = '';
 
-                <div id="dynamic_edit_fields"></div>
-
-                <div class="form-actions" style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" class="cancel-btn"
-                        style="background:#f1f5f9; color:#64748b; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;"
-                        onclick="closeModal(document.getElementById('editLegalModal'))">Cancel</button>
-                    <button type="submit" name="update_legal_record" class="save-btn"
-                        style="background:linear-gradient(135deg, #1e293b 0%, #334155 100%); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Update
-                        Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function editLegalRecord(data, type) {
-            const modal = document.getElementById('editLegalModal');
-            document.getElementById('edit_legal_id').value = data.id;
-            document.getElementById('edit_legal_type').value = type;
-            document.getElementById('edit_legal_name').value = data.name || data.contract_name || '';
-            document.getElementById('edit_legal_case_id').value = data.case_id || '';
-
-            const dynamicFields = document.getElementById('dynamic_edit_fields');
-            dynamicFields.innerHTML = '';
-
-            if (type === 'contract') {
-                dynamicFields.innerHTML = `
+        if (type === 'contract') {
+            dynamicFields.innerHTML = `
                     <div class="form-group" style="margin-bottom:15px;">
                         <label style="display:block; margin-bottom:5px; font-weight:600;">Resource Description</label>
                         <textarea name="edit_description" class="form-control" style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px;" rows="3">${data.description || ''}</textarea>
@@ -3461,17 +3626,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         </select>
                     </div>
                 `;
-            }
-
-            modal.style.display = 'flex';
         }
 
-        function closeModal(modal) {
-            if (modal) {
-                modal.style.display = 'none';
-            }
+        modal.style.display = 'flex';
+    }
+
+    function closeModal(modal) {
+        if (modal) {
+            modal.style.display = 'none';
         }
-    </script>
+    }
+</script>
 </body>
 
 </html>
