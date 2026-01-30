@@ -1533,6 +1533,8 @@ $r_rows = [];
                                 ['module' => 'Reservation', 'id' => 102, 'name' => 'Elizabeth Santos', 'ref' => 'Function Hall B', 'date' => date('Y-m-d', strtotime('+1 day')), 'status' => 'pending'],
                                 ['module' => 'Reservation', 'id' => 103, 'name' => 'John Doe', 'ref' => 'Poolside', 'date' => date('Y-m-d', strtotime('-1 day')), 'status' => 'cancelled'],
                                 ['module' => 'Reservation', 'id' => 104, 'name' => 'Maria Ozawa', 'ref' => 'Conference Room', 'date' => date('Y-m-d', strtotime('-2 days')), 'status' => 'completed'],
+                                ['module' => 'Reservation', 'id' => 105, 'name' => 'Sarah Smith', 'ref' => 'Grand Ballroom', 'date' => date('Y-m-d', strtotime('-3 days')), 'status' => 'pending'],
+                                ['module' => 'Reservation', 'id' => 106, 'name' => 'Mike Ross', 'ref' => 'Boardroom', 'date' => date('m/d/Y'), 'status' => 'confirmed'],
                                 ['module' => 'Facility', 'id' => 1, 'name' => 'Grand Ballroom', 'ref' => 'Main Building', 'date' => date('Y-m-d', strtotime('-5 days')), 'status' => 'active'],
                                 ['module' => 'Facility', 'id' => 2, 'name' => 'Function Hall A', 'ref' => 'East Wing', 'date' => date('Y-m-d', strtotime('-10 days')), 'status' => 'maintenance'],
                                 ['module' => 'Document', 'id' => 1, 'name' => 'ServiceAgreement_2026.pdf', 'ref' => 'DOC-882', 'date' => date('Y-m-d'), 'status' => 'Archived'],
@@ -1694,7 +1696,9 @@ $r_rows = [];
                             $mock_entries = [
                                 ['id' => 101, 'customer_name' => 'Marvin Quiriado', 'event_date' => date('Y-m-d'), 'start_time' => '10:00:00', 'guests_count' => 150, 'status' => 'confirmed', 'total_amount' => 45000, 'deposit_paid' => 15000, 'balance_due' => 30000, 'payment_method' => 'Bank Transfer', 'coordinator' => 'Sarah Reyes', 'package' => 'Premium Wedding'],
                                 ['id' => 102, 'customer_name' => 'Elizabeth Santos', 'event_date' => date('Y-m-d', strtotime('+1 day')), 'start_time' => '08:00:00', 'guests_count' => 80, 'status' => 'pending', 'total_amount' => 25000, 'deposit_paid' => 0, 'balance_due' => 25000, 'payment_method' => 'GCash', 'coordinator' => 'Mark Tui', 'package' => 'Corporate Package'],
-                                ['id' => 103, 'customer_name' => 'Roberto Gomez', 'event_date' => date('Y-m-d', strtotime('-2 days')), 'start_time' => '18:00:00', 'guests_count' => 50, 'status' => 'completed', 'total_amount' => 15000, 'deposit_paid' => 15000, 'balance_due' => 0, 'payment_method' => 'Cash', 'coordinator' => 'Maria Santos', 'package' => 'Standard Party']
+                                ['id' => 103, 'customer_name' => 'Roberto Gomez', 'event_date' => date('Y-m-d', strtotime('-2 days')), 'start_time' => '18:00:00', 'guests_count' => 50, 'status' => 'completed', 'total_amount' => 15000, 'deposit_paid' => 15000, 'balance_due' => 0, 'payment_method' => 'Cash', 'coordinator' => 'Maria Santos', 'package' => 'Standard Party'],
+                                ['id' => 104, 'customer_name' => 'Sarah Smith', 'event_date' => date('Y-m-d', strtotime('-3 days')), 'start_time' => '09:00:00', 'guests_count' => 20, 'status' => 'pending', 'total_amount' => 5000, 'deposit_paid' => 0, 'balance_due' => 5000, 'payment_method' => 'GCash', 'coordinator' => 'Sarah Reyes', 'package' => 'Birthday Pack'],
+                                ['id' => 105, 'customer_name' => 'John Wick', 'event_date' => date('Y-m-d', strtotime('-1 day')), 'start_time' => '14:00:00', 'guests_count' => 10, 'status' => 'pending', 'total_amount' => 3000, 'deposit_paid' => 500, 'balance_due' => 2500, 'payment_method' => 'Cash', 'coordinator' => 'Mark Tui', 'package' => 'Meeting Room']
                             ];
                             // Apply filters to mock data
                             if ($q_from) {
@@ -1817,8 +1821,21 @@ $r_rows = [];
                         <?php
                         $title_module = ($r_module === 'all') ? 'All Records' : ucfirst($r_module);
                         echo $title_module . ' Result';
-                        if ($r_from || $r_to || $r_status !== 'all')
-                            echo ' (Filtered)';
+
+                        $filter_parts = [];
+                        if ($r_status !== 'all')
+                            $filter_parts[] = "Status: " . ucfirst($r_status);
+                        if (!empty($q_from) && !empty($q_to)) {
+                            $filter_parts[] = "Date: " . date('M d, Y', strtotime($q_from)) . " - " . date('M d, Y', strtotime($q_to));
+                        } elseif (!empty($r_from)) {
+                            $filter_parts[] = "From: " . date('M d, Y', strtotime($r_from));
+                        } elseif (!empty($r_to)) {
+                            $filter_parts[] = "To: " . date('M d, Y', strtotime($r_to));
+                        }
+
+                        if (!empty($filter_parts)) {
+                            echo ' <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.9;">(' . implode(' | ', $filter_parts) . ')</span>';
+                        }
                         ?>
                     </h2>
                 </div>
@@ -1830,90 +1847,91 @@ $r_rows = [];
                             <thead>
                                 <tr>
                                     <?php foreach ($r_headers as $h): ?>
-                                            <th><?= $h ?></th>
+                                        <th><?= $h ?></th>
                                     <?php endforeach; ?>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (empty($r_rows)): ?>
-                                        <tr>
-                                            <td colspan="<?= count($r_headers) + 1 ?>"
-                                                style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
-                                                No records found for the
-                                                selected module and filters.
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td colspan="<?= count($r_headers) + 1 ?>"
+                                            style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">
+                                            No records found for the
+                                            selected module and filters.
+                                        </td>
+                                    </tr>
                                 <?php else: ?>
-                                        <?php foreach ($r_rows as $rr): ?>
-                                                <tr style="border-bottom: 1px solid #edf2f7;">
-                                                    <?php if ($r_module === 'reservations'): ?>
-                                                            <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
-                                                                #BK-<?= $rr['id'] ?></td>
-                                                            <td style="font-size: 13px; color: #64748b;">
-                                                                <?= date('Y-m-d', strtotime($rr['event_date'] ?? 'now')) ?>
-                                                            </td>
-                                                            <td style="font-size: 13px;">
-                                                                <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?>
-                                                            </td>
-                                                            <td style="font-size: 13px; font-weight: 600;">
-                                                                <?= $rr['guests_count'] ?>
-                                                            </td>
-                                                            <td style="font-size: 13px; font-weight: 500;">
-                                                                <?= htmlspecialchars($rr['package'] ?? 'Standard') ?>
-                                                            </td>
-                                                            <td style="font-weight: 700; font-size: 13px; color: #0f172a;">
-                                                                ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?>
-                                                            </td>
-                                                            <td style="color: #059669; font-weight: 700; font-size: 13px;">
-                                                                ₱<?= number_format($rr['deposit_paid'] ?? ($rr['total_amount'] * 0.4), 2) ?>
-                                                            </td>
-                                                            <td style="color: #dc2626; font-weight: 700; font-size: 13px;">
-                                                                ₱<?= number_format($rr['balance_due'] ?? ($rr['total_amount'] * 0.6), 2) ?>
-                                                            </td>
-                                                            <td style="font-size: 13px;">
-                                                                <span
-                                                                    style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">
-                                                                    <?= strtoupper(htmlspecialchars($rr['payment_method'] ?? 'GCash')) ?>
-                                                                </span>
-                                                            </td>
-                                                            <td style="font-size: 13px; color: #64748b;">
-                                                                <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
-                                                            </td>
-                                                            <td style="font-size: 13px;">
-                                                                <span class="status-badge status-<?= $rr['status'] ?>"
-                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
-                                                                    <?= strtoupper(htmlspecialchars($rr['status'])) ?>
-                                                                </span>
-                                                            </td>
-                                                            <td style="padding: 14px 15px;">
-                                                                <div class="d-flex gap-1" style="justify-content: center;">
-                                                                    <button type="button" class="btn btn-outline btn-sm btn-icon"
-                                                                        onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
-                                                                        style="color: #60a5fa; border-color: #3b82f6;" title="View Details">
-                                                                        <i class="fa-solid fa-eye"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                    <?php else: ?>
-                                                            <!-- Generic display for other modules -->
-                                                            <?php foreach ($rr as $key => $val): ?>
-                                                                    <td style="color: #1e293b; font-size: 13px; padding: 14px 15px;">
-                                                                        <?php
-                                                                        $display_val = $val;
-                                                                        $date_keys = ['date', 'created_at', 'uploaded_at', 'checkin_date', 'event_date'];
+                                    <?php foreach ($r_rows as $rr): ?>
+                                        <tr style="border-bottom: 1px solid #edf2f7;">
+                                            <?php if ($r_module === 'reservations'): ?>
+                                                <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
+                                                    #BK-<?= $rr['id'] ?></td>
+                                                <td style="font-size: 13px; color: #64748b;">
+                                                    <?= date('m/d/Y', strtotime($rr['event_date'] ?? 'now')) ?>
+                                                </td>
+                                                <td style="font-size: 13px; white-space: nowrap;">
+                                                    <?= date('g:i A', strtotime($rr['start_time'] ?? 'now')) ?> -
+                                                    <?= date('g:i A', strtotime($rr['end_time'] ?? 'now')) ?>
+                                                </td>
+                                                <td style="font-size: 13px; font-weight: 600;">
+                                                    <?= $rr['guests_count'] ?>
+                                                </td>
+                                                <td style="font-size: 13px; font-weight: 500;">
+                                                    <?= htmlspecialchars($rr['package'] ?? 'Standard') ?>
+                                                </td>
+                                                <td style="font-weight: 700; font-size: 13px; color: #0f172a;">
+                                                    ₱<?= number_format($rr['total_amount'] ?? 0, 2) ?>
+                                                </td>
+                                                <td style="color: #059669; font-weight: 700; font-size: 13px;">
+                                                    ₱<?= number_format($rr['deposit_paid'] ?? ($rr['total_amount'] * 0.4), 2) ?>
+                                                </td>
+                                                <td style="color: #dc2626; font-weight: 700; font-size: 13px;">
+                                                    ₱<?= number_format($rr['balance_due'] ?? ($rr['total_amount'] * 0.6), 2) ?>
+                                                </td>
+                                                <td style="font-size: 13px;">
+                                                    <span
+                                                        style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">
+                                                        <?= strtoupper(htmlspecialchars($rr['payment_method'] ?? 'GCash')) ?>
+                                                    </span>
+                                                </td>
+                                                <td style="font-size: 13px; color: #64748b;">
+                                                    <?= htmlspecialchars($rr['coordinator'] ?? 'Maria Santos') ?>
+                                                </td>
+                                                <td style="font-size: 13px;">
+                                                    <span class="status-badge status-<?= $rr['status'] ?>"
+                                                        style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
+                                                        <?= strtoupper(htmlspecialchars($rr['status'])) ?>
+                                                    </span>
+                                                </td>
+                                                <td style="padding: 14px 15px;">
+                                                    <div class="d-flex gap-1" style="justify-content: center;">
+                                                        <button type="button" class="btn btn-outline btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.viewReservationDetails(<?= htmlspecialchars(json_encode($rr)) ?>)"
+                                                            style="color: #60a5fa; border-color: #3b82f6;" title="View Details">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            <?php else: ?>
+                                                <!-- Generic display for other modules -->
+                                                <?php foreach ($rr as $key => $val): ?>
+                                                    <td style="color: #1e293b; font-size: 13px; padding: 14px 15px;">
+                                                        <?php
+                                                        $display_val = $val;
+                                                        $date_keys = ['date', 'created_at', 'uploaded_at', 'checkin_date', 'event_date'];
 
-                                                                        if (strtolower($key) === 'status'):
-                                                                            ?>
-                                                                                <span class="status-badge status-<?= strtolower($val) ?>"
-                                                                                    style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
-                                                                                    <?php
-                                                                                    if (strtolower($val) === 'active')
-                                                                                        $display_val = 'Checked In';
-                                                                                    echo strtoupper(htmlspecialchars($display_val));
-                                                                                    ?>
-                                                                                </span>
-                                                                        <?php elseif (in_array(strtolower($key), $date_keys) && $val !== 'N/A' && !empty($val)): ?>
-                                                                                <?= date('Y-m-d', strtotime($val)) ?>
+                                                        if (strtolower($key) === 'status'):
+                                                            ?>
+                                                            <span class="status-badge status-<?= strtolower($val) ?>"
+                                                                style="font-weight: 700; padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;">
+                                                                <?php
+                                                                if (strtolower($val) === 'active')
+                                                                    $display_val = 'Checked In';
+                                                                echo strtoupper(htmlspecialchars($display_val));
+                                                                ?>
+                                                            </span>
+                                                        <?php elseif (in_array(strtolower($key), $date_keys) && $val !== 'N/A' && !empty($val)): ?>
+                                                            <?= date('m/d/Y', strtotime($val)) ?>
                                                                         <?php else: ?>
                                                                                 <?= htmlspecialchars($val) ?>
                                                                         <?php endif; ?>
@@ -3893,4 +3911,4 @@ $r_rows = [];
     </div>
 </body>
 
-</html>
+</html> 
