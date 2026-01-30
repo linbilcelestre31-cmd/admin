@@ -1488,6 +1488,10 @@ if (isset($dashboard_data['error'])) {
 
                         $where_status = ($r_status !== 'all') ? " AND status = " . $db->quote($r_status) : "";
                         $where_status_res = ($r_status !== 'all') ? " AND r.status = " . $db->quote($r_status) : "";
+                        $where_status_vis = ($r_status !== 'all') ? " AND status = " . $db->quote(($r_status === 'Checked In' || $r_status === 'active') ? 'active' : $r_status) : "";
+                        $where_status_leg = ($r_status !== 'all' && strtolower($r_status) !== 'active') ? " AND 1=0" : "";
+                        $where_status_doc = ($r_status !== 'all' && strtolower($r_status) !== 'archived') ? " AND 1=0" : "";
+
                         $where_date_res = ($r_from ? " AND r.event_date >= " . $db->quote($r_from) : "") . ($r_to ? " AND r.event_date <= " . $db->quote($r_to) : "");
                         $where_date_doc = ($r_from ? " AND DATE(uploaded_at) >= " . $db->quote($r_from) : "") . ($r_to ? " AND DATE(uploaded_at) <= " . $db->quote($r_to) : "");
                         $where_date_vis = ($r_from ? " AND DATE(checkin_date) >= " . $db->quote($r_from) : "") . ($r_to ? " AND DATE(checkin_date) <= " . $db->quote($r_to) : "");
@@ -1499,11 +1503,11 @@ if (isset($dashboard_data['error'])) {
                                 UNION ALL
                                 (SELECT 'Facility' as module, id, CONVERT(name USING utf8mb4), CONVERT(location USING utf8mb4), 'N/A' as date, CONVERT(status USING utf8mb4) FROM facilities WHERE 1=1 $where_status)
                                 UNION ALL
-                                (SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc " . (($r_status !== 'all' && $r_status === 'Archived') ? "" : ($r_status !== 'all' ? " AND 1=0" : "")) . ")
+                                (SELECT 'Document' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(uploaded_at AS CHAR) as date, 'Archived' as status FROM documents WHERE is_deleted = 0 $where_date_doc $where_status_doc)
                                 UNION ALL
-                                (SELECT 'Visitor' as module, id, CONVERT(full_name USING utf8mb4), CONVERT(room_number USING utf8mb4), CAST(checkin_date AS CHAR) as date, CONVERT(CASE WHEN status = 'active' THEN 'Checked In' ELSE status END USING utf8mb4) as status FROM direct_checkins WHERE 1=1 $where_status $where_date_vis)
+                                (SELECT 'Visitor' as module, id, CONVERT(full_name USING utf8mb4), CONVERT(room_number USING utf8mb4), CAST(checkin_date AS CHAR) as date, CONVERT(CASE WHEN status = 'active' THEN 'Checked In' ELSE status END USING utf8mb4) as status FROM direct_checkins WHERE 1=1 $where_status_vis $where_date_vis)
                                 UNION ALL
-                                (SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, CONVERT(risk_score USING utf8mb4) as status FROM contracts WHERE 1=1 $where_date_leg " . (($r_status !== 'all') ? " AND 1=0" : "") . ")
+                                (SELECT 'Legal' as module, id, CONVERT(name USING utf8mb4), CONVERT(case_id USING utf8mb4), CAST(created_at AS CHAR) as date, 'Active' as status FROM contracts WHERE 1=1 $where_date_leg $where_status_leg)
                                 ORDER BY date DESC
                             ";
                         $r_stmt = get_pdo()->prepare($all_sql);
@@ -1606,6 +1610,13 @@ if (isset($dashboard_data['error'])) {
 
                     case 'facilities':
                         $r_sql = "SELECT id, name, type, capacity, location, CONCAT('₱', FORMAT(hourly_rate, 2)) as rate, created_at, status FROM facilities WHERE 1=1";
+                        if ($r_from)
+                            $r_sql .= " AND DATE(created_at) >= " . $db->quote($r_from);
+                        if ($r_to)
+                            $r_sql .= " AND DATE(created_at) <= " . $db->quote($r_to);
+                        if ($r_status !== 'all')
+                            $r_sql .= " AND status = " . $db->quote($r_status);
+
                         $r_headers = ['ID', 'NAME', 'TYPE', 'CAPACITY', 'LOCATION', 'RATE', 'DATE', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
@@ -1613,13 +1624,15 @@ if (isset($dashboard_data['error'])) {
                         break;
 
                     case 'archiving':
-                        $r_sql = "SELECT id, name, case_id, file_path, uploaded_at FROM documents WHERE is_deleted = 0";
+                        $r_sql = "SELECT id, name, case_id, file_path, uploaded_at, 'Archived' as status FROM documents WHERE is_deleted = 0";
                         if ($r_from)
                             $r_sql .= " AND DATE(uploaded_at) >= " . $db->quote($r_from);
                         if ($r_to)
                             $r_sql .= " AND DATE(uploaded_at) <= " . $db->quote($r_to);
+                        if ($r_status !== 'all' && strtolower($r_status) !== 'archived')
+                            $r_sql .= " AND 1=0";
 
-                        $r_headers = ['ID', 'DOCUMENT NAME', 'CASE ID', 'FILE PATH', 'UPLOADED AT'];
+                        $r_headers = ['ID', 'DOCUMENT NAME', 'CASE ID', 'FILE PATH', 'UPLOADED AT', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1647,6 +1660,10 @@ if (isset($dashboard_data['error'])) {
                                 $r_sql .= " AND DATE($v_checkin) >= " . get_pdo()->quote($r_from);
                             if ($r_to)
                                 $r_sql .= " AND DATE($v_checkin) <= " . get_pdo()->quote($r_to);
+                            if ($r_status !== 'all') {
+                                $mapped_status = ($r_status === 'Checked In' || $r_status === 'active') ? 'active' : $r_status;
+                                $r_sql .= " AND status = " . get_pdo()->quote($mapped_status);
+                            }
                             $r_headers = ['ID', 'NAME', 'EMAIL', 'PHONE', 'FACILITY', 'DATE', 'TIME IN', 'TIME OUT', 'STATUS'];
                             $r_stmt = get_pdo()->prepare($r_sql);
                             $r_stmt->execute();
@@ -1695,13 +1712,15 @@ if (isset($dashboard_data['error'])) {
                         break;
 
                     case 'legal':
-                        $r_sql = "SELECT id, name, case_id, contract_type, risk_score, created_at FROM contracts WHERE 1=1";
+                        $r_sql = "SELECT id, name, case_id, contract_type, risk_score, created_at, 'Active' as status FROM contracts WHERE 1=1";
                         if ($r_from)
                             $r_sql .= " AND DATE(created_at) >= " . $db->quote($r_from);
                         if ($r_to)
                             $r_sql .= " AND DATE(created_at) <= " . $db->quote($r_to);
+                        if ($r_status !== 'all' && strtolower($r_status) !== 'active')
+                            $r_sql .= " AND 1=0";
 
-                        $r_headers = ['ID', 'CONTRACT NAME', 'CASE ID', 'TYPE', 'RISK SCORE', 'CREATED AT'];
+                        $r_headers = ['ID', 'CONTRACT NAME', 'CASE ID', 'TYPE', 'RISK SCORE', 'CREATED AT', 'STATUS'];
                         $r_stmt = get_pdo()->prepare($r_sql);
                         $r_stmt->execute();
                         $r_rows = $r_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1972,7 +1991,14 @@ if (isset($dashboard_data['error'])) {
 
                 <div class="d-flex align-center gap-1 mb-1">
                     <i class="fa-solid fa-file-invoice" style="font-size: 1.5rem; color: #3182ce;"></i>
-                    <h2 style="margin: 0;"><?= ucfirst($r_module) ?> Reports</h2>
+                    <h2 style="margin: 0;">
+                        <?php
+                        $title_module = ($r_module === 'all') ? 'All Records' : ucfirst($r_module);
+                        echo $title_module . ' Result';
+                        if ($r_from || $r_to || $r_status !== 'all')
+                            echo ' (Filtered)';
+                        ?>
+                    </h2>
                 </div>
 
                 <div class="table-container <?= isset($is_premium_report) ? 'premium-white-card' : '' ?>"
