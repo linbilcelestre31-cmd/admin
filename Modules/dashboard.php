@@ -3056,6 +3056,43 @@ if (isset($dashboard_data['error'])) {
                 </div>
 
                 <div id="maintenance-trash-section" style="display: none;">
+                    <!-- Date Range Filter for Deleted Table -->
+                    <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <form method="get" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                            <input type="hidden" name="tab" value="maintenance">
+                            <div class="filter-group">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">FROM</label><br>
+                                <input type="date" name="deleted_from_date" value="<?= htmlspecialchars($_GET['deleted_from_date'] ?? '') ?>" 
+                                       style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                            </div>
+                            <div class="filter-group">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">TO</label><br>
+                                <input type="date" name="deleted_to_date" value="<?= htmlspecialchars($_GET['deleted_to_date'] ?? '') ?>" 
+                                       style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;">
+                            </div>
+                            <div class="filter-group">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Date Range</label><br>
+                                <select name="deleted_date_range" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white;" 
+                                        onchange="setDeletedDateRange(this.value)">
+                                    <option value="">Custom Range</option>
+                                    <option value="today" <?= ($_GET['deleted_date_range'] === 'today') ? 'selected' : '' ?>>Today</option>
+                                    <option value="yesterday" <?= ($_GET['deleted_date_range'] === 'yesterday') ? 'selected' : '' ?>>Yesterday</option>
+                                    <option value="this_week" <?= ($_GET['deleted_date_range'] === 'this_week') ? 'selected' : '' ?>>This Week</option>
+                                    <option value="last_week" <?= ($_GET['deleted_date_range'] === 'last_week') ? 'selected' : '' ?>>Last Week</option>
+                                    <option value="this_month" <?= ($_GET['deleted_date_range'] === 'this_month') ? 'selected' : '' ?>>This Month</option>
+                                    <option value="last_month" <?= ($_GET['deleted_date_range'] === 'last_month') ? 'selected' : '' ?>>Last Month</option>
+                                    <option value="this_quarter" <?= ($_GET['deleted_date_range'] === 'this_quarter') ? 'selected' : '' ?>>This Quarter</option>
+                                    <option value="this_year" <?= ($_GET['deleted_date_range'] === 'this_year') ? 'selected' : '' ?>>This Year</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" style="align-self: flex-end;">
+                                <button class="btn btn-primary" style="padding: 10px 25px; background: #3182ce; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                    <i class="fa-solid fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
                     <div class="card management-card management-trash premium-dark-card"
                         style="margin-top: -10px; background: #CEB15E !important; border-radius: 12px; overflow: hidden; border: 1px solid #111; border-top: 4px solid #ef4444;">
                         <div class="card-header"
@@ -3069,7 +3106,73 @@ if (isset($dashboard_data['error'])) {
                             </div>
                         </div>
                         <div class="card-content" style="padding: 0;">
-                            <?php $deleted_logs = $reservationSystem->fetchMaintenanceLogs(true); ?>
+                            <?php 
+                            // Handle date filtering for deleted logs
+                            $deleted_from_date = $_GET['deleted_from_date'] ?? '';
+                            $deleted_to_date = $_GET['deleted_to_date'] ?? '';
+                            $deleted_date_range = $_GET['deleted_date_range'] ?? '';
+                            
+                            // Handle date_range parameter to auto-set from_date and to_date for deleted logs
+                            if ($deleted_date_range && !$deleted_from_date && !$deleted_to_date) {
+                                $today = date('Y-m-d');
+                                switch($deleted_date_range) {
+                                    case 'today':
+                                        $deleted_from_date = $deleted_to_date = $today;
+                                        break;
+                                    case 'yesterday':
+                                        $deleted_from_date = $deleted_to_date = date('Y-m-d', strtotime('-1 day'));
+                                        break;
+                                    case 'this_week':
+                                        $deleted_from_date = date('Y-m-d', strtotime('monday this week'));
+                                        $deleted_to_date = date('Y-m-d', strtotime('sunday this week'));
+                                        break;
+                                    case 'last_week':
+                                        $deleted_from_date = date('Y-m-d', strtotime('monday last week'));
+                                        $deleted_to_date = date('Y-m-d', strtotime('sunday last week'));
+                                        break;
+                                    case 'this_month':
+                                        $deleted_from_date = date('Y-m-01');
+                                        $deleted_to_date = date('Y-m-t');
+                                        break;
+                                    case 'last_month':
+                                        $deleted_from_date = date('Y-m-01', strtotime('-1 month'));
+                                        $deleted_to_date = date('Y-m-t', strtotime('-1 month'));
+                                        break;
+                                    case 'this_quarter':
+                                        $current_quarter = ceil(date('n') / 3);
+                                        $deleted_from_date = date('Y-m-d', mktime(0, 0, 0, ($current_quarter - 1) * 3 + 1, 1, date('Y')));
+                                        $deleted_to_date = date('Y-m-d', mktime(0, 0, 0, $current_quarter * 3 + 1, 0, date('Y')));
+                                        break;
+                                    case 'this_year':
+                                        $deleted_from_date = date('Y-01-01');
+                                        $deleted_to_date = date('Y-12-31');
+                                        break;
+                                }
+                            }
+                            
+                            $deleted_logs = $reservationSystem->fetchMaintenanceLogs(true);
+                            
+                            // Apply date filtering to deleted logs
+                            if (!empty($deleted_logs) && ($deleted_from_date || $deleted_to_date)) {
+                                $filtered_deleted_logs = [];
+                                foreach ($deleted_logs as $dlog) {
+                                    $log_date = $dlog['maintenance_date'];
+                                    $show_log = true;
+                                    
+                                    if ($deleted_from_date && $log_date < $deleted_from_date) {
+                                        $show_log = false;
+                                    }
+                                    if ($deleted_to_date && $log_date > $deleted_to_date) {
+                                        $show_log = false;
+                                    }
+                                    
+                                    if ($show_log) {
+                                        $filtered_deleted_logs[] = $dlog;
+                                    }
+                                }
+                                $deleted_logs = $filtered_deleted_logs;
+                            }
+                            ?>
                             <div class="table-wrapper"
                                 style="box-shadow: none; border-radius: 0; background: transparent; overflow-x: auto; margin: 0;">
                                 <table class="table"
@@ -3149,7 +3252,6 @@ if (isset($dashboard_data['error'])) {
     </div> <!-- End dashboard-content -->
     </main> <!-- End main-content -->
     </div> <!-- End container -->
-
     <!-- Modals -->
     <!-- Reservation Modal -->
     <div id="reservation-modal" class="modal">
@@ -3615,6 +3717,72 @@ if (isset($dashboard_data['error'])) {
             // Update the date input fields
             const fromInput = document.querySelector('input[name="from_date"]');
             const toInput = document.querySelector('input[name="to_date"]');
+            
+            if (fromInput) fromInput.value = fromDate;
+            if (toInput) toInput.value = toDate;
+        }
+
+        // Deleted Date Range Selection Function
+        function setDeletedDateRange(range) {
+            const today = new Date();
+            let fromDate = '';
+            let toDate = '';
+            
+            switch(range) {
+                case 'today':
+                    fromDate = toDate = today.toISOString().split('T')[0];
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    fromDate = toDate = yesterday.toISOString().split('T')[0];
+                    break;
+                case 'this_week':
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    fromDate = startOfWeek.toISOString().split('T')[0];
+                    toDate = endOfWeek.toISOString().split('T')[0];
+                    break;
+                case 'last_week':
+                    const startOfLastWeek = new Date(today);
+                    startOfLastWeek.setDate(today.getDate() - today.getDay() - 7);
+                    const endOfLastWeek = new Date(startOfLastWeek);
+                    endOfLastWeek.setDate(startOfLastWeek.getDate() + 6);
+                    fromDate = startOfLastWeek.toISOString().split('T')[0];
+                    toDate = endOfLastWeek.toISOString().split('T')[0];
+                    break;
+                case 'this_month':
+                    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    fromDate = startOfMonth.toISOString().split('T')[0];
+                    toDate = endOfMonth.toISOString().split('T')[0];
+                    break;
+                case 'last_month':
+                    const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    fromDate = startOfLastMonth.toISOString().split('T')[0];
+                    toDate = endOfLastMonth.toISOString().split('T')[0];
+                    break;
+                case 'this_quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    const startOfQuarter = new Date(today.getFullYear(), quarter * 3, 1);
+                    const endOfQuarter = new Date(today.getFullYear(), quarter * 3 + 3, 0);
+                    fromDate = startOfQuarter.toISOString().split('T')[0];
+                    toDate = endOfQuarter.toISOString().split('T')[0];
+                    break;
+                case 'this_year':
+                    const startOfYear = new Date(today.getFullYear(), 0, 1);
+                    const endOfYear = new Date(today.getFullYear(), 11, 31);
+                    fromDate = startOfYear.toISOString().split('T')[0];
+                    toDate = endOfYear.toISOString().split('T')[0];
+                    break;
+            }
+            
+            // Update the deleted date input fields
+            const fromInput = document.querySelector('input[name="deleted_from_date"]');
+            const toInput = document.querySelector('input[name="deleted_to_date"]');
             
             if (fromInput) fromInput.value = fromDate;
             if (toInput) toInput.value = toDate;
