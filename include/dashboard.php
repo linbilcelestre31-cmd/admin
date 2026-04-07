@@ -253,8 +253,9 @@
                                     style="font-weight: 600; color: #1e293b; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?>
                                 </div>
-                                <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500;">
-                                    <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?>
+                                <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                                    <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?></span>
+                                    <span style="font-size: 0.65rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="font-size: 0.6rem;"></i> <?= date('h:i A') ?></span>
                                 </div>
                             </div>
                         </div>
@@ -389,9 +390,9 @@
                             <div style="font-weight: 600; color: #1e293b;">
                                 <?= htmlspecialchars(($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? '')) ?>
                             </div>
-                            <div style="font-size: 0.85rem; color: #64748b;">
-                                <?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?> • <span
-                                    style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span>
+                            <div style="font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+                                <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?> • <span style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span></span>
+                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> <?= date('m/d/Y h:i A') ?></span>
                             </div>
                         </div>
                     </div>

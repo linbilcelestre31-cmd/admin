@@ -711,7 +711,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .table th, .table td {
             text-align: center;
             padding: 14px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #94a3b8; /* Darker border for better visibility */
             font-size: 0.9rem;
         }
 
