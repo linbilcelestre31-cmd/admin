@@ -845,8 +845,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <main class="main-content">
             <header class="top-header">
-                <div class="header-title">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()" style="display:none;">
+                <div class="header-title" style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1>Account Settings</h1>
@@ -897,6 +897,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                             <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Active Users</h3>
+                            <button class="btn btn-primary security-only" onclick="openCreateModal()">
+                                <i class="fas fa-plus"></i> Add New User
+                            </button>
                         </div>
 
                         <div class="viewing-container">
@@ -911,6 +914,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
+                                            <th class="security-only">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -920,6 +924,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
+                                                <td class="security-only">
+                                                    <button class="btn btn-outline btn-sm btn-icon" title="Edit User" onclick="openEditModal(<?= htmlspecialchars(json_encode($user)) ?>)" style="color: #3b82f6; border-color: #e2e8f0;">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <?php if ($user['id'] != $_SESSION['user_id']): ?>
+                                                    <button class="btn btn-outline btn-sm btn-icon" title="Delete User" onclick="openDeleteModal(<?= $user['id'] ?>)" style="color: #ef4444; border-color: #e2e8f0; margin-left: 5px;">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
