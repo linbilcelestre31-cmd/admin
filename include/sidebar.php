@@ -20,7 +20,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <img src="../assets/image/logo.png" alt="Atiéra Logo"
+                    <img id="sidebarLogo" src="../assets/image/logo.png" alt="Atiéra Logo"
                         style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <?php if ($isSuperAdmin): ?>
                         <div
@@ -368,24 +368,71 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             if (sidebar.style.width === '80px') {
                 sidebar.style.width = '280px';
                 if(mainContent) mainContent.style.marginLeft = '280px';
+                
+                // Show logo.png
+                const sidebarLogo = document.getElementById('sidebarLogo');
+                if (sidebarLogo) {
+                    sidebarLogo.src = '../assets/image/logo.png';
+                    sidebarLogo.style.height = '60px'; // Restore size
+                }
+
                 // Show text
                 document.querySelectorAll('.nav-links a').forEach(a => {
-                    const textNode = Array.from(a.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().length > 0);
-                    if(textNode) textNode.parentElement.classList.remove('hide-text');
+                    Array.from(a.childNodes).forEach(n => {
+                        if (n.nodeType === 3 && n.textContent.trim().length > 0) {
+                            // Text node logic
+                        }
+                    });
+                    // Remove hidden span wrappers if we created them
+                    const textSpan = a.querySelector('.nav-text-span');
+                    if (textSpan) {
+                        textSpan.style.display = 'inline-block';
+                    } else {
+                        // Quick CSS workaround to show text
+                        a.style.color = '#cbd5e0';
+                    }
+                    
+                    const arrow = a.querySelector('.dropdown-arrow');
+                    if (arrow) arrow.style.display = 'inline-block';
+                    
+                    const divWrapper = a.querySelector('div');
+                    if (divWrapper && divWrapper.style !== undefined) divWrapper.style.color = '';
                 });
                 document.querySelectorAll('.nav-title').forEach(el => el.style.display = 'block');
-                document.querySelectorAll('.logo-area img').forEach(el => el.style.display = 'block');
                 document.querySelectorAll('.logo-area div').forEach(el => el.style.display = 'block');
             } else {
                 sidebar.style.width = '80px';
                 if(mainContent) mainContent.style.marginLeft = '80px';
+                
+                // Show logo2.png
+                const sidebarLogo = document.getElementById('sidebarLogo');
+                if (sidebarLogo) {
+                    sidebarLogo.src = '../assets/image/logo2.png';
+                    sidebarLogo.style.height = '40px'; // Smaller for collapsed
+                }
+
                 // Hide text
                 document.querySelectorAll('.nav-title').forEach(el => el.style.display = 'none');
-                document.querySelectorAll('.logo-area img').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.logo-area div').forEach(el => {
-                    if (el.className !== 'logo-area') {
+                    if (el.className !== 'logo-area' && el.className !== 'logo' && !el.querySelector('img')) {
                         el.style.display = 'none';
                     }
+                });
+                
+                // Magic CSS trick to hide text content without spans
+                document.querySelectorAll('.nav-links a').forEach(a => {
+                    a.style.color = 'transparent';
+                    
+                    // Keep icon visible
+                    const icon = a.querySelector('i');
+                    if (icon) icon.style.color = '#cbd5e0';
+                    
+                    // Hide arrow
+                    const arrow = a.querySelector('.dropdown-arrow');
+                    if (arrow) arrow.style.display = 'none';
+                    
+                    const divWrapper = a.querySelector('div'); // Management tab has a div wrapper
+                    if (divWrapper) divWrapper.style.color = 'transparent';
                 });
             }
         }
