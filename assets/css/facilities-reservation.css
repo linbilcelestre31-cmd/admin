@@ -325,7 +325,9 @@ body {
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
-    display: none;
+    display: inline-flex; /* Make it visible on desktop too */
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 2px solid var(--accent);
     color: var(--accent);

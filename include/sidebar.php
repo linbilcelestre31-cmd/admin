@@ -346,4 +346,61 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             });
         }
     });
+
+    // 8. Sidebar Toggle Logic for Menu Button
+    window.toggleSidebar = function() {
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        
+        if (window.innerWidth <= 768) {
+            // Mobile behavior
+            if (sidebar.style.transform === 'translateX(0px)') {
+                sidebar.style.transform = 'translateX(-100%)';
+                const overlay = document.querySelector('.mobile-menu-overlay');
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                sidebar.style.transform = 'translateX(0px)';
+                const overlay = document.querySelector('.mobile-menu-overlay');
+                if (overlay) overlay.style.display = 'block';
+            }
+        } else {
+            // Desktop behavior
+            if (sidebar.style.width === '80px') {
+                sidebar.style.width = '280px';
+                if(mainContent) mainContent.style.marginLeft = '280px';
+                // Show text
+                document.querySelectorAll('.nav-links a').forEach(a => {
+                    const textNode = Array.from(a.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+                    if(textNode) textNode.parentElement.classList.remove('hide-text');
+                });
+                document.querySelectorAll('.nav-title').forEach(el => el.style.display = 'block');
+                document.querySelectorAll('.logo-area img').forEach(el => el.style.display = 'block');
+                document.querySelectorAll('.logo-area div').forEach(el => el.style.display = 'block');
+            } else {
+                sidebar.style.width = '80px';
+                if(mainContent) mainContent.style.marginLeft = '80px';
+                // Hide text
+                document.querySelectorAll('.nav-title').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.logo-area img').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.logo-area div').forEach(el => {
+                    if (el.className !== 'logo-area') {
+                        el.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // Add smooth transitions if not present
+        if (!sidebar.style.transition) sidebar.style.transition = 'all 0.3s ease';
+        if (mainContent && !mainContent.style.transition) mainContent.style.transition = 'margin-left 0.3s ease';
+    };
+
+    window.closeSidebar = function() {
+        const sidebar = document.querySelector('.sidebar');
+        if (window.innerWidth <= 768 && sidebar) {
+            sidebar.style.transform = 'translateX(-100%)';
+            const overlay = document.querySelector('.mobile-menu-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+    };
 </script>

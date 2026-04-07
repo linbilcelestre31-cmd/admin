@@ -1013,7 +1013,7 @@ $r_rows = [];
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title">
                         <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                            <span class="icon-img-placeholder">☰</span>
+                            <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
                             style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
@@ -2759,6 +2759,7 @@ $r_rows = [];
                                             <th class="col-reported-by">Reported By</th>
                                             <th class="col-date">Reported Date</th>
                                             <th class="col-schedule">Schedule</th>
+                                            <th class="col-action" style="text-align: center;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2811,6 +2812,13 @@ $r_rows = [];
                                                                 style="color: #3b82f6; font-size: 0.8rem;"></i>
                                                             <?= date('m/d/Y', strtotime($log['maintenance_date'])) ?>
                                                         </div>
+                                                    </td>
+                                                    <td class="col-action" style="text-align: center;">
+                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                            onclick="event.preventDefault();"
+                                                            title="View Details" style="border-color: #e2e8f0; color: #475569;">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
