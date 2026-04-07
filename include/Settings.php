@@ -885,7 +885,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
                             <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
                         </div>
-                        <span style="font-size: 0.9rem;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></span>
+                        <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                            <span style="font-size: 0.85rem; font-weight: 800;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></span>
+                            <span style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? '') ?></span>
+                        </div>
                     </div>
                 </div>
             </header>

@@ -177,11 +177,12 @@
         <!-- Compliance Reports (Legal) -->
         <div
             style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Compliance Reports</h3>
                 <a href="legalmanagement.php" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View
                     Legal <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
+            <div style="height: 3px; width: 60px; background: linear-gradient(90deg, #ef4444, transparent); border-radius: 10px; margin-bottom: 12px;"></div>
 
             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
                 <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border-left: 4px solid #ef4444;">
@@ -223,12 +224,13 @@
         <!-- Recent Activity (Employee Activity from HR4) -->
         <div
             style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Recent Activity</h3>
                 <a href="#" onclick="openRecentActivitiesModal(event)"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View All <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
+            <div style="height: 3px; width: 60px; background: linear-gradient(90deg, #4338ca, transparent); border-radius: 10px; margin-bottom: 12px;"></div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <?php if (empty($employees_data) || !is_array($employees_data)): ?>
                     <div
@@ -265,12 +267,13 @@
         </div>
         <div
             style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
                 <a href="#" onclick="checkVaultPin(event, 'document management(archiving).php')"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">Go to Vault <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
+            <div style="height: 3px; width: 60px; background: linear-gradient(90deg, #3b82f6, transparent); border-radius: 10px; margin-bottom: 12px;"></div>
 
             <!-- Stats Boxes (Mirroring Archiving Module) -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
@@ -315,12 +318,13 @@
         <!-- Maintenance Tracking -->
         <div
             style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Maintenance Schedule</h3>
                 <a href="dashboard.php?tab=management"
                     style="font-size: 0.85rem; color: #64748b; text-decoration: none;">Schedules <i
                         class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i></a>
             </div>
+            <div style="height: 3px; width: 60px; background: linear-gradient(90deg, #ca8a04, transparent); border-radius: 10px; margin-bottom: 12px;"></div>
 
             <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
                 <?php if (empty($pending_maintenance)): ?>
