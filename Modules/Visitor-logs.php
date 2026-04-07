@@ -727,7 +727,7 @@ function getLastInsertId()
     </div>
 
     <!-- corrected external script filename (fix typo) -->
-    <script src="../assets/Javascript/Visitor.js"></script>
+    <script src="../assets/Javascript/Visitor.js?v=<?php echo time(); ?>"></script>
 
     <script>
         // Modal Helper Functions

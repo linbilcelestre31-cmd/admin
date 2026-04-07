@@ -402,19 +402,26 @@ function updateRecentActivity() {
         const activityEl = document.createElement('div');
         activityEl.className = 'recent-activity-item';
 
-        const displayStatus = activity.action === 'timed-in' ? 'CHECKED IN' : 'CHECKED OUT';
-        // Status specific styling class
-        const statusClass = activity.action === 'timed-in' ? 'status-text-in' : 'status-text-out';
+        const displayStatus = activity.action === 'timed-in' ? 'CHECKED IN' : 'CHECKED-OUT';
+        const iconContainerClass = activity.action === 'timed-in' ? 'bg-success-light text-success' : 'bg-gray-100 text-gray-500';
+        const iconClass = activity.action === 'timed-in' ? 'fa-solid fa-arrow-right-to-bracket' : 'fa-solid fa-arrow-right-from-bracket';
+        const statusBadgeClass = activity.action === 'timed-in' ? 'status-badge status-timed-in' : 'status-badge status-timed-out';
 
         activityEl.innerHTML = `
-            <div class="activity-main">
-                <span class="activity-name">${activity.name}</span>
-                <span class="activity-text">is</span>
-                <span class="activity-status ${statusClass}">${displayStatus}</span>
-                <span class="activity-text">at the ${activity.type}</span>
+            <div class="activity-icon ${iconContainerClass}">
+                <i class="${iconClass}"></i>
             </div>
-            <div class="activity-meta">
-                ${activity.details} • ${formatTime(activity.time)}
+            <div class="activity-content">
+                <div class="activity-main">
+                    <span class="activity-name">${activity.name}</span>
+                    <span class="${statusBadgeClass}" style="margin: 0 8px; font-size: 0.65rem; padding: 4px 8px;">${displayStatus}</span>
+                    <span class="activity-text">at the ${activity.type}</span>
+                </div>
+                <div class="activity-meta">
+                    <i class="fa-regular fa-clock" style="margin-right: 4px;"></i> ${formatTime(activity.time)} 
+                    <span style="margin: 0 8px; color: #cbd5e1;">•</span> 
+                    <i class="fa-solid ${activity.type === 'Hotel' ? 'fa-door-open' : 'fa-chair'}" style="margin-right: 4px;"></i> ${activity.details}
+                </div>
             </div>
         `;
         activityContainer.appendChild(activityEl);
