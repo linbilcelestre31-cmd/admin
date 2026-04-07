@@ -339,7 +339,7 @@ class ReservationSystem
                         FROM payments GROUP BY reservation_id
                     )
                 ) p ON r.id = p.reservation_id
-                ORDER BY r.id DESC
+                ORDER BY r.id ASC
             ")->fetchAll();
 
             // Maintenance data (cached if possible)
@@ -1455,22 +1455,22 @@ $r_rows = [];
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left; padding: 15px; color: #000000 !important;">ID</th>
-                                    <th style="text-align: left; color: #000000 !important;">FACILITY</th>
-                                    <th style="text-align: left; color: #000000 !important;">CUSTOMER</th>
-                                    <th style="text-align: left; color: #000000 !important;">CONTACT</th>
-                                    <th style="text-align: left; color: #000000 !important;">EMAIL</th>
-                                    <th style="text-align: left; color: #000000 !important;">EVENT TYPE</th>
-                                    <th style="text-align: left; color: #000000 !important;">DATE</th>
-                                    <th style="text-align: left; color: #000000 !important;">TIME</th>
-                                    <th style="text-align: center; color: #000000 !important;">GUESTS</th>
-                                    <th style="text-align: center; color: #000000 !important;">STATUS</th>
-                                    <th style="text-align: center; color: #000000 !important;">TABLE/ROOM</th>
-                                    <th style="text-align: center; color: #000000 !important;">PAYMENT</th>
-                                    <th style="text-align: center; color: #000000 !important;">ACTIONS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">ID</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">FACILITY</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">CUSTOMER</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">CONTACT</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">EMAIL</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">EVENT TYPE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">DATE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">TIME</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">GUESTS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">STATUS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">TABLE/ROOM</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">PAYMENT</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">ACTIONS</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style="font-size: 13px; white-space: nowrap;">
                                 <?php if (empty($dashboard_data['reservations'])): ?>
                                     <tr>
                                         <td colspan="12" style="text-align: center; padding: 20px;">
