@@ -918,21 +918,26 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($users as $user): ?>
+                                        <?php $userCounter = 1; foreach ($users as $user): ?>
                                             <tr>
-                                                <td style="font-weight: 600; color: #94a3b8;">#<?= $user['id'] ?></td>
+                                                <td style="font-weight: 600; color: #94a3b8;">#<?= $userCounter++ ?></td>
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
                                                 <td class="security-only">
-                                                    <button class="btn btn-outline btn-sm btn-icon" title="Edit User" onclick="openEditModal(<?= htmlspecialchars(json_encode($user)) ?>)" style="color: #3b82f6; border-color: #e2e8f0;">
-                                                        <i class="fa-solid fa-pen"></i>
-                                                    </button>
-                                                    <?php if ($user['id'] != $_SESSION['user_id']): ?>
-                                                    <button class="btn btn-outline btn-sm btn-icon" title="Delete User" onclick="openDeleteModal(<?= $user['id'] ?>)" style="color: #ef4444; border-color: #e2e8f0; margin-left: 5px;">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                    <?php endif; ?>
+                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                        <button title="Edit User" onclick="openEditModal(<?= htmlspecialchars(json_encode($user)) ?>)" style="background: #eff6ff; color: #3b82f6; border: none; width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                                                            <i class="fa-solid fa-pen" style="font-size: 0.85rem;"></i>
+                                                        </button>
+                                                        <?php if ($user['id'] != $_SESSION['user_id']): ?>
+                                                        <button title="Delete User" onclick="openDeleteModal(<?= $user['id'] ?>)" style="background: #fef2f2; color: #ef4444; border: none; width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+                                                            <i class="fa-solid fa-trash" style="font-size: 0.85rem;"></i>
+                                                        </button>
+                                                        <?php else: ?>
+                                                        <!-- Placeholder aligned with other rows -->
+                                                        <div style="width: 34px; height: 34px; visibility: hidden;"></div>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
