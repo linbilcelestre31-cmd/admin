@@ -852,7 +852,30 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h1>Account Settings</h1>
                     <p class="header-subtitle">Manage Admin Accounts and System Users</p>
                 </div>
-                <div class="header-actions">
+                <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
+                    <div class="current-time-bar" style="display: flex; align-items: center; gap: 12px; background: rgba(248, 250, 252, 0.8); padding: 8px 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); backdrop-filter: blur(8px);">
+                        <div style="display: flex; align-items: center; gap: 8px; color: #3b82f6;">
+                            <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
+                            <span id="settings-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                        </div>
+                        <div style="width: 1px; height: 16px; background: #e2e8f0;"></div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #6366f1;">
+                            <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
+                            <span id="settings-time" style="font-weight: 700; color: #1e293b; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
+                        </div>
+                    </div>
+                    <script>
+                        function updateSettingsDateTime() {
+                            const now = new Date();
+                            const dateOptions = { month: 'long', day: '2-digit', year: 'numeric' };
+                            const dateEl = document.getElementById('settings-date');
+                            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', dateOptions);
+                            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+                            const timeEl = document.getElementById('settings-time');
+                            if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+                        }
+                        setInterval(updateSettingsDateTime, 1000);
+                    </script>
                     <div class="user-info" style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
                         <div
                             style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">

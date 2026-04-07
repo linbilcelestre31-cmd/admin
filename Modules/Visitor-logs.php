@@ -170,22 +170,47 @@ function getLastInsertId()
 <body>
     <header>
         <div class="container">
-            <div class="header-content">
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="logo" style="display: flex; align-items: center; gap: 15px;">
                     <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
                     <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px;">Hotel &
                         Restaurant Visitor Management</span>
                 </div>
-                <nav>
-                    <ul>
-                        <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
-                        <li><a href="#" class="nav-link" data-page="hotel-visitors">Hotel</a></li>
-                        <li><a href="#" class="nav-link" data-page="restaurant-visitors">Restaurant</a></li>
-                        <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
-                        <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
-                    </ul>
-                </nav>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="current-time-bar" style="display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.1); padding: 8px 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px);">
+                        <div style="display: flex; align-items: center; gap: 8px; color: #60a5fa;">
+                            <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
+                            <span id="visitor-date" style="font-weight: 700; color: white; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                        </div>
+                        <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #a5b4fc;">
+                            <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
+                            <span id="visitor-time" style="font-weight: 700; color: white; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
+                        </div>
+                    </div>
+                    <nav>
+                        <ul>
+                            <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                            <li><a href="#" class="nav-link" data-page="hotel-visitors">Hotel</a></li>
+                            <li><a href="#" class="nav-link" data-page="restaurant-visitors">Restaurant</a></li>
+                            <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
+                            <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
+            <script>
+                function updateVisitorDateTime() {
+                    const now = new Date();
+                    const dateOptions = { month: 'long', day: '2-digit', year: 'numeric' };
+                    const dateEl = document.getElementById('visitor-date');
+                    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', dateOptions);
+                    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+                    const timeEl = document.getElementById('visitor-time');
+                    if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+                }
+                setInterval(updateVisitorDateTime, 1000);
+            </script>
         </div>
     </header>
 
