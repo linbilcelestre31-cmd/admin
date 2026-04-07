@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         ";
                             $mail->send();
-                            $message = "User created! Login details sent to <strong>" . htmlspecialchars($email) . "</strong>";
+                            $message = "User created! Login details sent to " . htmlspecialchars($email);
                         } else {
                             // 1. Insert user (placeholder password)
                             $stmt = $pdo->prepare("INSERT INTO users (username, email, full_name, password_hash) VALUES (?, ?, ?, 'PENDING_REGISTRATION')");
@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         ";
                             $mail->send();
-                            $message = "Invitation sent to <strong>" . htmlspecialchars($email) . "</strong>! They can now activate their account.";
+                            $message = "Invitation sent to " . htmlspecialchars($email) . "! They can now activate their account.";
                         }
                         $pdo->commit();
                     }
@@ -414,6 +414,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=3">
+    <script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script>
     <style>
         :root {
             --primary-blue: #1e3a8a;
@@ -889,14 +890,32 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="dashboard-content" style="padding: 0 2rem 2rem 2rem;">
                 <?php if ($message): ?>
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: '<?= addslashes($message) ?>',
+                                confirmButtonColor: '#1e40af',
+                                timer: 5000,
+                                timerProgressBar: true
+                            });
+                        });
+                    </script>
                 <?php endif; ?>
                 <?php if ($error): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: '<?= addslashes($error) ?>',
+                                confirmButtonColor: '#d33',
+                                timer: 5000,
+                                timerProgressBar: true
+                            });
+                        });
+                    </script>
                 <?php endif; ?>
 
                 <div class="tabs-container">
