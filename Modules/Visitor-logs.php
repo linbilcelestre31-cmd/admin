@@ -525,10 +525,14 @@ function getLastInsertId()
                 <div id="maintenance" class="page">
                     <h1>Maintenance Management</h1>
                     <div class="card">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h2><i class="fas fa-tools"></i> Maintenance Logs</h2>
-                            <button class="btn btn-success" onclick="alert('Maintenance feature coming soon!')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                            <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                                <div style="background: #e2e8f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-screwdriver-wrench" style="color: var(--primary); font-size: 1.1rem;"></i>
+                                </div>
+                                Maintenance Logs
+                            </h2>
+                            <button class="btn-success" style="width: auto; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;" onclick="alert('Maintenance feature coming soon!')">
                                 <i class="fas fa-plus"></i> Schedule Maintenance
                             </button>
                         </div>
@@ -536,75 +540,92 @@ function getLastInsertId()
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Ticket ID</th>
-                                        <th>Facility</th>
-                                        <th>Issue Description</th>
-                                        <th>Reported Date</th>
-                                        <th>Priority</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th style="text-align: center; vertical-align: middle;">Ticket ID</th>
+                                        <th style="text-align: center; vertical-align: middle;">Facility</th>
+                                        <th style="text-align: center; vertical-align: middle;">Issue Description</th>
+                                        <th style="text-align: center; vertical-align: middle;">Reported Date</th>
+                                        <th style="text-align: center; vertical-align: middle;">Priority</th>
+                                        <th style="text-align: center; vertical-align: middle;">Status</th>
+                                        <th style="text-align: center; vertical-align: middle;">Action</th>
                                     </tr>
                                 </thead>
+                                <style>
+                                    #maintenance .table td {
+                                        text-align: center;
+                                        vertical-align: middle;
+                                    }
+                                    .action-icon-btn {
+                                        border: none;
+                                        background: #f1f5f9;
+                                        color: var(--primary);
+                                        width: 32px;
+                                        height: 32px;
+                                        border-radius: 6px;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                    }
+                                    .action-icon-btn:hover {
+                                        background: #e2e8f0;
+                                        transform: scale(1.05);
+                                    }
+                                    .action-icon-btn.btn-completed { color: #059669; background: #d1fae5; }
+                                    .action-icon-btn.btn-completed:hover { background: #a7f3d0; }
+                                </style>
                                 <tbody>
                                     <tr>
-                                        <td>#MT-2024-001</td>
+                                        <td style="font-weight: 600; color: #64748b;">#MT-2024-001</td>
                                         <td>Banquet Hall A</td>
                                         <td>Air conditioning unit leaking water</td>
                                         <td>2024-01-15</td>
-                                        <td><span class="status-badge"
-                                                style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px;">High</span>
+                                        <td><span class="status-badge" style="background: #fee2e2; color: #b91c1c;">High</span></td>
+                                        <td><span class="status-badge" style="background: #fef08a; color: #854d0e;">In Progress</span></td>
+                                        <td>
+                                            <button class="action-icon-btn" onclick="alert('View details for #MT-2024-001')" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
                                         </td>
-                                        <td><span class="status-badge"
-                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">In
-                                                Progress</span></td>
-                                        <td><button class="btn btn-sm btn-outline"
-                                                onclick="alert('View details for #MT-2024-001')"><i
-                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                     <tr>
-                                        <td>#MT-2024-002</td>
+                                        <td style="font-weight: 600; color: #64748b;">#MT-2024-002</td>
                                         <td>Meeting Room 2</td>
                                         <td>Projector bulb replacement needed</td>
                                         <td>2024-01-20</td>
-                                        <td><span class="status-badge"
-                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        <td><span class="status-badge" style="background: #ffedd5; color: #c2410c;">Medium</span></td>
+                                        <td><span class="status-badge" style="background: #e0f2fe; color: #0369a1;">Open</span></td>
+                                        <td>
+                                            <button class="action-icon-btn" onclick="alert('View details for #MT-2024-002')" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
                                         </td>
-                                        <td><span class="status-badge"
-                                                style="background: #e0f2fe; color: #075985; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Open</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"
-                                                onclick="alert('View details for #MT-2024-002')"><i
-                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                     <tr>
-                                        <td>#MT-2024-003</td>
+                                        <td style="font-weight: 600; color: #64748b;">#MT-2024-003</td>
                                         <td>Pool Side</td>
                                         <td>Loose tiles near the deep end</td>
                                         <td>2024-01-18</td>
-                                        <td><span class="status-badge"
-                                                style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Low</span>
+                                        <td><span class="status-badge" style="background: #dcfce7; color: #15803d;">Low</span></td>
+                                        <td><span class="status-badge" style="background: #d1fae5; color: #047857;">Completed</span></td>
+                                        <td>
+                                            <button class="action-icon-btn btn-completed" onclick="alert('View details for #MT-2024-003')" title="Marked as completed">
+                                                <i class="fas fa-check"></i>
+                                            </button>
                                         </td>
-                                        <td><span class="status-badge"
-                                                style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Completed</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"
-                                                onclick="alert('View details for #MT-2024-003')"><i
-                                                    class="fas fa-check"></i></button></td>
                                     </tr>
                                     <tr>
-                                        <td>#MT-2024-004</td>
+                                        <td style="font-weight: 600; color: #64748b;">#MT-2024-004</td>
                                         <td>Executive Lounge</td>
                                         <td>Coffee machine malfunction</td>
                                         <td>2024-01-22</td>
-                                        <td><span class="status-badge"
-                                                style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Medium</span>
+                                        <td><span class="status-badge" style="background: #ffedd5; color: #c2410c;">Medium</span></td>
+                                        <td><span class="status-badge" style="background: #fef08a; color: #854d0e;">Pending</span></td>
+                                        <td>
+                                            <button class="action-icon-btn" onclick="alert('View details for #MT-2024-004')" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
                                         </td>
-                                        <td><span class="status-badge"
-                                                style="background: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 12px;">Pending</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-outline"
-                                                onclick="alert('View details for #MT-2024-004')"><i
-                                                    class="fas fa-eye"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>
