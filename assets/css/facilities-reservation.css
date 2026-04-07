@@ -24,6 +24,68 @@ body {
     background-color: #f8fafc;
     color: var(--dark);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode {
+    --primary: #cbd5e0;
+    --secondary: #94a3b8;
+    --accent: #60a5fa;
+    --light: #1e293b;
+    --dark: #f1f5f9;
+    --border: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+body.dark-mode .top-header,
+body.dark-mode .card,
+body.dark-mode .modal-content,
+body.dark-mode .calendar-container,
+body.dark-mode .calendar-day-cell,
+body.dark-mode .filters-container,
+body.dark-mode .user-info-header,
+body.dark-mode .current-time-bar {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6, body.dark-mode span#current-time, body.dark-mode span#current-date {
+    color: #f8fafc !important;
+}
+
+body.dark-mode table th {
+    background-color: #0f172a !important;
+    color: #cbd5e0 !important;
+    border-bottom-color: #334155 !important;
+}
+
+body.dark-mode table td, body.dark-mode .table tr td {
+    color: #e2e8f0 !important;
+    border-bottom-color: #334155 !important;
+}
+
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .btn-outline {
+    background-color: transparent !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .dropdown-menu li a:hover {
+    background-color: #334155 !important;
 }
 
 .container {
@@ -700,7 +762,7 @@ body {
 .table th,
 .table td {
     padding: 0.8rem 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
+    border: 1px solid #000000; /* Dark 1px black border */
     background-color: #ffffff !important;
     color: #000000 !important;
     word-break: break-word;

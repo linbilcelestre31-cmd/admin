@@ -324,7 +324,7 @@ class ReservationSystem
                 ORDER BY r.start_time
             ")->fetchAll();
 
-            // Fetch only recent reservations (last 10 instead of 50) for faster loading
+            // Fetch all reservations ordered by newest first
             $data['reservations'] = $pdo->query("
                 SELECT r.*, f.name as facility_name, f.capacity as facility_capacity, f.image_url,
                        COALESCE(p.payment_status, 'Pending') as payment_status,
@@ -339,8 +339,7 @@ class ReservationSystem
                         FROM payments GROUP BY reservation_id
                     )
                 ) p ON r.id = p.reservation_id
-                ORDER BY r.event_date DESC, r.start_time DESC 
-                LIMIT 10
+                ORDER BY r.id DESC
             ")->fetchAll();
 
             // Maintenance data (cached if possible)
@@ -523,7 +522,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'make_reservation':
                 $result = $reservationSystem->makeReservation($_POST);
                 if ($result['success']) {
-                    $success_message = $result['message'];
+                    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                    echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Reservation Confirmed!',
+                                text: 'Your booking has been added to the calendar.',
+                                confirmButtonColor: '#3182ce',
+                                timer: 3000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.href = 'dashboard.php?tab=calendar';
+                            });
+                        });
+                    </script>";
+                    exit;
                 } else {
                     $error_message = $result['message'];
                 }
@@ -1066,6 +1080,92 @@ $r_rows = [];
                             <?php endif;
                         }
                         ?>
+                        
+                        <!-- Dark Mode Toggle & Notifications -->
+                        <div class="header-tools" style="display: flex; align-items: center; gap: 15px;">
+                            <button id="darkModeToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" title="Toggle Dark Mode" onclick="toggleDarkMode()">
+                                <i class="fa-solid fa-moon"></i>
+                            </button>
+                            <div class="notification-wrapper" style="position: relative;">
+                                <button id="notificationToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative;" title="Notifications">
+                                    <i class="fa-solid fa-bell"></i>
+                                    <span class="notification-badge" style="position: absolute; top: -3px; right: -3px; background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; border: 2px solid white;">3</span>
+                                </button>
+                                <!-- Notification Dropdown -->
+                                <div id="notificationDropdown" style="display: none; position: absolute; top: 130%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 1000; overflow: hidden; transform-origin: top right;">
+                                    <div style="padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e293b;"><i class="fa-regular fa-bell" style="margin-right: 5px;"></i> Notifications</h4>
+                                        <span style="font-size: 0.75rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark all as read</span>
+                                    </div>
+                                    <div style="max-height: 300px; overflow-y: auto;">
+                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                            <div style="width: 32px; height: 32px; background: #eff6ff; color: #3b82f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-calendar-check"></i></div>
+                                            <div>
+                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>New Reservation</strong> for Grand Ballroom</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 2 minutes ago</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                            <div style="width: 32px; height: 32px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                            <div>
+                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>Maintenance Alert</strong> in Pool Area</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 1 hour ago</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 15px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                            <div style="width: 32px; height: 32px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-check"></i></div>
+                                            <div>
+                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>Contract Signed</strong> by Jane Doe</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 3 hours ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+                                        <a href="#" style="font-size: 0.8rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View All Notifications</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function toggleDarkMode() {
+                                document.body.classList.toggle('dark-mode');
+                                const isDark = document.body.classList.contains('dark-mode');
+                                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+                                const icon = document.querySelector('#darkModeToggle i');
+                                if (isDark) {
+                                    icon.classList.remove('fa-moon');
+                                    icon.classList.add('fa-sun');
+                                    document.getElementById('darkModeToggle').style.color = '#f59e0b'; // Sun color
+                                } else {
+                                    icon.classList.remove('fa-sun');
+                                    icon.classList.add('fa-moon');
+                                    document.getElementById('darkModeToggle').style.color = '#64748b'; // Moon color
+                                }
+                            }
+                            document.addEventListener('DOMContentLoaded', () => {
+                                if (localStorage.getItem('darkMode') === 'enabled') {
+                                    document.body.classList.add('dark-mode');
+                                    const icon = document.querySelector('#darkModeToggle i');
+                                    if(icon) { 
+                                        icon.classList.remove('fa-moon'); 
+                                        icon.classList.add('fa-sun'); 
+                                        document.getElementById('darkModeToggle').style.color = '#f59e0b';
+                                    }
+                                }
+                                const notifToggle = document.getElementById('notificationToggle');
+                                const notifDropdown = document.getElementById('notificationDropdown');
+                                if (notifToggle && notifDropdown) {
+                                    notifToggle.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
+                                    });
+                                    document.addEventListener('click', () => notifDropdown.style.display = 'none');
+                                    notifDropdown.addEventListener('click', (e) => e.stopPropagation());
+                                }
+                            });
+                        </script>
+
                         <div class="current-time-bar"
                             style="display: flex; align-items: center; gap: 12px; background: rgba(248, 250, 252, 0.8); padding: 8px 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); backdrop-filter: blur(8px);">
                             <div style="display: flex; align-items: center; gap: 8px; color: #3b82f6;">
@@ -2377,7 +2477,7 @@ $r_rows = [];
                                 </button>
                             </div>
                             <button onclick="openModal('reservation-modal')" class="btn btn-primary btn-sm"
-                                style="height: 45px; padding: 0 25px; border-radius: 12px; font-weight: 700; background: #3b82f6; border: none; cursor: pointer; transition: all 0.3s; color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; gap: 10px;">
+                                style="min-width: 140px; flex-shrink: 0; height: 45px; padding: 0 25px; border-radius: 12px; font-weight: 700; background: #3b82f6; border: none; cursor: pointer; transition: all 0.3s; color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap;">
                                 <i class="fa-solid fa-calendar-plus" style="font-size: 1.1rem;"></i> Book Now
                             </button>
                         </div>
@@ -2495,6 +2595,13 @@ $r_rows = [];
                                 cell.className = 'calendar-day-cell';
 
                                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                                
+                                cell.style.cursor = 'pointer';
+                                cell.onclick = (e) => {
+                                    if(e.target.closest('.calendar-event-dot')) return; // let event click handle itself
+                                    document.getElementById('event_date').value = dateStr;
+                                    openModal('reservation-modal');
+                                };
 
                                 const dayNumber = document.createElement('div');
                                 dayNumber.className = `day-number ${d === today.getDate() && month === today.getMonth() && year === today.getFullYear() ? 'today' : ''}`;
