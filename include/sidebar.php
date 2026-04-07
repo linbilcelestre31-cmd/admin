@@ -138,13 +138,13 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </div>
 
     <!-- User Profile Section -->
-    <div class="user-profile-section" style="padding: 15px 20px; display: flex; align-items: center; gap: 12px; transition: all 0.3s; margin-bottom: 20px;">
-        <div class="user-avatar" style="width: 38px; height: 38px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <i class="fas fa-user" style="font-size: 1rem; color: #64748b;"></i>
+    <div class="user-profile-section" style="padding: 15px 20px; display: flex; align-items: center; gap: 12px; transition: all 0.3s; margin-top: 10px; margin-bottom: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0,0,0,0.2);">
+        <div class="user-avatar" style="width: 38px; height: 38px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <i class="fas fa-user-shield" style="font-size: 1rem; color: white;"></i>
         </div>
         <div class="user-details-text" style="overflow: hidden; transition: all 0.3s;">
-            <div style="font-weight: 700; color: white; font-size: 0.95rem;">Admin</div>
-            <div style="font-size: 0.75rem; color: #94a3b8; white-space: nowrap;">atiera41001@gmail.com</div>
+            <div style="font-weight: 700; color: white; font-size: 0.95rem; text-transform: capitalize;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></div>
+            <div style="font-size: 0.75rem; color: #94a3b8; white-space: nowrap;"><?= htmlspecialchars($_SESSION['email'] ?? 'atiera41001@gmail.com') ?></div>
         </div>
     </div>
 </nav>

@@ -133,6 +133,7 @@ try {
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['email'] = $email;
+                $_SESSION['full_name'] = $row['full_name'];
                 $_SESSION['name'] = $row['full_name'];
 
                 // Cleanup codes
@@ -178,6 +179,7 @@ try {
             $_SESSION['user_id'] = $userId;
             $_SESSION['username'] = $_SESSION['temp_username'];
             $_SESSION['email'] = $email;
+            $_SESSION['full_name'] = $name;
             $_SESSION['name'] = $name;
             // Note: Role removed as per previous instructions
 
