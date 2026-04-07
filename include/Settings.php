@@ -181,8 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $mail->SMTPAuth = true;
                             $mail->Username = SMTP_USER;
                             $mail->Password = SMTP_PASS;
-                            $mail->Port = SMTP_PORT;
-                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->Port = 465;
+                            $mail->SMTPSecure = 'ssl';
                             $mail->SMTPOptions = array(
                                 'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                             );
@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <span style=\"font-size: 28px; font-weight: bold; letter-spacing: 8px; color: #1e40af;\">{$code}</span>
                                 </div>
                                 <div style=\"margin: 20px 0; text-align: center;\">
-                                    <a href=\"{{ $loginUrl }}\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Activate & Login</a>
+                                    <a href=\"" . $loginUrl . "\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Activate & Login</a>
                                 </div>
                                 <p style=\"font-size: 11px; color: #64748b; text-align: center;\">This security link and code expires in 24 hours.</p>
                             </div>
@@ -235,8 +235,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $mail->SMTPAuth = true;
                             $mail->Username = SMTP_USER;
                             $mail->Password = SMTP_PASS;
-                            $mail->Port = SMTP_PORT;
-                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->Port = 465;
+                            $mail->SMTPSecure = 'ssl';
                             $mail->SMTPOptions = array(
                                 'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                             );
