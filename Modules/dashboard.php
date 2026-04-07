@@ -1083,7 +1083,7 @@ $r_rows = [];
                         
                         <!-- Dark Mode Toggle & Notifications -->
                         <div class="header-tools" style="display: flex; align-items: center; gap: 15px;">
-                            <button id="darkModeToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" title="Toggle Dark Mode" onclick="toggleDarkMode()">
+                            <button id="darkModeToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" title="Toggle Dark Mode" >
                                 <i class="fa-solid fa-moon"></i>
                             </button>
                             <div class="notification-wrapper" style="position: relative;">
