@@ -541,7 +541,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'add_facility':
                 $result = $reservationSystem->addFacility($_POST);
                 if ($result['success']) {
-                    $success_message = $result['message'];
+                    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                    echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Facility Added!',
+                                text: 'New facility has been successfully created.',
+                                confirmButtonColor: '#3182ce',
+                                timer: 3000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.href = 'dashboard.php?tab=facilities';
+                            });
+                        });
+                    </script>";
+                    exit;
                 } else {
                     $error_message = $result['message'];
                 }
@@ -794,16 +809,18 @@ $r_rows = [];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=3">
     <style>
-        .table th,
-        .table td {
-            text-align: center !important;
-            vertical-align: middle;
-            background: #ffffff !important;
-            color: #000000 !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-            font-size: 0.85rem;
-            padding: 12px 15px;
-            white-space: nowrap;
+        .modal-content {
+            background-color: #ffffff;
+            margin: 2% auto;
+            padding: 1.5rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh; /* Prevents button from being hidden */
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid #e2e8f0;
         }
 
         .table th {
