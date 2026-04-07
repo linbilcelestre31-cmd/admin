@@ -1,0 +1,22 @@
+# Database Fix for Legal Management System
+
+The following error:
+`Fatal error: Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'file_path' in 'INSERT INTO'...`
+
+Indicates that the `contracts` table on the live server is missing new columns required by the latest update.
+
+## SQL Solution
+Run the following SQL commands in your MySQL database (using phpMyAdmin or similar tool) to fix the table structure:
+
+```sql
+ALTER TABLE contracts
+ADD COLUMN file_path VARCHAR(255) AFTER case_id,
+ADD COLUMN description TEXT AFTER case_id,
+ADD COLUMN risk_level VARCHAR(50) DEFAULT 'Low',
+ADD COLUMN risk_score INT DEFAULT 0,
+ADD COLUMN risk_factors TEXT,
+ADD COLUMN recommendations TEXT,
+ADD COLUMN analysis_summary TEXT;
+```
+
+This will add all the necessary columns (`file_path`, `description`, `risk_level`, `risk_score`, etc.) to the `contracts` table so the uploads and AI analysis can be saved without errors.
