@@ -664,15 +664,34 @@ function generateReport() {
     }
 
     // Generate report content
-    reportData += `<h3>Report for ${formatDate(dateRange.start)} to ${formatDate(dateRange.end)}</h3>`;
+    reportData += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--gray-100); padding-bottom: 15px;">
+                    <h3 style="font-size: 1.5rem; color: var(--primary); margin: 0;">
+                        <i class="fa-solid fa-file-invoice" style="color: var(--secondary); margin-right: 10px;"></i> Report for ${formatDate(dateRange.start)} to ${formatDate(dateRange.end)}
+                    </h3>
+                   </div>`;
 
     if (venue === 'all' || venue === 'hotel') {
-        reportData += `<h4>Hotel Statistics</h4>`;
-        reportData += `<p>Total Guests: ${hotelData.length}</p>`;
-        reportData += `<p>Currently CHECKED IN: ${hotelData.filter(g => g.status === 'timed-in').length}</p>`;
+        reportData += `<div style="margin-bottom: 30px;">
+                        <h4 style="font-size: 1.25rem; color: var(--primary-light); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-hotel" style="color: var(--secondary);"></i> Hotel Statistics
+                        </h4>
+                        <div class="stats-container" style="gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                            <div class="stat-card" style="padding: 1rem;">
+                                <i class="fa-solid fa-users" style="font-size: 1.5rem;"></i>
+                                <div class="stat-number" style="font-size: 2rem;">${hotelData.length}</div>
+                                <div class="stat-label">Total Guests</div>
+                            </div>
+                            <div class="stat-card" style="padding: 1rem;">
+                                <i class="fa-solid fa-bed" style="font-size: 1.5rem;"></i>
+                                <div class="stat-number" style="font-size: 2rem;">${hotelData.filter(g => g.status === 'timed-in').length}</div>
+                                <div class="stat-label">Currently Checked In</div>
+                            </div>
+                        </div>
+                       </div>`;
 
         if (hotelData.length > 0) {
-            reportData += `<table>
+            reportData += `<div class="table-container" style="margin-bottom: 20px;">
+                        <table>
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -707,18 +726,37 @@ function generateReport() {
                             </tr>`;
             });
 
-            reportData += `</tbody></table>`;
+            reportData += `</tbody></table></div>`;
         }
     }
 
     if (venue === 'all' || venue === 'restaurant') {
-        reportData += `<h4>Restaurant Statistics</h4>`;
-        reportData += `<p>Total Visitors: ${restaurantData.length}</p>`;
-        reportData += `<p>Total Covers: ${restaurantData.reduce((sum, visitor) => sum + visitor.partySize, 0)}</p>`;
-        reportData += `<p>Currently Dining (CHECKED IN): ${restaurantData.filter(v => v.status === 'timed-in').length}</p>`;
+        reportData += `<div style="margin-bottom: 30px; margin-top: 40px;">
+                        <h4 style="font-size: 1.25rem; color: var(--primary-light); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-utensils" style="color: var(--secondary);"></i> Restaurant Statistics
+                        </h4>
+                        <div class="stats-container" style="gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                            <div class="stat-card" style="padding: 1rem;">
+                                <i class="fa-solid fa-users-rays" style="font-size: 1.5rem;"></i>
+                                <div class="stat-number" style="font-size: 2rem;">${restaurantData.length}</div>
+                                <div class="stat-label">Total Visitors</div>
+                            </div>
+                            <div class="stat-card" style="padding: 1rem;">
+                                <i class="fa-solid fa-bell-concierge" style="font-size: 1.5rem;"></i>
+                                <div class="stat-number" style="font-size: 2rem;">${restaurantData.reduce((sum, visitor) => sum + visitor.partySize, 0)}</div>
+                                <div class="stat-label">Total Covers</div>
+                            </div>
+                            <div class="stat-card" style="padding: 1rem;">
+                                <i class="fa-solid fa-chair" style="font-size: 1.5rem;"></i>
+                                <div class="stat-number" style="font-size: 2rem;">${restaurantData.filter(v => v.status === 'timed-in').length}</div>
+                                <div class="stat-label">Currently Dining</div>
+                            </div>
+                        </div>
+                       </div>`;
 
         if (restaurantData.length > 0) {
-            reportData += `<table>
+            reportData += `<div class="table-container">
+                        <table>
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -745,13 +783,13 @@ function generateReport() {
                                 <td>${visitor.table}</td>
                                 <td>${formatTime(visitor.checkinTime)}</td>
                                 <td style="display:flex; gap:5px; justify-content:space-between; align-items:center;">
-                                    ${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'CHECKED IN'}
+                                    ${visitor.checkoutTime ? formatTime(visitor.checkoutTime) : '<span class="status-badge status-timed-in" style="font-size: 0.65rem;">CHECKED IN</span>'}
                                     <button class="view-btn" style="padding: 2px 8px; font-size: 12px; cursor: pointer;">View</button>
                                 </td>
                             </tr>`;
             });
 
-            reportData += `</tbody></table>`;
+            reportData += `</tbody></table></div>`;
         }
     }
 
