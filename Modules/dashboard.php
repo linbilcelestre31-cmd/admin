@@ -1083,7 +1083,7 @@ $r_rows = [];
                         
                         <!-- Dark Mode Toggle & Notifications -->
                         <div class="header-tools" style="display: flex; align-items: center; gap: 15px;">
-                            <button id="darkModeToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" title="Toggle Dark Mode" >
+                            <button id="darkModeToggle" onclick="toggleDarkModeActual()" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" title="Toggle Dark Mode" >
                                 <i class="fa-solid fa-moon"></i>
                             </button>
                             <div class="notification-wrapper" style="position: relative;">
@@ -1128,41 +1128,41 @@ $r_rows = [];
                         </div>
 
                         <script>
-                            (function() {
-                                function initializeDarkMode() {
-                                    const darkModeBtn = document.getElementById('darkModeToggle');
-                                    const body = document.body;
-                                    
-                                    function updateDarkModeUI(isDark) {
-                                        const icon = darkModeBtn ? darkModeBtn.querySelector('i') : null;
-                                        if (isDark) {
-                                            body.classList.add('dark-mode');
-                                            if (icon) icon.className = 'fa-solid fa-sun';
-                                            if (darkModeBtn) darkModeBtn.style.color = '#f59e0b';
-                                        } else {
-                                            body.classList.remove('dark-mode');
-                                            if (icon) icon.className = 'fa-solid fa-moon';
-                                            if (darkModeBtn) darkModeBtn.style.color = '#64748b';
-                                        }
-                                    }
-
-                                    const savedMode = localStorage.getItem('darkMode');
-                                    if (savedMode === 'enabled') {
-                                        updateDarkModeUI(true);
-                                    }
-
+                            function toggleDarkModeActual() {
+                                const body = document.body;
+                                const darkModeBtn = document.getElementById('darkModeToggle');
+                                const isNowDark = !body.classList.contains('dark-mode');
+                                
+                                if (isNowDark) {
+                                    body.classList.add('dark-mode');
                                     if (darkModeBtn) {
-                                        darkModeBtn.addEventListener('click', function(e) {
-                                            e.preventDefault();
-                                            const isNowDark = !body.classList.contains('dark-mode');
-                                            updateDarkModeUI(isNowDark);
-                                            localStorage.setItem('darkMode', isNowDark ? 'enabled' : 'disabled');
-                                        });
+                                        const icon = darkModeBtn.querySelector('i');
+                                        if (icon) icon.className = 'fa-solid fa-sun';
+                                        darkModeBtn.style.color = '#f59e0b';
+                                    }
+                                } else {
+                                    body.classList.remove('dark-mode');
+                                    if (darkModeBtn) {
+                                        const icon = darkModeBtn.querySelector('i');
+                                        if (icon) icon.className = 'fa-solid fa-moon';
+                                        darkModeBtn.style.color = '#64748b';
                                     }
                                 }
+                                localStorage.setItem('darkMode', isNowDark ? 'enabled' : 'disabled');
+                            }
 
+                            (function() {
                                 function initializeDashboardTools() {
-                                    initializeDarkMode();
+                                    // Check saved preference
+                                    if (localStorage.getItem('darkMode') === 'enabled') {
+                                        document.body.classList.add('dark-mode');
+                                        const darkModeBtn = document.getElementById('darkModeToggle');
+                                        if (darkModeBtn) {
+                                            const icon = darkModeBtn.querySelector('i');
+                                            if (icon) icon.className = 'fa-solid fa-sun';
+                                            darkModeBtn.style.color = '#f59e0b';
+                                        }
+                                    }
 
                                     const notifToggle = document.getElementById('notificationToggle');
                                     const notifDropdown = document.getElementById('notificationDropdown');
