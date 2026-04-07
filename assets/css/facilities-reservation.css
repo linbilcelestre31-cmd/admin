@@ -52,14 +52,41 @@ body.dark-mode .current-time-bar {
     color: #f1f5f9 !important;
 }
 
+body.dark-mode .management-card .card-content,
+body.dark-mode .main-content {
+    background-color: #0f172a !important;
+}
+
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6, body.dark-mode span#current-time, body.dark-mode span#current-date {
     color: #f8fafc !important;
 }
 
-body.dark-mode table th {
+body.dark-mode table th,
+body.dark-mode .premium-white-card .table thead th,
+body.dark-mode .management-card .table thead th {
     background-color: #0f172a !important;
     color: #cbd5e0 !important;
     border-bottom-color: #334155 !important;
+}
+
+body.dark-mode table td, 
+body.dark-mode .table tr td,
+body.dark-mode .premium-white-card .table tbody td,
+body.dark-mode .management-card .table tbody td {
+    color: #e2e8f0 !important;
+    border-bottom-color: #334155 !important;
+}
+
+body.dark-mode .premium-white-card .table tr:hover,
+body.dark-mode .management-card .table tr:hover {
+    background-color: #1e293b !important;
+}
+
+body.dark-mode .premium-white-card .table th,
+body.dark-mode .premium-white-card .table td,
+body.dark-mode .management-card .table th,
+body.dark-mode .management-card .table td {
+    border-color: #334155 !important;
 }
 
 body.dark-mode table td, body.dark-mode .table tr td {

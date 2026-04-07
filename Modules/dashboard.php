@@ -839,7 +839,7 @@ $r_rows = [];
 
         .table th {
             background: #ffffff !important;
-            color: #000000 !important;
+            
             font-weight: 701;
             border-bottom: 2px solid #000000 !important;
         }
@@ -1455,19 +1455,19 @@ $r_rows = [];
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">ID</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">FACILITY</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">CUSTOMER</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">CONTACT</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">EMAIL</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">EVENT TYPE</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">DATE</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; color: #000000 !important;">TIME</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">GUESTS</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">STATUS</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">TABLE/ROOM</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">PAYMENT</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; color: #000000 !important;">ACTIONS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">ID</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">FACILITY</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">CUSTOMER</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">CONTACT</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">EMAIL</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">EVENT TYPE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">DATE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">TIME</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">GUESTS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">STATUS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">TABLE/ROOM</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">PAYMENT</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody style="font-size: 13px; white-space: nowrap;">
@@ -1484,35 +1484,35 @@ $r_rows = [];
                                 <?php else: ?>
                                     <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
                                         <tr>
-                                            <td style="font-weight: 700; color: #000000 !important;">#<?= $reservation['id'] ?>
+                                            <td style="font-weight: 700; ">#<?= $reservation['id'] ?>
                                             </td>
                                             <td style="text-align: left;">
-                                                <div style="font-weight: 600; color: #000000 !important;">
+                                                <div style="font-weight: 600; ">
                                                     <?= htmlspecialchars($reservation['facility_name']) ?>
                                                 </div>
                                             </td>
                                             <td style="text-align: left;">
-                                                <div style="font-weight: 500; color: #000000 !important;">
+                                                <div style="font-weight: 500; ">
                                                     <?= htmlspecialchars($reservation['customer_name']) ?>
                                                 </div>
                                             </td>
-                                            <td style="text-align: left; color: #000000 !important;">
+                                            <td style="text-align: left; ">
                                                 <?= htmlspecialchars($reservation['customer_phone'] ?? 'N/A') ?>
                                             </td>
-                                            <td style="text-align: left; color: #000000 !important; font-size: 0.8rem;">
+                                            <td style="text-align: left;  font-size: 0.8rem;">
                                                 <?= htmlspecialchars($reservation['customer_email'] ?? 'N/A') ?>
                                             </td>
-                                            <td style="text-align: left; color: #000000 !important;">
+                                            <td style="text-align: left; ">
                                                 <?= htmlspecialchars($reservation['event_type']) ?>
                                             </td>
-                                            <td style="text-align: left; color: #000000 !important;">
+                                            <td style="text-align: left; ">
                                                 <?= date('m/d/Y', strtotime($reservation['event_date'])) ?>
                                             </td>
-                                            <td style="text-align: left; font-size: 0.8rem; color: #000000 !important;">
+                                            <td style="text-align: left; font-size: 0.8rem; ">
                                                 <?= date('g:i a', strtotime($reservation['start_time'])) ?> -
                                                 <?= date('g:i a', strtotime($reservation['end_time'])) ?>
                                             </td>
-                                            <td style="text-align: center; font-weight: 600; color: #000000 !important;">
+                                            <td style="text-align: center; font-weight: 600; ">
                                                 <?= $reservation['guests_count'] ?>
                                             </td>
                                             <td style="text-align: center;">
@@ -1521,7 +1521,7 @@ $r_rows = [];
                                                     <?= ucfirst($reservation['status']) ?>
                                                 </span>
                                             </td>
-                                            <td style="text-align: center; color: #000000 !important; font-weight: 500;">
+                                            <td style="text-align: center;  font-weight: 500;">
                                                 <?php
                                                 // Derive Table/Room if possible, otherwise use a default
                                                 $tableRoom = 'N/A';
@@ -2755,27 +2755,21 @@ $r_rows = [];
                             }
 
                             .maintenance-table-premium th {
-                                background: #f8fafc !important;
-                                padding: 18px 20px !important;
+                                padding: 10px !important; /* Sakto padding */
                                 font-weight: 800 !important;
-                                font-size: 0.75rem !important;
-                                color: #475569 !important;
+                                font-size: 13px !important; /* Sakto font size */
                                 text-transform: uppercase !important;
-                                letter-spacing: 1.5px !important;
-                                border-bottom: 2px solid #e2e8f0 !important;
+                                letter-spacing: 1px !important;
+                                border-bottom: 2px solid #e2e8f0;
                                 white-space: nowrap !important;
                             }
 
                             .maintenance-table-premium td {
-                                padding: 20px !important;
+                                padding: 10px 15px !important; /* Sakto padding */
+                                font-size: 13px !important; /* Sakto font size */
                                 vertical-align: middle !important;
-                                border-bottom: 1px solid #f1f5f9 !important;
+                                border-bottom: 1px solid #f1f5f9;
                                 transition: all 0.2s ease !important;
-                                color: #1e293b !important;
-                            }
-
-                            .maintenance-table-premium tr:hover td {
-                                background: #f8fafc !important;
                             }
 
                             .col-priority {
@@ -2787,7 +2781,6 @@ $r_rows = [];
                                 width: 220px;
                                 text-align: left !important;
                                 font-weight: 800 !important;
-                                font-size: 0.9rem !important;
                             }
 
                             .col-description {
@@ -2795,7 +2788,6 @@ $r_rows = [];
                                 text-align: center !important;
                                 line-height: 1.6 !important;
                                 font-weight: 500 !important;
-                                color: #475569 !important;
                             }
 
                             .col-reported-by {
@@ -2808,14 +2800,12 @@ $r_rows = [];
                                 width: 130px;
                                 text-align: left !important;
                                 font-weight: 700 !important;
-                                color: #334155 !important;
                             }
 
                             .col-schedule {
                                 width: 130px;
                                 text-align: left !important;
                                 font-weight: 800 !important;
-                                color: #1e293b !important;
                             }
 
                             .priority-indicator-modern {
