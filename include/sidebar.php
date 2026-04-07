@@ -136,6 +136,17 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             </li>
         </ul>
     </div>
+
+    <!-- User Profile Section -->
+    <div class="user-profile-section" style="padding: 15px 20px; display: flex; align-items: center; gap: 12px; transition: all 0.3s; margin-bottom: 20px;">
+        <div class="user-avatar" style="width: 38px; height: 38px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fas fa-user" style="font-size: 1rem; color: #64748b;"></i>
+        </div>
+        <div class="user-details-text" style="overflow: hidden; transition: all 0.3s;">
+            <div style="font-weight: 700; color: white; font-size: 0.95rem;">Admin</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; white-space: nowrap;">atiera41001@gmail.com</div>
+        </div>
+    </div>
 </nav>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -400,6 +411,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 });
                 document.querySelectorAll('.nav-title').forEach(el => el.style.display = 'block');
                 document.querySelectorAll('.logo-area div').forEach(el => el.style.display = 'block');
+                
+                // Show user profile text
+                const userText = document.querySelector('.user-details-text');
+                if (userText) userText.style.width = 'auto';
+                const profileSection = document.querySelector('.user-profile-section');
+                if (profileSection) profileSection.style.padding = '15px 20px';
             } else {
                 sidebar.style.width = '80px';
                 if(mainContent) mainContent.style.marginLeft = '80px';
@@ -434,6 +451,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                     const divWrapper = a.querySelector('div'); // Management tab has a div wrapper
                     if (divWrapper) divWrapper.style.color = 'transparent';
                 });
+
+                // Hide user profile text
+                const userText = document.querySelector('.user-details-text');
+                if (userText) userText.style.width = '0';
+                const profileSection = document.querySelector('.user-profile-section');
+                if (profileSection) profileSection.style.padding = '15px 10px';
             }
         }
         
