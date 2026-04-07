@@ -1128,64 +1128,72 @@ $r_rows = [];
                         </div>
 
                         <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const darkModeBtn = document.getElementById('darkModeToggle');
-                                
-                                if (darkModeBtn) {
-                                    // Remove any inline onclick if present securely
-                                    darkModeBtn.removeAttribute('onclick');
+                            (function() {
+                                function initializeDarkMode() {
+                                    const darkModeBtn = document.getElementById('darkModeToggle');
+                                    const body = document.body;
                                     
-                                    darkModeBtn.addEventListener('click', function(e) {
-                                        e.preventDefault();
-                                        document.body.classList.toggle('dark-mode');
-                                        const isDark = document.body.classList.contains('dark-mode');
-                                        localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-                                        
-                                        const icon = this.querySelector('i');
-                                        if (icon) {
-                                            if (isDark) {
-                                                icon.className = 'fa-solid fa-sun';
-                                                this.style.color = '#f59e0b';
-                                            } else {
-                                                icon.className = 'fa-solid fa-moon';
-                                                this.style.color = '#64748b';
-                                            }
+                                    function updateDarkModeUI(isDark) {
+                                        const icon = darkModeBtn ? darkModeBtn.querySelector('i') : null;
+                                        if (isDark) {
+                                            body.classList.add('dark-mode');
+                                            if (icon) icon.className = 'fa-solid fa-sun';
+                                            if (darkModeBtn) darkModeBtn.style.color = '#f59e0b';
+                                        } else {
+                                            body.classList.remove('dark-mode');
+                                            if (icon) icon.className = 'fa-solid fa-moon';
+                                            if (darkModeBtn) darkModeBtn.style.color = '#64748b';
                                         }
-                                    });
-                                }
+                                    }
 
-                                if (localStorage.getItem('darkMode') === 'enabled') {
-                                    document.body.classList.add('dark-mode');
-                                    if(darkModeBtn) {
-                                        const icon = darkModeBtn.querySelector('i');
-                                        if(icon) icon.className = 'fa-solid fa-sun';
-                                        darkModeBtn.style.color = '#f59e0b';
+                                    const savedMode = localStorage.getItem('darkMode');
+                                    if (savedMode === 'enabled') {
+                                        updateDarkModeUI(true);
+                                    }
+
+                                    if (darkModeBtn) {
+                                        darkModeBtn.addEventListener('click', function(e) {
+                                            e.preventDefault();
+                                            const isNowDark = !body.classList.contains('dark-mode');
+                                            updateDarkModeUI(isNowDark);
+                                            localStorage.setItem('darkMode', isNowDark ? 'enabled' : 'disabled');
+                                        });
                                     }
                                 }
-                                const notifToggle = document.getElementById('notificationToggle');
-                                const notifDropdown = document.getElementById('notificationDropdown');
-                                if (notifToggle && notifDropdown) {
-                                    notifToggle.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
-                                    });
-                                    document.addEventListener('click', () => notifDropdown.style.display = 'none');
-                                    notifDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+                                function initializeDashboardTools() {
+                                    initializeDarkMode();
+
+                                    const notifToggle = document.getElementById('notificationToggle');
+                                    const notifDropdown = document.getElementById('notificationDropdown');
+                                    if (notifToggle && notifDropdown) {
+                                        notifToggle.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
+                                        });
+                                        document.addEventListener('click', () => notifDropdown.style.display = 'none');
+                                        notifDropdown.addEventListener('click', (e) => e.stopPropagation());
+                                    }
+
+                                    function updateRealTimeClient() {
+                                        const timeEl = document.getElementById('current-time');
+                                        const dateEl = document.getElementById('current-date');
+                                        if (timeEl && dateEl) {
+                                            const now = new Date();
+                                            timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                                            dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                                        }
+                                    }
+                                    setInterval(updateRealTimeClient, 1000);
+                                    updateRealTimeClient();
                                 }
 
-                                // Update time and date dynamically to match user's local timezone
-                                function updateRealTimeClient() {
-                                    const timeEl = document.getElementById('current-time');
-                                    const dateEl = document.getElementById('current-date');
-                                    if (timeEl && dateEl) {
-                                        const now = new Date();
-                                        timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit', second:'2-digit' });
-                                        dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-                                    }
+                                if (document.readyState === 'loading') {
+                                    document.addEventListener('DOMContentLoaded', initializeDashboardTools);
+                                } else {
+                                    initializeDashboardTools();
                                 }
-                                setInterval(updateRealTimeClient, 1000);
-                                updateRealTimeClient();
-                            });
+                            })();
                         </script>
 
                         <div class="current-time-bar"
