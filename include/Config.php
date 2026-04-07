@@ -4,7 +4,7 @@
 
 define('SMTP_HOST', 'smtp.gmail.com');
 
-define('SMTP_PORT', 465);
+define('SMTP_PORT', 587);
 define('SMTP_USER', 'atiera41001@gmail.com'); // Put your random email here
 define('SMTP_PASS', 'zdra ezij caxp uoqk');    // Put your random email App Password here
 define('SMTP_FROM_EMAIL', 'atiera41001@gmail.com');
