@@ -47,14 +47,14 @@ body.dark-mode .calendar-day-cell,
 body.dark-mode .filters-container,
 body.dark-mode .user-info-header,
 body.dark-mode .current-time-bar {
-    background-color: #1e293b !important;
+    background-color: #111111 !important;
     border-color: #334155 !important;
     color: #f1f5f9 !important;
 }
 
 body.dark-mode .management-card .card-content,
 body.dark-mode .main-content {
-    background-color: #0f172a !important;
+    background-color: #000000 !important;
 }
 
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6, body.dark-mode span#current-time, body.dark-mode span#current-date {
@@ -64,7 +64,7 @@ body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body
 body.dark-mode table th,
 body.dark-mode .premium-white-card .table thead th,
 body.dark-mode .management-card .table thead th {
-    background-color: #0f172a !important;
+    background-color: #000000 !important;
     color: #cbd5e0 !important;
     border-bottom-color: #334155 !important;
 }
@@ -79,7 +79,7 @@ body.dark-mode .management-card .table tbody td {
 
 body.dark-mode .premium-white-card .table tr:hover,
 body.dark-mode .management-card .table tr:hover {
-    background-color: #1e293b !important;
+    background-color: #111111 !important;
 }
 
 body.dark-mode .premium-white-card .table th,
@@ -95,7 +95,7 @@ body.dark-mode table td, body.dark-mode .table tr td {
 }
 
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-    background-color: #0f172a !important;
+    background-color: #000000 !important;
     border-color: #334155 !important;
     color: #f8fafc !important;
 }
@@ -107,7 +107,7 @@ body.dark-mode .btn-outline {
 }
 
 body.dark-mode .dropdown-menu {
-    background-color: #1e293b !important;
+    background-color: #111111 !important;
     border-color: #334155 !important;
 }
 
