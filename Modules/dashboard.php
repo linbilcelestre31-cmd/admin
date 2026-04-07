@@ -1079,20 +1079,12 @@ $r_rows = [];
                             </div>
                         </div>
 
-                        <script>
-                            function updateDateTime() {
-                                const now = new Date();
-                                
-                                // Format Date: March 03, 2026
-                                const dateOptions = { month: 'long', day: '2-digit', year: 'numeric' };
-                                document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
-                                
-                                // Format Time: 02:25:30 PM
-                                const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-                                document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
-                            }
-                            setInterval(updateDateTime, 1000);
-                        </script>
+                        <div class="user-info-header" style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="width: 34px; height: 34px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
+                                <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
+                            </div>
+                            <span style="font-size: 0.9rem;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></span>
+                        </div>
                     </div>
                 </div>
             </header>

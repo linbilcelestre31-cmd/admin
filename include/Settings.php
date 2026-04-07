@@ -400,7 +400,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch Users
-$stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC");
+$stmt = $pdo->query("SELECT * FROM users ORDER BY full_name ASC");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -878,12 +878,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         }
                         setInterval(updateSettingsDateTime, 1000);
                     </script>
-                    <div class="user-info" style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
-                        <div
-                            style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <div class="user-info-header" style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
                             <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
                         </div>
-                        <span>Admin</span>
+                        <span style="font-size: 0.9rem;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></span>
                     </div>
                 </div>
             </header>
@@ -957,6 +956,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
+                                            <th class="security-only">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -966,6 +966,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
+                                                <td class="security-only">
+                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                        <button class="btn btn-outline" style="padding: 6px 10px; font-size: 0.8rem;" onclick='openEditModal(<?= json_encode($user) ?>)'>
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </button>
+                                                        <button class="btn btn-danger" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openDeleteModal(<?= $user['id'] ?>)">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
