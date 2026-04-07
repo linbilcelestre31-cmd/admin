@@ -1128,29 +1128,38 @@ $r_rows = [];
                         </div>
 
                         <script>
-                            function toggleDarkMode() {
-                                document.body.classList.toggle('dark-mode');
-                                const isDark = document.body.classList.contains('dark-mode');
-                                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-                                const icon = document.querySelector('#darkModeToggle i');
-                                if (isDark) {
-                                    icon.classList.remove('fa-moon');
-                                    icon.classList.add('fa-sun');
-                                    document.getElementById('darkModeToggle').style.color = '#f59e0b'; // Sun color
-                                } else {
-                                    icon.classList.remove('fa-sun');
-                                    icon.classList.add('fa-moon');
-                                    document.getElementById('darkModeToggle').style.color = '#64748b'; // Moon color
-                                }
-                            }
                             document.addEventListener('DOMContentLoaded', () => {
+                                const darkModeBtn = document.getElementById('darkModeToggle');
+                                
+                                if (darkModeBtn) {
+                                    // Remove any inline onclick if present securely
+                                    darkModeBtn.removeAttribute('onclick');
+                                    
+                                    darkModeBtn.addEventListener('click', function(e) {
+                                        e.preventDefault();
+                                        document.body.classList.toggle('dark-mode');
+                                        const isDark = document.body.classList.contains('dark-mode');
+                                        localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+                                        
+                                        const icon = this.querySelector('i');
+                                        if (icon) {
+                                            if (isDark) {
+                                                icon.className = 'fa-solid fa-sun';
+                                                this.style.color = '#f59e0b';
+                                            } else {
+                                                icon.className = 'fa-solid fa-moon';
+                                                this.style.color = '#64748b';
+                                            }
+                                        }
+                                    });
+                                }
+
                                 if (localStorage.getItem('darkMode') === 'enabled') {
                                     document.body.classList.add('dark-mode');
-                                    const icon = document.querySelector('#darkModeToggle i');
-                                    if(icon) { 
-                                        icon.classList.remove('fa-moon'); 
-                                        icon.classList.add('fa-sun'); 
-                                        document.getElementById('darkModeToggle').style.color = '#f59e0b';
+                                    if(darkModeBtn) {
+                                        const icon = darkModeBtn.querySelector('i');
+                                        if(icon) icon.className = 'fa-solid fa-sun';
+                                        darkModeBtn.style.color = '#f59e0b';
                                     }
                                 }
                                 const notifToggle = document.getElementById('notificationToggle');
@@ -1163,6 +1172,19 @@ $r_rows = [];
                                     document.addEventListener('click', () => notifDropdown.style.display = 'none');
                                     notifDropdown.addEventListener('click', (e) => e.stopPropagation());
                                 }
+
+                                // Update time and date dynamically to match user's local timezone
+                                function updateRealTimeClient() {
+                                    const timeEl = document.getElementById('current-time');
+                                    const dateEl = document.getElementById('current-date');
+                                    if (timeEl && dateEl) {
+                                        const now = new Date();
+                                        timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                                        dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                                    }
+                                }
+                                setInterval(updateRealTimeClient, 1000);
+                                updateRealTimeClient();
                             });
                         </script>
 
@@ -2983,12 +3005,12 @@ $r_rows = [];
                                     onmouseout="this.style.borderColor='<?= $is_today ? '#3b82f6' : '#f1f5f9' ?>'; this.style.transform='translateY(0)'; this.style.boxShadow='<?= $is_today ? '0 10px 25px -5px rgba(59, 130, 246, 0.1)' : '0 4px 10px rgba(0,0,0,0.03)' ?>';">
 
                                     <div class="calendar-day-header"
-                                        style="padding: 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: <?= $is_today ? 'linear-gradient(to right, #eff6ff, #ffffff)' : '#ffffff' ?>; border-radius: 20px 20px 0 0;">
+                                        style="padding: 15px; border-bottom: 1px solid var(--border, #f1f5f9); display: flex; justify-content: space-between; align-items: center; background: <?= $is_today ? 'linear-gradient(to right, rgba(59,130,246,0.1), transparent)' : 'transparent' ?>; border-radius: 20px 20px 0 0;">
                                         <div>
                                             <span
-                                                style="display: block; font-size: 0.7rem; font-weight: 800; color: <?= $is_today ? '#3b82f6' : '#94a3b8' ?>; text-transform: uppercase; letter-spacing: 2px;"><?= $day_name ?></span>
+                                                style="display: block; font-size: 0.65rem; font-weight: 800; color: <?= $is_today ? '#3b82f6' : 'var(--secondary, #94a3b8)' ?>; text-transform: uppercase; letter-spacing: 2px;"><?= $day_name ?></span>
                                             <span
-                                                style="display: block; font-size: 1.15rem; font-weight: 800; color: #1e293b; margin-top: 4px;"><?= $display_date ?></span>
+                                                style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--dark, #1e293b); margin-top: 4px;"><?= $display_date ?></span>
                                         </div>
                                         <?php if ($is_today): ?>
                                             <div
@@ -3033,7 +3055,7 @@ $r_rows = [];
                                                     </div>
 
                                                     <h4
-                                                        style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4;">
+                                                        style="color: var(--dark, #1e293b); font-size: 13px; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4;">
                                                         <?= htmlspecialchars($job['item_name']) ?>
                                                     </h4>
 
