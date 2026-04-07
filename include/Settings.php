@@ -708,21 +708,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-collapse: collapse;
         }
 
-        .table th {
+        .table th, .table td {
             text-align: center;
-            padding: 12px;
-            background: #f8fafc;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
 
-        .table td {
-            padding: 12px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
-            text-align: center;
+        .table th {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table tr:hover td {
+            background-color: #f1f5f9;
         }
 
         .alert {
@@ -956,7 +959,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
-                                            <th class="security-only">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -966,16 +968,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                                 <td><?= htmlspecialchars($user['username']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
-                                                <td class="security-only">
-                                                    <div style="display: flex; gap: 8px; justify-content: center;">
-                                                        <button class="btn btn-outline" style="padding: 6px 10px; font-size: 0.8rem;" onclick='openEditModal(<?= json_encode($user) ?>)'>
-                                                            <i class="fas fa-edit"></i> Edit
-                                                        </button>
-                                                        <button class="btn btn-danger" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openDeleteModal(<?= $user['id'] ?>)">
-                                                            <i class="fas fa-trash"></i> Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
