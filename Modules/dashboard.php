@@ -838,7 +838,7 @@ $r_rows = [];
         }
 
         .table th {
-            background: #ffffff !important;
+            background: var(--light, #ffffff) !important;
             
             font-weight: 701;
             border-bottom: 2px solid #000000 !important;
@@ -886,7 +886,7 @@ $r_rows = [];
         }
 
         .schedule-item {
-            background: #ffffff;
+            background: var(--light, #ffffff);
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.25rem;
@@ -975,7 +975,7 @@ $r_rows = [];
             justify-content: center;
             gap: 12px;
             flex-wrap: wrap;
-            background: #ffffff;
+            background: var(--light, #ffffff);
             border: 1px solid var(--border, #e2e8f0);
             padding: 12px 14px;
             border-radius: 10px;
@@ -1039,7 +1039,7 @@ $r_rows = [];
         <!-- Main Content -->
         <main class="main-content">
             <!-- Top Header -->
-            <header class="top-header" style="background: white; border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
+            <header class="top-header" style="background: var(--light, white); border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
                 <div class="header-inner"
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title">
@@ -1072,7 +1072,7 @@ $r_rows = [];
                             $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                             if (!empty($display_key)): ?>
                                 <div class="api-key-display"
-                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 11px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    style="background: var(--light, white); border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 11px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                     <i class="fas fa-key" style="color: #d4af37;"></i>
                                     <span>Key: <strong
                                             style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
@@ -2037,7 +2037,7 @@ $r_rows = [];
                 </div>
 
                 <div class="table-container <?= isset($is_premium_report) ? 'premium-white-card' : '' ?>"
-                    style="border:none; background: #ffffff;">
+                    style="border:none; background: var(--light, #ffffff);">
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
@@ -2208,7 +2208,7 @@ $r_rows = [];
                     <h2 style="margin: 0;">Reports Dates</h2>
                 </div>
 
-                <div class="table-container premium-white-card" style="border:none; background: #ffffff;">
+                <div class="table-container premium-white-card" style="border:none; background: var(--light, #ffffff);">
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
@@ -2383,7 +2383,7 @@ $r_rows = [];
                     }
 
                     .calendar-day-cell {
-                        background: #ffffff !important;
+                        background: var(--light, #ffffff) !important;
                         border: 1px solid #f1f5f9 !important;
                         border-radius: 16px !important;
                         min-height: 120px !important;
@@ -2479,7 +2479,7 @@ $r_rows = [];
                 </style>
 
                 <div class="calendar-container"
-                    style="background: #ffffff; border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); width: 95%; max-width: 1200px; margin: 0 auto 40px auto; overflow: hidden;">
+                    style="background: var(--light, #ffffff); border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); width: 95%; max-width: 1200px; margin: 0 auto 40px auto; overflow: hidden;">
                     <div class="calendar-header"
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px;">
                         <div style="display: flex; align-items: center; gap: 15px;">
@@ -2742,7 +2742,7 @@ $r_rows = [];
                         <style>
                             /* Premium Maintenance Table Styles */
                             .maintenance-card-premium {
-                                background: #ffffff !important;
+                                background: var(--light, #ffffff) !important;
                                 border-radius: 16px !important;
                                 border: 1px solid #e2e8f0 !important;
                                 box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
@@ -2751,7 +2751,7 @@ $r_rows = [];
                             }
 
                             .maintenance-header-premium {
-                                background: #ffffff !important;
+                                background: var(--light, #ffffff) !important;
                                 padding: 25px 30px !important;
                                 border-bottom: 2px solid #f1f5f9 !important;
                                 display: flex !important;
@@ -2977,7 +2977,7 @@ $r_rows = [];
                     style="margin-top: 0; background: transparent !important; border: none; box-shadow: none; display: none; visibility: visible !important; width: 100%; overflow-x: auto;">
 
                     <div class="card-header"
-                        style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        style="background: var(--light, #ffffff); border-bottom: 1px solid #e2e8f0; padding: 20px; border-radius: 12px 12px 0 0; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div
                                 style="width: 45px; height: 45px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.4rem; border: 1px solid #dbeafe;">
@@ -3008,7 +3008,7 @@ $r_rows = [];
                                 });
                                 ?>
                                 <div class="calendar-day"
-                                    style="background: #ffffff; border: 1px solid <?= $is_today ? '#3b82f6' : '#f1f5f9' ?>; border-radius: 20px; min-height: 300px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);' : 'box-shadow: 0 4px 10px rgba(0,0,0,0.03);' ?>"
+                                    style="background: var(--light, #ffffff); border: 1px solid <?= $is_today ? '#3b82f6' : '#f1f5f9' ?>; border-radius: 20px; min-height: 300px; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); <?= $is_today ? 'box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);' : 'box-shadow: 0 4px 10px rgba(0,0,0,0.03);' ?>"
                                     onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.1)';"
                                     onmouseout="this.style.borderColor='<?= $is_today ? '#3b82f6' : '#f1f5f9' ?>'; this.style.transform='translateY(0)'; this.style.boxShadow='<?= $is_today ? '0 10px 25px -5px rgba(59, 130, 246, 0.1)' : '0 4px 10px rgba(0,0,0,0.03)' ?>';">
 
@@ -3047,7 +3047,7 @@ $r_rows = [];
                                                 $text_color = ($job_priority == 'high') ? '#991b1b' : (($job_priority == 'medium') ? '#92400e' : '#166534');
                                                 ?>
                                                 <div class="calendar-event-card"
-                                                    style="background: #ffffff; border: 1px solid #f1f5f9; border-left: 5px solid <?= $accent_color ?>; border-radius: 12px; padding: 14px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor: pointer;"
+                                                    style="background: var(--light, #ffffff); border: 1px solid #f1f5f9; border-left: 5px solid <?= $accent_color ?>; border-radius: 12px; padding: 14px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor: pointer;"
                                                     onclick="if(window.viewMaintenanceDetails) window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($job)) ?>)"
                                                     onmouseover="this.style.background='<?= $bg_color ?>'; this.style.borderColor='<?= $accent_color ?>40'; this.style.transform='scale(1.02)';"
                                                     onmouseout="this.style.background='#ffffff'; this.style.borderColor='#f1f5f9'; this.style.transform='scale(1)';">
@@ -4034,7 +4034,7 @@ $r_rows = [];
             if (!document.getElementById('logoutConfirmModal')) {
                 const modalHtml = `
                     <div id="logoutConfirmModal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center; transition: all 0.3s ease;">
-                        <div style="background: #ffffff; padding: 40px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.05);">
+                        <div style="background: var(--light, #ffffff); padding: 40px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.05);">
                             <div style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 32px; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.1);">
                                 <i class="fa-solid fa-right-from-bracket"></i>
                             </div>
