@@ -1436,6 +1436,125 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
     </style>
 </head>
+<body>
+
+<script>
+    // Premium Section Switcher
+    window.switchSection = function(targetId) {
+        // Update Tab Buttons
+        const tabs = document.querySelectorAll('.nav-tab[data-target]');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-target') === targetId) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // Update Content Sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active');
+                section.style.display = 'block';
+
+                if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
+                    setTimeout(window.initRiskChart, 50);
+                }
+
+                if (window.innerWidth <= 768) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            }
+        });
+    };
+
+    // Global Authentication Handler
+    window.validateLogin = function() {
+        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+        const correctPIN = '1234';
+        
+        const enteredPIN = Array.from(pinInputs).map(input => input.value).join('');
+        if (enteredPIN === correctPIN) {
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'block';
+            
+            const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
+            if (activeTab) switchSection(activeTab.getAttribute('data-target'));
+        } else {
+            errorMessage.style.display = 'block';
+            pinInputs.forEach(input => input.value = '');
+            pinInputs[0]?.focus();
+        }
+    };
+
+    // Sensitive Action Gate
+    window.withPasswordGate = function(callback) {
+        const pin = prompt("Enter Administration PIN:");
+        if (pin === '1234') {
+            callback();
+        } else {
+            alert("Incorrect PIN.");
+        }
+    };
+
+    // Real-time Clock for Header
+    function updateHeaderClock() {
+        const now = new Date();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Manila' };
+        const dateOptions = { month: 'long', day: '2-digit', year: 'numeric', timeZone: 'Asia/Manila' };
+        const liveTime = document.getElementById('headerLiveTime');
+        const liveDate = document.getElementById('headerLiveDate');
+        if (liveTime) liveTime.textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
+        if (liveDate) liveDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+    }
+    setInterval(updateHeaderClock, 1000);
+
+    // Initializations
+    document.addEventListener('DOMContentLoaded', () => {
+        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
+        pinInputs[0]?.focus();
+
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                if (this.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Logout
+        const logoutBtn = document.getElementById('backDashboardBtn');
+        logoutBtn?.addEventListener('click', function () {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+        });
+
+        updateHeaderClock();
+    });
+
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }
+        }, 3000);
+    });
+</script>
 
 <!-- Login Screen -->
 <div class="login-container" id="loginScreen">
@@ -4219,164 +4338,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     }
 </script>
 
-<script>
-    // Premium Section Switcher
-    function switchSection(targetId) {
-        // Update Tab Buttons
-        const tabs = document.querySelectorAll('.nav-tab[data-target]');
-        tabs.forEach(tab => {
-            if (tab.getAttribute('data-target') === targetId) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
-        });
-
-        // Update Content Sections
-        const sections = document.querySelectorAll('.content-section');
-        sections.forEach(section => {
-            if (section.id === targetId) {
-                section.classList.add('active');
-                section.style.display = 'block';
-
-                // Trigger animations or chart re-init
-                if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
-                    setTimeout(window.initRiskChart, 50);
-                }
-
-                // Scroll into view if on mobile
-                if (window.innerWidth <= 768) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            } else {
-                section.classList.remove('active');
-                section.style.display = 'none';
-            }
-        });
-    }
-
-    // Real-time Clock for Header
-    function updateHeaderClock() {
-        const now = new Date();
-        const timeOptions = {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'Asia/Manila'
-        };
-        const dateOptions = {
-            month: 'long',
-            day: '2-digit',
-            year: 'numeric',
-            timeZone: 'Asia/Manila'
-        };
-
-        const liveTime = document.getElementById('headerLiveTime');
-        const liveDate = document.getElementById('headerLiveDate');
-
-        if (liveTime) liveTime.textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
-        if (liveDate) liveDate.textContent = now.toLocaleDateString('en-US', dateOptions);
-    }
-
-    setInterval(updateHeaderClock, 1000);
-    updateHeaderClock();
-
-    // Handle Logic & Toggles
-    document.addEventListener('DOMContentLoaded', function () {
-        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const loginScreen = document.getElementById('loginScreen');
-        const dashboard = document.getElementById('dashboard');
-        const logoutBtn = document.getElementById('backDashboardBtn');
-        const correctPIN = '1234';
-
-        pinInputs[0]?.focus();
-
-        pinInputs.forEach((input, index) => {
-            input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
-                if (this.value.length === 1 && index < pinInputs.length - 1) {
-                    pinInputs[index + 1].focus();
-                }
-                errorMessage.style.display = 'none';
-            });
-            input.addEventListener('keydown', function (e) {
-                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                    pinInputs[index - 1].focus();
-                }
-            });
-        });
-
-        loginBtn?.addEventListener('click', function () {
-            const enteredPIN = Array.from(pinInputs).map(input => input.value).join('');
-            if (enteredPIN === correctPIN) {
-                loginScreen.style.display = 'none';
-                dashboard.style.display = 'block';
-                
-                // Set default tab if needed
-                const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
-                if (activeTab) switchSection(activeTab.getAttribute('data-target'));
-            } else {
-                errorMessage.style.display = 'block';
-                pinInputs.forEach(input => input.value = '');
-                pinInputs[0]?.focus();
-            }
-        });
-
-        logoutBtn?.addEventListener('click', function () {
-            dashboard.style.display = 'none';
-            loginScreen.style.display = 'flex';
-            pinInputs.forEach(input => input.value = '');
-            pinInputs[0]?.focus();
-            errorMessage.style.display = 'none';
-        });
-    });
-
-    // Global Authentication Handler
-    window.validateLogin = function() {
-        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
-        const errorMessage = document.getElementById('errorMessage');
-        const loginScreen = document.getElementById('loginScreen');
-        const dashboard = document.getElementById('dashboard');
-        const correctPIN = '1234';
-        
-        const enteredPIN = Array.from(pinInputs).map(input => input.value).join('');
-        if (enteredPIN === correctPIN) {
-            loginScreen.style.display = 'none';
-            dashboard.style.display = 'block';
-            
-            // Set default tab
-            const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
-            if (activeTab) switchSection(activeTab.getAttribute('data-target'));
-        } else {
-            errorMessage.style.display = 'block';
-            pinInputs.forEach(input => input.value = '');
-            pinInputs[0]?.focus();
-        }
-    };
-
-    // Sensitive Action Gate
-    window.withPasswordGate = function(callback) {
-        const pin = prompt("Enter Administration PIN:");
-        if (pin === '1234') {
-            callback();
-        } else {
-            alert("Incorrect PIN.");
-        }
-    };
-
-    // Handle Loader
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
-        }, 3000);
-    });
-</script>
 </div> <!-- End #dashboard -->
 </body>
 
