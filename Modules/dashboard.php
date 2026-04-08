@@ -1211,7 +1211,7 @@ $r_rows = [];
                                 <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
                             </div>
                             <div style="display: flex; flex-direction: column; line-height: 1.2;">
-                                <span style="font-size: 0.85rem; font-weight: 800;"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin') ?></span>
+                                <span style="font-size: 0.85rem; font-weight: 800;"><?= ucwords(strtolower(htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin'))) ?></span>
                                 <span style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? '') ?></span>
                             </div>
                         </div>
@@ -3869,8 +3869,8 @@ $r_rows = [];
                             tbody.innerHTML += `
                                 <tr>
                                     <td style="text-align: center;">#${employee.id}</td>
-                                    <td>${employee.first_name || ''}</td>
-                                    <td>${employee.last_name || ''}</td>
+                                    <td>${(employee.first_name || "").toLowerCase().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}</td>
+                                    <td>${(employee.last_name || "").toLowerCase().split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}</td>
                                     <td>${employee.email}</td>
                                     <td>${position}</td>
                                     <td>${department}</td>
