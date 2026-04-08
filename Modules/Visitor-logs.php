@@ -334,6 +334,25 @@ function getLastInsertId()
                             <span id="visitor-date" style="font-weight: 700; color: white; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
                         </div>
                         <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
+                        
+                        <!-- Notification Bell -->
+                        <div style="position: relative; margin: 0 5x; cursor: pointer; color: #fbbf24; display: flex; align-items: center;" onclick="alert('Notification: No new data inserted.')" title="Recent data insertions">
+                            <i class="fas fa-bell" style="font-size: 1.25rem; animation: bell-ring 2s ease-in-out infinite alternate;"></i>
+                            <span id="notif-count" style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; border-radius: 50%; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #1e293b;">1</span>
+                        </div>
+                        <style>
+                            @keyframes bell-ring {
+                                0% { transform: rotate(0); }
+                                5% { transform: rotate(10deg); }
+                                10% { transform: rotate(-10deg); }
+                                15% { transform: rotate(4deg); }
+                                20% { transform: rotate(-4deg); }
+                                25% { transform: rotate(0); }
+                                100% { transform: rotate(0); }
+                            }
+                        </style>
+
+                        <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
                         <div style="display: flex; align-items: center; gap: 8px; color: #a5b4fc;">
                             <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
                             <span id="visitor-time" style="font-weight: 700; color: white; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
