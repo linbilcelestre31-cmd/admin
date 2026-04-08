@@ -1565,8 +1565,18 @@ $r_rows = [];
                                         <?php foreach ($dashboard_data['facilities'] as $f): ?>
                                         <tr>
                                             <td style="text-align: center;">#<?= $f['id'] ?></td>
-                                            <td style="text-align: left; color: #475569;">
-                                                <?= htmlspecialchars($f['next_reserve_name'] ?? 'Available') ?>
+                                            <td style="text-align: left;">
+                                                <?php if (($f['next_reserve_name'] ?? 'Available') === 'Available'): ?>
+                                                    <button class="btn btn-primary btn-sm" 
+                                                        onclick="openReservationFor(<?= $f['id'] ?>)" 
+                                                        style="background: #3b82f6; border: none; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);">
+                                                        <i class="fa-solid fa-calendar-plus" style="font-size: 0.8rem;"></i> Reserve
+                                                    </button>
+                                                <?php else: ?>
+                                                    <span style="color: #475569; font-weight: 500;">
+                                                        <?= htmlspecialchars($f['next_reserve_name']) ?>
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
                                             <td style="text-align: left; font-weight: 600;">
                                                 <?php
@@ -4059,6 +4069,20 @@ $r_rows = [];
 
             if (fromInput) fromInput.value = fromDate;
             if (toInput) toInput.value = toDate;
+        }
+
+        function openReservationFor(facilityId) {
+            const facilitySelect = document.getElementById('facility_id');
+            if (facilitySelect) {
+                facilitySelect.value = facilityId;
+                // Trigger onchange to update prices/capacity display
+                if (typeof updateFacilityDetails === 'function') {
+                    updateFacilityDetails();
+                }
+            }
+            if (typeof openModal === 'function') {
+                openModal('reservation-modal');
+            }
         }
 
         // Employee Management Functions

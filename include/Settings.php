@@ -1132,7 +1132,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         <button class="btn btn-outline btn-sm security-only" 
                                                             onclick='openRecoveryModal(<?= $user['id'] ?>, "<?= htmlspecialchars($user['full_name']) ?>")'
                                                             title="Recover Account" style="color: #10b981; border-color: #10b981;">
-                                                            <i class="fas fa-undo-alt"></i> Recover
+                                                            <i class="fas fa-undo-alt"></i>
                                                         </button>
                                                     </div>
                                                 </td>
