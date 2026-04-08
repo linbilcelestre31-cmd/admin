@@ -794,6 +794,14 @@ function generateAutoCaseID($pdo, $type = 'contract')
     return $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
 }
 
+// Filter contracts for summary
+$internalDocs = array_filter($contracts, function ($c) {
+    return (isset($c['contract_type']) && $c['contract_type'] === 'Internal');
+});
+$externalDocs = array_filter($contracts, function ($c) {
+    return (isset($c['contract_type']) && $c['contract_type'] === 'External');
+});
+
 $totalContracts = count($contracts);
 $highPct = $totalContracts ? round(($riskCounts['High'] / $totalContracts) * 100, 1) : 0;
 $mediumPct = $totalContracts ? round(($riskCounts['Medium'] / $totalContracts) * 100, 1) : 0;
@@ -1606,34 +1614,28 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             </div>
 
-            <!-- Time-Date-Notif Encapsulated Bar -->
+            <!-- Unified Status Bar -->
             <div class="header-status-bar"
-                style="display: flex; align-items: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);">
+                style="display: flex; align-items: center; justify-content: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1); width: fit-content; margin-left: auto; margin-right: auto;">
+                
                 <!-- Date -->
                 <div style="display: flex; align-items: center; gap: 12px; color: #60a5fa;">
-                    <div
-                        style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
                         <i class="fa-solid fa-calendar-days" style="font-size: 1.1rem;"></i>
                     </div>
                     <div style="text-align: left;">
-                        <span
-                            style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Current
-                            Date</span>
-                        <span id="headerLiveDate"
-                            style="font-weight: 700; color: #f8fafc; font-size: 1.05rem;"><?php echo date('F d, Y'); ?></span>
+                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Date</span>
+                        <span id="headerLiveDate" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem;"><?php echo date('F d, Y'); ?></span>
                     </div>
                 </div>
 
                 <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Bell -->
-                <div class="notif-wrapper"
-                    style="position: relative; cursor: pointer; color: #fbbf24; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease;">
-                    <div
-                        style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(251, 191, 36, 0.2);">
+                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24;">
+                    <div style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(251, 191, 36, 0.2);">
                         <i class="fa-solid fa-bell" style="font-size: 1.3rem;"></i>
-                        <span
-                            style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 22px; height: 22px; border: 3px solid #1e293b; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">3</span>
+                        <span style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 20px; height: 20px; border: 2px solid #1e293b; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
                     </div>
                 </div>
 
@@ -1641,64 +1643,56 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <!-- Time -->
                 <div style="display: flex; align-items: center; gap: 12px; color: #818cf8;">
-                    <div
-                        style="width: 40px; height: 40px; background: rgba(129, 140, 248, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(129, 140, 248, 0.2);">
+                    <div style="width: 40px; height: 40px; background: rgba(129, 140, 248, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(129, 140, 248, 0.2);">
                         <i class="fa-solid fa-clock" style="font-size: 1.1rem;"></i>
                     </div>
                     <div style="text-align: left;">
-                        <span
-                            style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Live
-                            Time</span>
-                        <span id="headerLiveTime"
-                            style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00
-                            AM</span>
+                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Live Time</span>
+                        <span id="headerLiveTime" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00 AM</span>
                     </div>
+                </div>
+
                 <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
-                <!-- Lock System -->
-                <div id="backDashboardBtn" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; transition: all 0.3s ease;" title="Lock System">
+                <!-- Lock -->
+                <div id="backDashboardBtn" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; transition: all 0.3s ease;">
                     <i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i>
                 </div>
             </div>
 
-            <!-- Custom Tab Navigation -->
-            <div class="premium-nav-tabs"
-                style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px;">
+            <!-- Navigation Tabs -->
+            <div class="premium-nav-tabs" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; margin-bottom: 20px;">
                 <button class="nav-tab active" data-target="overview" onclick="switchSection('overview')">
-                    <i class="fa-solid fa-gauge-high" style="margin-right: 8px;"></i> Dashboard
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </button>
                 <button class="nav-tab" data-target="employees" onclick="switchSection('employees')">
-                    <i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i> Employees
+                    <i class="fa-solid fa-users-gear"></i> Employees
                 </button>
                 <button class="nav-tab" data-target="internal" onclick="switchSection('internal')">
-                    <i class="fa-solid fa-folder-closed" style="margin-right: 8px;"></i> Internal
+                    <i class="fa-solid fa-folder-closed"></i> Internal
                 </button>
                 <button class="nav-tab" data-target="external" onclick="switchSection('external')">
-                    <i class="fa-solid fa-file-signature" style="margin-right: 8px;"></i> External
+                    <i class="fa-solid fa-file-signature"></i> External
                 </button>
                 <button class="nav-tab" data-target="documents" onclick="switchSection('documents')">
-                    <i class="fa-solid fa-file-shield" style="margin-right: 8px;"></i> Legal Docs
+                    <i class="fa-solid fa-file-shield"></i> Legal Docs
                 </button>
                 <button class="nav-tab" data-target="contracts" onclick="switchSection('contracts')">
-                    <i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> AI Analysis
+                    <i class="fa-solid fa-microchip"></i> AI Analysis
                 </button>
                 <button class="nav-tab" data-target="risk_analysis" onclick="switchSection('risk_analysis')">
-                    <i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Risk Insights
+                    <i class="fa-solid fa-chart-line"></i> Risk Insights
                 </button>
-
-                <div style="margin-left: 10px; display: flex; align-items: center;">
-                    <?php if ($isSuperAdmin): ?>
-                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn"
-                            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
-                            <i class="fa-solid fa-arrow-left-long"></i>
-                        </a>
-                    <?php else: ?>
-                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')"
-                            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
-                            <i class="fa-solid fa-power-off"></i>
-                        </button>
-                    <?php endif; ?>
-                </div>
+                
+                <?php if ($isSuperAdmin): ?>
+                    <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 12px; padding: 10px 20px;">
+                        <i class="fa-solid fa-power-off"></i>
+                    </a>
+                <?php else: ?>
+                    <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 12px; padding: 10px 20px;">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </header>
