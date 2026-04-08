@@ -1539,16 +1539,16 @@ $r_rows = [];
                             <table class="table">
                                 <thead>
                                     <tr style="border-bottom: 2px solid #e2e8f0;">
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ID</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">RESERVE NAME</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">FACILITY NAME</th>
-                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">TYPE</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">CAPACITY</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">LOCATION</th>
-                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">RATE</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">STATUS</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ASSIGNED USER</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ACTIONS</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ID</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">RESERVE NAME</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">FACILITY NAME</th>
+                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">TYPE</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">CAPACITY</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">LOCATION</th>
+                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">RATE</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">STATUS</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ASSIGNED USER</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>

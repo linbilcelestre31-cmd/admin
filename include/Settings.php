@@ -1113,11 +1113,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 80px;">ID</th>
-                                            <th>Full Name</th>
-                                            <th>Username</th>
-                                            <th>Email</th>
-                                            <th style="width: 100px;">Action</th>
+                                            <th style="width: 80px; white-space: nowrap;">ID</th>
+                                            <th style="white-space: nowrap;">Full Name</th>
+                                            <th style="white-space: nowrap;">Username</th>
+                                            <th style="white-space: nowrap;">Email</th>
+                                            <th style="width: 100px; white-space: nowrap;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
