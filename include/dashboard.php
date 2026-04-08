@@ -78,7 +78,7 @@
 
     <!-- Top Metrics Grid -->
     <div class="stats-grid"
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; align-items: stretch;">
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; align-items: stretch;">
 
         <!-- Available Room Card -->
         <div
@@ -172,7 +172,7 @@
     </div>
 
     <!-- Bottom Split Section (4 Cards Grid) -->
-    <div class="bottom-split-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; align-items: stretch;">
+    <div class="bottom-split-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; align-items: stretch;">
         
         <!-- Compliance Reports (Legal) -->
         <div

@@ -1026,6 +1026,13 @@ $r_rows = [];
             display: block;
         }
 
+        /* --- DESKTOP ALIGNMENT FIX --- */
+        @media (min-width: 1025px) {
+            .stats-grid, .bottom-split-section {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+
         /* --- RESPONSIVE MOBILE FIXES --- */
         @media (max-width: 1024px) {
             .dashboard-content {
