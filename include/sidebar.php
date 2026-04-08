@@ -137,7 +137,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <img id="sidebarLogo" src="<?= getBaseUrl() ?>/assets/image/logo.png" alt="Atiéra Logo"
+                    <img id="sidebarLogo" src="<?= rtrim(getBaseUrl(), '/') ?>/assets/image/logo.png" alt="Atiéra Logo"
                         style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <?php if ($isSuperAdmin): ?>
                         <div
@@ -154,8 +154,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         <div class="nav-title">Settings</div>
         <ul class="nav-links">
             <li>
-                <a href="<?= $isSuperAdmin ? getBaseUrl() . '/Super-admin/Settings.php' : getBaseUrl() . '/include/Settings.php' ?>"
-                    class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
+                <a href="<?= $isSuperAdmin ? rtrim(getBaseUrl(), '/') . '/Super-admin/Settings.php' : rtrim(getBaseUrl(), '/') . '/include/Settings.php' ?>"
+                    class="<?= (strpos($current_page, 'Settings.php') !== false) ? 'active' : '' ?>">
                     <i class="fa-solid fa-circle-user"></i> Account
                 </a>
             </li>
@@ -487,7 +487,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
                 // Show logo.png
                 const sidebarLogo = document.getElementById('sidebarLogo');
                 if (sidebarLogo) {
-                    sidebarLogo.src = '<?= getBaseUrl() ?>/assets/image/logo.png';
+                    sidebarLogo.src = '<?= rtrim(getBaseUrl(), '/') ?>/assets/image/logo.png';
                     sidebarLogo.style.height = '60px'; // Restore size
                 }
 
@@ -528,7 +528,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
                 // Show logo2.png
                 const sidebarLogo = document.getElementById('sidebarLogo');
                 if (sidebarLogo) {
-                    sidebarLogo.src = '<?= getBaseUrl() ?>/assets/image/logo2.png';
+                    sidebarLogo.src = '<?= rtrim(getBaseUrl(), '/') ?>/assets/image/logo2.png';
                     sidebarLogo.style.height = '40px'; // Smaller for collapsed
                 }
 

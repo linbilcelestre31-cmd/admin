@@ -817,7 +817,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>/assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>assets/image/logo2.png">
     <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1" media="none"
         onload="if(media!='all')media='all'">
 
@@ -1278,7 +1278,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <div class="login-container" id="loginScreen">
     <div class="login-form">
         <div style="text-align: center; margin-bottom: 25px;">
-            <img src="<?= getBaseUrl() ?>/assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
+            <img src="<?= getBaseUrl() ?>assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
         </div>
         <h2>Legal Management System</h2>
         <p>Enter your PIN to access the system</p>

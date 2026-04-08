@@ -23,9 +23,13 @@ function getBaseUrl()
         $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('include', $parts)));
     } elseif (in_array('auth', $parts)) {
         $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('auth', $parts)));
+    } elseif (in_array('Modules', $parts)) {
+        $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('Modules', $parts)));
+    } elseif (in_array('Super-admin', $parts)) {
+        $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('Super-admin', $parts)));
     } else {
         $projectRoot = $currentDir;
     }
-    return $protocol . "://" . $host . rtrim($projectRoot, '/');
+    return $protocol . "://" . $host . '/' . trim($projectRoot, '/') . '/';
 }
 ?>

@@ -411,7 +411,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Settings - Admin</title>
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=3">
     <script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@11\"></script>
@@ -1427,7 +1427,7 @@ You have been added as an administrator. To complete your account setup, please 
     <div class="modal" id="securityUnlockModal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <div style="margin-bottom: 20px;">
-                <img src="../assets/image/logo.png" alt="Atiera Logo" style="width: 140px; height: auto;">
+                <img src="<?= getBaseUrl() ?>assets/image/logo.png" alt="Atiera Logo" style="width: 140px; height: auto;">
             </div>
             <h3 style="margin-top: 0; color: #1e293b;">Security Mode</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 24px;">Please enter the system PIN to unlock

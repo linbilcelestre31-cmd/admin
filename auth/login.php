@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ATIERA — Secure Login</title>
-  <link rel="icon" href="../assets/image/logo2.png">
+  <link rel="icon" href="<?= getBaseUrl() ?>assets/image/logo2.png">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -524,13 +524,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
   <!-- Watermark -->
   <div class="bg-watermark" aria-hidden="true">
-    <img src="../assets/image/logo.png" alt="ATIERA watermark" id="wm">
+    <img src="<?= getBaseUrl() ?>assets/image/logo.png" alt="ATIERA watermark" id="wm">
   </div>
 
   <!-- Left panel -->
   <section class="hidden md:flex w-full h-full items-center justify-center">
     <div class="max-w-lg text-white px-6 reveal">
-      <img src="../assets/image/logo.png" alt="ATIERA" class="w-56 mb-6 drop-shadow-xl select-none" draggable="false">
+      <img src="<?= getBaseUrl() ?>assets/image/logo.png" alt="ATIERA" class="w-56 mb-6 drop-shadow-xl select-none" draggable="false">
       <h1 class="text-4xl font-extrabold leading-tight tracking-tight">
         ATIERA <span style="color:var(--gold)">HOTEL & RESTAURANT</span> Management
       </h1>
@@ -543,7 +543,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     <div id="card" class="card p-6 sm:p-8 reveal">
       <div class="flex items-center justify-between mb-4">
         <div class="md:hidden flex items-center gap-3">
-          <img src="../assets/image/logo.png" alt="ATIERA" class="h-10 w-auto">
+          <img src="<?= getBaseUrl() ?>assets/image/logo.png" alt="ATIERA" class="h-10 w-auto">
           <div>
             <div class="text-sm font-semibold leading-4">ATIERA Finance Suite</div>
             <div class="text-[10px] text-[color:var(--muted)]">Blue • White • <span class="font-medium"
