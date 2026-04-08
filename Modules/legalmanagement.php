@@ -4086,37 +4086,6 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
     };
 
-    // Hide loading screen after page loads
-    window.addEventListener('load', function () {
-        // Initially disable login screen interactions
-        const loginScreen = document.getElementById('loginScreen');
-        if (loginScreen) loginScreen.style.pointerEvents = 'none';
-
-        setTimeout(function () {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-
-                    // Enable inputs and button after loader is gone
-                    const pinInputs = document.querySelectorAll('.pin-digit');
-                    const loginBtn = document.getElementById('loginBtn');
-
-                    if (pinInputs.length > 0) {
-                        pinInputs.forEach(input => input.disabled = false);
-                        pinInputs[0].focus(); // Focus after enabling
-                    }
-                    if (loginBtn) {
-                        loginBtn.disabled = false;
-                    }
-                    if (loginScreen) {
-                        loginScreen.style.pointerEvents = 'auto';
-                    }
-                }, 500);
-            }
-            document.body.classList.add('loaded');
-        }, 3000); // 3 seconds total loading time
 
         // Combined Contract Filter Logic
         window.applyContractFilters = function () {
@@ -4319,7 +4288,24 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             switchSection(activeTab.getAttribute('data-target'));
         }
     });
+
+    // Handle Login Enabling after Animation
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            const loader = document.getElementById('loadingOverlay');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    // The external script will handle the focus and interactions
+                }, 500);
+            }
+        }, 3000);
+    });
 </script>
+
+<!-- External Logic -->
+<script src="../assets/Javascript/legalmanagemet.js"></script>
 </div> <!-- End #dashboard -->
 </body>
 
