@@ -1098,14 +1098,62 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 font-size: 12px !important;
             }
             
-            .table-container, .table-scroll-container, .data-table {
+            .table-container, .table-scroll-container {
                 width: 100% !important;
                 display: block !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
+                margin-bottom: 20px;
             }
             .data-table {
-                min-width: 900px !important; /* Ensure table doesn't squish too much */
+                min-width: 900px !important; 
+            }
+
+            /* Responsive Stacking for Contracts Table */
+            .mobile-stack-table thead {
+                display: none;
+            }
+            .mobile-stack-table tr {
+                display: block;
+                background: #ffffff;
+                margin-bottom: 20px;
+                border-radius: 16px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                padding: 15px;
+            }
+            .mobile-stack-table td {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                border: none !important;
+                text-align: right !important;
+                padding: 10px 0 !important;
+                border-bottom: 1px solid #f8fafc !important;
+                width: 100% !important;
+            }
+            .mobile-stack-table td:last-child {
+                border-bottom: none !important;
+                padding-top: 15px !important;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .mobile-stack-table td::before {
+                content: attr(data-label);
+                font-weight: 800;
+                color: #3b82f6;
+                text-transform: uppercase;
+                font-size: 10px;
+                letter-spacing: 0.5px;
+                text-align: left;
+            }
+            .mobile-stack-table .action-container {
+                width: 100%;
+                justify-content: center !important;
+            }
+            .mobile-stack-table .action-btn {
+                width: 100%;
+                margin: 0;
             }
             
             .nav-tabs {
@@ -1384,23 +1432,40 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <div class="dashboard" id="dashboard">
     <div class="header">
         <div class="container">
-            <div class="header-content">
-                <div class="logo">Legal Management System</div>
-                <div class="user-info">
-                    <span>Welcome, Admin</span>
-                    <?php if ($isSuperAdmin): ?>
-                        <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
-                            style="text-decoration: none;">
-                            <i class="fas fa-arrow-left"></i>
-                            Back
-                        </a>
-                    <?php else: ?>
-                        <button type="button" class="logout-btn" id="backDashboardBtn"
-                            onclick="window.location.replace('../Modules/dashboard.php')">
-                            <span class="icon-img-placeholder">⏻</span>
-                            logout
-                        </button>
-                    <?php endif; ?>
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div class="logo" style="display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.5rem; color: #1e293b;">
+                    <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Logo" style="height: 40px; width: auto;">
+                    <span class="logo-text">Legal Management System</span>
+                </div>
+                
+                <div class="header-right" style="display: flex; align-items: center; gap: 25px;">
+                    <div class="time-date-display" style="text-align: right; border-right: 2px solid #e2e8f0; padding-right: 25px; display: flex; flex-direction: column;">
+                        <span id="headerLiveTime" style="font-size: 1.1rem; font-weight: 800; color: #3b82f6; line-height: 1;">00:00:00 AM</span>
+                        <span id="headerLiveDate" style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-top: 4px;"><?php echo date('l, F j, Y'); ?></span>
+                    </div>
+
+                    <div class="notif-wrapper" style="position: relative; cursor: pointer;">
+                        <i class="fa-solid fa-bell" style="font-size: 1.4rem; color: #64748b; transition: all 0.2s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#64748b'"></i>
+                        <span style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 20px; border: 2px solid #fff;">3</span>
+                    </div>
+
+                    <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-weight: 700; color: #1e293b;">Welcome, Admin</span>
+                        <?php if ($isSuperAdmin): ?>
+                            <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
+                                style="text-decoration: none; background: #ef4444; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-arrow-left"></i>
+                                Back
+                            </a>
+                        <?php else: ?>
+                            <button type="button" class="logout-btn" id="backDashboardBtn"
+                                onclick="window.location.replace('../Modules/dashboard.php')"
+                                style="background: #ef4444; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;">
+                                <span class="icon-img-placeholder">⏻</span>
+                                logout
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1689,27 +1754,32 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
             </div>
             <!-- External Legal Management Tabs -->
-            <div class="external-tabs-container" style="margin-bottom: 20px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <div class="external-tabs-container" style="margin-bottom: 30px;">
+                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto;">
                     <button class="ext-tab-btn active" onclick="filterExternalDocs(this, 'supplier')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-file-contract" style="margin-right: 8px;"></i> Supplier Contracts
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: space-between;">
+                        <span><i class="fa-solid fa-file-contract" style="margin-right: 12px; width: 20px;"></i> Supplier Contracts</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'govt')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-landmark" style="margin-right: 8px;"></i> Govt Relations
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-landmark" style="margin-right: 12px; width: 20px;"></i> Govt Relations</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'lawsuits')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-gavel" style="margin-right: 8px;"></i> Lawsuits & Disputes
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-gavel" style="margin-right: 12px; width: 20px;"></i> Lawsuits & Disputes</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'compliance')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-clipboard-check" style="margin-right: 8px;"></i> Regulatory Compliance
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-clipboard-check" style="margin-right: 12px; width: 20px;"></i> Regulatory Compliance</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'consumer')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i> Consumer Protection
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-user-shield" style="margin-right: 12px; width: 20px;"></i> Consumer Protection</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                 </div>
             </div>
@@ -1722,13 +1792,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     buttons.forEach(b => {
                         b.classList.remove('active');
                         b.style.background = 'white';
-                        b.style.color = '#64748b';
+                        b.style.color = '#475569';
+                        b.style.boxShadow = '0 2px 4px rgba(0,0,0,0.03)';
                     });
 
                     // Set active style for clicked button
                     btn.classList.add('active');
                     btn.style.background = '#10b981';
                     btn.style.color = 'white';
+                    btn.style.boxShadow = '0 4px 6px rgba(16, 185, 129, 0.2)';
 
                     // Filter Rows
                     const rows = document.querySelectorAll('.external-doc-row');
@@ -2061,90 +2133,93 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
 
             <!-- Contracts Table -->
-            <table class="data-table premium-table">
-                <thead>
-                    <tr>
-                        <th>Contract Name</th>
-                        <th>Case</th>
-                        <th>Status</th>
-                        <th>Risk Score</th>
-                        <th>Upload Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="contractsTableBody">
-                    <?php foreach ($contracts as $contract):
-                        $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
-                        $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
-                        $score = $contract['risk_score'] ?? 0;
-                        $rowRisk = 'Low';
-                        if ($score >= 70)
-                            $rowRisk = 'High';
-                        elseif ($score >= 31)
-                            $rowRisk = 'Medium';
-                        ?>
-                        <tr class="contract-row" data-risk="<?php echo $rowRisk; ?>"
-                            data-name="<?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? ''); ?>"
-                            data-case="<?php echo htmlspecialchars($contract['case_id']); ?>"
-                            data-date="<?php echo date('Y-m-d', strtotime($contract['created_at'])); ?>">
-                            <td>
-                                <?php if (!empty($contract['file_path'])): ?>
-                                    <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
-                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
-                                <?php else: ?>
-                                    <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($contract['case_id']); ?></td>
-                            <td>
-                                <span class="risk-badge risk-<?php echo strtolower($rowRisk); ?>" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; 
-                                        <?php if ($rowRisk === 'High')
-                                            echo 'background: #fee2e2; color: #ef4444;';
-                                        elseif ($rowRisk === 'Medium')
-                                            echo 'background: #fef3c7; color: #f59e0b;';
-                                        else
-                                            echo 'background: #dcfce7; color: #22c55e;'; ?>">
-                                    <?php echo $rowRisk; ?>
-                                </span>
-                            </td>
-                            <td>
-                                <?php
-                                $score = $contract['risk_score'] ?? 0;
-                                $riskClass = ($score >= 70) ? 'high' : (($score >= 31) ? 'medium' : 'low');
-                                ?>
-                                <span class="risk-score-display <?php echo $riskClass; ?>">
-                                    <?php echo htmlspecialchars($score); ?>/100
-                                </span>
-                            </td>
-                            <td><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
-                            <td>
-                                <div class="action-container">
-                                    <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                        data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
-                                        <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
-                                    </button>
-                                    <button class="action-btn download-btn" data-type="contract-download"
-                                        data-pdf-type="contract"
-                                        data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                        style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                        <i class="fa-solid fa-file-pdf"></i> PDF
-                                    </button>
-                                    <?php if ($isSuperAdmin): ?>
-                                        <form method="POST"
-                                            onsubmit="return confirm('Are you sure you want to delete this contract?');">
-                                            <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
-                                            <button type="submit" name="delete_contract" class="action-btn delete-btn"
-                                                style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                                <i class="fa-solid fa-trash"></i> Delete
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
+            <div class="table-scroll-container">
+                <table class="data-table premium-table mobile-stack-table">
+                    <thead>
+                        <tr>
+                            <th>Contract Name</th>
+                            <th>Case</th>
+                            <th>Status</th>
+                            <th>Risk Score</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="contractsTableBody">
+                        <?php foreach ($contracts as $contract):
+                            $risk_factors = json_decode($contract['risk_factors'] ?? '[]', true);
+                            $recommendations = json_decode($contract['recommendations'] ?? '[]', true);
+                            $score = $contract['risk_score'] ?? 0;
+                            $rowRisk = 'Low';
+                            if ($score >= 70)
+                                $rowRisk = 'High';
+                            elseif ($score >= 31)
+                                $rowRisk = 'Medium';
+                            ?>
+                            <tr class="contract-row" data-risk="<?php echo $rowRisk; ?>"
+                                data-name="<?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? ''); ?>"
+                                data-case="<?php echo htmlspecialchars($contract['case_id']); ?>"
+                                data-date="<?php echo date('Y-m-d', strtotime($contract['created_at'])); ?>">
+                                <td data-label="Contract Name">
+                                    <?php if (!empty($contract['file_path'])): ?>
+                                        <a href="#" class="view-pdf-link text-blue-600 hover:underline" data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'><?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?></a>
+                                    <?php else: ?>
+                                        <?php echo htmlspecialchars($contract['contract_name'] ?? $contract['name'] ?? 'N/A'); ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td data-label="Case ID"><?php echo htmlspecialchars($contract['case_id']); ?></td>
+                                <td data-label="Status">
+                                    <span class="risk-badge risk-<?php echo strtolower($rowRisk); ?>" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+                                            <?php if ($rowRisk === 'High')
+                                                echo 'background: #fee2e2; color: #ef4444;';
+                                            elseif ($rowRisk === 'Medium')
+                                                echo 'background: #fef3c7; color: #f59e0b;';
+                                            else
+                                                echo 'background: #dcfce7; color: #22c55e;'; ?>">
+                                        <?php echo $rowRisk; ?>
+                                    </span>
+                                </td>
+                                <td data-label="Risk Score">
+                                    <?php
+                                    $score = $contract['risk_score'] ?? 0;
+                                    $riskClass = ($score >= 70) ? 'high' : (($score >= 31) ? 'medium' : 'low');
+                                    ?>
+                                    <span class="risk-score-display <?php echo $riskClass; ?>">
+                                        <?php echo htmlspecialchars($score); ?>/100
+                                    </span>
+                                </td>
+                                <td data-label="Upload Date"><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                <td data-label="Actions">
+                                    <div class="action-container">
+                                        <button class="action-btn analyze-btn" data-type="contract-analyze"
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
+                                            <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
+                                        </button>
+                                        <button class="action-btn download-btn" data-type="contract-download"
+                                            data-pdf-type="contract"
+                                            data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        </button>
+                                        <?php if ($isSuperAdmin): ?>
+                                            <form method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this contract?');"
+                                                style="width: 100%;">
+                                                <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
+                                                <button type="submit" name="delete_contract" class="action-btn delete-btn"
+                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer; width: 100%;">
+                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="content-section" id="risk_analysis">
@@ -3833,6 +3908,33 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
     }
 </script>
+
+    <script>
+        // Real-time Clock for Header
+        function updateHeaderClock() {
+            const now = new Date();
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true,
+                timeZone: 'Asia/Manila'
+            };
+            const dateOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Manila'
+            };
+
+            document.getElementById('headerLiveTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('headerLiveDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+        }
+
+        setInterval(updateHeaderClock, 1000);
+        updateHeaderClock();
+    </script>
 </body>
 
 </html>
