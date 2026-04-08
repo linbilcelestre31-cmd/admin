@@ -324,14 +324,13 @@ function getLastInsertId()
             <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="logo" style="display: flex; align-items: center; gap: 15px;">
                     <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
-                    <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px;">Hotel &
-                        Restaurant Visitor Management</span>
+                    <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; text-align: center;">Hotel & Restaurant<br>Visitor Management</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <div class="current-time-bar" style="display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.1); padding: 8px 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px);">
                         <div style="display: flex; align-items: center; gap: 8px; color: #60a5fa;">
                             <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
-                            <span id="visitor-date" style="font-weight: 700; color: white; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                            <span id="visitor-date" style="font-weight: 700; color: white; font-size: 0.9rem; white-space: nowrap;"><?= date('F d, Y') ?></span>
                         </div>
                         <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
                         
@@ -355,7 +354,7 @@ function getLastInsertId()
                         <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
                         <div style="display: flex; align-items: center; gap: 8px; color: #a5b4fc;">
                             <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
-                            <span id="visitor-time" style="font-weight: 700; color: white; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
+                            <span id="visitor-time" style="font-weight: 700; color: white; font-size: 0.9rem; font-variant-numeric: tabular-nums; white-space: nowrap;"><?= date('h:i:s A') ?></span>
                         </div>
                     </div>
                     <nav>
@@ -873,24 +872,36 @@ function getLastInsertId()
 
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 90%;
+            max-width: 500px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: slideDown 0.3s;
+            animation: fadeInScale 0.3s;
         }
 
-        @keyframes slideDown {
+        @keyframes fadeInScale {
             from {
-                transform: translateY(-50px);
+                transform: translate(-50%, -50%) scale(0.9);
                 opacity: 0;
             }
 
             to {
-                transform: translateY(0);
+                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 15px;
             }
         }
 

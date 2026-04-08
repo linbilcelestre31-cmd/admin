@@ -582,16 +582,53 @@ function loadHistory() {
 function viewVisitorDetails(guestId) {
     const guest = hotelVisitors.find(g => String(g.id) === String(guestId));
     if (guest) {
+        const statusBadgeClass = guest.status === 'timed-in' ? 'status-timed-in' : 'status-timed-out';
+        const displayStatus = guest.status === 'timed-in' ? 'CHECKED IN' : (guest.status || 'UNKNOWN');
+        
         const detailsHtml = `
-            <div style="text-align: left; line-height: 1.6;">
-                <p><strong>Name:</strong> ${guest.name}</p>
-                <p><strong>Room/Facility:</strong> ${guest.room || 'N/A'}</p>
-                <p><strong>Email:</strong> ${guest.email || 'N/A'}</p>
-                <p><strong>Phone:</strong> ${guest.phone || 'N/A'}</p>
-                <p><strong>Check-in:</strong> ${formatDate(guest.checkinTime)}</p>
-                <p><strong>Status:</strong> ${guest.status === 'timed-in' ? 'CHECKED IN' : guest.status}</p>
-                <p><strong>Notes:</strong> ${guest.notes || 'None'}</p>
+            <div class="visitor-details-grid" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                    <div style="background: #e0f2fe; color: #0284c7; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: #1e293b; font-size: 1.25rem;">${guest.name}</h3>
+                        <span class="status-badge ${statusBadgeClass}" style="margin-top: 5px; display: inline-block;">${displayStatus}</span>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 5px;">
+                    <div class="detail-item" style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <span style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 4px;">Room/Facility</span>
+                        <div style="font-weight: 500; color: #334155;"><i class="fas fa-door-open" style="color:#94a3b8; margin-right:5px;"></i> ${guest.room || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item" style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <span style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 4px;">Check-in Time</span>
+                        <div style="font-weight: 500; color: #334155;"><i class="fas fa-clock" style="color:#94a3b8; margin-right:5px;"></i> ${formatDate(guest.checkinTime)}</div>
+                    </div>
+                    <div class="detail-item" style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <span style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 4px;">Email Address</span>
+                        <div style="font-weight: 500; color: #334155;"><i class="fas fa-envelope" style="color:#94a3b8; margin-right:5px;"></i> ${guest.email || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item" style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <span style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 4px;">Phone Number</span>
+                        <div style="font-weight: 500; color: #334155;"><i class="fas fa-phone" style="color:#94a3b8; margin-right:5px;"></i> ${guest.phone || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px;">
+                    <span style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 4px;"><i class="fas fa-clipboard" style="margin-right:5px;"></i> Notes</span>
+                    <div style="color: #334155; font-size: 0.95rem; line-height: 1.5;">${guest.notes || 'No notes provided.'}</div>
+                </div>
             </div>
+            
+            <style>
+                @media (max-width: 480px) {
+                    .visitor-details-grid > div:nth-child(2) {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            </style>
         `;
         if (typeof showDetailsModal === 'function') {
             showDetailsModal('Visitor Details', detailsHtml);
