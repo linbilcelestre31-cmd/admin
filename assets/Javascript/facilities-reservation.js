@@ -27,7 +27,7 @@ window.switchTab = function (tabName) {
     // Update page title & subtitle
     const titles = {
         'dashboard': 'Dashboard',
-        'facilities': 'Hotel Facilities',
+        'facilities': 'Facilities',
         'reservations': 'Reservation Management',
         'calendar': 'Reservation Calendar',
         'management': 'Management',

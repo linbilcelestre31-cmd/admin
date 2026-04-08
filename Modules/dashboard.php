@@ -1179,7 +1179,7 @@ $r_rows = [];
                             <?php
                             $tab_titles = [
                                 'dashboard' => 'Dashboard',
-                                'facilities' => 'Hotel Facilities',
+                                'facilities' => 'Facilities',
                                 'reservations' => 'Reservations',
                                 'calendar' => 'Calendar',
                                 'management' => 'Management',
@@ -1376,13 +1376,13 @@ $r_rows = [];
                 <div id="facilities"
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
                     <div class="d-flex justify-between align-center mb-2" style="background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; margin-top: 10px;">
-                        <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">
-                            <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" style="width: 28px; height: 28px;" alt="Hotel">
-                            Hotel
+                        <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b;">
+                            <i class="fa-solid fa-hotel" style="color: #3b82f6;"></i>
+                            Facilities Management
                         </h2>
                         <div class="d-flex gap-1 align-center">
-                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')" style="background: #3182ce; border-radius: 8px; padding: 8px 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 6px -1px rgba(49, 130, 206, 0.2);">
-                                <i class="fa-solid fa-plus"></i> Add
+                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')" style="background: #3b82f6; border-radius: 10px; padding: 10px 20px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);">
+                                <i class="fa-solid fa-plus" style="font-size: 0.9rem;"></i> Add Facility
                             </button>
                         </div>
                     </div>

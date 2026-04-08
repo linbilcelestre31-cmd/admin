@@ -27,6 +27,28 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             width: 280px !important;
             box-shadow: 10px 0 30px rgba(0,0,0,0.5) !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .sidebar .nav-links a {
+            color: #cbd5e0 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        .sidebar .nav-links a i {
+            color: #cbd5e0 !important;
+            width: 20px !important;
+            text-align: center !important;
+        }
+        .sidebar .nav-links a div {
+            color: inherit !important;
+        }
+        .sidebar .nav-title, .sidebar .logo-area div {
+            display: block !important;
+        }
+        .sidebar .dropdown-arrow {
+            display: inline-block !important;
         }
         .sidebar.active {
             transform: translateX(0) !important;
@@ -474,6 +496,25 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         const overlay = document.querySelector('.mobile-menu-overlay');
         
         if (window.innerWidth <= 768) {
+            // Reset any desktop collapsed styles just in case
+            sidebar.style.width = '';
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                a.style.color = '';
+                const icon = a.querySelector('i');
+                if (icon) icon.style.color = '';
+                const div = a.querySelector('div');
+                if (div) div.style.color = '';
+                const arrow = a.querySelector('.dropdown-arrow');
+                if (arrow) arrow.style.display = '';
+            });
+            document.querySelectorAll('.nav-title, .logo-area div').forEach(el => el.style.display = '');
+
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            if (sidebarLogo) {
+                sidebarLogo.src = '<?= rtrim(getBaseUrl(), '/') ?>/assets/image/logo.png';
+                sidebarLogo.style.height = '60px'; // Reset for mobile
+            }
+
             // Mobile behavior: Use active class for transform
             const isActive = sidebar.classList.toggle('active');
             if (overlay) {
@@ -578,4 +619,31 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             if (overlay) overlay.style.display = 'none';
         }
     };
+
+    // 9. Handle window resize to reset sidebar if going mobile
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                 sidebar.style.width = '';
+                 sidebar.style.transition = '';
+                 const sidebarLogo = document.getElementById('sidebarLogo');
+                 if (sidebarLogo) {
+                     sidebarLogo.src = '<?= rtrim(getBaseUrl(), '/') ?>/assets/image/logo.png';
+                     sidebarLogo.style.height = '60px';
+                 }
+                 // Reset inline color/display for all a tags, titles etc
+                 document.querySelectorAll('.nav-links a').forEach(a => {
+                    a.style.color = '';
+                    const icon = a.querySelector('i');
+                    if (icon) icon.style.color = '';
+                    const div = a.querySelector('div');
+                    if (div) div.style.color = '';
+                    const arrow = a.querySelector('.dropdown-arrow');
+                    if (arrow) arrow.style.display = '';
+                 });
+                 document.querySelectorAll('.nav-title, .logo-area div').forEach(el => el.style.display = '');
+            }
+        }
+    });
 </script>
