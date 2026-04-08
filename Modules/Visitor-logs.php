@@ -9,6 +9,7 @@
 
 // Include HR4 API for employee data integration
 require_once __DIR__ . '/../integ/hr4_api.php';
+require_once __DIR__ . '/../include/Config.php';
 
 
 
@@ -91,7 +92,7 @@ function getLastInsertId()
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ateria Visitor Management</title>
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>/assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,7 +318,7 @@ function getLastInsertId()
         <div class="container">
             <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="logo" style="display: flex; align-items: center; gap: 15px;">
-                    <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
+                    <img src="<?= getBaseUrl() ?>/assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
                     <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px;">Hotel &
                         Restaurant Visitor Management</span>
                 </div>
@@ -380,7 +381,7 @@ function getLastInsertId()
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 2rem;">
-                        <img src="../assets/image/logo2.png" alt="Logo" style="height: 50px; width: auto;">
+                        <img src="<?= getBaseUrl() ?>/assets/image/logo2.png" alt="Logo" style="height: 50px; width: auto;">
                         <h1 style="margin-bottom: 0;">Dashboard</h1>
                     </div>
                     <div class="stats-container">

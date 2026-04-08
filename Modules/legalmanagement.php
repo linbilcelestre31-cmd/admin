@@ -9,6 +9,7 @@
 
 // Include HR4 API for employee-contract linking
 require_once __DIR__ . '/../integ/hr4_api.php';
+require_once __DIR__ . '/../include/Config.php';
 
 
 if (session_status() === PHP_SESSION_NONE)
@@ -816,7 +817,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>/assets/image/logo2.png">
     <link rel="stylesheet" href="../assets/css/legalmanagement.css?v=1" media="none"
         onload="if(media!='all')media='all'">
 
@@ -1000,25 +1001,21 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             animation: pulse-red 2s infinite;
         }
 
-        /* Mobile Optimization for Legal Management */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 1000 !important;
-                width: 260px !important;
-                position: fixed !important;
-                left: 0;
-                top: 0;
-                height: 100vh;
+            .header-content {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 15px !important;
+                text-align: center;
+                padding: 15px 0;
             }
-            .sidebar.active {
-                transform: translateX(0);
+            .user-info {
+                width: 100%;
+                justify-content: center;
+                gap: 10px;
             }
-            .main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding: 10px !important;
+            .logo {
+                font-size: 1.2rem !important;
             }
             
             .metrics-grid {
@@ -1033,38 +1030,31 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 margin-bottom: 20px;
-                scrollbar-width: auto !important; /* Re-enable scrollbar for mobile */
+                scrollbar-width: auto !important;
             }
             .data-table {
-                min-width: 900px !important;
-            }
-            .data-table th, .data-table td {
-                padding: 10px 5px !important;
-                font-size: 12px !important;
+                min-width: 800px !important;
             }
             
-            .dashboard-header {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 15px !important;
+            .nav-tabs {
+                display: flex !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                padding-bottom: 10px !important;
+                gap: 5px !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
             }
-            .header-actions {
-                width: 100%;
-                justify-content: flex-start;
-                flex-wrap: wrap;
-                gap: 10px !important;
+            .nav-tabs::-webkit-scrollbar {
+                display: none;
             }
-            
-            .tab-nav {
-                overflow-x: auto;
-                white-space: nowrap;
-                padding-bottom: 5px;
+            .nav-tab {
+                flex: 0 0 auto !important;
+                padding: 8px 15px !important;
+                font-size: 13px !important;
             }
-            
-            /* Hide non-essential columns on very small screens if necessary, 
-               but user wants scrollbar, so we keep min-width */
         }
-    </style>
+
 
         .risk-medium {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -1282,15 +1272,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
         }
     </style>
-
-
 </head>
 
 <!-- Login Screen -->
 <div class="login-container" id="loginScreen">
     <div class="login-form">
         <div style="text-align: center; margin-bottom: 25px;">
-            <img src="../assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
+            <img src="<?= getBaseUrl() ?>/assets/image/logo.png" alt="Logo" style="width: 200px; height: auto;">
         </div>
         <h2>Legal Management System</h2>
         <p>Enter your PIN to access the system</p>

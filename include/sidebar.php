@@ -5,13 +5,13 @@ $isSuperAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin'
 $current_page = basename($_SERVER['PHP_SELF']);
 $is_dashboard = ($current_page == 'dashboard.php');
 
-function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
-{
+require_once __DIR__ . '/Config.php';
+
+function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     if ($isSuperAdmin && $tab === 'dashboard') {
-        return "../Super-admin/Dashboard.php";
+        return getBaseUrl() . "/Super-admin/Dashboard.php";
     }
-    // Always return a direct link for reliability
-    return "../Modules/dashboard.php?tab=$tab";
+    return getBaseUrl() . "/Modules/dashboard.php?tab=$tab";
 }
 ?>
 <style>
@@ -107,17 +107,17 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         <i class="fa-solid fa-house"></i>
         <span>Home</span>
     </a>
-    <a href="../Modules/Visitor-logs.php" 
+    <a href="<?= getBaseUrl() ?>/Modules/Visitor-logs.php" 
        class="bottom-nav-item <?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
         <i class="fa-solid fa-id-card-clip"></i>
         <span>Visitors</span>
     </a>
-    <a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+    <a href="#" onclick="checkVaultPin(event, '<?= getBaseUrl() ?>/Modules/document management(archiving).php')"
        class="bottom-nav-item <?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
         <i class="fa-solid fa-vault"></i>
         <span>Vault</span>
     </a>
-    <a href="../Modules/legalmanagement.php" 
+    <a href="<?= getBaseUrl() ?>/Modules/legalmanagement.php" 
        class="bottom-nav-item <?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
         <i class="fa-solid fa-scale-balanced"></i>
         <span>Legal</span>
@@ -137,7 +137,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <img id="sidebarLogo" src="../assets/image/logo.png" alt="Atiéra Logo"
+                    <img id="sidebarLogo" src="<?= getBaseUrl() ?>/assets/image/logo.png" alt="Atiéra Logo"
                         style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <?php if ($isSuperAdmin): ?>
                         <div
@@ -154,7 +154,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         <div class="nav-title">Settings</div>
         <ul class="nav-links">
             <li>
-                <a href="<?= $isSuperAdmin ? '../Super-admin/Settings.php' : '../include/Settings.php' ?>"
+                <a href="<?= $isSuperAdmin ? getBaseUrl() . '/Super-admin/Settings.php' : getBaseUrl() . '/include/Settings.php' ?>"
                     class="<?= ($current_page == 'Settings.php') ? 'active' : '' ?>">
                     <i class="fa-solid fa-circle-user"></i> Account
                 </a>
@@ -213,16 +213,16 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 </ul>
             </li>
 
-            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+            <li><a href="#" onclick="checkVaultPin(event, '<?= getBaseUrl() ?>/Modules/document management(archiving).php')"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-vault"></i> Document Archiving
                 </a></li>
-            <li><a href="../Modules/Visitor-logs.php"
+            <li><a href="<?= getBaseUrl() ?>/Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
                     <i class="fa-solid fa-id-card-clip"></i> Visitors Management
                 </a></li>
-            <li><a href="../Modules/legalmanagement.php"
+            <li><a href="<?= getBaseUrl() ?>/Modules/legalmanagement.php"
                     class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-scale-balanced"></i> Legal Management
@@ -263,7 +263,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             const div = document.createElement('div');
             div.id = 'loadingOverlay';
             div.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); transition: opacity 0.5s ease; opacity: 1;';
-            div.innerHTML = '<iframe src="../animation/loading.html" style="width:100%; height:100%; border:none; background:transparent;" allowtransparency="true"></iframe>';
+            div.innerHTML = `<iframe src="<?= getBaseUrl() ?>/animation/loading.html" style="width:100%; height:100%; border:none; background:transparent;" allowtransparency="true"></iframe>`;
             document.body.appendChild(div);
         }
 
@@ -328,7 +328,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         if (event) event.preventDefault();
 
         // Store target URL
-        window.pendingVaultUrl = url || '../Modules/document management(archiving).php';
+        window.pendingVaultUrl = url || '<?= getBaseUrl() ?>/Modules/document management(archiving).php';
 
         // Inject PIN Modal if missing
         if (!document.getElementById('vaultPinModal')) {
@@ -487,7 +487,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 // Show logo.png
                 const sidebarLogo = document.getElementById('sidebarLogo');
                 if (sidebarLogo) {
-                    sidebarLogo.src = '../assets/image/logo.png';
+                    sidebarLogo.src = '<?= getBaseUrl() ?>/assets/image/logo.png';
                     sidebarLogo.style.height = '60px'; // Restore size
                 }
 
@@ -528,7 +528,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 // Show logo2.png
                 const sidebarLogo = document.getElementById('sidebarLogo');
                 if (sidebarLogo) {
-                    sidebarLogo.src = '../assets/image/logo2.png';
+                    sidebarLogo.src = '<?= getBaseUrl() ?>/assets/image/logo2.png';
                     sidebarLogo.style.height = '40px'; // Smaller for collapsed
                 }
 

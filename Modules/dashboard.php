@@ -9,6 +9,7 @@
 
 // Include HR4 API for employee management
 require_once __DIR__ . '/../integ/hr4_api.php';
+require_once __DIR__ . '/../include/Config.php';
 
 
 
@@ -814,7 +815,7 @@ $r_rows = [];
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="<?= getBaseUrl() ?>/assets/image/logo2.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
