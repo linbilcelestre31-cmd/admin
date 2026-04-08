@@ -1867,6 +1867,76 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 padding-top: 10px;
                 text-align: left !important;
             }
+
+            .inner-legal-tabs {
+                flex-direction: column !important;
+                max-width: 600px !important;
+            }
+            .inner-legal-tabs .legal-tab-btn {
+                width: 100% !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                padding: 14px 20px !important;
+                text-align: left !important;
+            }
+            .inner-legal-tabs .legal-tab-btn i:not(.fa-chevron-right) {
+                font-size: 1.1rem !important;
+                margin-right: 12px !important;
+            }
+            .inner-legal-tabs .legal-tab-btn .fa-chevron-right {
+                display: block !important;
+                font-size: 0.8rem !important;
+                opacity: 0.7;
+            }
+        }
+
+        .inner-legal-tabs {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .inner-legal-tabs .legal-tab-btn {
+            flex: 1;
+            max-width: 250px;
+            text-align: center;
+            padding: 18px 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .inner-legal-tabs .legal-tab-btn i:not(.fa-chevron-right) {
+            font-size: 1.4rem;
+            margin: 0 !important;
+        }
+
+        .inner-legal-tabs .legal-tab-btn span {
+            font-size: 0.9rem;
+        }
+
+        .inner-legal-tabs .legal-tab-btn .fa-chevron-right {
+            display: none;
+        }
+
+        .inner-legal-tabs .legal-tab-btn.active {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
         }
     </style>
 
@@ -1929,7 +1999,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <i class="fa-solid fa-robot" style="font-size: 2.5rem; color: #60a5fa;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 10px;">Welcome to the <span style="color: #60a5fa;">Legal Command Center</span></h3>
+                        <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 10px;">Welcome to the <span style="color: #60a5fa;">Legal Management System</span></h3>
                         <p style="color: #94a3b8; font-size: 1.05rem; max-width: 600px; line-height: 1.6;">Your AI-powered suite for contract analysis, document tracking, and employee legal history. Access all modules from the navigation bar above or review high-level insights below.</p>
                     </div>
                     <button onclick="switchSection('risk_analysis')" style="margin-left: auto; background: #3b82f6; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);">
@@ -2041,31 +2111,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
             </div>
             <!-- Internal Legal Management Tabs -->
-            <div class="internal-tabs-container" style="margin-bottom: 30px;">
-                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto;">
-                    <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
-                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: space-between;">
-                        <span><i class="fa-solid fa-book-open" style="margin-right: 12px; width: 20px;"></i> Policies &
-                            Handbook</span>
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
+            <div class="internal-tabs-container" style="margin-bottom: 40px;">
+                <div class="inner-legal-tabs">
+                    <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Policies & Handbook</span>
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
-                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
-                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-users" style="margin-right: 12px; width: 20px;"></i> Labor
-                            Relations</span>
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Labor Relations</span>
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
-                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
-                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-scale-balanced" style="margin-right: 12px; width: 20px;"></i>
-                            Internal Compliance</span>
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                        <span>Internal Compliance</span>
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
-                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
-                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-shield-halved" style="margin-right: 12px; width: 20px;"></i> Risk
-                            Management</span>
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Risk Management</span>
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
@@ -2075,17 +2141,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     // Update Tab Styles
                     const container = btn.closest('.internal-tabs-container');
                     const buttons = container.querySelectorAll('.legal-tab-btn');
-                    buttons.forEach(b => {
-                        b.classList.remove('active');
-                        b.style.background = 'white';
-                        b.style.color = '#475569';
-                        b.style.boxShadow = '0 2px 4px rgba(0,0,0,0.03)';
-                    });
-
+                    buttons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    btn.style.background = '#3b82f6';
-                    btn.style.color = 'white';
-                    btn.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.2)';
 
                     // Filter Rows
                     const rows = document.querySelectorAll('.internal-doc-row');

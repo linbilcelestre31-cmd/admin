@@ -665,6 +665,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 switch ($module) {
                     case 'all':
+                        $db = get_pdo();
                         $status_val = $db->quote($status);
                         $where_status = ($status !== 'all') ? " AND status = $status_val" : "";
                         $where_status_res = ($status !== 'all') ? " AND r.status = $status_val" : "";
