@@ -297,7 +297,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $position = $_POST['employee_position'] ?? '';
         $email = $_POST['employee_email'] ?? '';
         $phone = $_POST['employee_phone'] ?? '';
-        
+
         if ($empId > 0) {
             // Check if record exists locally
             $check = $db->prepare("SELECT COUNT(*) FROM contacts WHERE id = ?");
@@ -672,7 +672,8 @@ try {
                     break;
                 }
             }
-            if ($isDuplicate) continue;
+            if ($isDuplicate)
+                continue;
 
             $jobTitle = 'N/A';
             if (isset($emp['employment_details']) && is_array($emp['employment_details'])) {
@@ -1005,6 +1006,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             .header {
                 padding: 10px 0;
             }
+
             .header-content {
                 flex-direction: column !important;
                 align-items: center !important;
@@ -1012,107 +1014,125 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 text-align: center;
                 padding: 10px 0;
             }
+
             .logo {
                 font-size: 1.1rem !important;
                 margin-bottom: 5px;
             }
+
             .user-info {
                 width: 100%;
                 justify-content: center;
                 gap: 8px;
                 font-size: 14px;
             }
+
             .logout-btn {
                 padding: 6px 12px !important;
                 font-size: 13px !important;
             }
-            
+
             .content-section {
                 padding: 15px !important;
             }
-            
+
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
+
             .section-title {
                 font-size: 1.2rem;
             }
+
             .add-btn {
                 width: 100%;
                 justify-content: center;
             }
 
-            .filters-container > div {
+            .filters-container>div {
                 flex-direction: column !important;
                 align-items: stretch !important;
                 gap: 15px !important;
             }
+
             .filter-group {
                 width: 100% !important;
                 flex: none !important;
                 min-width: 0 !important;
             }
+
             .filter-group[style*="display: flex"] {
                 flex-direction: row !important;
             }
+
             .filter-group button {
                 flex: 1;
                 justify-content: center;
             }
-            
+
             .risk-stats-grid {
                 grid-template-columns: 1fr 1fr !important;
                 gap: 12px !important;
             }
+
             .stat-card {
                 padding: 15px !important;
                 gap: 12px !important;
                 flex-direction: column;
                 text-align: center;
             }
+
             .stat-icon {
                 width: 50px;
                 height: 50px;
                 font-size: 1.2rem;
             }
+
             .stat-value {
                 font-size: 1.4rem;
             }
-            
-            .chart-container-wrapper, .high-risk-list-wrapper {
+
+            .chart-container-wrapper,
+            .high-risk-list-wrapper {
                 padding: 15px !important;
             }
+
             .chart-area {
                 height: 300px !important;
                 padding: 15px !important;
             }
-            .chart-container-wrapper > div:first-child {
+
+            .chart-container-wrapper>div:first-child {
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 gap: 15px !important;
             }
+
             .chart-container-wrapper button {
                 padding: 8px 15px !important;
                 font-size: 12px !important;
             }
-            
-            .table-container, .table-scroll-container {
+
+            .table-container,
+            .table-scroll-container {
                 width: 100% !important;
                 display: block !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 margin-bottom: 20px;
             }
+
             .data-table {
-                min-width: 900px !important; 
+                min-width: 900px !important;
             }
 
             /* Responsive Stacking for Contracts Table */
             .mobile-stack-table thead {
                 display: none;
             }
+
             .mobile-stack-table tr {
                 display: block;
                 background: #ffffff;
@@ -1122,6 +1142,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
                 padding: 15px;
             }
+
             .mobile-stack-table td {
                 display: flex !important;
                 justify-content: space-between;
@@ -1132,12 +1153,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 border-bottom: 1px solid #f8fafc !important;
                 width: 100% !important;
             }
+
             .mobile-stack-table td:last-child {
                 border-bottom: none !important;
                 padding-top: 15px !important;
                 flex-direction: column;
                 gap: 10px;
             }
+
             .mobile-stack-table td::before {
                 content: attr(data-label);
                 font-weight: 800;
@@ -1147,15 +1170,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 letter-spacing: 0.5px;
                 text-align: left;
             }
+
             .mobile-stack-table .action-container {
                 width: 100%;
                 justify-content: center !important;
             }
+
             .mobile-stack-table .action-btn {
                 width: 100%;
                 margin: 0;
             }
-            
+
             .nav-tabs {
                 display: flex !important;
                 overflow-x: auto !important;
@@ -1166,9 +1191,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 scrollbar-width: none;
                 border-radius: 10px !important;
             }
+
             .nav-tabs::-webkit-scrollbar {
                 display: none;
             }
+
             .nav-tab {
                 flex: 0 0 auto !important;
                 padding: 10px 15px !important;
@@ -1180,9 +1207,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             .risk-stats-grid {
                 grid-template-columns: 1fr !important;
             }
+
             .filter-group[style*="display: flex"] {
                 flex-direction: column !important;
             }
+
             .stat-card {
                 flex-direction: row;
                 text-align: left;
@@ -1430,45 +1459,62 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <!-- Dashboard Container (Hidden until login) -->
 <div id="dashboard" style="display: none;">
 
-<!-- Dashboard -->
-    <header style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); border-radius: 50%; blur: 40px;"></div>
-        <div style="position: absolute; bottom: -50px; left: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%); border-radius: 50%; blur: 40px;"></div>
-        
-        <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1;">
+    <!-- Dashboard -->
+    <header
+        style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
+        <div
+            style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); border-radius: 50%; blur: 40px;">
+        </div>
+        <div
+            style="position: absolute; bottom: -50px; left: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%); border-radius: 50%; blur: 40px;">
+        </div>
+
+        <div class="container"
+            style="display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1;">
             <!-- Logo Section -->
             <div class="logo-area" style="margin-bottom: 25px; transform: scale(1.1); transition: transform 0.3s ease;">
-                <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo" style="height: 65px; width: auto; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));">
+                <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo"
+                    style="height: 65px; width: auto; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));">
             </div>
 
             <!-- Title Section -->
             <div style="margin-bottom: 30px;">
-                <h1 style="color: #f8fafc; font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; text-transform: none; font-family: 'Cinzel', serif;">
-                    Legal <span style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Management</span> System
+                <h1
+                    style="color: #f8fafc; font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; text-transform: none; font-family: 'Cinzel', serif;">
+                    Legal <span
+                        style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Management</span>
                 </h1>
 
             </div>
 
             <!-- Time-Date-Notif Encapsulated Bar -->
-            <div class="header-status-bar" style="display: flex; align-items: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);">
+            <div class="header-status-bar"
+                style="display: flex; align-items: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);">
                 <!-- Date -->
                 <div style="display: flex; align-items: center; gap: 12px; color: #60a5fa;">
-                    <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
                         <i class="fa-solid fa-calendar-days" style="font-size: 1.1rem;"></i>
                     </div>
                     <div style="text-align: left;">
-                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Current Date</span>
-                        <span id="headerLiveDate" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem;"><?php echo date('F d, Y'); ?></span>
+                        <span
+                            style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Current
+                            Date</span>
+                        <span id="headerLiveDate"
+                            style="font-weight: 700; color: #f8fafc; font-size: 1.05rem;"><?php echo date('F d, Y'); ?></span>
                     </div>
                 </div>
 
                 <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Bell -->
-                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease;">
-                    <div style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(251, 191, 36, 0.2);">
+                <div class="notif-wrapper"
+                    style="position: relative; cursor: pointer; color: #fbbf24; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease;">
+                    <div
+                        style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(251, 191, 36, 0.2);">
                         <i class="fa-solid fa-bell" style="font-size: 1.3rem;"></i>
-                        <span style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 22px; height: 22px; border: 3px solid #1e293b; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">3</span>
+                        <span
+                            style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 22px; height: 22px; border: 3px solid #1e293b; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">3</span>
                     </div>
                 </div>
 
@@ -1476,19 +1522,28 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
                 <!-- Time -->
                 <div style="display: flex; align-items: center; gap: 12px; color: #818cf8;">
-                    <div style="width: 40px; height: 40px; background: rgba(129, 140, 248, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(129, 140, 248, 0.2);">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(129, 140, 248, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(129, 140, 248, 0.2);">
                         <i class="fa-solid fa-clock" style="font-size: 1.1rem;"></i>
                     </div>
                     <div style="text-align: left;">
-                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Live Time</span>
-                        <span id="headerLiveTime" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00 AM</span>
+                        <span
+                            style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Live
+                            Time</span>
+                        <span id="headerLiveTime"
+                            style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00
+                            AM</span>
                     </div>
                 </div>
             </div>
 
             <!-- Custom Tab Navigation -->
-            <div class="premium-nav-tabs" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px;">
-                <button class="nav-tab active" data-target="employees" onclick="switchSection('employees')">
+            <div class="premium-nav-tabs"
+                style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px;">
+                <button class="nav-tab active" data-target="overview" onclick="switchSection('overview')">
+                    <i class="fa-solid fa-gauge-high" style="margin-right: 8px;"></i> Dashboard
+                </button>
+                <button class="nav-tab" data-target="employees" onclick="switchSection('employees')">
                     <i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i> Employees
                 </button>
                 <button class="nav-tab" data-target="internal" onclick="switchSection('internal')">
@@ -1506,14 +1561,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <button class="nav-tab" data-target="risk_analysis" onclick="switchSection('risk_analysis')">
                     <i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Risk Insights
                 </button>
-                
+
                 <div style="margin-left: 10px; display: flex; align-items: center;">
                     <?php if ($isSuperAdmin): ?>
-                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
+                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn"
+                            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
                             <i class="fa-solid fa-arrow-left-long"></i>
                         </a>
                     <?php else: ?>
-                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
+                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')"
+                            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
                             <i class="fa-solid fa-power-off"></i>
                         </button>
                     <?php endif; ?>
@@ -1583,11 +1640,13 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 transform: translateX(-50%);
                 position: relative;
             }
-            .header-status-bar > div:not(.divider) {
+
+            .header-status-bar>div:not(.divider) {
                 width: auto !important;
                 justify-content: center;
                 gap: 8px !important;
             }
+
             .header-status-bar .divider {
                 display: block !important;
                 width: 1px !important;
@@ -1595,23 +1654,28 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 margin: 0 5px !important;
                 opacity: 0.5;
             }
-            .header-status-bar div[style*="width: 40px"], 
+
+            .header-status-bar div[style*="width: 40px"],
             .header-status-bar div[style*="width: 45px"] {
                 width: 32px !important;
                 height: 32px !important;
             }
+
             .header-status-bar span[style*="font-size: 0.7rem"] {
                 display: none !important;
             }
+
             .header-status-bar span[id*="headerLive"] {
                 font-size: 0.85rem !important;
                 white-space: nowrap !important;
                 display: flex !important;
                 align-items: center !important;
             }
+
             .header-status-bar i {
                 font-size: 0.9rem !important;
             }
+
             .header-status-bar .notif-wrapper span {
                 min-width: 16px !important;
                 height: 16px !important;
@@ -1619,6 +1683,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 top: -1px !important;
                 right: -1px !important;
             }
+
             .premium-nav-tabs {
                 padding: 5px 15px;
                 gap: 10px !important;
@@ -1629,17 +1694,59 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 scrollbar-width: none;
                 width: 100% !important;
             }
+
             .premium-nav-tabs::-webkit-scrollbar {
                 display: none;
             }
+
             .premium-nav-tabs .nav-tab {
                 flex: 0 0 auto !important;
                 font-size: 0.85rem;
                 padding: 12px 20px;
                 white-space: nowrap !important;
             }
+
             .premium-nav-tabs .back-btn {
                 flex: 0 0 auto !important;
+            }
+
+            /* Risk Analysis Mobile Optimization */
+            .risk-stats-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            .chart-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 20px !important;
+            }
+            .chart-header > div {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+            .chart-header h3 span {
+                font-size: 1.1rem !important;
+            }
+            .chart-area {
+                height: 300px !important;
+                padding: 15px !important;
+            }
+            .chart-legend {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+                padding: 15px !important;
+            }
+            .chart-legend > div {
+                width: 100% !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 10px !important;
+            }
+            .chart-legend > div:last-child {
+                border-top: 1px solid #e2e8f0;
+                padding-top: 10px;
+                text-align: left !important;
             }
         }
     </style>
@@ -1647,19 +1754,74 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div class="container main-content-wrapper" style="margin-top: -20px; position: relative; z-index: 10;">
         <!-- Success/Error Messages -->
         <?php if (isset($success_message)): ?>
-            <div class="alert alert-success" style="border-radius: 16px; border: none; background: #10b981; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
+            <div class="alert alert-success"
+                style="border-radius: 16px; border: none; background: #10b981; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
                 <i class="fa-solid fa-circle-check" style="margin-right: 10px;"></i> <?php echo $success_message; ?>
             </div>
         <?php endif; ?>
 
         <?php if (isset($error_message)): ?>
-            <div class="alert alert-error" style="border-radius: 16px; border: none; background: #ef4444; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);">
+            <div class="alert alert-error"
+                style="border-radius: 16px; border: none; background: #ef4444; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);">
                 <i class="fa-solid fa-triangle-exclamation" style="margin-right: 10px;"></i> <?php echo $error_message; ?>
             </div>
         <?php endif; ?>
 
+        <!-- Dashboard Overview Section -->
+        <div class="content-section active" id="overview">
+            <div class="section-header">
+                <h2 class="section-title">Legal Management Overview</h2>
+            </div>
+            
+            <!-- Quick Stats Summary -->
+            <div class="risk-stats-grid" style="margin-bottom: 40px;">
+                <div class="stat-card total" style="background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);">
+                    <div class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Managed Files</span>
+                        <span class="stat-value"><?php echo count($employees) + count($internalDocs) + count($externalDocs); ?></span>
+                        <span class="stat-meta">Across all modules</span>
+                    </div>
+                </div>
+                <!-- Risk Stats (Redundant but good for dashboard) -->
+                <div class="stat-card high">
+                    <div class="stat-icon"><i class="fa-solid fa-shield-virus"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Critical Risks</span>
+                        <span class="stat-value"><?php echo $riskCounts['High']; ?></span>
+                        <span class="stat-meta">Immediate action required</span>
+                    </div>
+                </div>
+                <div class="stat-card medium">
+                    <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Pending Reviews</span>
+                        <span class="stat-value"><?php echo $riskCounts['Medium']; ?></span>
+                        <span class="stat-meta">Due for monitoring</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Welcome Banner -->
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 24px; padding: 40px; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(59, 130, 246, 0.1); border-radius: 50%;"></div>
+                <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+                        <i class="fa-solid fa-robot" style="font-size: 2.5rem; color: #60a5fa;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 10px;">Welcome to the <span style="color: #60a5fa;">Legal Command Center</span></h3>
+                        <p style="color: #94a3b8; font-size: 1.05rem; max-width: 600px; line-height: 1.6;">Your AI-powered suite for contract analysis, document tracking, and employee legal history. Access all modules from the navigation bar above or review high-level insights below.</p>
+                    </div>
+                    <button onclick="switchSection('risk_analysis')" style="margin-left: auto; background: #3b82f6; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);">
+                         View Risk Insights <i class="fa-solid fa-arrow-right" style="margin-left: 10px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Employees Section -->
-        <div class="content-section active" id="employees">
+        <div class="content-section" id="employees">
             <div class="section-header">
                 <h2 class="section-title">Employee Information</h2>
                 <button class="add-btn" id="addEmployeeBtn">
@@ -1764,22 +1926,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto;">
                     <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: space-between;">
-                        <span><i class="fa-solid fa-book-open" style="margin-right: 12px; width: 20px;"></i> Policies & Handbook</span>
+                        <span><i class="fa-solid fa-book-open" style="margin-right: 12px; width: 20px;"></i> Policies &
+                            Handbook</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-users" style="margin-right: 12px; width: 20px;"></i> Labor Relations</span>
+                        <span><i class="fa-solid fa-users" style="margin-right: 12px; width: 20px;"></i> Labor
+                            Relations</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-scale-balanced" style="margin-right: 12px; width: 20px;"></i> Internal Compliance</span>
+                        <span><i class="fa-solid fa-scale-balanced" style="margin-right: 12px; width: 20px;"></i>
+                            Internal Compliance</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-shield-halved" style="margin-right: 12px; width: 20px;"></i> Risk Management</span>
+                        <span><i class="fa-solid fa-shield-halved" style="margin-right: 12px; width: 20px;"></i> Risk
+                            Management</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                 </div>
@@ -1923,27 +2089,32 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto;">
                     <button class="ext-tab-btn active" onclick="filterExternalDocs(this, 'supplier')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #10b981; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: space-between;">
-                        <span><i class="fa-solid fa-file-contract" style="margin-right: 12px; width: 20px;"></i> Supplier Contracts</span>
+                        <span><i class="fa-solid fa-file-contract" style="margin-right: 12px; width: 20px;"></i>
+                            Supplier Contracts</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'govt')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-landmark" style="margin-right: 12px; width: 20px;"></i> Govt Relations</span>
+                        <span><i class="fa-solid fa-landmark" style="margin-right: 12px; width: 20px;"></i> Govt
+                            Relations</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'lawsuits')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-gavel" style="margin-right: 12px; width: 20px;"></i> Lawsuits & Disputes</span>
+                        <span><i class="fa-solid fa-gavel" style="margin-right: 12px; width: 20px;"></i> Lawsuits &
+                            Disputes</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'compliance')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-clipboard-check" style="margin-right: 12px; width: 20px;"></i> Regulatory Compliance</span>
+                        <span><i class="fa-solid fa-clipboard-check" style="margin-right: 12px; width: 20px;"></i>
+                            Regulatory Compliance</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="ext-tab-btn" onclick="filterExternalDocs(this, 'consumer')"
                         style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <span><i class="fa-solid fa-user-shield" style="margin-right: 12px; width: 20px;"></i> Consumer Protection</span>
+                        <span><i class="fa-solid fa-user-shield" style="margin-right: 12px; width: 20px;"></i> Consumer
+                            Protection</span>
                         <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                 </div>
@@ -2354,7 +2525,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <?php echo htmlspecialchars($score); ?>/100
                                     </span>
                                 </td>
-                                <td data-label="Upload Date"><?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
+                                <td data-label="Upload Date">
+                                    <?php echo date('Y-m-d', strtotime($contract['created_at'])); ?></td>
                                 <td data-label="Actions">
                                     <div class="action-container">
                                         <button class="action-btn analyze-btn" data-type="contract-analyze"
@@ -2432,8 +2604,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             <div class="risk-analysis-layout">
                 <div class="chart-container-wrapper">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div class="chart-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                         <h3 class="subsection-title" style="margin: 0; display: flex; align-items: center; gap: 12px;">
                             <div
                                 style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
@@ -2465,8 +2636,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                         <canvas id="riskDistributionChart" width="600" height="400"
                             style="width: 100%; height: 100%; opacity: 1; border-radius: 16px;"></canvas>
                     </div>
-                    <div
-                        style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div class="chart-legend" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div style="display: flex; gap: 20px;">
                             <div
                                 style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
@@ -4074,77 +4244,77 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     }
 </script>
 
-    <script>
-        // Premium Section Switcher
-        function switchSection(targetId) {
-            // Update Tab Buttons
-            const tabs = document.querySelectorAll('.nav-tab[data-target]');
-            tabs.forEach(tab => {
-                if (tab.getAttribute('data-target') === targetId) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-
-            // Update Content Sections
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                    section.style.display = 'block';
-                    
-                    // Trigger animations or chart re-init
-                    if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
-                        setTimeout(window.initRiskChart, 50);
-                    }
-                    
-                    // Scroll into view if on mobile
-                    if (window.innerWidth <= 768) {
-                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                } else {
-                    section.classList.remove('active');
-                    section.style.display = 'none';
-                }
-            });
-        }
-
-        // Real-time Clock for Header
-        function updateHeaderClock() {
-            const now = new Date();
-            const timeOptions = { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit', 
-                timeZone: 'Asia/Manila'
-            };
-            const dateOptions = {
-                month: 'long',
-                day: '2-digit',
-                year: 'numeric',
-                timeZone: 'Asia/Manila'
-            };
-
-            const liveTime = document.getElementById('headerLiveTime');
-            const liveDate = document.getElementById('headerLiveDate');
-            
-            if (liveTime) liveTime.textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
-            if (liveDate) liveDate.textContent = now.toLocaleDateString('en-US', dateOptions);
-        }
-
-        setInterval(updateHeaderClock, 1000);
-        updateHeaderClock();
-
-        // Ensure default section is visible on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
-            if (activeTab) {
-                switchSection(activeTab.getAttribute('data-target'));
+<script>
+    // Premium Section Switcher
+    function switchSection(targetId) {
+        // Update Tab Buttons
+        const tabs = document.querySelectorAll('.nav-tab[data-target]');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-target') === targetId) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
             }
         });
-    </script>
-    </div> <!-- End #dashboard -->
+
+        // Update Content Sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active');
+                section.style.display = 'block';
+
+                // Trigger animations or chart re-init
+                if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
+                    setTimeout(window.initRiskChart, 50);
+                }
+
+                // Scroll into view if on mobile
+                if (window.innerWidth <= 768) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            }
+        });
+    }
+
+    // Real-time Clock for Header
+    function updateHeaderClock() {
+        const now = new Date();
+        const timeOptions = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'Asia/Manila'
+        };
+        const dateOptions = {
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric',
+            timeZone: 'Asia/Manila'
+        };
+
+        const liveTime = document.getElementById('headerLiveTime');
+        const liveDate = document.getElementById('headerLiveDate');
+
+        if (liveTime) liveTime.textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
+        if (liveDate) liveDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+    }
+
+    setInterval(updateHeaderClock, 1000);
+    updateHeaderClock();
+
+    // Ensure default section is visible on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
+        if (activeTab) {
+            switchSection(activeTab.getAttribute('data-target'));
+        }
+    });
+</script>
+</div> <!-- End #dashboard -->
 </body>
 
 </html>
