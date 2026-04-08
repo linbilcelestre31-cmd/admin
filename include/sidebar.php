@@ -124,10 +124,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
 
 <!-- Mobile Bottom Navigation -->
 <div class="mobile-bottom-nav">
-    <a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/dashboard.php" 
-       class="bottom-nav-item <?= ($current_page == 'dashboard.php' && !isset($_GET['tab'])) ? 'active' : '' ?>">
-        <i class="fa-solid fa-house"></i>
-        <span>Home</span>
+    <a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>" 
+       class="bottom-nav-item <?= ($current_page == 'dashboard.php' && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
+       data-tab="dashboard">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span>Dashboard</span>
     </a>
     <a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/Visitor-logs.php" 
        class="bottom-nav-item <?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
@@ -187,9 +188,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
-            <li><a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/dashboard.php"
-                    class="<?= ($current_page == 'dashboard.php' && !isset($_GET['tab'])) ? 'active' : '' ?>">
-                    <i class="fa-solid fa-house"></i> Home
+            <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
+                    class="<?= ($current_page == 'dashboard.php' && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
+                    data-tab="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a></li>
             <!-- Dropdown for Management -->
             <?php
@@ -321,6 +323,19 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             // If it's a direct URL link (not hash, not handled by onclick)
             if (href && href !== '#' && !href.startsWith('javascript') && !onclick) {
                 a.addEventListener('click', function (e) {
+                    // Check if we are on dashboard.php and the link has a data-tab
+                    const isDashboard = window.location.pathname.includes('dashboard.php');
+                    const tabName = a.getAttribute('data-tab');
+                    
+                    if (isDashboard && tabName && typeof window.switchTab === 'function') {
+                        e.preventDefault();
+                        window.switchTab(tabName);
+                        // Update URL without reload
+                        const newUrl = window.location.pathname + '?tab=' + tabName;
+                        window.history.pushState({tab: tabName}, '', newUrl);
+                        return;
+                    }
+
                     // Check if target is one of the allowed modules for animation
                     const isTargetModule = href.includes('legalmanagement.php') || href.includes('document management(archiving).php');
 
@@ -334,7 +349,6 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
                             window.location.href = href;
                         }
                     }
-                    // Otherwise, do nothing (let default navigation happen without animation)
                 });
             }
         });
