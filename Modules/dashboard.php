@@ -1025,6 +1025,78 @@ $r_rows = [];
         .tab-content.active {
             display: block;
         }
+
+        /* --- RESPONSIVE MOBILE FIXES --- */
+        @media (max-width: 1024px) {
+            .dashboard-content {
+                padding: 1.5rem 2rem;
+            }
+            .header-inner {
+                padding: 0 1.5rem !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 1rem 1rem;
+            }
+            .header-inner {
+                padding: 0 1rem !important;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .header-title {
+                order: 1;
+                flex: 1;
+            }
+            .header-actions {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 5px;
+                padding-top: 10px;
+                border-top: 1px solid #f1f5f9;
+            }
+            .current-time-bar {
+                padding: 5px 12px !important;
+                font-size: 0.8rem;
+            }
+            #current-date, #current-time {
+                font-size: 0.8rem !important;
+            }
+            .user-info-header {
+                padding: 4px 10px !important;
+            }
+            .user-info-header .user-details-text, 
+            .user-info-header span:last-child {
+                display: none; /* Hide email on mobile to save space */
+            }
+            .header-tools {
+                order: 2;
+            }
+            
+            /* Stats grid on mobile */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            /* Section grids */
+            .bottom-split-section {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .current-time-bar {
+                display: none !important; /* Hide clock on very small screens if title needs room */
+            }
+            .header-actions {
+                justify-content: flex-end;
+            }
+        }
     </style>
 </head>
 
@@ -1042,25 +1114,26 @@ $r_rows = [];
             <header class="top-header" style="background: var(--light, white); border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
                 <div class="header-inner"
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <div class="header-title">
-                        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <div class="header-title" style="display: flex; align-items: center; gap: 12px;">
+                        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3182ce; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
-                            style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
+                            style="margin: 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
                             <?php
                             $tab_titles = [
                                 'dashboard' => 'Dashboard',
                                 'facilities' => 'Hotel Facilities',
-                                'reservations' => 'Reservation Management',
-                                'calendar' => 'Reservation Calendar',
+                                'reservations' => 'Reservations',
+                                'calendar' => 'Calendar',
                                 'management' => 'Management',
-                                'maintenance' => 'Maintenance Management',
-                                'reports' => 'Reports & Analytics',
-                                'reports_dates' => 'Reports Dates'
+                                'maintenance' => 'Maintenance',
+                                'reports' => 'Analytics',
+                                'reports_dates' => 'Reports'
                             ];
                             $current_tab = $_GET['tab'] ?? 'dashboard';
-                            echo $tab_titles[$current_tab] ?? 'Dashboard';
+                            $title_text = $tab_titles[$current_tab] ?? 'Dashboard';
+                            echo htmlspecialchars($title_text);
                             ?>
                         </h1>
                     </div>

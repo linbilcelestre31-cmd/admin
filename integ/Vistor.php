@@ -48,31 +48,49 @@ try {
             $id = $input['id'];
             $checkoutDate = date('Y-m-d H:i:s');
 
-            // 1. Prevent checking out external records (start with 'ext_')
+            // 1. Prevent checking out external records directly (they should be localized first or handled by the external system)
             if (strpos((string) $id, 'ext_') === 0) {
-                echo json_encode(['status' => 'error', 'message' => 'Cannot check out external records.']);
+                echo json_encode(['status' => 'error', 'message' => 'Cannot check out external records directly.']);
                 exit;
             }
 
-            // 2. Update Local Record
-            $sql = "UPDATE direct_checkins SET status = 'checked_out', checkout_date = ? WHERE id = ?"; // Removed 'checkin_time' from update
+            $sql = "UPDATE direct_checkins SET status = 'checked_out', checkout_date = ? WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            if ($stmt->execute([$checkoutDate, $id])) {
+                echo json_encode(['status' => 'success', 'message' => 'Guest checked out successfully.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Database error.']);
+            }
+            exit;
+        }
 
-            // Adjust query based on DB driver
-            if ($db instanceof mysqli) {
+        // --- EDIT / UPDATE LOGIC (Including Localization) ---
+        if (isset($input['action']) && $input['action'] === 'edit' && isset($input['id'])) {
+            $id = $input['id'];
+            $fullName = $input['full_name'] ?? '';
+            $email = $input['email'] ?? '';
+            $phone = $input['phone'] ?? '';
+            $roomNumber = $input['room_number'] ?? '';
+            $notes = $input['notes'] ?? '';
+
+            if (strpos((string)$id, 'ext_') === 0) {
+                // LOCALIZATION: Insert as new local record
+                $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, notes, status, checkin_date) VALUES (?, ?, ?, ?, ?, 'active', ?)";
                 $stmt = $db->prepare($sql);
-                // 'si' -> string (date), integer (id)
-                $stmt->bind_param("si", $checkoutDate, $id);
-                if ($stmt->execute()) {
-                    echo json_encode(['status' => 'success', 'message' => 'Guest checked out successfully.']);
+                $checkin = $input['checkin_date'] ?? date('Y-m-d H:i:s');
+                if ($stmt->execute([$fullName, $email, $phone, $roomNumber, $notes, $checkin])) {
+                    echo json_encode(['status' => 'success', 'message' => 'External record localized and updated locally.']);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $stmt->error]);
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to localize record.']);
                 }
-            } elseif ($db instanceof PDO) {
+            } else {
+                // UPDATE LOCAL
+                $sql = "UPDATE direct_checkins SET full_name = ?, email = ?, phone_number = ?, room_number = ?, notes = ? WHERE id = ?";
                 $stmt = $db->prepare($sql);
-                if ($stmt->execute([$checkoutDate, $id])) {
-                    echo json_encode(['status' => 'success', 'message' => 'Guest checked out successfully.']);
+                if ($stmt->execute([$fullName, $email, $phone, $roomNumber, $notes, $id])) {
+                    echo json_encode(['status' => 'success', 'message' => 'Visitor details updated successfully.']);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Database error: Failed to update record.']);
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to update visitor.']);
                 }
             }
             exit;

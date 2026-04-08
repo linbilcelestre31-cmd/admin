@@ -296,11 +296,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $position = $_POST['employee_position'] ?? '';
         $email = $_POST['employee_email'] ?? '';
         $phone = $_POST['employee_phone'] ?? '';
+        
         if ($empId > 0) {
-            $query = "UPDATE contacts SET name = ?, role = ?, email = ?, phone = ? WHERE id = ?";
-            $stmt = $db->prepare($query);
-            if ($stmt->execute([$name, $position, $email, $phone, $empId])) {
-                $success_message = "Employee updated successfully!";
+            // Check if record exists locally
+            $check = $db->prepare("SELECT COUNT(*) FROM contacts WHERE id = ?");
+            $check->execute([$empId]);
+            $exists = $check->fetchColumn();
+
+            if ($exists) {
+                $query = "UPDATE contacts SET name = ?, role = ?, email = ?, phone = ? WHERE id = ?";
+                $stmt = $db->prepare($query);
+                $exec = $stmt->execute([$name, $position, $email, $phone, $empId]);
+            } else {
+                // Localization: Create local record for API employee
+                $query = "INSERT INTO contacts (name, role, email, phone) VALUES (?, ?, ?, ?)";
+                $stmt = $db->prepare($query);
+                $exec = $stmt->execute([$name, $position, $email, $phone]);
+            }
+
+            if ($exec) {
+                $success_message = "Employee record updated and localized successfully!";
             } else {
                 $error_message = "Failed to update employee.";
             }
@@ -624,26 +639,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $employees = [];
 $contracts = [];
+
+// 1. Fetch from Local Database
 try {
-    $api_employees = fetchAllEmployees(5);
+    $stmt = $db->query("SELECT * FROM contacts");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $employees[] = [
+            'id' => $row['id'],
+            'employee_id' => $row['employee_id'] ?? ('EMN' . $row['id']),
+            'name' => $row['name'],
+            'position' => $row['role'] ?? $row['position'] ?? 'N/A',
+            'email' => $row['email'],
+            'phone' => $row['phone'],
+            'source' => 'local'
+        ];
+    }
+} catch (PDOException $e) {
+    // Table might not exist yet or other error
+}
+
+// 2. Fetch from Live API and merge
+try {
+    $api_employees = fetchAllEmployees(15); // Fetch more for variety
     if (is_array($api_employees)) {
         foreach ($api_employees as $emp) {
+            // Check if already in local (by name or email to avoid duplicates)
+            $isDuplicate = false;
+            foreach ($employees as $existing) {
+                if ($existing['name'] === (($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? ''))) {
+                    $isDuplicate = true;
+                    break;
+                }
+            }
+            if ($isDuplicate) continue;
+
             $jobTitle = 'N/A';
             if (isset($emp['employment_details']) && is_array($emp['employment_details'])) {
                 $jobTitle = $emp['employment_details']['job_title'] ?? 'N/A';
             }
+            // Fallbacks for job title
+            if ($jobTitle === 'N/A') {
+                $jobTitle = $emp['position'] ?? $emp['role'] ?? $emp['job_title'] ?? 'N/A';
+            }
+
             $employees[] = [
                 'id' => $emp['id'],
                 'employee_id' => $emp['employee_id'] ?? ('EMN' . $emp['id']),
                 'name' => ($emp['first_name'] ?? '') . ' ' . ($emp['last_name'] ?? ''),
                 'position' => $jobTitle,
                 'email' => $emp['email'] ?? 'N/A',
-                'phone' => $emp['contact_number'] ?? $emp['phone'] ?? 'N/A'
+                'phone' => $emp['contact_number'] ?? $emp['phone'] ?? 'N/A',
+                'source' => 'api'
             ];
         }
     }
 } catch (Exception $e) {
-    $error_message = "Error fetching employees from API: " . $e->getMessage();
+    // Log error but don't stop execution
+    if (!$isSuperAdmin && empty($employees)) {
+        $error_message = "Error fetching employees from API: " . $e->getMessage();
+    }
 }
 
 // Fetch contracts from database

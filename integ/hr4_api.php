@@ -102,6 +102,47 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
         $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
         $employees = fetchAllEmployees($limit);
 
+        // Merge with local contacts
+        try {
+            require_once __DIR__ . '/../db/db.php';
+            $db = get_pdo();
+            $stmt = $db->query("SELECT * FROM contacts");
+            $local_contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($local_contacts as $lc) {
+                // Check for duplicates by name or email
+                $isDuplicate = false;
+                $lc_full_name = strtolower(trim($lc['name']));
+                
+                foreach ($employees as $idx => $api_emp) {
+                    $api_name = strtolower(trim(($api_emp['first_name'] ?? '') . ' ' . ($api_emp['last_name'] ?? '')));
+                    if ($api_name === $lc_full_name || (isset($api_emp['email']) && $api_emp['email'] === $lc['email'])) {
+                        // Local data takes priority for customized fields
+                        $employees[$idx]['position'] = $lc['role'] ?? $lc['position'] ?? ($api_emp['position'] ?? 'N/A');
+                        $employees[$idx]['phone'] = $lc['phone'] ?? ($api_emp['contact_number'] ?? 'N/A');
+                        $isDuplicate = true;
+                        break;
+                    }
+                }
+                
+                if (!$isDuplicate) {
+                    // Add as new local employee if not in API list
+                    $employees[] = [
+                        'id' => $lc['id'],
+                        'employee_id' => $lc['employee_id'] ?? ('LCL' . $lc['id']),
+                        'first_name' => $lc['name'],
+                        'last_name' => '',
+                        'email' => $lc['email'] ?? 'N/A',
+                        'position' => $lc['role'] ?? $lc['position'] ?? 'Local Staff',
+                        'phone' => $lc['phone'] ?? 'N/A',
+                        'source' => 'local'
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            // Silently fail if DB issues, just serve API data
+        }
+
         // Apply local quarantine filter
         require_once __DIR__ . '/protocol_handler.php';
         $action = $_GET['action'] ?? '';
@@ -113,7 +154,7 @@ if (basename($_SERVER['PHP_SELF']) == 'hr4_api.php') {
 
         echo json_encode([
             'success' => true,
-            'message' => 'Employees retrieved successfully from live server',
+            'message' => 'Employees retrieved successfully (Merged Local + Live)',
             'data' => array_values($employees),
             'total' => count($employees)
         ]);

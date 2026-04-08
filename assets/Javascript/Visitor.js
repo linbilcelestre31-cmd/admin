@@ -210,6 +210,12 @@ function setupForms() {
 
 // Time-in hotel guest
 function timeInHotelGuest() {
+    const submitBtn = document.getElementById('timein-submit');
+    if (submitBtn && submitBtn.dataset.mode === 'edit') {
+        saveVisitorEdits(submitBtn.dataset.id, submitBtn.dataset.checkin);
+        return;
+    }
+
     const form = document.getElementById('hotel-checkin-form');
     const formData = new FormData(form);
 
@@ -466,6 +472,9 @@ function loadCurrentVisitors() {
                                     <button class="btn-action-view" onclick="viewVisitorDetails('${guest.id}')">
                                         <i class="fas fa-eye"></i> View
                                     </button>
+                                    <button class="btn-action-view" style="background:#f59e0b;" onclick="editVisitor('${guest.id}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
                                     <button class="btn-action-timeout" onclick="timeOutHotelGuest('${guest.id}')">
                                         <i class="fas fa-sign-out-alt"></i> Time-out
                                     </button>
@@ -571,32 +580,111 @@ function loadHistory() {
 
 // Function to view visitor details in a modal
 function viewVisitorDetails(guestId) {
-    fetch(API_BASE_URL)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success' && data.data) {
-                const guest = data.data.find(g => String(g.id) === String(guestId));
-                if (guest) {
-                    const detailsHtml = `
-                    <div style="text-align: left; line-height: 1.6;">
-                        <p><strong>Name:</strong> ${guest.full_name}</p>
-                        <p><strong>Room:</strong> ${guest.room_number || 'N/A'}</p>
-                        <p><strong>Email:</strong> ${guest.email || 'N/A'}</p>
-                        <p><strong>Phone:</strong> ${guest.phone_number || 'N/A'}</p>
-                        <p><strong>Check-in:</strong> ${guest.checkin_date}</p>
-                        <p><strong>Status:</strong> ${guest.status}</p>
-                        <p><strong>Notes:</strong> ${guest.notes || 'None'}</p>
-                    </div>
-                `;
-                    // Use the custom details modal function we will create
-                    if (typeof showDetailsModal === 'function') {
-                        showDetailsModal('Visitor Details', detailsHtml);
-                    } else {
-                        alert('Visitor: ' + guest.full_name);
-                    }
-                }
-            }
-        });
+    const guest = hotelVisitors.find(g => String(g.id) === String(guestId));
+    if (guest) {
+        const detailsHtml = `
+            <div style="text-align: left; line-height: 1.6;">
+                <p><strong>Name:</strong> ${guest.name}</p>
+                <p><strong>Room/Facility:</strong> ${guest.room || 'N/A'}</p>
+                <p><strong>Email:</strong> ${guest.email || 'N/A'}</p>
+                <p><strong>Phone:</strong> ${guest.phone || 'N/A'}</p>
+                <p><strong>Check-in:</strong> ${formatDate(guest.checkinTime)}</p>
+                <p><strong>Status:</strong> ${guest.status === 'timed-in' ? 'CHECKED IN' : guest.status}</p>
+                <p><strong>Notes:</strong> ${guest.notes || 'None'}</p>
+            </div>
+        `;
+        if (typeof showDetailsModal === 'function') {
+            showDetailsModal('Visitor Details', detailsHtml);
+        } else {
+            alert('Visitor: ' + guest.name);
+        }
+    }
+}
+
+// Function to edit visitor details
+function editVisitor(guestId) {
+    const guest = hotelVisitors.find(g => String(g.id) === String(guestId));
+    if (guest) {
+        // Switch to check-in tab (we'll reuse the form for editing)
+        activateTab('hotel-checkin');
+        
+        // Update Title and Button
+        const formHeader = document.querySelector('#hotel-checkin-tab h2');
+        if (formHeader) formHeader.innerHTML = '<i class="fas fa-edit"></i> Edit Guest Information';
+        
+        const submitBtn = document.getElementById('timein-submit');
+        if (submitBtn) {
+            submitBtn.textContent = 'Update Guest Info';
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-primary');
+            submitBtn.dataset.mode = 'edit';
+            submitBtn.dataset.id = guestId;
+            submitBtn.dataset.checkin = guest.checkinTime;
+        }
+
+        // Fill Form
+        document.getElementById('full_name').value = guest.name || '';
+        document.getElementById('email').value = guest.email || '';
+        document.getElementById('phone').value = guest.phone || '';
+        document.getElementById('room_number').value = guest.room || '';
+        document.getElementById('notes').value = guest.notes || '';
+        
+        // Host ID might not be a simple match if it's from API
+        const hostSelect = document.getElementById('host_id');
+        if (hostSelect) hostSelect.value = guest.host_id || '';
+    }
+}
+
+// Update the form setup to handle edit mode
+function saveVisitorEdits(guestId, originalCheckin) {
+    const form = document.getElementById('hotel-checkin-form');
+    const formData = new FormData(form);
+
+    const requestData = {
+        action: 'edit',
+        id: guestId,
+        full_name: formData.get('full_name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        room_number: formData.get('room_number'),
+        notes: formData.get('notes'),
+        checkin_date: originalCheckin
+    };
+
+    fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showAlert('Visitor updated successfully!', 'success');
+            resetHotelForm();
+            loadCurrentVisitors().then(() => updateDashboard());
+        } else {
+            showAlert('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function resetHotelForm() {
+    const form = document.getElementById('hotel-checkin-form');
+    if (form) form.reset();
+    
+    const formHeader = document.querySelector('#hotel-checkin-tab h2');
+    if (formHeader) formHeader.innerHTML = '<i class="fas fa-id-card-clip"></i> Guest Registration Form';
+    
+    const submitBtn = document.getElementById('timein-submit');
+    if (submitBtn) {
+        submitBtn.textContent = 'Time-in Guest';
+        submitBtn.classList.add('btn-success');
+        submitBtn.classList.remove('btn-primary');
+        delete submitBtn.dataset.mode;
+        delete submitBtn.dataset.id;
+        delete submitBtn.dataset.checkin;
+    }
 }
 
 
