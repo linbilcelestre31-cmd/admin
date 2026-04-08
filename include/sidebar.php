@@ -197,7 +197,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     }
 
     .mgmt-radial-item i {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
         transition: transform 0.3s;
     }
 
@@ -206,18 +206,19 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     }
 
     .mgmt-radial-item span {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         text-align: center;
         color: #1e293b;
         line-height: 1;
+        margin-top: 5px;
     }
 
-    /* Positioning along the arc - mimicking the screenshot */
-    .item-1 { top: 40px; left: 30px; }      /* Facilities - Outer Top */
-    .item-2 { top: 120px; left: 160px; }    /* Reservations - Inner Top */
-    .item-3 { top: 180px; left: 20px; }     /* Calendar - Outer Bottom */
-    .item-4 { top: 260px; left: 140px; }    /* Maintenance - Inner Bottom */
+    /* Positioning along the arc - refined based on feedback */
+    .item-1 { top: 30px; left: 40px; }      /* Facilities - Higher */
+    .item-2 { top: 100px; left: 180px; }    /* Reservations - Higher (following arrow) */
+    .item-3 { top: 170px; left: 30px; }     /* Calendar - Shifted up */
+    .item-4 { top: 250px; left: 150px; }    /* Maintenance - Shifted up */
 
     .mgmt-radial-close {
         position: absolute;
@@ -245,20 +246,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
     }
 
-    .icon-box {
-        width: 50px;
-        height: 50px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 2px;
-    }
-
-    /* Color Palette from screenshot */
-    .color-purple { color: #7c3aed; background: #f5f3ff; }
-    .color-blue { color: #2563eb; background: #eff6ff; }
-    .color-indigo { color: #4f46e5; background: #eef2ff; }
+    /* Color Palette directly on icons */
+    .color-purple { color: #7c3aed; }
+    .color-blue { color: #2563eb; }
+    .color-indigo { color: #4f46e5; }
 </style>
 
 <!-- Mobile Bottom Navigation -->
@@ -829,30 +820,22 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     <div class="mgmt-radial-bg"></div>
     
     <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1">
-        <div class="icon-box color-purple">
-            <i class="fa-solid fa-hotel"></i>
-        </div>
+        <i class="fa-solid fa-hotel color-purple"></i>
         <span>Facilities</span>
     </a>
     
     <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2">
-        <div class="icon-box color-blue">
-            <i class="fa-solid fa-calendar-check"></i>
-        </div>
+        <i class="fa-solid fa-calendar-check color-blue"></i>
         <span>Reservations</span>
     </a>
     
     <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3">
-        <div class="icon-box color-purple">
-            <i class="fa-solid fa-calendar-days"></i>
-        </div>
+        <i class="fa-solid fa-calendar-days color-purple"></i>
         <span>Calendar</span>
     </a>
     
     <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4">
-        <div class="icon-box color-indigo">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-        </div>
+        <i class="fa-solid fa-screwdriver-wrench color-indigo"></i>
         <span>Maintenance</span>
     </a>
     
