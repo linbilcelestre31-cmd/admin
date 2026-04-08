@@ -2,6 +2,12 @@
 session_start();
 require_once __DIR__ . '/../db/db.php';
 require_once __DIR__ . '/../include/Config.php';
+require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 // Security check: Only Super Admin can access
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
@@ -101,9 +107,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_hash = password_hash($default_pass, PASSWORD_DEFAULT);
 
             try {
-                $stmt = $pdo->prepare("UPDATE `$sa_table` SET password_hash = ? WHERE id = ?");
-                $stmt->execute([$new_hash, $target_id]);
-                $message = "SECURITY RESET: Account password has been recovered to default [Atiera@123]";
+                // Fetch details first
+                $stmt = $pdo->prepare("SELECT full_name, email, username FROM `$sa_table` WHERE id = ?");
+                $stmt->execute([$target_id]);
+                $target_user = $stmt->fetch();
+
+                if ($target_user) {
+                    $stmt = $pdo->prepare("UPDATE `$sa_table` SET password_hash = ? WHERE id = ?");
+                    $stmt->execute([$new_hash, $target_id]);
+
+                    // Send email
+                    try {
+                        $mail = new PHPMailer(true);
+                        $mail->isSMTP();
+                        $mail->Host = SMTP_HOST;
+                        $mail->SMTPAuth = true;
+                        $mail->Username = SMTP_USER;
+                        $mail->Password = SMTP_PASS;
+                        $mail->Port = 587;
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->SMTPOptions = array(
+                            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
+                        );
+                        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                        $mail->addAddress($target_user['email'], $target_user['full_name']);
+                        $mail->isHTML(true);
+                        $mail->Subject = "🔐 MASTER SECURITY RESET: Your Super Admin Password was Updated";
+                        $mail->Body = "
+                            <div style=\"font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 550px; margin: auto; border: 1px solid #d4af37; border-radius: 20px; background: #fff;\">
+                                <h2 style=\"color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 10px;\">Super Admin Access Recovery</h2>
+                                <p>Hello " . htmlspecialchars($target_user['full_name']) . ",</p>
+                                <p>This is a master security notification. Your Super Admin account credentials for the ATIERA Master Panel have been reset by another authorized Super Administrator.</p>
+                                <div style=\"background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 25px 0;\">
+                                    <p style=\"margin: 0; font-size: 14px;\"><strong>Target Account:</strong> " . htmlspecialchars($target_user['username']) . "</p>
+                                    <p style=\"margin: 10px 0 0; font-size: 16px;\"><strong>Temporary Password:</strong> <span style=\"color: #d4af37; font-weight: 800; font-family: monospace;\">" . $default_pass . "</span></p>
+                                </div>
+                                <p style=\"color: #ef4444; font-weight: 600;\">⚠️ IMPORTANT SECURITY REQUIREMENT:</p>
+                                <p style=\"font-size: 13px;\">Please log in immediately and update your password to a new secure one. Do not share these temporary credentials with anyone.</p>
+                                <div style=\"margin: 30px 0; text-align: center;\">
+                                    <a href=\"" . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/admin/auth/login.php\" 
+                                       style=\"background: #0f172a; color: #d4af37; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; border: 1px solid #d4af37;\"> Access Master Portal </a>
+                                </div>
+                                <p style=\"font-size: 11px; color: #64748b; text-align: center; margin-top: 40px;\">© 2024 ATIERA HOTEL & RESTAURANT - MASTER SECURITY PROTOCOL</p>
+                            </div>
+                        ";
+                        $mail->send();
+                        $message = "SECURITY RESET: Account password recovered to default [Atiera@123]. Notification sent to " . htmlspecialchars($target_user['email']);
+                    } catch (Exception $e) {
+                        $message = "SECURITY RESET: Password updated to default, but notification failed: " . $e->getMessage();
+                    }
+                } else {
+                    $error = "Recovery Failed: Target administrator not found.";
+                }
             } catch (PDOException $e) {
                 $error = "Recovery Protocol Failure: " . $e->getMessage();
             }
@@ -586,11 +641,6 @@ $api_key = $admin['api_key'] ?? '';
                                                     onclick='openRecoveryModal(<?php echo $acc['id']; ?>, "<?php echo htmlspecialchars($acc['full_name']); ?>")'
                                                     title="Recover Account (Reset Password)">
                                                     <i class="fas fa-undo-alt"></i>
-                                                </button>
-                                                <button class="action-btn delete-btn"
-                                                    onclick="openDeleteModal(<?php echo $acc['id']; ?>, '<?php echo htmlspecialchars($acc['full_name']); ?>')"
-                                                    title="Delete Account">
-                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </div>
                                         </td>

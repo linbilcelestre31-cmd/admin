@@ -402,9 +402,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hashedPass = password_hash($defaultPass, PASSWORD_DEFAULT);
 
             try {
-                $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
-                $stmt->execute([$hashedPass, $id]);
-                $message = "User password has been recovered to default: " . $defaultPass;
+                // Fetch User Details first for email
+                $stmt = $pdo->prepare("SELECT username, email, full_name FROM users WHERE id = ?");
+                $stmt->execute([$id]);
+                $user = $stmt->fetch();
+
+                if ($user) {
+                    $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+                    $stmt->execute([$hashedPass, $id]);
+
+                    // Send notification email
+                    try {
+                        $emailSettings = getEmailSettings($pdo);
+                        $mail = new PHPMailer(true);
+                        $mail->isSMTP();
+                        $mail->Host = SMTP_HOST;
+                        $mail->SMTPAuth = true;
+                        $mail->Username = SMTP_USER;
+                        $mail->Password = SMTP_PASS;
+                        $mail->Port = 587;
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->SMTPOptions = array(
+                            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
+                        );
+                        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                        $mail->addAddress($user['email'], $user['full_name']);
+                        $mail->isHTML(true);
+                        $mail->Subject = "🔐 Security Notice: Your ATIERA Account has been Recovered";
+                        $mail->Body = "
+                            <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
+                                <h2 style=\"color: #0f172a;\">Account Recovered</h2>
+                                <p>Hello " . htmlspecialchars($user['full_name']) . ",</p>
+                                <p>This is a security notification to let you know that your password for the ATIERA Admin Panel has been recovered by an administrator.</p>
+                                <div style=\"background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;\">
+                                    <p style=\"margin: 0;\"><strong>Your Default Password:</strong> <span style=\"color: #1e40af; font-weight: bold;\">" . $defaultPass . "</span></p>
+                                </div>
+                                <p>For security reasons, please change your password immediately after logging in.</p>
+                                <div style=\"margin: 20px 0; text-align: center;\">
+                                    <a href=\"" . getBaseUrl() . "/auth/login.php\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Log In Now</a>
+                                </div>
+                                <p style=\"font-size: 11px; color: #64748b; text-align: center;\">This is an automated security message - do not reply to this email.</p>
+                            </div>
+                        ";
+                        $mail->send();
+                        $message = "User password has been recovered to default: " . $defaultPass . ". Notification email sent to " . htmlspecialchars($user['email']);
+                    } catch (Exception $e) {
+                        $message = "User password recovered to default: " . $defaultPass . ", but failed to send email: " . $e->getMessage();
+                    }
+                } else {
+                    $error = "User not found for recovery.";
+                }
             } catch (PDOException $e) {
                 $error = "Recovery Error: " . $e->getMessage();
             }
@@ -1070,7 +1117,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
-                                            <th style="width: 150px;">Action</th>
+                                            <th style="width: 100px;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1086,11 +1133,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                             onclick='openRecoveryModal(<?= $user['id'] ?>, "<?= htmlspecialchars($user['full_name']) ?>")'
                                                             title="Recover Account" style="color: #10b981; border-color: #10b981;">
                                                             <i class="fas fa-undo-alt"></i> Recover
-                                                        </button>
-                                                        <button class="btn btn-outline btn-sm security-only" 
-                                                            onclick='openDeleteModal(<?= $user['id'] ?>)'
-                                                            title="Delete" style="color: #ef4444; border-color: #ef4444;">
-                                                            <i class="fas fa-trash"></i>
                                                         </button>
                                                     </div>
                                                 </td>
