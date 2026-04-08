@@ -95,6 +95,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $admin['api_key'] = $new_api;
             $message = "System Bypass Key regenerated successfully!";
         }
+        /* Recovery Admin Logic */ elseif ($_POST['action'] === 'recovery_admin') {
+            $target_id = $_POST['target_id'];
+            $default_pass = 'Atiera@123';
+            $new_hash = password_hash($default_pass, PASSWORD_DEFAULT);
+
+            try {
+                $stmt = $pdo->prepare("UPDATE `$sa_table` SET password_hash = ? WHERE id = ?");
+                $stmt->execute([$new_hash, $target_id]);
+                $message = "SECURITY RESET: Account password has been recovered to default [Atiera@123]";
+            } catch (PDOException $e) {
+                $error = "Recovery Protocol Failure: " . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -378,13 +391,18 @@ $api_key = $admin['api_key'] ?? '';
             color: white;
         }
 
-        .delete-btn {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-
         .delete-btn:hover {
             background: #ef4444;
+            color: white;
+        }
+
+        .recovery-btn {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .recovery-btn:hover {
+            background: #10b981;
             color: white;
         }
     </style>
@@ -552,7 +570,7 @@ $api_key = $admin['api_key'] ?? '';
                                         </td>
                                         <td>@<?php echo htmlspecialchars($acc['username']); ?></td>
                                         <td><?php echo htmlspecialchars($acc['email']); ?></td>
-                                        <td>
+                                         <td>
                                             <span class="status-badge status-active">
                                                 <i class="fas fa-check-circle"></i> Authorized
                                             </span>
@@ -563,6 +581,11 @@ $api_key = $admin['api_key'] ?? '';
                                                     onclick='openEditModal(<?php echo json_encode($acc); ?>)'
                                                     title="Edit Account">
                                                     <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="action-btn recovery-btn"
+                                                    onclick='openRecoveryModal(<?php echo $acc['id']; ?>, "<?php echo htmlspecialchars($acc['full_name']); ?>")'
+                                                    title="Recover Account (Reset Password)">
+                                                    <i class="fas fa-undo-alt"></i>
                                                 </button>
                                                 <button class="action-btn delete-btn"
                                                     onclick="openDeleteModal(<?php echo $acc['id']; ?>, '<?php echo htmlspecialchars($acc['full_name']); ?>')"
@@ -666,6 +689,30 @@ $api_key = $admin['api_key'] ?? '';
         </div>
     </div>
 
+    <!-- Recovery Modal -->
+    <div id="recoveryModal" class="modal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <button class="modal-close" onclick="closeModal('recoveryModal')">&times;</button>
+            <div style="font-size: 50px; color: #10b981; margin-bottom: 20px;">
+                <i class="fas fa-shield-virus"></i>
+            </div>
+            <h2 style="color: #0f172a; margin-bottom: 15px;">Initiate Account Recovery</h2>
+            <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6; margin-bottom: 30px;">
+                You are about to reset the password for <strong id="recovery_admin_name" style="color: #0f172a;"></strong>. 
+                The new password will be defaulted to <strong>Atiera@123</strong>.
+            </p>
+            <form method="POST">
+                <input type="hidden" name="action" value="recovery_admin">
+                <input type="hidden" name="target_id" id="recovery_target_id">
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="save-btn" style="background: #f1f5f9; color: #64748b;"
+                        onclick="closeModal('recoveryModal')">Cancel</button>
+                    <button type="submit" class="save-btn" style="background: #10b981;">Execute Recovery</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function showTab(tabId) {
             // Hide all contents
@@ -695,6 +742,12 @@ $api_key = $admin['api_key'] ?? '';
             document.getElementById('delete_target_id').value = id;
             document.getElementById('delete_admin_name').innerText = name;
             document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function openRecoveryModal(id, name) {
+            document.getElementById('recovery_target_id').value = id;
+            document.getElementById('recovery_admin_name').innerText = name;
+            document.getElementById('recoveryModal').style.display = 'flex';
         }
 
         function closeModal(modalId) {
