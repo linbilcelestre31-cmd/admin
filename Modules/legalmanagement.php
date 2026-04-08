@@ -1002,56 +1002,142 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         @media (max-width: 768px) {
+            .header {
+                padding: 10px 0;
+            }
             .header-content {
                 flex-direction: column !important;
                 align-items: center !important;
-                gap: 15px !important;
+                gap: 12px !important;
                 text-align: center;
-                padding: 15px 0;
+                padding: 10px 0;
+            }
+            .logo {
+                font-size: 1.1rem !important;
+                margin-bottom: 5px;
             }
             .user-info {
                 width: 100%;
                 justify-content: center;
-                gap: 10px;
+                gap: 8px;
+                font-size: 14px;
             }
-            .logo {
-                font-size: 1.2rem !important;
+            .logout-btn {
+                padding: 6px 12px !important;
+                font-size: 13px !important;
             }
             
-            .metrics-grid {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 10px !important;
-            }
-            .stat-card {
+            .content-section {
                 padding: 15px !important;
             }
             
-            .table-container, .table-scroll-container {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .add-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filters-container > div {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 15px !important;
+            }
+            .filter-group {
+                width: 100% !important;
+                flex: none !important;
+                min-width: 0 !important;
+            }
+            .filter-group[style*="display: flex"] {
+                flex-direction: row !important;
+            }
+            .filter-group button {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .risk-stats-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+            }
+            .stat-card {
+                padding: 15px !important;
+                gap: 12px !important;
+                flex-direction: column;
+                text-align: center;
+            }
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            .stat-value {
+                font-size: 1.4rem;
+            }
+            
+            .chart-container-wrapper, .high-risk-list-wrapper {
+                padding: 15px !important;
+            }
+            .chart-area {
+                height: 300px !important;
+                padding: 15px !important;
+            }
+            .chart-container-wrapper > div:first-child {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+            }
+            .chart-container-wrapper button {
+                padding: 8px 15px !important;
+                font-size: 12px !important;
+            }
+            
+            .table-container, .table-scroll-container, .data-table {
+                width: 100% !important;
+                display: block !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
-                margin-bottom: 20px;
-                scrollbar-width: auto !important;
             }
             .data-table {
-                min-width: 800px !important;
+                min-width: 900px !important; /* Ensure table doesn't squish too much */
             }
             
             .nav-tabs {
                 display: flex !important;
                 overflow-x: auto !important;
                 white-space: nowrap !important;
-                padding-bottom: 10px !important;
+                padding-bottom: 5px !important;
                 gap: 5px !important;
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
+                border-radius: 10px !important;
             }
             .nav-tabs::-webkit-scrollbar {
                 display: none;
             }
             .nav-tab {
                 flex: 0 0 auto !important;
-                padding: 8px 15px !important;
+                padding: 10px 15px !important;
                 font-size: 13px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .risk-stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .filter-group[style*="display: flex"] {
+                flex-direction: column !important;
+            }
+            .stat-card {
+                flex-direction: row;
+                text-align: left;
             }
         }
 
@@ -1444,24 +1530,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 </button>
             </div>
             <!-- Internal Legal Management Tabs -->
-            <div class="internal-tabs-container" style="margin-bottom: 20px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <div class="internal-tabs-container" style="margin-bottom: 30px;">
+                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 600px; margin: 0 auto;">
                     <button class="legal-tab-btn active" onclick="filterLegalDocs(this, 'policies')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-book-open" style="margin-right: 8px;"></i> Policies & Handbook
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #3b82f6; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: space-between;">
+                        <span><i class="fa-solid fa-book-open" style="margin-right: 12px; width: 20px;"></i> Policies & Handbook</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'labor')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-users" style="margin-right: 8px;"></i> Labor Relations
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-users" style="margin-right: 12px; width: 20px;"></i> Labor Relations</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'compliance')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i> Internal Compliance
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-scale-balanced" style="margin-right: 12px; width: 20px;"></i> Internal Compliance</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
-
                     <button class="legal-tab-btn" onclick="filterLegalDocs(this, 'risk')"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; font-weight: 500; transition: all 0.2s;">
-                        <i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i> Risk Management
+                        style="width: 100%; text-align: left; padding: 14px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <span><i class="fa-solid fa-shield-halved" style="margin-right: 12px; width: 20px;"></i> Risk Management</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; opacity: 0.7;"></i>
                     </button>
                 </div>
             </div>
@@ -1474,12 +1563,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     buttons.forEach(b => {
                         b.classList.remove('active');
                         b.style.background = 'white';
-                        b.style.color = '#64748b';
+                        b.style.color = '#475569';
+                        b.style.boxShadow = '0 2px 4px rgba(0,0,0,0.03)';
                     });
 
                     btn.classList.add('active');
                     btn.style.background = '#3b82f6';
                     btn.style.color = 'white';
+                    btn.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.2)';
 
                     // Filter Rows
                     const rows = document.querySelectorAll('.internal-doc-row');
