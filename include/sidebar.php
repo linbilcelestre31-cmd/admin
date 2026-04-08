@@ -176,15 +176,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         position: absolute;
         width: 100px;
         height: 100px;
-        background: white;
-        border-radius: 28px;
+        background: transparent;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        border: 1px solid rgba(0,0,0,0.03);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 2;
         gap: 8px;
@@ -214,11 +211,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         margin-top: 5px;
     }
 
-    /* Positioning along the arc - refined based on feedback */
-    .item-1 { top: 30px; left: 40px; }      /* Facilities - Higher */
-    .item-2 { top: 100px; left: 180px; }    /* Reservations - Higher (following arrow) */
-    .item-3 { top: 170px; left: 30px; }     /* Calendar - Shifted up */
-    .item-4 { top: 250px; left: 150px; }    /* Maintenance - Shifted up */
+    /* Positioning along the arc - further refined following the arrow UP */
+    .item-1 { top: 10px; left: 50px; }      /* Facilities - Top Outer */
+    .item-2 { top: 70px; left: 180px; }     /* Reservations - Higher (following arrow) */
+    .item-3 { top: 130px; left: 20px; }     /* Calendar - Higher */
+    .item-4 { top: 200px; left: 130px; }    /* Maintenance - Higher */
 
     .mgmt-radial-close {
         position: absolute;
