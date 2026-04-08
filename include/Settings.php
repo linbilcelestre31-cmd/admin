@@ -396,6 +396,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+        /* Recovery User */ elseif ($_POST['action'] === 'recovery_user') {
+            $id = intval($_POST['user_id']);
+            $defaultPass = 'Atiera@123';
+            $hashedPass = password_hash($defaultPass, PASSWORD_DEFAULT);
+
+            try {
+                $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+                $stmt->execute([$hashedPass, $id]);
+                $message = "User password has been recovered to default: " . $defaultPass;
+            } catch (PDOException $e) {
+                $error = "Recovery Error: " . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -1053,10 +1066,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th style="width: 80px;">ID</th>
                                             <th>Full Name</th>
                                             <th>Username</th>
                                             <th>Email</th>
+                                            <th style="width: 150px;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1066,6 +1080,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['full_name'])) ?></td>
                                                 <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['username'])) ?></td>
                                                 <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['email'])) ?></td>
+                                                <td style="text-align: center;">
+                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                        <button class="btn btn-outline btn-sm security-only" 
+                                                            onclick='openRecoveryModal(<?= $user['id'] ?>, "<?= htmlspecialchars($user['full_name']) ?>")'
+                                                            title="Recover Account" style="color: #10b981; border-color: #10b981;">
+                                                            <i class="fas fa-undo-alt"></i> Recover
+                                                        </button>
+                                                        <button class="btn btn-outline btn-sm security-only" 
+                                                            onclick='openDeleteModal(<?= $user['id'] ?>)'
+                                                            title="Delete" style="color: #ef4444; border-color: #ef4444;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -1206,22 +1234,23 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
+
+
+    <!-- Recovery Confirmation Modal -->
+    <div class="modal" id="recoveryModal">
         <div class="modal-content" style="max-width:400px; text-align:center;">
-            <div style="color: #e53e3e; font-size: 3rem; margin-bottom: 1rem;">
-                <span class="icon-img-placeholder">⚠️</span>
+            <div style="color: #10b981; font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-shield-virus"></i>
             </div>
-            <h3 style="margin-top: 0; color: #2d3748;">Delete User?</h3>
-            <p style="color: #718096; margin-bottom: 1.5rem;">Are you sure you want to delete this user? This action
-                cannot be undone.</p>
+            <h3 style="margin-top: 0; color: #2d3748;">Recover Account?</h3>
+            <p style="color: #718096; margin-bottom: 1.5rem;">Resetting password for <strong id="recoveryUserName"></strong>. The new password will be defaulted to <strong>Atiera@123</strong>.</p>
             <form method="POST">
-                <input type="hidden" name="action" value="delete_user">
-                <input type="hidden" name="user_id" id="deleteUserId">
+                <input type="hidden" name="action" value="recovery_user">
+                <input type="hidden" name="user_id" id="recoveryUserId">
                 <div style="display:flex; gap:10px; justify-content:center;">
                     <button type="button" class="btn btn-outline" style="flex: 1;"
-                        onclick="closeModal('deleteModal')">Cancel</button>
-                    <button type="submit" class="btn btn-danger" style="flex: 1;">Delete User</button>
+                        onclick="closeModal('recoveryModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background: #10b981;">Recover Account</button>
                 </div>
             </form>
         </div>
@@ -1529,6 +1558,12 @@ You have been added as an administrator. To complete your account setup, please 
         function openDeleteModal(id) {
             document.getElementById('deleteUserId').value = id;
             document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function openRecoveryModal(id, name) {
+            document.getElementById('recoveryUserId').value = id;
+            document.getElementById('recoveryUserName').innerText = name;
+            document.getElementById('recoveryModal').classList.add('active');
         }
 
         function closeModal(modalId) {
