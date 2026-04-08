@@ -120,6 +120,113 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         transform: translateY(-5px);
         color: #3b82f6;
     }
+
+    /* Management Modal Styles */
+    .mgmt-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(12px);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    
+    .mgmt-modal.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .mgmt-container {
+        position: relative;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 40px;
+        padding: 40px;
+        width: calc(100% - 60px);
+        max-width: 400px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transform: scale(0.9) translateY(20px);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .mgmt-modal.show .mgmt-container {
+        transform: scale(1) translateY(0);
+    }
+
+    .mgmt-close {
+        position: absolute;
+        bottom: -70px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mgmt-close:hover {
+        transform: translateX(-50%) scale(1.1);
+        color: #3b82f6;
+    }
+
+    .mgmt-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 25px 15px;
+        background: white;
+        border-radius: 30px;
+        text-decoration: none;
+        color: #1e293b;
+        transition: all 0.3s;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .mgmt-option:hover {
+        background: #f8fafc;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        border-color: #3b82f6;
+    }
+
+    .mgmt-option i {
+        font-size: 1.8rem;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        margin-bottom: 5px;
+    }
+
+    .mgmt-option span {
+        font-weight: 700;
+        font-size: 0.85rem;
+        line-height: 1.2;
+    }
+
+    .icon-blue { background: #eff6ff; color: #3b82f6; }
+    .icon-green { background: #f0fdf4; color: #22c55e; }
+    .icon-orange { background: #fff7ed; color: #f97316; }
+    .icon-purple { background: #faf5ff; color: #a855f7; }
 </style>
 
 <!-- Mobile Bottom Navigation -->
@@ -145,9 +252,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         <i class="fa-solid fa-scale-balanced"></i>
         <span>Legal</span>
     </a>
-    <a href="#" onclick="toggleSidebar()" class="bottom-nav-item">
-        <i class="fa-solid fa-bars"></i>
-        <span>Menu</span>
+    <a href="javascript:void(0)" onclick="openManagementModal()" class="bottom-nav-item">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Management</span>
     </a>
 </div>
 
@@ -660,4 +767,47 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             }
         }
     });
+
+    // 10. Management Modal Logic
+    window.openManagementModal = function() {
+        const modal = document.getElementById('mgmtModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+    };
+
+    window.closeManagementModal = function() {
+        const modal = document.getElementById('mgmtModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 400);
+        }
+    };
 </script>
+
+<!-- Management Quick Access Modal -->
+<div id="mgmtModal" class="mgmt-modal" onclick="if(event.target === this) closeManagementModal()">
+    <div class="mgmt-container">
+        <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
+            <i class="fa-solid fa-hotel icon-blue"></i>
+            <span>Facilities<br>Management</span>
+        </a>
+        <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
+            <i class="fa-solid fa-calendar-check icon-green"></i>
+            <span>Reservation<br>List</span>
+        </a>
+        <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
+            <i class="fa-solid fa-calendar-days icon-orange"></i>
+            <span>Booking<br>Calendar</span>
+        </a>
+        <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
+            <i class="fa-solid fa-screwdriver-wrench icon-purple"></i>
+            <span>Maintenance<br>System</span>
+        </a>
+        
+        <div class="mgmt-close" onclick="closeManagementModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+    </div>
+</div>

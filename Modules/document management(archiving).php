@@ -1808,30 +1808,35 @@ function formatFileSize($bytes)
                     const grid = document.getElementById(gridId);
                     if (!grid) return;
 
+                    let records = [];
                     if (data.success && data.data && data.data.length > 0) {
-                        if (category === 'Inventory') {
-                            renderInventoryTable(data.data, grid);
-                        } else if (category === 'Guest Records') {
-                            renderGuestTable(data.data, grid);
-                        } else {
-                            renderDocumentTable(data.data, grid);
-                        }
+                        records = data.data;
+                    } else if (category === 'Inventory') {
+                        records = fallbackInventory;
                     } else {
-                        // Use fallback for Inventory if API returns empty
-                        if (category === 'Inventory') {
-                            renderInventoryTable(fallbackInventory, grid);
-                        } else {
-                            showNoDataMessage(grid, category);
-                        }
+                        showNoDataMessage(grid, category);
+                        return;
                     }
+
+                    // Setup Table State
+                    TableState.data = records;
+                    TableState.gridId = gridId;
+                    if (category === 'Inventory') {
+                        TableState.renderFunc = renderInventoryTable;
+                    } else if (category === 'Guest Records') {
+                        TableState.renderFunc = renderGuestTable;
+                    }
+                    updateTableDisplay();
                 })
                 .catch(error => {
                     console.error(`Error loading ${category}:`, error);
                     const grid = document.getElementById(gridId);
                     if (grid) {
-                        // Use fallback for Inventory on error
                         if (category === 'Inventory') {
-                            renderInventoryTable(fallbackInventory, grid);
+                            TableState.data = fallbackInventory;
+                            TableState.gridId = gridId;
+                            TableState.renderFunc = renderInventoryTable;
+                            updateTableDisplay();
                         } else {
                             grid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #dc3545; grid-column: 1/-1;"><p>Error loading content.</p></div>';
                         }
@@ -1845,9 +1850,6 @@ function formatFileSize($bytes)
             if (!grid) return;
             grid.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i></div>';
 
-            const fallbackFinancialData = [];
-
-            // Attempt to fetch from API, but default to fallback on ANY error (CORS, 404, etc.)
             fetch('https://financial.atierahotelandrestaurant.com/api/users.php')
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
@@ -1855,30 +1857,36 @@ function formatFileSize($bytes)
                 })
                 .then(data => {
                     let records = Array.isArray(data) ? data : (data.data || []);
-                    if (records.length === 0) {
-                        renderFinancialTable(fallbackFinancialData, grid);
-                        return;
-                    }
-                    renderFinancialTable(records, grid);
+                    
+                    // Setup Table State
+                    TableState.data = records;
+                    TableState.gridId = gridId;
+                    TableState.renderFunc = renderFinancialTable;
+                    updateTableDisplay();
                 })
                 .catch(error => {
-                    console.warn('Financial API unreachable (using offline mode):', error.message);
-                    renderFinancialTable(fallbackFinancialData, grid);
+                    console.warn('Financial API unreachable:', error.message);
+                    TableState.data = [];
+                    TableState.gridId = gridId;
+                    TableState.renderFunc = renderFinancialTable;
+                    updateTableDisplay();
                 });
         }
 
-        function renderFinancialTable(data, grid) {
+        function renderFinancialTable(data, grid, controlsHtml = '') {
+            const sortClass = (col) => TableState.sortColumn === col ? (TableState.sortDirection === 'asc' ? 'asc' : 'desc') : '';
             grid.innerHTML = `
+                ${controlsHtml}
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
                             <tr style="background: #f8fafc;">
-                                <th>User ID</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Role</th>
-                                <th>Department</th>
-                                <th>Status</th>
+                                <th class="sortable ${sortClass('id')}" onclick="handleHeaderClick('id')">User ID</th>
+                                <th class="sortable ${sortClass('full_name')}" onclick="handleHeaderClick('full_name')">Name</th>
+                                <th class="sortable ${sortClass('username')}" onclick="handleHeaderClick('username')">Username</th>
+                                <th class="sortable ${sortClass('role')}" onclick="handleHeaderClick('role')">Role</th>
+                                <th class="sortable ${sortClass('department')}" onclick="handleHeaderClick('department')">Department</th>
+                                <th class="sortable ${sortClass('status')}" onclick="handleHeaderClick('status')">Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1905,16 +1913,18 @@ function formatFileSize($bytes)
              `;
         }
 
-        function renderGuestTable(data, grid) {
+        function renderGuestTable(data, grid, controlsHtml = '') {
+            const sortClass = (col) => TableState.sortColumn === col ? (TableState.sortDirection === 'asc' ? 'asc' : 'desc') : '';
             grid.innerHTML = `
+                ${controlsHtml}
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
                             <tr style="background: #f8fafc;">
-                                <th>Guest Name</th>
-                                <th>Room Type</th>
-                                <th>Status</th>
-                                <th>Check-In Date</th>
+                                <th class="sortable ${sortClass('full_name')}" onclick="handleHeaderClick('full_name')">Guest Name</th>
+                                <th class="sortable ${sortClass('category')}" onclick="handleHeaderClick('category')">Room Type</th>
+                                <th class="sortable ${sortClass('status')}" onclick="handleHeaderClick('status')">Status</th>
+                                <th class="sortable ${sortClass('entry_date')}" onclick="handleHeaderClick('entry_date')">Check-In Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1939,15 +1949,17 @@ function formatFileSize($bytes)
             `;
         }
 
-        function renderInventoryTable(data, grid) {
+        function renderInventoryTable(data, grid, controlsHtml = '') {
+            const sortClass = (col) => TableState.sortColumn === col ? (TableState.sortDirection === 'asc' ? 'asc' : 'desc') : '';
             grid.innerHTML = `
+                ${controlsHtml}
                 <div class="financial-table-container">
                     <table class="financial-table">
                         <thead>
                             <tr>
-                                <th>Product Name</th>
-                                <th>Stock</th>
-                                <th>Unit Price</th>
+                                <th class="sortable ${sortClass('name')}" onclick="handleHeaderClick('name')">Product Name</th>
+                                <th class="sortable ${sortClass('stock')}" onclick="handleHeaderClick('stock')">Stock</th>
+                                <th class="sortable ${sortClass('unit_price')}" onclick="handleHeaderClick('unit_price')">Unit Price</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
