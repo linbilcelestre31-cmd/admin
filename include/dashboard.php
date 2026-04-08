@@ -78,11 +78,11 @@
 
     <!-- Top Metrics Grid -->
     <div class="stats-grid"
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; align-items: stretch;">
 
         <!-- Available Room Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; min-height: 160px; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
                     style="width: 45px; height: 45px; background: #fff7ed; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #f97316; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.1);">
@@ -105,7 +105,7 @@
 
         <!-- Visitors Today Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; min-height: 160px; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
                     style="width: 45px; height: 45px; background: #f0fdf4; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #22c55e; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.1);">
@@ -127,7 +127,7 @@
 
         <!-- Documents Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; min-height: 160px; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
                     style="width: 45px; height: 45px; background: #fef2f2; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);">
@@ -150,7 +150,7 @@
 
         <!-- Employees Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; min-height: 160px; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
                     style="width: 45px; height: 45px; background: #f5f3ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #7c3aed; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.1);">
@@ -172,11 +172,11 @@
     </div>
 
     <!-- Bottom Split Section (4 Cards Grid) -->
-    <div class="bottom-split-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px;">
-
+    <div class="bottom-split-section" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; align-items: stretch;">
+        
         <!-- Compliance Reports (Legal) -->
         <div
-            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Compliance Reports</h3>
                 <a href="legalmanagement.php" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">View
@@ -223,7 +223,7 @@
 
         <!-- Recent Activity (Employee Activity from HR4) -->
         <div
-            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Recent Activity</h3>
                 <a href="#" onclick="openRecentActivitiesModal(event)"
@@ -272,7 +272,7 @@
             </div>
         </div>
         <div
-            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Archiving Status</h3>
                 <a href="#" onclick="checkVaultPin(event, 'document management(archiving).php')"
@@ -323,7 +323,7 @@
 
         <!-- Maintenance Tracking -->
         <div
-            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            style="background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">Maintenance Schedule</h3>
                 <a href="dashboard.php?tab=management"
