@@ -121,112 +121,135 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         color: #3b82f6;
     }
 
-    /* Management Modal Styles */
-    .mgmt-modal {
+    /* Management Radial Menu Styles */
+    .mgmt-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.4);
-        backdrop-filter: blur(12px);
+        background: rgba(15, 23, 42, 0.3);
+        backdrop-filter: blur(8px);
         z-index: 10000;
-        align-items: center;
-        justify-content: center;
         opacity: 0;
         transition: opacity 0.4s ease;
     }
     
-    .mgmt-modal.show {
-        display: flex;
+    .mgmt-overlay.show {
+        display: block;
         opacity: 1;
     }
 
-    .mgmt-container {
-        position: relative;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 40px;
-        padding: 40px;
-        width: calc(100% - 60px);
-        max-width: 400px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        transform: scale(0.9) translateY(20px);
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        text-align: center;
-    }
-    
-    .mgmt-modal.show .mgmt-container {
-        transform: scale(1) translateY(0);
+    .mgmt-radial-wrapper {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        width: 320px;
+        height: 320px;
+        z-index: 10001;
+        pointer-events: none;
+        visibility: hidden;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform: scale(0.5) translate(50%, 50%);
+        opacity: 0;
     }
 
-    .mgmt-close {
+    .mgmt-overlay.show + .mgmt-radial-wrapper {
+        visibility: visible;
+        pointer-events: auto;
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+
+    /* The 'Circle on the side' background */
+    .mgmt-radial-bg {
         position: absolute;
-        bottom: -70px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: -50px;
+        right: -50px;
+        width: 380px;
+        height: 380px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .mgmt-radial-item {
+        position: absolute;
+        width: 65px;
+        height: 65px;
+        background: white;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s;
+        z-index: 2;
+    }
+
+    .mgmt-radial-item:hover {
+        transform: scale(1.1);
+        border-color: #3b82f6;
+        box-shadow: 0 12px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .mgmt-radial-item i {
+        font-size: 1.4rem;
+        margin-bottom: 2px;
+    }
+
+    .mgmt-radial-item span {
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-align: center;
+        color: #475569;
+        line-height: 1;
+    }
+
+    /* Positioning along the arc (counter-clockwise from 6 o'clock) */
+    /* Item 1: Facilities (Top Left-ish) */
+    .item-1 { top: 30px; left: 40px; }
+    /* Item 2: Reservations (Top Right-ish) */
+    .item-2 { top: 80px; left: 140px; }
+    /* Item 3: Calendar (Bottom Left-ish) */
+    .item-3 { top: 130px; left: 30px; }
+    /* Item 4: Maintenance (Center Left-ish) */
+    .item-4 { top: 210px; left: 80px; }
+
+    .mgmt-radial-close {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
         width: 50px;
         height: 50px;
-        background: white;
+        background: #f1f5f9;
+        color: #475569;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         cursor: pointer;
+        z-index: 3;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         transition: all 0.2s;
     }
 
-    .mgmt-close:hover {
-        transform: translateX(-50%) scale(1.1);
-        color: #3b82f6;
+    .mgmt-radial-close:hover {
+        background: #3b82f6;
+        color: white;
+        transform: rotate(90deg);
     }
 
-    .mgmt-option {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-        padding: 25px 15px;
-        background: white;
-        border-radius: 30px;
-        text-decoration: none;
-        color: #1e293b;
-        transition: all 0.3s;
-        border: 1px solid #f1f5f9;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-
-    .mgmt-option:hover {
-        background: #f8fafc;
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        border-color: #3b82f6;
-    }
-
-    .mgmt-option i {
-        font-size: 1.8rem;
-        width: 60px;
-        height: 60px;
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 20px;
-        margin-bottom: 5px;
     }
-
-    .mgmt-option span {
-        font-weight: 700;
-        font-size: 0.85rem;
-        line-height: 1.2;
-    }
-
-    .icon-blue { background: #eff6ff; color: #3b82f6; }
-    .icon-green { background: #f0fdf4; color: #22c55e; }
-    .icon-orange { background: #fff7ed; color: #f97316; }
-    .icon-purple { background: #faf5ff; color: #a855f7; }
 </style>
 
 <!-- Mobile Bottom Navigation -->
@@ -768,46 +791,63 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         }
     });
 
-    // 10. Management Modal Logic
+    // 10. Management Radial Menu Logic
     window.openManagementModal = function() {
-        const modal = document.getElementById('mgmtModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('show'), 10);
+        const overlay = document.getElementById('mgmtOverlay');
+        const wrapper = document.getElementById('mgmtRadialWrapper');
+        if (overlay && wrapper) {
+            overlay.style.display = 'block';
+            setTimeout(() => {
+                overlay.classList.add('show');
+            }, 10);
         }
     };
 
     window.closeManagementModal = function() {
-        const modal = document.getElementById('mgmtModal');
-        if (modal) {
-            modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 400);
+        const overlay = document.getElementById('mgmtOverlay');
+        if (overlay) {
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 400);
         }
     };
 </script>
 
-<!-- Management Quick Access Modal -->
-<div id="mgmtModal" class="mgmt-modal" onclick="if(event.target === this) closeManagementModal()">
-    <div class="mgmt-container">
-        <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
-            <i class="fa-solid fa-hotel icon-blue"></i>
-            <span>Facilities<br>Management</span>
-        </a>
-        <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
-            <i class="fa-solid fa-calendar-check icon-green"></i>
-            <span>Reservation<br>List</span>
-        </a>
-        <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
-            <i class="fa-solid fa-calendar-days icon-orange"></i>
-            <span>Booking<br>Calendar</span>
-        </a>
-        <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-option">
-            <i class="fa-solid fa-screwdriver-wrench icon-purple"></i>
-            <span>Maintenance<br>System</span>
-        </a>
-        
-        <div class="mgmt-close" onclick="closeManagementModal()">
-            <i class="fa-solid fa-xmark"></i>
+<!-- Management Quick Access Radial Menu -->
+<div id="mgmtOverlay" class="mgmt-overlay" onclick="closeManagementModal()"></div>
+<div id="mgmtRadialWrapper" class="mgmt-radial-wrapper">
+    <div class="mgmt-radial-bg"></div>
+    
+    <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1">
+        <div class="icon-box icon-blue">
+            <i class="fa-solid fa-hotel"></i>
         </div>
+        <span>Facilities</span>
+    </a>
+    
+    <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2">
+        <div class="icon-box icon-green">
+            <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <span>Reservations</span>
+    </a>
+    
+    <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3">
+        <div class="icon-box icon-orange">
+            <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <span>Calendar</span>
+    </a>
+    
+    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4">
+        <div class="icon-box icon-purple">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <span>Maintenance</span>
+    </a>
+    
+    <div class="mgmt-radial-close" onclick="closeManagementModal()">
+        <i class="fa-solid fa-xmark"></i>
     </div>
 </div>
