@@ -43,9 +43,90 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         .main-content {
             margin-left: 0 !important;
             width: 100% !important;
+            padding-bottom: 80px !important; /* Space for bottom nav */
+        }
+        .mobile-bottom-nav {
+            display: flex !important;
         }
     }
+
+    /* Bottom Nav Styles */
+    .mobile-bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 40px);
+        max-width: 450px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        height: 65px;
+        border-radius: 20px;
+        z-index: 9998;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0 10px;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .bottom-nav-item i {
+        font-size: 1.2rem;
+        transition: all 0.3s;
+    }
+
+    .bottom-nav-item.active {
+        color: #3b82f6;
+    }
+
+    .bottom-nav-item.active i {
+        transform: translateY(-5px);
+        color: #3b82f6;
+    }
 </style>
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-bottom-nav">
+    <a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>" 
+       class="bottom-nav-item <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+    </a>
+    <a href="../Modules/Visitor-logs.php" 
+       class="bottom-nav-item <?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-id-card-clip"></i>
+        <span>Visitors</span>
+    </a>
+    <a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+       class="bottom-nav-item <?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-vault"></i>
+        <span>Vault</span>
+    </a>
+    <a href="../Modules/legalmanagement.php" 
+       class="bottom-nav-item <?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Legal</span>
+    </a>
+    <a href="#" onclick="toggleSidebar()" class="bottom-nav-item">
+        <i class="fa-solid fa-bars"></i>
+        <span>Menu</span>
+    </a>
+</div>
 
 <!-- Mobile Menu Overlay -->
 <div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
