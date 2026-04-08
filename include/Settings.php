@@ -12,6 +12,8 @@ require_once __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
 require_once __DIR__ . '/Config.php';
 
+$isSuperAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin');
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -1080,21 +1082,25 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="tabs-container">
                     <div class="tabs-list">
-                        <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
-                            List</button>
-                        <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <?php if ($isSuperAdmin): ?>
+                            <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users List</button>
+                        <?php endif; ?>
+                        <button class="tab-btn <?= !$isSuperAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="swap-btn" onclick="openSecurityModal('pin')">
                             <i class="fas fa-key"></i> Security PIN
                         </button>
-                        <button class="swap-btn" onclick="toggleLayout()">
-                            <i class="fas fa-sync-alt"></i> Swap View
-                        </button>
+                        <?php if ($isSuperAdmin): ?>
+                            <button class="swap-btn" onclick="toggleLayout()">
+                                <i class="fas fa-sync-alt"></i> Swap View
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Users List Tab Content -->
+                <?php if ($isSuperAdmin): ?>
                 <div id="content-general">
                     <div class="content-card">
                         <div
@@ -1144,10 +1150,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Security Tab Content -->
-            <div id="content-security" style="display: none;">
+            <div id="content-security" style="<?= !$isSuperAdmin ? 'display: block;' : 'display: none;' ?>">
                 <div class="content-card">
                     <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
                         Security Controls</h3>
@@ -1193,6 +1200,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
                         </div>
                     </div>
+                    <?php if ($isSuperAdmin): ?>
                     <div class="stat-card">
                         <div class="stat-icon" style="background: #10b981;">
                             <i class="fas fa-users"></i>
@@ -1202,6 +1210,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <div class="stat-card">
                         <div class="stat-icon" style="background: #f59e0b;">
                             <i class="fas fa-shield-alt"></i>
@@ -1225,7 +1234,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
                     <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                        <?php if ($isSuperAdmin): ?>
+                            <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                        <?php endif; ?>
                         <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
                         <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
                     </div>
