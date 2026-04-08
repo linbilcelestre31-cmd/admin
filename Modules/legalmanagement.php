@@ -1446,12 +1446,12 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <h2>Legal Management System</h2>
         <p>Enter your PIN to access the system</p>
         <div class="pin-input">
-            <input type="password" maxlength="1" class="pin-digit" id="pin1" disabled>
-            <input type="password" maxlength="1" class="pin-digit" id="pin2" disabled>
-            <input type="password" maxlength="1" class="pin-digit" id="pin3" disabled>
-            <input type="password" maxlength="1" class="pin-digit" id="pin4" disabled>
+            <input type="password" maxlength="1" class="pin-digit" id="pin1">
+            <input type="password" maxlength="1" class="pin-digit" id="pin2">
+            <input type="password" maxlength="1" class="pin-digit" id="pin3">
+            <input type="password" maxlength="1" class="pin-digit" id="pin4">
         </div>
-        <button class="login-btn" id="loginBtn" disabled>Login</button>
+        <button class="login-btn" id="loginBtn">Login</button>
         <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
     </div>
 </div>
@@ -1534,6 +1534,11 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00
                             AM</span>
                     </div>
+                <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
+
+                <!-- Lock System -->
+                <div id="backDashboardBtn" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; transition: all 0.3s ease;" title="Lock System">
+                    <i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i>
                 </div>
             </div>
 
@@ -1656,7 +1661,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
 
             .header-status-bar div[style*="width: 40px"],
-            .header-status-bar div[style*="width: 45px"] {
+            .header-status-bar div[style*="width: 45px"],
+            #backDashboardBtn {
                 width: 32px !important;
                 height: 32px !important;
             }
