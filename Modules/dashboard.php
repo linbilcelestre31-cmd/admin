@@ -314,7 +314,7 @@ class ReservationSystem
                 SELECT f.*, 
                 (SELECT customer_name FROM reservations r WHERE r.facility_id = f.id AND r.event_date >= CURDATE() AND r.status = 'confirmed' ORDER BY r.event_date ASC, r.start_time ASC LIMIT 1) as next_reserve_name,
                 'Not Assigned' as next_assigned_user
-                FROM facilities f WHERE f.status = 'active' ORDER BY f.name
+                FROM facilities f WHERE f.status = 'active' ORDER BY f.id ASC
             ")->fetchAll();
             $data['today_schedule'] = $pdo->query("
                 SELECT r.*, f.name as facility_name 
@@ -1399,17 +1399,17 @@ $r_rows = [];
                         <div class="table-container">
                             <table class="table">
                                 <thead>
-                                    <tr>
-                                        <th style="text-align: center;">ID</th>
-                                        <th style="text-align: left;">reserve name</th>
-                                        <th style="text-align: left;">Facility Name</th>
-                                        <th>Type</th>
-                                        <th style="text-align: center;">Capacity</th>
-                                        <th style="text-align: left;">Location</th>
-                                        <th>Rate</th>
-                                        <th style="text-align: center;">Status</th>
-                                        <th style="text-align: center;">Assigned User</th>
-                                        <th style="text-align: center;">Actions</th>
+                                    <tr style="border-bottom: 2px solid #e2e8f0;">
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ID</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">RESERVE NAME</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">FACILITY NAME</th>
+                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">TYPE</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">CAPACITY</th>
+                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">LOCATION</th>
+                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">RATE</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">STATUS</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ASSIGNED USER</th>
+                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -87,6 +87,9 @@ $clusters = [
     ],
     'Administrative' => [
         ['name' => 'Administrative', 'id' => 'Administrative', 'icon' => 'building-user', 'color' => '#000', 'url' => '../Modules/dashboard.php', 'pin' => '1234'],
+        ['name' => 'Visitor Logs', 'id' => 'VisitorLogs', 'icon' => 'user-check', 'color' => '#6366f1', 'url' => '../Modules/Visitor-logs.php', 'pin' => '1234'],
+        ['name' => 'Archiving', 'id' => 'Archiving', 'icon' => 'box-archive', 'color' => '#8b5cf6', 'url' => '../Modules/document management(archiving).php', 'pin' => '1234'],
+        ['name' => 'Legal Management', 'id' => 'Legal', 'icon' => 'file-contract', 'color' => '#10b981', 'url' => '../Modules/legalmanagement.php', 'pin' => '1234'],
     ]
 ];
 
@@ -161,7 +164,16 @@ $clusters = [
     <?php include 'Department/Security.php'; ?>
 
 
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-toggle" class="mobile-toggle-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
     <!-- Sidebar -->
+
     <div class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-logo">ATIÉRA</h1>
@@ -177,7 +189,17 @@ $clusters = [
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a href="#" onclick="openUniversalPermission(this, event)" 
+                   data-target-url="../Modules/Visitor-logs.php?bypass_key=<?= urlencode($api_key) ?>&super_admin_session=true"
+                   data-name="Visitor Logs" data-icon="fas fa-user-check" data-color="#6366f1"
+                   data-pin="1234" class="nav-link">
+                    <i class="fas fa-user-check"></i> Visitor Logs
+                </a>
+            </li>
+
             <div class="nav-section-label">Settings</div>
+
             <li class="nav-item">
                 <a href="Settings.php" class="nav-link">
                     <i class="fas fa-user-gear"></i> Account
@@ -196,7 +218,7 @@ $clusters = [
     <div class="main-content">
         <div class="header"
             style="background: white; border-bottom: 1px solid #e2e8f0; padding: 20px 40px; margin: -40px -40px 35px -40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-            <div class="header-title">
+            <div class="header-title" style="display: flex; align-items: center; gap: 15px;">
                 <h1 style="margin: 0; font-size: 1.75rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
                     Dashboard</h1>
             </div>
@@ -415,6 +437,34 @@ $clusters = [
         // Immediate: If document is already complete
         if (document.readyState === 'complete') {
             hideLoader();
+        }
+
+        // Mobile Menu Toggle Logic
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (mobileToggle && sidebar && overlay) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Close sidebar when clicking a link on mobile
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
         }
 
     </script>

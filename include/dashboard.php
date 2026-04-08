@@ -239,8 +239,10 @@
                     </div>
                 <?php else: ?>
                     <?php
+                    $m_idx_small = 0;
                     $recent_emps = array_slice($employees_data, 0, 4);
                     foreach ($recent_emps as $emp):
+                        $m_idx_small++;
                         $gender = strtolower($emp['gender'] ?? 'male');
                         $icon = ($gender === 'female' || $gender === 'f') ? '../assets/image/Women.png' : '../assets/image/Men.png';
                         ?>
@@ -258,7 +260,7 @@
                                 <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
                                     <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?></span>
                                     <?php 
-                                    $random_minutes = rand(5, 120);
+                                    $random_minutes = ($m_idx_small * 20) + rand(5, 15);
                                     $activity_time = date('h:i A', strtotime("-$random_minutes minutes"));
                                     ?>
                                     <span style="font-size: 0.65rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="font-size: 0.6rem;"></i> <?= $activity_time ?></span>
@@ -401,7 +403,7 @@
                             <div style="font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
                                 <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?> • <span style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span></span>
                                 <?php 
-                                $random_offset = ($m_idx_modal * 15) + rand(5, 20); // Each activity is older than the previous one
+                                $random_offset = ($m_idx_modal * 22) + rand(5, 15); // Guaranteed older than previous
                                 $activity_ts = date('m/d/Y h:i A', strtotime("-$random_offset minutes"));
                                 ?>
                                 <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> <?= $activity_ts ?></span>
