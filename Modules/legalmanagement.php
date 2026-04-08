@@ -1451,7 +1451,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <input type="password" maxlength="1" class="pin-digit" id="pin3">
             <input type="password" maxlength="1" class="pin-digit" id="pin4">
         </div>
-        <button class="login-btn" id="loginBtn">Login</button>
+        <button class="login-btn" id="loginBtn" onclick="validateLogin()">Login</button>
         <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
     </div>
 </div>
@@ -4332,6 +4332,39 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             errorMessage.style.display = 'none';
         });
     });
+
+    // Global Authentication Handler
+    window.validateLogin = function() {
+        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+        const correctPIN = '1234';
+        
+        const enteredPIN = Array.from(pinInputs).map(input => input.value).join('');
+        if (enteredPIN === correctPIN) {
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'block';
+            
+            // Set default tab
+            const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
+            if (activeTab) switchSection(activeTab.getAttribute('data-target'));
+        } else {
+            errorMessage.style.display = 'block';
+            pinInputs.forEach(input => input.value = '');
+            pinInputs[0]?.focus();
+        }
+    };
+
+    // Sensitive Action Gate
+    window.withPasswordGate = function(callback) {
+        const pin = prompt("Enter Administration PIN:");
+        if (pin === '1234') {
+            callback();
+        } else {
+            alert("Incorrect PIN.");
+        }
+    };
 
     // Handle Loader
     window.addEventListener('load', function () {
