@@ -1605,6 +1605,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
             .header-status-bar span[id*="headerLive"] {
                 font-size: 0.85rem !important;
+                white-space: nowrap !important;
+                display: flex !important;
+                align-items: center !important;
             }
             .header-status-bar i {
                 font-size: 0.9rem !important;
@@ -1617,16 +1620,26 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 right: -1px !important;
             }
             .premium-nav-tabs {
-                padding: 0 15px;
-                gap: 8px !important;
+                padding: 5px 15px;
+                gap: 10px !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                justify-content: flex-start !important;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+                width: 100% !important;
+            }
+            .premium-nav-tabs::-webkit-scrollbar {
+                display: none;
             }
             .premium-nav-tabs .nav-tab {
-                flex: 1 1 45%;
-                font-size: 0.8rem;
-                padding: 12px 10px;
+                flex: 0 0 auto !important;
+                font-size: 0.85rem;
+                padding: 12px 20px;
+                white-space: nowrap !important;
             }
             .premium-nav-tabs .back-btn {
-                flex: 1 1 100%;
+                flex: 0 0 auto !important;
             }
         }
     </style>
