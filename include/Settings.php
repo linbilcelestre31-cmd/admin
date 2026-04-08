@@ -841,6 +841,101 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             transform: translateY(-2px);
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column !important;
+                height: auto !important;
+                padding: 1.5rem 1rem !important;
+                gap: 20px !important;
+                text-align: center;
+                background: white !important;
+            }
+
+            .header-title {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 10px !important;
+                width: 100%;
+            }
+
+            .header-title h1 {
+                font-size: 1.75rem !important;
+                margin: 0 !important;
+            }
+
+            .header-subtitle {
+                display: block !important;
+                font-size: 0.85rem !important;
+                margin: 0 !important;
+                color: #64748b !important;
+            }
+
+            .mobile-menu-btn {
+                position: absolute;
+                left: 1rem;
+                top: 1.5rem;
+            }
+
+            .header-actions {
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 15px !important;
+            }
+
+            .current-time-bar {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .user-info-header {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .tabs-container {
+                flex-direction: column !important;
+                gap: 15px !important;
+                align-items: stretch !important;
+            }
+
+            .tabs-list {
+                width: 100% !important;
+                justify-content: center !important;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+
+            .tabs-container > div:last-child {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+                gap: 10px !important;
+            }
+
+            .swap-btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .dashboard-content {
+                padding: 1rem !important;
+            }
+
+            .content-card {
+                padding: 1.25rem !important;
+            }
+
+            .table-container {
+                margin: 0 -0.5rem;
+            }
+
+            .viewing-badge {
+                font-size: 0.8rem !important;
+                padding: 8px 16px !important;
+            }
+        }
     </style>
 </head>
 

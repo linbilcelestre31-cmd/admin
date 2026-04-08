@@ -167,34 +167,80 @@ function getLastInsertId()
 
         /* Mobile Optimization */
         @media (max-width: 768px) {
+            header {
+                padding: 15px 10px !important;
+            }
             header .container .header-content {
                 flex-direction: column !important;
-                gap: 15px !important;
+                gap: 12px !important;
                 padding: 10px 0 !important;
+                text-align: center;
             }
             header .logo {
                 flex-direction: column;
-                text-align: center;
-                gap: 5px !important;
+                justify-content: center;
+                gap: 8px !important;
+            }
+            header .logo img {
+                height: 35px !important;
             }
             header .logo span {
-                font-size: 1rem !important;
-                line-height: 1.2;
+                font-size: 1.1rem !important;
+                line-height: 1.3;
+                max-width: 250px;
+                margin: 0 auto;
+                color: #60a5fa !important;
             }
-            .current-time-bar {
+            
+            /* The wrapper for time and nav */
+            header .header-content > div:last-child {
+                flex-direction: column !important;
                 width: 100%;
+                gap: 15px !important;
+            }
+
+            .current-time-bar {
+                width: 100% !important;
+                max-width: 320px;
+                margin: 0 auto;
                 justify-content: center;
-                padding: 5px 10px !important;
+                padding: 10px 15px !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+            
+            nav {
+                width: 100%;
             }
             nav ul {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 5px !important;
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                padding: 0;
+                list-style: none;
+            }
+            nav ul li {
+                margin: 0;
             }
             nav ul li a {
-                padding: 6px 10px !important;
-                font-size: 0.8rem !important;
+                display: block;
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                white-space: nowrap;
+            }
+            nav ul li a.active {
+                background: #3b82f6 !important;
+                border-color: #3b82f6 !important;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+            .nav-item-back {
+                background: rgba(239, 68, 68, 0.1) !important;
+                border-color: rgba(239, 68, 68, 0.2) !important;
+                color: #ef4444 !important;
             }
             
             .main-content {
