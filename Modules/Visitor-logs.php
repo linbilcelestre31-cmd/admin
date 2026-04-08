@@ -215,11 +215,16 @@ function getLastInsertId()
             nav ul {
                 display: flex !important;
                 flex-direction: row !important;
-                flex-wrap: wrap !important;
-                justify-content: center !important;
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
                 gap: 8px !important;
-                padding: 0;
+                padding: 0 5px 10px 5px !important;
                 list-style: none;
+            }
+            nav ul::-webkit-scrollbar {
+                display: none;
             }
             nav ul li {
                 margin: 0;
