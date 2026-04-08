@@ -1376,10 +1376,21 @@ $r_rows = [];
                 <div id="facilities"
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
                     <div class="d-flex justify-between align-center mb-2" style="background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; margin-top: 10px;">
-                        <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b;">
-                            <i class="fa-solid fa-hotel" style="color: #3b82f6;"></i>
-                            Facilities Management
-                        </h2>
+                        <div class="d-flex align-center gap-2">
+                            <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b;">
+                                <i class="fa-solid fa-hotel" style="color: #3b82f6;"></i>
+                                Facilities Management
+                            </h2>
+                            <!-- View Switcher -->
+                            <div class="view-switcher d-flex gap-1" style="margin-left: 20px; background: #f1f5f9; padding: 4px; border-radius: 10px;">
+                                <button id="btn-grid-view" class="btn btn-sm active" onclick="switchFacilityView('grid')" style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <i class="fa-solid fa-grid-2"></i> Grid
+                                </button>
+                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')" style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: transparent;">
+                                    <i class="fa-solid fa-list"></i> List
+                                </button>
+                            </div>
+                        </div>
                         <div class="d-flex gap-1 align-center">
                             <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')" style="background: #3b82f6; border-radius: 10px; padding: 10px 20px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);">
                                 <i class="fa-solid fa-plus" style="font-size: 0.9rem;"></i> Add Facility
@@ -1390,7 +1401,14 @@ $r_rows = [];
                     <!-- Grid View -->
                     <div id="facility-grid-view">
                         <div class="facilities-grid">
-                            <?php foreach ($dashboard_data['facilities'] as $facility): ?>
+                            <?php if (empty($dashboard_data['facilities'])): ?>
+                                <div style="grid-column: 1 / -1; text-align: center; padding: 50px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                                    <i class="fa-solid fa-hotel" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
+                                    <h3 style="color: #64748b; font-weight: 600;">No Facilities Found</h3>
+                                    <p style="color: #94a3b8;">Click the "Add Facility" button to create your first facility.</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($dashboard_data['facilities'] as $facility): ?>
                                 <div class="facility-card">
                                     <div class="facility-image">
                                         <?php
@@ -1508,6 +1526,7 @@ $r_rows = [];
                                     </div>
                                 </div>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -1533,7 +1552,17 @@ $r_rows = [];
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($dashboard_data['facilities'] as $f): ?>
+                                    <?php if (empty($dashboard_data['facilities'])): ?>
+                                        <tr>
+                                            <td colspan="10" style="text-align: center; padding: 40px;">
+                                                <div style="color: #94a3b8; font-style: italic;">
+                                                    <i class="fa-solid fa-hotel" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                    No facilities found. Create one using the "Add Facility" button.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($dashboard_data['facilities'] as $f): ?>
                                         <tr>
                                             <td style="text-align: center;">#<?= $f['id'] ?></td>
                                             <td style="text-align: left; color: #475569;">
@@ -1581,10 +1610,11 @@ $r_rows = [];
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
                 </div>
 
                 <!-- Reservations Tab -->
