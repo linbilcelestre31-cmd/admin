@@ -1070,7 +1070,92 @@ function formatFileSize($bytes)
             border: 1px solid var(--accent-blue);
         }
 
-        /* Table protocol redesign */
+        /* Table Control Styles */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-entries {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .table-entries select {
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+            justify-content: flex-end;
+            padding: 0 10px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: var(--text-gray);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            position: relative;
+            padding-right: 30px !important;
+        }
+
+        th.sortable::after {
+            content: "\f0dc";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 10px;
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        th.sortable.asc::after { content: "\f0de"; color: var(--primary-blue); }
+        th.sortable.desc::after { content: "\f0dd"; color: var(--primary-blue); }
+
         .financial-table-container {
             background: white;
             border-radius: 24px;
@@ -1497,6 +1582,18 @@ function formatFileSize($bytes)
             pinErrorMessage.style.display = 'none';
         }
 
+        // Advanced Table Controller
+        const TableState = {
+            data: [],
+            filteredData: [],
+            currentPage: 1,
+            entriesPerPage: 10,
+            sortColumn: null,
+            sortDirection: 'asc',
+            renderFunc: null,
+            gridId: null
+        };
+
         function switchCategory(linkElement, category) {
             document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
             linkElement.classList.add('active');
@@ -1517,7 +1614,96 @@ function formatFileSize($bytes)
             const contentEl = document.getElementById(contentId) || document.getElementById('all-content');
             if (contentEl) contentEl.classList.add('active');
 
+            // Reset Table State
+            TableState.currentPage = 1;
+            TableState.sortColumn = null;
+            
             loadCategoryFiles(category);
+        }
+
+        function updateTableDisplay() {
+            if (!TableState.renderFunc || !TableState.gridId) return;
+            
+            const grid = document.getElementById(TableState.gridId);
+            if (!grid) return;
+
+            // Apply Search
+            const searchTerm = documentSearch ? documentSearch.value.toLowerCase() : '';
+            TableState.filteredData = TableState.data.filter(item => {
+                return Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(searchTerm)
+                );
+            });
+
+            // Apply Sorting
+            if (TableState.sortColumn) {
+                TableState.filteredData.sort((a, b) => {
+                    const valA = String(a[TableState.sortColumn] || '').toLowerCase();
+                    const valB = String(b[TableState.sortColumn] || '').toLowerCase();
+                    if (valA < valB) return TableState.sortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return TableState.sortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            // Apply Pagination
+            const totalPages = Math.ceil(TableState.filteredData.length / TableState.entriesPerPage);
+            if (TableState.currentPage > totalPages) TableState.currentPage = Math.max(1, totalPages);
+            
+            const start = (TableState.currentPage - 1) * TableState.entriesPerPage;
+            const end = start + TableState.entriesPerPage;
+            const paginatedData = TableState.filteredData.slice(start, end);
+
+            // Render Control Bar
+            let controlsHtml = `
+                <div class="table-controls">
+                    <div class="table-entries">
+                        <span>Show</span>
+                        <select onchange="TableState.entriesPerPage = parseInt(this.value); TableState.currentPage = 1; updateTableDisplay();">
+                            <option value="5" ${TableState.entriesPerPage === 5 ? 'selected' : ''}>5</option>
+                            <option value="10" ${TableState.entriesPerPage === 10 ? 'selected' : ''}>10</option>
+                            <option value="25" ${TableState.entriesPerPage === 25 ? 'selected' : ''}>25</option>
+                            <option value="50" ${TableState.entriesPerPage === 50 ? 'selected' : ''}>50</option>
+                        </select>
+                        <span>entries</span>
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-gray);">
+                        Showing ${TableState.filteredData.length > 0 ? start + 1 : 0} to ${Math.min(end, TableState.filteredData.length)} of ${TableState.filteredData.length} entries
+                    </div>
+                </div>
+            `;
+
+            // Call the specific render function
+            TableState.renderFunc(paginatedData, grid, controlsHtml);
+
+            // Render Pagination Buttons
+            if (totalPages > 1) {
+                let paginationHtml = `<div class="pagination">
+                    <button class="page-btn" ${TableState.currentPage === 1 ? 'disabled' : ''} onclick="TableState.currentPage--; updateTableDisplay();"><i class="fas fa-chevron-left"></i></button>`;
+                
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= TableState.currentPage - 1 && i <= TableState.currentPage + 1)) {
+                        paginationHtml += `<button class="page-btn ${i === TableState.currentPage ? 'active' : ''}" onclick="TableState.currentPage = ${i}; updateTableDisplay();">${i}</button>`;
+                    } else if (i === TableState.currentPage - 2 || i === TableState.currentPage + 2) {
+                        paginationHtml += `<span style="color:#94a3b8;">...</span>`;
+                    }
+                }
+
+                paginationHtml += `<button class="page-btn" ${TableState.currentPage === totalPages ? 'disabled' : ''} onclick="TableState.currentPage++; updateTableDisplay();"><i class="fas fa-chevron-right"></i></button></div>`;
+                grid.innerHTML += paginationHtml;
+            }
+
+            // Sync Search Bar if needed (handled by external input listener)
+        }
+
+        function handleHeaderClick(column) {
+            if (TableState.sortColumn === column) {
+                TableState.sortDirection = TableState.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                TableState.sortColumn = column;
+                TableState.sortDirection = 'asc';
+            }
+            updateTableDisplay();
         }
 
         function loadCategoryFiles(category) {
@@ -1562,22 +1748,26 @@ function formatFileSize($bytes)
                     if (!grid) return;
 
                     // Fallback for HR Documents
-                    if ((!data || data.length === 0) && category === 'HR Documents') {
-                        const fallbackHRData = [
+                    let records = data;
+                    if ((!records || records.length === 0) && category === 'HR Documents') {
+                        records = [
                             { id: 201, name: 'Employee Handbook 2024', category: 'HR Documents', upload_date: '2024-01-10', status: 'Active', description: 'Updated employee guidelines and policies.' },
                             { id: 202, name: 'Memo: Holiday Schedule', category: 'HR Documents', upload_date: '2023-12-15', status: 'Archived', description: 'Clarification on holiday shift rotations.' },
                             { id: 203, name: 'Health & Safety Protocol', category: 'HR Documents', upload_date: '2024-02-01', status: 'Active', description: 'Standard operating procedures for workplace safety.' },
                             { id: 204, name: 'Recruitment Policy v2', category: 'HR Documents', upload_date: '2023-11-20', status: 'Active', description: 'Revised hiring and onboarding process.' }
                         ];
-                        renderDocumentTable(fallbackHRData, grid);
-                        return;
                     }
 
-                    if (!data || data.length === 0) {
+                    if (!records || records.length === 0) {
                         showNoDataMessage(grid, category);
                         return;
                     }
-                    renderDocumentTable(data, grid);
+
+                    // Setup Global Table Controller
+                    TableState.data = records;
+                    TableState.renderFunc = renderDocumentTable;
+                    TableState.gridId = gridId;
+                    updateTableDisplay();
                 })
                 .catch(error => {
                     console.error(`Error loading ${category}:`, error);
@@ -1781,16 +1971,19 @@ function formatFileSize($bytes)
             `;
         }
 
-        function renderDocumentTable(data, grid) {
+        function renderDocumentTable(data, grid, controlsHtml = '') {
             const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
+            const sortClass = (col) => TableState.sortColumn === col ? (TableState.sortDirection === 'asc' ? 'asc' : 'desc') : '';
+
             grid.innerHTML = `
+                ${controlsHtml}
                 <div class="table-container">
                     <table class="financial-table">
                         <thead>
                             <tr>
-                                <th>Archive Name</th>
-                                <th>Sector</th>
-                                <th>Timeline</th>
+                                <th class="sortable ${sortClass('name')}" onclick="handleHeaderClick('name')">Archive Name</th>
+                                <th class="sortable ${sortClass('category')}" onclick="handleHeaderClick('category')">Sector</th>
+                                <th class="sortable ${sortClass('upload_date')}" onclick="handleHeaderClick('upload_date')">Timeline</th>
                                 <th>Protocols</th>
                             </tr>
                         </thead>
