@@ -1429,48 +1429,125 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 </div>
 
 <!-- Dashboard -->
-<div class="dashboard" id="dashboard">
-    <div class="header">
-        <div class="container">
-            <div class="header-content" style="display: flex; justify-content: center; align-items: center; gap: 40px; padding: 10px 0;">
-                <div class="logo" style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #1e293b; white-space: nowrap;">
-                    <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Logo" style="height: 35px; width: auto;">
-                    <span class="logo-text">Legal System</span>
+<header style="background: #111827; padding: 40px 0 30px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <!-- Logo Section -->
+            <div class="logo-area" style="margin-bottom: 20px;">
+                <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo" style="height: 50px; width: auto; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));">
+            </div>
+
+            <!-- Title Section -->
+            <h1 style="color: #60a5fa; font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; letter-spacing: 0.5px; text-transform: none;">
+                Legal Management System
+            </h1>
+
+            <!-- Time-Date-Notif Encapsulated Bar -->
+            <div class="header-status-bar" style="display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.03); padding: 12px 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); margin-bottom: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                <!-- Date -->
+                <div style="display: flex; align-items: center; gap: 10px; color: #60a5fa;">
+                    <i class="fa-solid fa-calendar-days" style="font-size: 1.2rem;"></i>
+                    <span id="headerLiveDate" style="font-weight: 700; color: #f8fafc; font-size: 1.1rem;"><?php echo date('F d, Y'); ?></span>
                 </div>
+
+                <div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1);"></div>
+
+                <!-- Bell -->
+                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24; display: flex; align-items: center;">
+                    <i class="fa-solid fa-bell" style="font-size: 1.4rem;"></i>
+                    <span style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; padding: 0 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #111827;">3</span>
+                </div>
+
+                <div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1);"></div>
+
+                <!-- Time -->
+                <div style="display: flex; align-items: center; gap: 10px; color: #818cf8;">
+                    <i class="fa-solid fa-clock" style="font-size: 1.2rem;"></i>
+                    <span id="headerLiveTime" style="font-weight: 700; color: #f8fafc; font-size: 1.1rem; font-variant-numeric: tabular-nums;">00:00:00 AM</span>
+                </div>
+            </div>
+
+            <!-- Custom Tab Navigation -->
+            <div class="premium-nav-tabs" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 900px;">
+                <button class="nav-tab active" data-section="employees" onclick="switchSection('employees')">Employees</button>
+                <button class="nav-tab" data-section="internal" onclick="switchSection('internal')">Internal</button>
+                <button class="nav-tab" data-section="external" onclick="switchSection('external')">External</button>
+                <button class="nav-tab" data-section="contracts" onclick="switchSection('contracts')">Analysis</button>
+                <button class="nav-tab" data-section="risk_analysis" onclick="switchSection('risk_analysis')">Risk Analysis</button>
                 
-                <div class="header-center-info" style="display: flex; align-items: center; gap: 25px; white-space: nowrap;">
-                    <div class="time-date-display" style="text-align: center; border-left: 2px solid #e2e8f0; border-right: 2px solid #e2e8f0; padding: 0 25px; display: flex; flex-direction: column; justify-content: center;">
-                        <span id="headerLiveTime" style="font-size: 1rem; font-weight: 800; color: #3b82f6; line-height: 1;">00:00:00 AM</span>
-                        <span id="headerLiveDate" style="font-size: 0.7rem; font-weight: 600; color: #64748b; margin-top: 2px;"><?php echo date('M d, Y'); ?></span>
-                    </div>
-
-                    <div class="notif-wrapper" style="position: relative; cursor: pointer; display: flex; align-items: center;">
-                        <i class="fa-solid fa-bell" style="font-size: 1.2rem; color: #64748b;"></i>
-                        <span style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 20px; border: 2px solid #fff;">3</span>
-                    </div>
-
-                    <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
-                        <div style="display: flex; flex-direction: column; align-items: center;">
-                            <span style="font-weight: 700; color: #1e293b; font-size: 0.85rem; line-height: 1;">Welcome,</span>
-                            <span style="font-weight: 800; color: #3b82f6; font-size: 0.9rem;">Admin</span>
-                        </div>
-                        <?php if ($isSuperAdmin): ?>
-                            <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
-                                style="text-decoration: none; background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; transition: all 0.3s; display: flex; align-items: center;">
-                                logout
-                            </a>
-                        <?php else: ?>
-                            <button type="button" class="logout-btn" id="backDashboardBtn"
-                                onclick="window.location.replace('../Modules/dashboard.php')"
-                                style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer;">
-                                logout
-                            </button>
-                        <?php endif; ?>
-                    </div>
+                <div style="margin-left: 10px; display: flex; align-items: center;">
+                    <?php if ($isSuperAdmin): ?>
+                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444;">Back</a>
+                    <?php else: ?>
+                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444;">Logout</button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
+
+    <style>
+        .premium-nav-tabs .nav-tab {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(25, 29, 41, 0.4);
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .premium-nav-tabs .nav-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .premium-nav-tabs .nav-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .premium-nav-tabs .nav-tab::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .premium-nav-tabs .nav-tab:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .header-status-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+                width: 90%;
+            }
+            .header-status-bar > div:not(.notif-wrapper) {
+                width: 100%;
+                justify-content: center;
+            }
+            .header-status-bar div[style*="width: 1px"] {
+                display: none;
+            }
+        }
+    </style>
 
     <div class="container">
         <!-- Success/Error Messages -->
@@ -3921,14 +3998,17 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 timeZone: 'Asia/Manila'
             };
             const dateOptions = {
-                month: 'short',
-                day: 'numeric',
+                month: 'long',
+                day: '2-digit',
                 year: 'numeric',
                 timeZone: 'Asia/Manila'
             };
 
-            document.getElementById('headerLiveTime').textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
-            document.getElementById('headerLiveDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            const liveTime = document.getElementById('headerLiveTime');
+            const liveDate = document.getElementById('headerLiveDate');
+            
+            if (liveTime) liveTime.textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
+            if (liveDate) liveDate.textContent = now.toLocaleDateString('en-US', dateOptions);
         }
 
         setInterval(updateHeaderClock, 1000);
