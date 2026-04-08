@@ -2593,6 +2593,25 @@ $r_rows = [];
                         color: #ffffff !important;
                         box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3) !important;
                     }
+
+                    .btn-today-premium:hover {
+                        background: #f8fafc !important;
+                        border-color: #3b82f6 !important;
+                        color: #3b82f6 !important;
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 12px rgba(59, 130, 246, 0.1) !important;
+                    }
+
+                    .today-event-card:hover {
+                        border-color: #3b82f6 !important;
+                        transform: translateX(5px);
+                        box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
+                        background: linear-gradient(to right, #fff, #f8fafc) !important;
+                    }
+
+                    .today-event-card {
+                        border-left: 4px solid #3b82f6 !important;
+                    }
                 </style>
 
                 <div class="calendar-container"
@@ -2609,8 +2628,9 @@ $r_rows = [];
                             </h2>
                         </div>
                         <div class="calendar-nav" style="display:flex; gap:15px; align-items: center;">
-                            <button onclick="goToToday()" class="btn btn-outline btn-sm"
-                                style="height: 45px; padding: 0 18px; border-radius: 12px; font-weight: 700; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; color: #64748b;">
+                            <button onclick="goToToday()" class="btn-today-premium"
+                                style="height: 45px; padding: 0 20px; border-radius: 12px; font-weight: 800; background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #475569; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-width: 90px; justify-content: center;">
+                                <i class="fa-solid fa-calendar-day" style="font-size: 0.9rem; color: #3b82f6;"></i>
                                 Today
                             </button>
                             <div style="display: flex; gap: 8px;">
@@ -2709,6 +2729,57 @@ $r_rows = [];
                         window.goToToday = function () {
                             currentCalendarDate = new Date();
                             renderCalendar(currentCalendarDate);
+
+                            // Enhanced Today View: Show Today's Reservations Modal
+                            const today = new Date();
+                            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                            const todayEvents = calendarReservations.filter(e => e.event_date === dateStr);
+
+                            const body = document.getElementById('today-reservations-body');
+                            if (body) {
+                                if (todayEvents.length === 0) {
+                                    body.innerHTML = `
+                                        <div style="text-align:center; padding: 3rem 1.5rem; color: #64748b;">
+                                            <div style="width: 80px; height: 80px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #cbd5e1;">
+                                                <i class="fa-solid fa-calendar-xmark" style="font-size: 2.5rem;"></i>
+                                            </div>
+                                            <h4 style="margin: 0; color: #1e293b; font-size: 1.1rem; font-weight: 700;">No Reservations Today</h4>
+                                            <p style="margin: 10px 0 0; font-size: 0.9rem;">Your schedule is clear for today.</p>
+                                        </div>`;
+                                } else {
+                                    let html = '<div style="display: flex; flex-direction: column; gap: 12px; padding: 0 10px;">';
+                                    todayEvents.forEach(evt => {
+                                        const statusColors = {
+                                            'confirmed': { bg: '#ecfdf5', text: '#059669', border: '#d1fae5' },
+                                            'pending': { bg: '#fffbeb', text: '#d97706', border: '#fef3c7' },
+                                            'cancelled': { bg: '#fef2f2', text: '#dc2626', border: '#fee2e2' },
+                                            'completed': { bg: '#eff6ff', text: '#2563eb', border: '#dbeafe' }
+                                        };
+                                        const colors = statusColors[evt.status] || { bg: '#f8fafc', text: '#64748b', border: '#e2e8f0' };
+
+                                        html += `
+                                            <div class="today-event-card" style="padding: 18px; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease;">
+                                                <div style="display: flex; align-items: center; gap: 15px;">
+                                                    <div style="width: 45px; height: 45px; background: ${colors.bg}; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: ${colors.text}; font-size: 1.2rem; flex-shrink: 0;">
+                                                        <i class="fa-solid fa-building"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 800; color: #0f172a; font-size: 1rem; margin-bottom: 4px;">${evt.facility_name}</div>
+                                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                                            <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;"><i class="fa-solid fa-user" style="margin-right: 5px; opacity: 0.7;"></i> ${evt.customer_name}</div>
+                                                            <div style="font-size: 0.8rem; color: #3b82f6; font-weight: 700;"><i class="fa-solid fa-clock" style="margin-right: 5px; opacity: 0.7;"></i> ${evt.start_time}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span style="background: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">${evt.status || 'pending'}</span>
+                                            </div>
+                                        `;
+                                    });
+                                    html += '</div>';
+                                    body.innerHTML = html;
+                                }
+                                if (window.openModal) window.openModal('today-reservations-modal');
+                            }
                         }
 
                         function renderCalendar(date) {
@@ -3732,6 +3803,24 @@ $r_rows = [];
             </div>
             <div style="margin-top: 1.5rem; text-align: right; pt: 1rem; border-top: 1px solid #eee;">
                 <button class="btn btn-outline" onclick="closeModal('maintenance-details-modal')">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today Reservations Modal -->
+    <div id="today-reservations-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px; border-radius: 20px;">
+            <div class="modal-header" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; font-family: 'Outfit', sans-serif;">
+                    <i class="fa-solid fa-calendar-check" style="color: #3b82f6; margin-right: 10px;"></i> Today's Schedule
+                </h3>
+                <span class="close" onclick="closeModal('today-reservations-modal')" style="font-size: 1.5rem; cursor: pointer;">&times;</span>
+            </div>
+            <div id="today-reservations-body" style="padding: 1.5rem 0; max-height: 60vh; overflow-y: auto;">
+                <!-- Filled via JS -->
+            </div>
+            <div style="margin-top: 1rem; text-align: right; border-top: 1px solid #f1f5f9; padding-top: 1.5rem;">
+                <button class="btn btn-outline" onclick="closeModal('today-reservations-modal')" style="border-radius: 10px; padding: 10px 20px; font-weight: 700;">Close</button>
             </div>
         </div>
     </div>

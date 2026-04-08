@@ -394,10 +394,13 @@ $api_key = $admin['api_key'] ?? '';
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h1 class="sidebar-logo">ATIÉRA</h1>
-            <div
-                style="color: var(--primary-gold); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; opacity: 0.8; text-align: center; width: 100%;">
-                Super Admin</div>
+            <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <img src="../assets/image/logo.png" alt="Atiéra Logo" 
+                     style="height: 50px; width: auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                <div style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3);">
+                    Super Admin
+                </div>
+            </div>
         </div>
 
         <ul class="nav-list">
@@ -415,7 +418,7 @@ $api_key = $admin['api_key'] ?? '';
             </li>
 
             <li class="nav-item">
-                <a href="auth/logout.php" class="nav-link" style="color: #ef4444;">
+                <a href="../auth/logout.php" class="nav-link" style="color: #ef4444;">
                     <i class="fas fa-power-off"></i> Log Out
                 </a>
             </li>

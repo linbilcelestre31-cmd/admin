@@ -9,9 +9,9 @@ require_once __DIR__ . '/Config.php';
 
 function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     if ($isSuperAdmin && $tab === 'dashboard') {
-        return getBaseUrl() . "/Super-admin/Dashboard.php";
+        return rtrim(getBaseUrl(), '/') . "/Super-admin/Dashboard.php";
     }
-    return getBaseUrl() . "/Modules/dashboard.php?tab=$tab";
+    return rtrim(getBaseUrl(), '/') . "/Modules/dashboard.php?tab=$tab";
 }
 ?>
 <style>
@@ -102,22 +102,22 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
 
 <!-- Mobile Bottom Navigation -->
 <div class="mobile-bottom-nav">
-    <a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>" 
-       class="bottom-nav-item <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>">
+    <a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/dashboard.php" 
+       class="bottom-nav-item <?= ($current_page == 'dashboard.php' && !isset($_GET['tab'])) ? 'active' : '' ?>">
         <i class="fa-solid fa-house"></i>
         <span>Home</span>
     </a>
-    <a href="<?= getBaseUrl() ?>/Modules/Visitor-logs.php" 
+    <a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/Visitor-logs.php" 
        class="bottom-nav-item <?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
         <i class="fa-solid fa-id-card-clip"></i>
         <span>Visitors</span>
     </a>
-    <a href="#" onclick="checkVaultPin(event, '<?= getBaseUrl() ?>/Modules/document management(archiving).php')"
+    <a href="#" onclick="checkVaultPin(event, '<?= rtrim(getBaseUrl(), '/') ?>/Modules/document management(archiving).php')"
        class="bottom-nav-item <?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
         <i class="fa-solid fa-vault"></i>
         <span>Vault</span>
     </a>
-    <a href="<?= getBaseUrl() ?>/Modules/legalmanagement.php" 
+    <a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/legalmanagement.php" 
        class="bottom-nav-item <?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
         <i class="fa-solid fa-scale-balanced"></i>
         <span>Legal</span>
@@ -133,7 +133,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
 
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
+        <a href="<?= $isSuperAdmin ? rtrim(getBaseUrl(), '/') . '/Super-admin/Dashboard.php' : rtrim(getBaseUrl(), '/') . '/Modules/dashboard.php' ?>" class="logo-link"
             title="Go to Dashboard">
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
@@ -165,10 +165,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     <div class="nav-section">
         <div class="nav-title">Main Navigation</div>
         <ul class="nav-links">
-            <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
-                    class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
-                    data-tab="dashboard">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
+            <li><a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/dashboard.php"
+                    class="<?= ($current_page == 'dashboard.php' && !isset($_GET['tab'])) ? 'active' : '' ?>">
+                    <i class="fa-solid fa-house"></i> Home
                 </a></li>
             <!-- Dropdown for Management -->
             <?php
@@ -213,16 +212,18 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
                 </ul>
             </li>
 
-            <li><a href="#" onclick="checkVaultPin(event, '<?= getBaseUrl() ?>/Modules/document management(archiving).php')"
+            <li>
+                <a href="#" onclick="checkVaultPin(event, '<?= rtrim(getBaseUrl(), '/') ?>/Modules/document management(archiving).php')"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-vault"></i> Document Archiving
-                </a></li>
-            <li><a href="<?= getBaseUrl() ?>/Modules/Visitor-logs.php"
+                </a>
+            </li>
+            <li><a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/Visitor-logs.php"
                     class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>" style="white-space: nowrap;">
                     <i class="fa-solid fa-id-card-clip"></i> Visitors Management
                 </a></li>
-            <li><a href="<?= getBaseUrl() ?>/Modules/legalmanagement.php"
+            <li><a href="<?= rtrim(getBaseUrl(), '/') ?>/Modules/legalmanagement.php"
                     class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-scale-balanced"></i> Legal Management
