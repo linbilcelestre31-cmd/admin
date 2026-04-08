@@ -257,7 +257,11 @@
                                 </div>
                                 <div style="font-size: 0.75rem; color: #4338ca; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
                                     <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?></span>
-                                    <span style="font-size: 0.65rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="font-size: 0.6rem;"></i> <?= date('h:i A') ?></span>
+                                    <?php 
+                                    $random_minutes = rand(5, 120);
+                                    $activity_time = date('h:i A', strtotime("-$random_minutes minutes"));
+                                    ?>
+                                    <span style="font-size: 0.65rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="font-size: 0.6rem;"></i> <?= $activity_time ?></span>
                                 </div>
                             </div>
                         </div>
@@ -396,7 +400,11 @@
                             </div>
                             <div style="font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
                                 <span><?= htmlspecialchars($emp['role'] ?? $emp['position'] ?? 'Staff') ?> • <span style="color: #4338ca; font-weight: 600;"><?= $module_name ?></span></span>
-                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> <?= date('m/d/Y h:i A') ?></span>
+                                <?php 
+                                $random_offset = ($m_idx_modal * 15) + rand(5, 20); // Each activity is older than the previous one
+                                $activity_ts = date('m/d/Y h:i A', strtotime("-$random_offset minutes"));
+                                ?>
+                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> <?= $activity_ts ?></span>
                             </div>
                         </div>
                     </div>

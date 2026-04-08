@@ -970,7 +970,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td style="font-weight: 600; color: #94a3b8;">#<?= $userCounter++ ?></td>
                                                 <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['full_name'])) ?></td>
                                                 <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['username'])) ?></td>
-                                                <td style="text-align: center;"><?= htmlspecialchars($user['email']) ?></td>
+                                                <td style="text-align: center; text-transform: capitalize;"><?= htmlspecialchars(strtolower($user['email'])) ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
