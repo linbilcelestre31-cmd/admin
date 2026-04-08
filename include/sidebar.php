@@ -14,6 +14,42 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     return "../Modules/dashboard.php?tab=$tab";
 }
 ?>
+<style>
+    /* Shared Mobile Sidebar Styles */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            height: 100vh !important;
+            transform: translateX(-100%) !important;
+            z-index: 10000 !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            width: 280px !important;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5) !important;
+        }
+        .sidebar.active {
+            transform: translateX(0) !important;
+        }
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9999 !important;
+            transition: opacity 0.3s ease;
+        }
+        .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+    }
+</style>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
+
 <nav class="sidebar">
     <div class="sidebar-header">
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
@@ -353,20 +389,16 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     window.toggleSidebar = function() {
         const sidebar = document.querySelector('.sidebar');
         const mainContent = document.querySelector('.main-content');
+        const overlay = document.querySelector('.mobile-menu-overlay');
         
         if (window.innerWidth <= 768) {
-            // Mobile behavior
-            if (sidebar.style.transform === 'translateX(0px)') {
-                sidebar.style.transform = 'translateX(-100%)';
-                const overlay = document.querySelector('.mobile-menu-overlay');
-                if (overlay) overlay.style.display = 'none';
-            } else {
-                sidebar.style.transform = 'translateX(0px)';
-                const overlay = document.querySelector('.mobile-menu-overlay');
-                if (overlay) overlay.style.display = 'block';
+            // Mobile behavior: Use active class for transform
+            const isActive = sidebar.classList.toggle('active');
+            if (overlay) {
+                overlay.style.display = isActive ? 'block' : 'none';
             }
         } else {
-            // Desktop behavior
+            // Desktop behavior (Collapsed/Expanded)
             if (sidebar.style.width === '80px') {
                 sidebar.style.width = '280px';
                 if(mainContent) mainContent.style.marginLeft = '280px';
@@ -459,7 +491,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     window.closeSidebar = function() {
         const sidebar = document.querySelector('.sidebar');
         if (window.innerWidth <= 768 && sidebar) {
-            sidebar.style.transform = 'translateX(-100%)';
+            sidebar.classList.remove('active');
             const overlay = document.querySelector('.mobile-menu-overlay');
             if (overlay) overlay.style.display = 'none';
         }

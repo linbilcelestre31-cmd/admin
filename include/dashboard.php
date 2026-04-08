@@ -82,10 +82,10 @@
 
         <!-- Available Room Card -->
         <div
-            style="background: white; padding: 12px; border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
-                    style="width: 45px; height: 45px; background: #fff7ed; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #f97316;">
+                    style="width: 45px; height: 45px; background: #fff7ed; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #f97316; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.1);">
                     <i class="fa-solid fa-hotel" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
@@ -105,10 +105,10 @@
 
         <!-- Visitors Today Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
-                    style="width: 45px; height: 45px; background: #f0fdf4; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #22c55e;">
+                    style="width: 45px; height: 45px; background: #f0fdf4; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #22c55e; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.1);">
                     <i class="fa-solid fa-id-card-clip" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
@@ -127,10 +127,10 @@
 
         <!-- Documents Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
-                    style="width: 45px; height: 45px; background: #fef2f2; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ef4444;">
+                    style="width: 45px; height: 45px; background: #fef2f2; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);">
                     <i class="fa-solid fa-vault" style="font-size: 1.2rem;"></i>
                 </div>
             </div>
@@ -150,10 +150,10 @@
 
         <!-- Employees Card -->
         <div
-            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div
-                    style="width: 45px; height: 45px; background: #f5f3ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #7c3aed;">
+                    style="width: 45px; height: 45px; background: #f5f3ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #7c3aed; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.1);">
                     <i class="fa-solid fa-user-group" style="font-size: 1.2rem;"></i>
                 </div>
             </div>

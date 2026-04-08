@@ -1043,19 +1043,29 @@ $r_rows = [];
             .header-inner {
                 padding: 0 1rem !important;
                 flex-wrap: wrap;
-                gap: 10px;
+                gap: 8px;
+                min-height: 70px; /* Force minimum height */
             }
             .header-title {
                 order: 1;
-                flex: 1;
+                flex: none;
+                width: auto;
+                display: flex;
+                align-items: center;
+                gap: 12px;
             }
             .header-actions {
                 order: 3;
                 width: 100%;
                 justify-content: space-between;
-                margin-top: 5px;
-                padding-top: 10px;
+                margin-top: 0;
+                padding: 10px 0;
                 border-top: 1px solid #f1f5f9;
+                gap: 10px !important;
+            }
+            .header-tools {
+                order: 2;
+                margin-left: auto;
             }
             .current-time-bar {
                 padding: 5px 12px !important;
@@ -1084,6 +1094,21 @@ $r_rows = [];
             .bottom-split-section {
                 grid-template-columns: 1fr !important;
             }
+
+            /* --- Sidebar Mobile Behavior --- */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 9999 !important; /* Above everything */
+                width: 280px !important;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1102,9 +1127,6 @@ $r_rows = [];
 
 <body>
     <div class="container">
-        <!-- Mobile Menu Overlay -->
-        <div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
-
         <!-- Sidebar -->
         <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
 
@@ -1119,7 +1141,7 @@ $r_rows = [];
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
-                            style="margin: 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
+                            style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; line-height: 1;">
                             <?php
                             $tab_titles = [
                                 'dashboard' => 'Dashboard',
