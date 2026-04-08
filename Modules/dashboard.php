@@ -1051,45 +1051,38 @@ $r_rows = [];
                 padding: 0 1rem !important;
                 flex-wrap: wrap;
                 gap: 8px;
-                min-height: 70px; /* Force minimum height */
+                min-height: auto;
             }
             .header-title {
                 order: 1;
-                flex: none;
-                width: auto;
+                flex: 1;
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 10px;
             }
             .header-actions {
-                order: 3;
+                order: 2;
                 width: 100%;
                 justify-content: space-between;
-                margin-top: 0;
+                margin-top: 5px;
                 padding: 10px 0;
                 border-top: 1px solid #f1f5f9;
                 gap: 10px !important;
+                display: flex !important;
+                flex-direction: row !important;
+            }
+            .user-info-header {
+                order: 1;
             }
             .header-tools {
                 order: 2;
                 margin-left: auto;
             }
             .current-time-bar {
-                padding: 5px 12px !important;
-                font-size: 0.8rem;
+                display: none !important;
             }
-            #current-date, #current-time {
-                font-size: 0.8rem !important;
-            }
-            .user-info-header {
-                padding: 4px 10px !important;
-            }
-            .user-info-header .user-details-text, 
-            .user-info-header span:last-child {
-                display: none; /* Hide email on mobile to save space */
-            }
-            .header-tools {
-                order: 2;
+            .user-info-header .user-details-text {
+                display: flex;
             }
             
             /* Stats grid on mobile */
@@ -1106,7 +1099,7 @@ $r_rows = [];
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
-                z-index: 9999 !important; /* Above everything */
+                z-index: 9999 !important;
                 width: 280px !important;
             }
             .sidebar.active {
@@ -1116,17 +1109,50 @@ $r_rows = [];
                 margin-left: 0 !important;
                 width: 100% !important;
             }
+
+            /* Table Scrollability */
+            .table-container, .table-wrapper {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                margin-bottom: 1rem;
+            }
+            .table {
+                min-width: 800px;
+            }
+            
+            /* Management Tab Fixes */
+            .management-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+            }
+            .management-buttons {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .management-btn {
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+            .maintenance-header-premium {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+                padding: 15px !important;
+            }
+            .btn-add-premium {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
                 grid-template-columns: 1fr !important;
             }
-            .current-time-bar {
-                display: none !important; /* Hide clock on very small screens if title needs room */
-            }
-            .header-actions {
-                justify-content: flex-end;
+            #page-title {
+                font-size: 1.1rem !important;
             }
         }
     </style>
@@ -1183,6 +1209,29 @@ $r_rows = [];
                         }
                         ?>
                         
+                        <div class="user-info-header" style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer;">
+                            <div style="width: 34px; height: 34px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
+                                <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
+                            </div>
+                            <div class="user-details-text" style="display: flex; flex-direction: column; line-height: 1.2;">
+                                <span style="font-size: 0.85rem; font-weight: 800;"><?= ucwords(strtolower(htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin'))) ?></span>
+                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? 'ateria41001@gmail.com') ?></span>
+                            </div>
+                        </div>
+
+                        <div class="current-time-bar"
+                            style="display: flex; align-items: center; gap: 12px; background: rgba(248, 250, 252, 0.8); padding: 8px 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); backdrop-filter: blur(8px);">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #3b82f6;">
+                                <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
+                                <span id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                            </div>
+                            <div style="width: 1px; height: 16px; background: #e2e8f0;"></div>
+                            <div style="display: flex; align-items: center; gap: 8px; color: #6366f1;">
+                                <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
+                                <span id="current-time" style="font-weight: 700; color: #1e293b; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
+                            </div>
+                        </div>
+
                         <!-- Notifications -->
                         <div class="header-tools" style="display: flex; align-items: center; gap: 15px;">
                             <div class="notification-wrapper" style="position: relative;">
@@ -1294,29 +1343,6 @@ $r_rows = [];
                                 }
                             })();
                         </script>
-
-                        <div class="current-time-bar"
-                            style="display: flex; align-items: center; gap: 12px; background: rgba(248, 250, 252, 0.8); padding: 8px 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); backdrop-filter: blur(8px);">
-                            <div style="display: flex; align-items: center; gap: 8px; color: #3b82f6;">
-                                <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
-                                <span id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
-                            </div>
-                            <div style="width: 1px; height: 16px; background: #e2e8f0;"></div>
-                            <div style="display: flex; align-items: center; gap: 8px; color: #6366f1;">
-                                <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
-                                <span id="current-time" style="font-weight: 700; color: #1e293b; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
-                            </div>
-                        </div>
-
-                        <div class="user-info-header" style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="width: 34px; height: 34px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
-                                <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column; line-height: 1.2;">
-                                <span style="font-size: 0.85rem; font-weight: 800;"><?= ucwords(strtolower(htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin'))) ?></span>
-                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? '') ?></span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </header>
@@ -1348,23 +1374,14 @@ $r_rows = [];
                 <!-- Facilities Tab -->
                 <div id="facilities"
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
-                    <div class="d-flex justify-between align-center mb-2">
-                        <h2><span class="icon-img-placeholder">🏢</span> Hotel Facilities</h2>
+                    <div class="d-flex justify-between align-center mb-2" style="background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; margin-top: 10px;">
+                        <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" style="width: 28px; height: 28px;" alt="Hotel">
+                            Hotel
+                        </h2>
                         <div class="d-flex gap-1 align-center">
-                            <div class="btn-group"
-                                style="display: flex; background: #edf2f7; padding: 4px; border-radius: 8px;">
-                                <button id="btn-grid-view" class="btn btn-sm active"
-                                    onclick="switchFacilityView('grid')"
-                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
-                                    <i class="fa-solid fa-grip"></i> Grid
-                                </button>
-                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')"
-                                    style="border-radius: 6px; padding: 6px 12px; transition: all 0.2s;">
-                                    <i class="fa-solid fa-list"></i> List
-                                </button>
-                            </div>
-                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')">
-                                <span class="icon-img-placeholder">➕</span> Add Facility
+                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')" style="background: #3182ce; border-radius: 8px; padding: 8px 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 6px -1px rgba(49, 130, 206, 0.2);">
+                                <i class="fa-solid fa-plus"></i> Add
                             </button>
                         </div>
                     </div>
@@ -1580,8 +1597,8 @@ $r_rows = [];
                         </button>
                     </div>
 
-                    <div class="table-container">
-                        <table class="table">
+                    <div class="table-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                        <table class="table" style="min-width: 1000px;">
                             <thead>
                                 <tr>
                                     <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">ID</th>

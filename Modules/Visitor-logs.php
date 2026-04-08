@@ -164,6 +164,105 @@ function getLastInsertId()
             color: #fff;
             background-color: rgba(255, 255, 255, 0.1);
         }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            header .container .header-content {
+                flex-direction: column !important;
+                gap: 15px !important;
+                padding: 10px 0 !important;
+            }
+            header .logo {
+                flex-direction: column;
+                text-align: center;
+                gap: 5px !important;
+            }
+            header .logo span {
+                font-size: 1rem !important;
+                line-height: 1.2;
+            }
+            .current-time-bar {
+                width: 100%;
+                justify-content: center;
+                padding: 5px 10px !important;
+            }
+            nav ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px !important;
+            }
+            nav ul li a {
+                padding: 6px 10px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .main-content {
+                flex-direction: column !important;
+            }
+            .sidebar {
+                width: 100% !important;
+                margin-bottom: 20px;
+                padding: 10px !important;
+            }
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+            .sidebar-menu li {
+                flex: 0 0 auto;
+            }
+            .sidebar-link {
+                padding: 10px 15px !important;
+                white-space: nowrap;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+            }
+            .stat-card {
+                padding: 15px !important;
+            }
+            .stat-number {
+                font-size: 1.5rem !important;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .table-container {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                background: white;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            table {
+                min-width: 700px !important;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            .tab {
+                padding: 10px 15px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .content {
+                padding: 0 !important;
+            }
+            .card {
+                padding: 15px !important;
+            }
+        }
     </style>
 </head>
 

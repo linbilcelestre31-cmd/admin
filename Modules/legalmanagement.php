@@ -1000,6 +1000,72 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             animation: pulse-red 2s infinite;
         }
 
+        /* Mobile Optimization for Legal Management */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1000 !important;
+                width: 260px !important;
+                position: fixed !important;
+                left: 0;
+                top: 0;
+                height: 100vh;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 10px !important;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+            }
+            .stat-card {
+                padding: 15px !important;
+            }
+            
+            .table-container, .table-scroll-container {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                margin-bottom: 20px;
+                scrollbar-width: auto !important; /* Re-enable scrollbar for mobile */
+            }
+            .data-table {
+                min-width: 900px !important;
+            }
+            .data-table th, .data-table td {
+                padding: 10px 5px !important;
+                font-size: 12px !important;
+            }
+            
+            .dashboard-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 10px !important;
+            }
+            
+            .tab-nav {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            /* Hide non-essential columns on very small screens if necessary, 
+               but user wants scrollbar, so we keep min-width */
+        }
+    </style>
+
         .risk-medium {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
