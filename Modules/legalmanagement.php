@@ -1432,36 +1432,37 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 <div class="dashboard" id="dashboard">
     <div class="header">
         <div class="container">
-            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                <div class="logo" style="display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.5rem; color: #1e293b;">
-                    <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Logo" style="height: 40px; width: auto;">
-                    <span class="logo-text">Legal Management System</span>
+            <div class="header-content" style="display: flex; justify-content: center; align-items: center; gap: 40px; padding: 10px 0;">
+                <div class="logo" style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #1e293b; white-space: nowrap;">
+                    <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Logo" style="height: 35px; width: auto;">
+                    <span class="logo-text">Legal System</span>
                 </div>
                 
-                <div class="header-right" style="display: flex; align-items: center; gap: 25px;">
-                    <div class="time-date-display" style="text-align: right; border-right: 2px solid #e2e8f0; padding-right: 25px; display: flex; flex-direction: column;">
-                        <span id="headerLiveTime" style="font-size: 1.1rem; font-weight: 800; color: #3b82f6; line-height: 1;">00:00:00 AM</span>
-                        <span id="headerLiveDate" style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-top: 4px;"><?php echo date('l, F j, Y'); ?></span>
+                <div class="header-center-info" style="display: flex; align-items: center; gap: 25px; white-space: nowrap;">
+                    <div class="time-date-display" style="text-align: center; border-left: 2px solid #e2e8f0; border-right: 2px solid #e2e8f0; padding: 0 25px; display: flex; flex-direction: column; justify-content: center;">
+                        <span id="headerLiveTime" style="font-size: 1rem; font-weight: 800; color: #3b82f6; line-height: 1;">00:00:00 AM</span>
+                        <span id="headerLiveDate" style="font-size: 0.7rem; font-weight: 600; color: #64748b; margin-top: 2px;"><?php echo date('M d, Y'); ?></span>
                     </div>
 
-                    <div class="notif-wrapper" style="position: relative; cursor: pointer;">
-                        <i class="fa-solid fa-bell" style="font-size: 1.4rem; color: #64748b; transition: all 0.2s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#64748b'"></i>
-                        <span style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 20px; border: 2px solid #fff;">3</span>
+                    <div class="notif-wrapper" style="position: relative; cursor: pointer; display: flex; align-items: center;">
+                        <i class="fa-solid fa-bell" style="font-size: 1.2rem; color: #64748b;"></i>
+                        <span style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 20px; border: 2px solid #fff;">3</span>
                     </div>
 
-                    <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-weight: 700; color: #1e293b;">Welcome, Admin</span>
+                    <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <span style="font-weight: 700; color: #1e293b; font-size: 0.85rem; line-height: 1;">Welcome,</span>
+                            <span style="font-weight: 800; color: #3b82f6; font-size: 0.9rem;">Admin</span>
+                        </div>
                         <?php if ($isSuperAdmin): ?>
                             <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
-                                style="text-decoration: none; background: #ef4444; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-                                <i class="fas fa-arrow-left"></i>
-                                Back
+                                style="text-decoration: none; background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; transition: all 0.3s; display: flex; align-items: center;">
+                                logout
                             </a>
                         <?php else: ?>
                             <button type="button" class="logout-btn" id="backDashboardBtn"
                                 onclick="window.location.replace('../Modules/dashboard.php')"
-                                style="background: #ef4444; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;">
-                                <span class="icon-img-placeholder">⏻</span>
+                                style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer;">
                                 logout
                             </button>
                         <?php endif; ?>
@@ -3917,18 +3918,16 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit', 
-                hour12: true,
                 timeZone: 'Asia/Manila'
             };
             const dateOptions = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
+                month: 'short',
                 day: 'numeric',
+                year: 'numeric',
                 timeZone: 'Asia/Manila'
             };
 
-            document.getElementById('headerLiveTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('headerLiveTime').textContent = now.toLocaleTimeString('en-US', { ...timeOptions, hour12: true });
             document.getElementById('headerLiveDate').textContent = now.toLocaleDateString('en-US', dateOptions);
         }
 
