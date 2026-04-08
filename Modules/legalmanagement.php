@@ -1426,7 +1426,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         <div class="error-message" id="errorMessage">Invalid PIN. Please try again.</div>
     </div>
 </div>
-</div>
+
+<!-- Dashboard Container (Hidden until login) -->
+<div id="dashboard" style="display: none;">
 
 <!-- Dashboard -->
     <header style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
@@ -1444,7 +1446,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <h1 style="color: #f8fafc; font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; text-transform: none; font-family: 'Cinzel', serif;">
                     Legal <span style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Management</span> System
                 </h1>
-                <p style="color: #64748b; font-size: 0.95rem; font-weight: 500; letter-spacing: 1px;">PREMIUM ADMINISTRATIVE SUITE</p>
+
             </div>
 
             <!-- Time-Date-Notif Encapsulated Bar -->
@@ -4129,6 +4131,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             }
         });
     </script>
+    </div> <!-- End #dashboard -->
 </body>
 
 </html>
