@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * DOCUMENT MANAGEMENT (ARCHIVING) MODULE
  * Purpose: Upload, organize, and manage company documents with version control
@@ -700,6 +700,105 @@ function formatFileSize($bytes)
             .sidebar {
                 width: 100%;
                 position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            nav ul {
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 5px;
+            }
+
+            .sidebar-menu li {
+                flex: 0 0 auto;
+                margin-bottom: 0;
+            }
+
+            .category-link {
+                padding: 10px 15px;
+                white-space: nowrap;
+                font-size: 14px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 15px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #documentSearch {
+                width: 100% !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-card {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .stat-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .stat-info p {
+                font-size: 18px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 0 10px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h2 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .financial-table th, .financial-table td {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .financial-table {
+                min-width: 600px;
             }
         }
 
