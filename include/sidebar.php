@@ -174,82 +174,91 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
 
     .mgmt-radial-item {
         position: absolute;
-        width: 65px;
-        height: 65px;
+        width: 100px;
+        height: 100px;
         background: white;
-        border-radius: 20px;
+        border-radius: 28px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        border: 1px solid #f1f5f9;
-        transition: all 0.3s;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,0,0,0.03);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 2;
+        gap: 8px;
     }
 
     .mgmt-radial-item:hover {
-        transform: scale(1.1);
-        border-color: #3b82f6;
-        box-shadow: 0 12px 20px rgba(59, 130, 246, 0.2);
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+        border-color: #6366f1;
     }
 
     .mgmt-radial-item i {
-        font-size: 1.4rem;
-        margin-bottom: 2px;
+        font-size: 1.8rem;
+        transition: transform 0.3s;
+    }
+
+    .mgmt-radial-item:hover i {
+        transform: scale(1.1);
     }
 
     .mgmt-radial-item span {
-        font-size: 0.6rem;
-        font-weight: 800;
+        font-size: 0.8rem;
+        font-weight: 700;
         text-align: center;
-        color: #475569;
+        color: #1e293b;
         line-height: 1;
     }
 
-    /* Positioning along the arc (counter-clockwise from 6 o'clock) */
-    /* Item 1: Facilities (Top Left-ish) */
-    .item-1 { top: 30px; left: 40px; }
-    /* Item 2: Reservations (Top Right-ish) */
-    .item-2 { top: 80px; left: 140px; }
-    /* Item 3: Calendar (Bottom Left-ish) */
-    .item-3 { top: 130px; left: 30px; }
-    /* Item 4: Maintenance (Center Left-ish) */
-    .item-4 { top: 210px; left: 80px; }
+    /* Positioning along the arc - mimicking the screenshot */
+    .item-1 { top: 40px; left: 30px; }      /* Facilities - Outer Top */
+    .item-2 { top: 120px; left: 160px; }    /* Reservations - Inner Top */
+    .item-3 { top: 180px; left: 20px; }     /* Calendar - Outer Bottom */
+    .item-4 { top: 260px; left: 140px; }    /* Maintenance - Inner Bottom */
 
     .mgmt-radial-close {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        background: #f1f5f9;
-        color: #475569;
+        bottom: 40px;
+        right: 40px;
+        width: 65px;
+        height: 65px;
+        background: #f8fafc;
+        color: #64748b;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         z-index: 3;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.05);
         transition: all 0.2s;
+        border: 1px solid rgba(0,0,0,0.02);
     }
 
     .mgmt-radial-close:hover {
-        background: #3b82f6;
+        background: #ef4444;
         color: white;
-        transform: rotate(90deg);
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
     }
 
     .icon-box {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-bottom: 2px;
     }
+
+    /* Color Palette from screenshot */
+    .color-purple { color: #7c3aed; background: #f5f3ff; }
+    .color-blue { color: #2563eb; background: #eff6ff; }
+    .color-indigo { color: #4f46e5; background: #eef2ff; }
 </style>
 
 <!-- Mobile Bottom Navigation -->
@@ -820,28 +829,28 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     <div class="mgmt-radial-bg"></div>
     
     <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1">
-        <div class="icon-box icon-blue">
+        <div class="icon-box color-purple">
             <i class="fa-solid fa-hotel"></i>
         </div>
         <span>Facilities</span>
     </a>
     
     <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2">
-        <div class="icon-box icon-green">
+        <div class="icon-box color-blue">
             <i class="fa-solid fa-calendar-check"></i>
         </div>
         <span>Reservations</span>
     </a>
     
     <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3">
-        <div class="icon-box icon-orange">
+        <div class="icon-box color-purple">
             <i class="fa-solid fa-calendar-days"></i>
         </div>
         <span>Calendar</span>
     </a>
     
     <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4">
-        <div class="icon-box icon-purple">
+        <div class="icon-box color-indigo">
             <i class="fa-solid fa-screwdriver-wrench"></i>
         </div>
         <span>Maintenance</span>
