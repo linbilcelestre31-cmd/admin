@@ -4281,31 +4281,69 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     setInterval(updateHeaderClock, 1000);
     updateHeaderClock();
 
-    // Ensure default section is visible on load
-    document.addEventListener('DOMContentLoaded', () => {
-        const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
-        if (activeTab) {
-            switchSection(activeTab.getAttribute('data-target'));
-        }
+    // Handle Logic & Toggles
+    document.addEventListener('DOMContentLoaded', function () {
+        const pinInputs = document.querySelectorAll('#loginScreen .pin-digit');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+        const logoutBtn = document.getElementById('backDashboardBtn');
+        const correctPIN = '1234';
+
+        pinInputs[0]?.focus();
+
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                if (this.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+                errorMessage.style.display = 'none';
+            });
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+
+        loginBtn?.addEventListener('click', function () {
+            const enteredPIN = Array.from(pinInputs).map(input => input.value).join('');
+            if (enteredPIN === correctPIN) {
+                loginScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+                
+                // Set default tab if needed
+                const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
+                if (activeTab) switchSection(activeTab.getAttribute('data-target'));
+            } else {
+                errorMessage.style.display = 'block';
+                pinInputs.forEach(input => input.value = '');
+                pinInputs[0]?.focus();
+            }
+        });
+
+        logoutBtn?.addEventListener('click', function () {
+            dashboard.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            pinInputs.forEach(input => input.value = '');
+            pinInputs[0]?.focus();
+            errorMessage.style.display = 'none';
+        });
     });
 
-    // Handle Login Enabling after Animation
+    // Handle Loader
     window.addEventListener('load', function () {
         setTimeout(function () {
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    // The external script will handle the focus and interactions
-                }, 500);
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
             }
         }, 3000);
     });
 </script>
-
-<!-- External Logic -->
-<script src="../assets/Javascript/legalmanagemet.js"></script>
 </div> <!-- End #dashboard -->
 </body>
 
