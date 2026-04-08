@@ -1429,56 +1429,91 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 </div>
 
 <!-- Dashboard -->
-<header style="background: #111827; padding: 40px 0 30px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <header style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); border-radius: 50%; blur: 40px;"></div>
+        <div style="position: absolute; bottom: -50px; left: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%); border-radius: 50%; blur: 40px;"></div>
+        
+        <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1;">
             <!-- Logo Section -->
-            <div class="logo-area" style="margin-bottom: 20px;">
-                <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo" style="height: 50px; width: auto; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));">
+            <div class="logo-area" style="margin-bottom: 25px; transform: scale(1.1); transition: transform 0.3s ease;">
+                <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo" style="height: 65px; width: auto; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));">
             </div>
 
             <!-- Title Section -->
-            <h1 style="color: #60a5fa; font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; letter-spacing: 0.5px; text-transform: none;">
-                Legal Management System
-            </h1>
+            <div style="margin-bottom: 30px;">
+                <h1 style="color: #f8fafc; font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; text-transform: none; font-family: 'Cinzel', serif;">
+                    Legal <span style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Management</span> System
+                </h1>
+                <p style="color: #64748b; font-size: 0.95rem; font-weight: 500; letter-spacing: 1px;">PREMIUM ADMINISTRATIVE SUITE</p>
+            </div>
 
             <!-- Time-Date-Notif Encapsulated Bar -->
-            <div class="header-status-bar" style="display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.03); padding: 12px 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); margin-bottom: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div class="header-status-bar" style="display: flex; align-items: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);">
                 <!-- Date -->
-                <div style="display: flex; align-items: center; gap: 10px; color: #60a5fa;">
-                    <i class="fa-solid fa-calendar-days" style="font-size: 1.2rem;"></i>
-                    <span id="headerLiveDate" style="font-weight: 700; color: #f8fafc; font-size: 1.1rem;"><?php echo date('F d, Y'); ?></span>
+                <div style="display: flex; align-items: center; gap: 12px; color: #60a5fa;">
+                    <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.2);">
+                        <i class="fa-solid fa-calendar-days" style="font-size: 1.1rem;"></i>
+                    </div>
+                    <div style="text-align: left;">
+                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Current Date</span>
+                        <span id="headerLiveDate" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem;"><?php echo date('F d, Y'); ?></span>
+                    </div>
                 </div>
 
-                <div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1);"></div>
+                <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Bell -->
-                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24; display: flex; align-items: center;">
-                    <i class="fa-solid fa-bell" style="font-size: 1.4rem;"></i>
-                    <span style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; padding: 0 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #111827;">3</span>
+                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease;">
+                    <div style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(251, 191, 36, 0.2);">
+                        <i class="fa-solid fa-bell" style="font-size: 1.3rem;"></i>
+                        <span style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 22px; height: 22px; border: 3px solid #1e293b; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">3</span>
+                    </div>
                 </div>
 
-                <div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1);"></div>
+                <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Time -->
-                <div style="display: flex; align-items: center; gap: 10px; color: #818cf8;">
-                    <i class="fa-solid fa-clock" style="font-size: 1.2rem;"></i>
-                    <span id="headerLiveTime" style="font-weight: 700; color: #f8fafc; font-size: 1.1rem; font-variant-numeric: tabular-nums;">00:00:00 AM</span>
+                <div style="display: flex; align-items: center; gap: 12px; color: #818cf8;">
+                    <div style="width: 40px; height: 40px; background: rgba(129, 140, 248, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(129, 140, 248, 0.2);">
+                        <i class="fa-solid fa-clock" style="font-size: 1.1rem;"></i>
+                    </div>
+                    <div style="text-align: left;">
+                        <span style="display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Live Time</span>
+                        <span id="headerLiveTime" style="font-weight: 700; color: #f8fafc; font-size: 1.05rem; font-variant-numeric: tabular-nums;">00:00:00 AM</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Custom Tab Navigation -->
-            <div class="premium-nav-tabs" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 900px;">
-                <button class="nav-tab active" data-section="employees" onclick="switchSection('employees')">Employees</button>
-                <button class="nav-tab" data-section="internal" onclick="switchSection('internal')">Internal</button>
-                <button class="nav-tab" data-section="external" onclick="switchSection('external')">External</button>
-                <button class="nav-tab" data-section="contracts" onclick="switchSection('contracts')">Analysis</button>
-                <button class="nav-tab" data-section="risk_analysis" onclick="switchSection('risk_analysis')">Risk Analysis</button>
+            <div class="premium-nav-tabs" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px;">
+                <button class="nav-tab active" data-target="employees" onclick="switchSection('employees')">
+                    <i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i> Employees
+                </button>
+                <button class="nav-tab" data-target="internal" onclick="switchSection('internal')">
+                    <i class="fa-solid fa-folder-closed" style="margin-right: 8px;"></i> Internal
+                </button>
+                <button class="nav-tab" data-target="external" onclick="switchSection('external')">
+                    <i class="fa-solid fa-file-signature" style="margin-right: 8px;"></i> External
+                </button>
+                <button class="nav-tab" data-target="documents" onclick="switchSection('documents')">
+                    <i class="fa-solid fa-file-shield" style="margin-right: 8px;"></i> Legal Docs
+                </button>
+                <button class="nav-tab" data-target="contracts" onclick="switchSection('contracts')">
+                    <i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> AI Analysis
+                </button>
+                <button class="nav-tab" data-target="risk_analysis" onclick="switchSection('risk_analysis')">
+                    <i class="fa-solid fa-chart-line" style="margin-right: 8px;"></i> Risk Insights
+                </button>
                 
                 <div style="margin-left: 10px; display: flex; align-items: center;">
                     <?php if ($isSuperAdmin): ?>
-                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444;">Back</a>
+                        <a href="../Super-admin/Dashboard.php" class="nav-tab back-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
+                            <i class="fa-solid fa-arrow-left-long"></i>
+                        </a>
                     <?php else: ?>
-                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444;">Logout</button>
+                        <button class="nav-tab back-btn" onclick="window.location.replace('../Modules/dashboard.php')" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; height: auto; padding: 14px 28px; width: auto; font-size: 0.95rem;">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1487,89 +1522,126 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <style>
         .premium-nav-tabs .nav-tab {
-            padding: 14px 28px;
-            border-radius: 12px;
+            padding: 14px 24px;
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(25, 29, 41, 0.4);
+            background: rgba(30, 41, 59, 0.3);
             color: #94a3b8;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .premium-nav-tabs .nav-tab.active {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
             border-color: #3b82f6;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            transform: translateY(-3px);
         }
 
         .premium-nav-tabs .nav-tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             color: #f8fafc;
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
         }
 
-        .premium-nav-tabs .nav-tab::after {
+        .premium-nav-tabs .nav-tab::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: 0.3s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
         }
 
-        .premium-nav-tabs .nav-tab:hover::after {
-            opacity: 1;
+        .premium-nav-tabs .nav-tab.active:hover::before {
+            left: 100%;
         }
 
         @media (max-width: 768px) {
             .header-status-bar {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-                width: 90%;
+                flex-direction: row !important;
+                gap: 12px !important;
+                padding: 10px 15px !important;
+                width: auto !important;
+                margin: 0 auto 30px !important;
+                display: inline-flex !important;
+                left: 50%;
+                transform: translateX(-50%);
+                position: relative;
             }
-            .header-status-bar > div:not(.notif-wrapper) {
-                width: 100%;
+            .header-status-bar > div:not(.divider) {
+                width: auto !important;
                 justify-content: center;
+                gap: 8px !important;
             }
-            .header-status-bar div[style*="width: 1px"] {
-                display: none;
+            .header-status-bar .divider {
+                display: block !important;
+                width: 1px !important;
+                height: 20px !important;
+                margin: 0 5px !important;
+                opacity: 0.5;
+            }
+            .header-status-bar div[style*="width: 40px"], 
+            .header-status-bar div[style*="width: 45px"] {
+                width: 32px !important;
+                height: 32px !important;
+            }
+            .header-status-bar span[style*="font-size: 0.7rem"] {
+                display: none !important;
+            }
+            .header-status-bar span[id*="headerLive"] {
+                font-size: 0.85rem !important;
+            }
+            .header-status-bar i {
+                font-size: 0.9rem !important;
+            }
+            .header-status-bar .notif-wrapper span {
+                min-width: 16px !important;
+                height: 16px !important;
+                font-size: 8px !important;
+                top: -1px !important;
+                right: -1px !important;
+            }
+            .premium-nav-tabs {
+                padding: 0 15px;
+                gap: 8px !important;
+            }
+            .premium-nav-tabs .nav-tab {
+                flex: 1 1 45%;
+                font-size: 0.8rem;
+                padding: 12px 10px;
+            }
+            .premium-nav-tabs .back-btn {
+                flex: 1 1 100%;
             }
         }
     </style>
 
-    <div class="container">
+    <div class="container main-content-wrapper" style="margin-top: -20px; position: relative; z-index: 10;">
         <!-- Success/Error Messages -->
         <?php if (isset($success_message)): ?>
-            <div class="alert alert-success"><?php echo $success_message; ?></div>
+            <div class="alert alert-success" style="border-radius: 16px; border: none; background: #10b981; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
+                <i class="fa-solid fa-circle-check" style="margin-right: 10px;"></i> <?php echo $success_message; ?>
+            </div>
         <?php endif; ?>
 
         <?php if (isset($error_message)): ?>
-            <div class="alert alert-error"><?php echo $error_message; ?></div>
+            <div class="alert alert-error" style="border-radius: 16px; border: none; background: #ef4444; color: white; padding: 15px 25px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-right: 10px;"></i> <?php echo $error_message; ?>
+            </div>
         <?php endif; ?>
-
-
-
-
-        <div class="nav-tabs">
-            <div class="nav-tab active" data-target="employees">Employees</div>
-            <div class="nav-tab" data-target="internal">Internal</div>
-            <div class="nav-tab" data-target="external">External</div>
-            <div class="nav-tab" data-target="documents">Documents</div>
-            <div class="nav-tab" data-target="contracts">Contracts</div>
-            <div class="nav-tab" data-target="risk_analysis">Risk Analysis</div>
-        </div>
 
         <!-- Employees Section -->
         <div class="content-section active" id="employees">
@@ -3988,6 +4060,41 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 </script>
 
     <script>
+        // Premium Section Switcher
+        function switchSection(targetId) {
+            // Update Tab Buttons
+            const tabs = document.querySelectorAll('.nav-tab[data-target]');
+            tabs.forEach(tab => {
+                if (tab.getAttribute('data-target') === targetId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Update Content Sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                    section.style.display = 'block';
+                    
+                    // Trigger animations or chart re-init
+                    if (targetId === 'risk_analysis' && typeof window.initRiskChart === 'function') {
+                        setTimeout(window.initRiskChart, 50);
+                    }
+                    
+                    // Scroll into view if on mobile
+                    if (window.innerWidth <= 768) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                } else {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                }
+            });
+        }
+
         // Real-time Clock for Header
         function updateHeaderClock() {
             const now = new Date();
@@ -4013,6 +4120,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         setInterval(updateHeaderClock, 1000);
         updateHeaderClock();
+
+        // Ensure default section is visible on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeTab = document.querySelector('.premium-nav-tabs .nav-tab.active');
+            if (activeTab) {
+                switchSection(activeTab.getAttribute('data-target'));
+            }
+        });
     </script>
 </body>
 
