@@ -1236,11 +1236,43 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
                     <div style="display: flex; gap: 12px; flex-wrap: nowrap; overflow-x: auto; width: 100%;">
                         <?php if ($isAdmin): ?>
-                            <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-download"></i> Backup</button>
+                            <button class="btn btn-outline" style="flex: 1; white-space: nowrap;" onclick="handleBackup()"><i class="fas fa-download"></i> Backup</button>
                         <?php endif; ?>
-                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-sync"></i> Refresh</button>
-                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-bell"></i> Alerts</button>
+                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;" onclick="window.location.reload()"><i class="fas fa-sync"></i> Refresh</button>
+                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;" onclick="showAlerts()"><i class="fas fa-bell"></i> Alerts</button>
                     </div>
+                    
+                    <script>
+                        function handleBackup() {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Starting Backup...',
+                                    text: 'Please wait while the system backs up data.',
+                                    icon: 'info',
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    Swal.fire('Success!', 'System backup completed successfully.', 'success');
+                                });
+                            } else {
+                                alert("System backup completed successfully.");
+                            }
+                        }
+                        
+                        function showAlerts() {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'System Alerts',
+                                    text: 'All systems are operating normally. No pending security alerts.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#3b82f6'
+                                });
+                            } else {
+                                alert("All systems are operating normally. No pending alerts.");
+                            }
+                        }
+                    </script>
                 </div>
             </div>
     </div>

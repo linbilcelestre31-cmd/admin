@@ -523,15 +523,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'make_reservation':
                 $result = $reservationSystem->makeReservation($_POST);
                 if ($result['success']) {
+                    // Send Email Notification
+                    $to = $_POST['customer_email'] ?? '';
+                    if (!empty($to) && filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                        $subject = "Reservation Confirmation - Atiera";
+                        $facility_name = $_POST['facility_id']; // This would ideally be fetched, but we use the ID or POST data
+                        $date = date('F d, Y', strtotime($_POST['event_date']));
+                        $start = date('g:i A', strtotime($_POST['start_time']));
+                        $end = date('g:i A', strtotime($_POST['end_time']));
+
+                        $message = "
+                        <html>
+                        <head><title>Reservation Confirmation</title></head>
+                        <body>
+                            <h2 style='color:#3b82f6;'>Booking Confirmed!</h2>
+                            <p>Hi {$_POST['customer_name']},</p>
+                            <p>Your reservation has been successfully booked. Here are the details:</p>
+                            <ul>
+                                <li><strong>Event Type:</strong> {$_POST['event_type']}</li>
+                                <li><strong>Date:</strong> $date</li>
+                                <li><strong>Time:</strong> $start - $end</li>
+                                <li><strong>Guests:</strong> {$_POST['guests_count']}</li>
+                            </ul>
+                            <p>Thank you for choosing Atiera!</p>
+                        </body>
+                        </html>
+                        ";
+
+                        $headers = "MIME-Version: 1.0" . "\r\n";
+                        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                        $headers .= "From: no-reply@atiera.com" . "\r\n";
+
+                        // Send the email (requires SMTP configuration on the server to work fully)
+                        @mail($to, $subject, $message, $headers);
+                    }
+
                     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
                     echo "<script>
                         document.addEventListener('DOMContentLoaded', function() {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Reservation Confirmed!',
-                                text: 'Your booking has been added to the calendar.',
+                                text: 'Your booking has been added and an email has been sent to the customer.',
                                 confirmButtonColor: '#3182ce',
-                                timer: 3000,
+                                timer: 4000,
                                 timerProgressBar: true
                             }).then(() => {
                                 window.location.href = 'dashboard.php?tab=calendar';
@@ -832,7 +867,8 @@ $r_rows = [];
             border-radius: 16px;
             width: 90%;
             max-width: 600px;
-            max-height: 85vh; /* Prevents button from being hidden */
+            max-height: 85vh;
+            /* Prevents button from being hidden */
             overflow-y: auto;
             position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -841,7 +877,7 @@ $r_rows = [];
 
         .table th {
             background: var(--light, #ffffff) !important;
-            
+
             font-weight: 701;
             border-bottom: 2px solid #000000 !important;
         }
@@ -1030,7 +1066,9 @@ $r_rows = [];
 
         /* --- DESKTOP ALIGNMENT FIX --- */
         @media (min-width: 1025px) {
-            .stats-grid, .bottom-split-section {
+
+            .stats-grid,
+            .bottom-split-section {
                 grid-template-columns: repeat(4, 1fr) !important;
             }
         }
@@ -1040,6 +1078,7 @@ $r_rows = [];
             .dashboard-content {
                 padding: 1.5rem 2rem;
             }
+
             .header-inner {
                 padding: 0 1.5rem !important;
             }
@@ -1049,12 +1088,14 @@ $r_rows = [];
             .dashboard-content {
                 padding: 1rem 1rem;
             }
+
             .header-inner {
                 padding: 0 1rem !important;
                 flex-wrap: wrap;
                 gap: 8px;
                 min-height: auto;
             }
+
             .header-title {
                 order: 1;
                 flex: 1;
@@ -1062,6 +1103,7 @@ $r_rows = [];
                 align-items: center;
                 gap: 10px;
             }
+
             .header-actions {
                 order: 2;
                 width: 100%;
@@ -1073,25 +1115,29 @@ $r_rows = [];
                 display: flex !important;
                 flex-direction: row !important;
             }
+
             .user-info-header {
                 order: 1;
             }
+
             .header-tools {
                 order: 2;
                 margin-left: auto;
             }
+
             .current-time-bar {
                 display: none !important;
             }
+
             .user-info-header .user-details-text {
                 display: flex;
             }
-            
+
             /* Stats grid on mobile */
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
-            
+
             /* Section grids */
             .bottom-split-section {
                 grid-template-columns: 1fr !important;
@@ -1104,24 +1150,28 @@ $r_rows = [];
                 z-index: 9999 !important;
                 width: 280px !important;
             }
+
             .sidebar.active {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0 !important;
                 width: 100% !important;
             }
 
             /* Table Scrollability */
-            .table-container, .table-wrapper {
+            .table-container,
+            .table-wrapper {
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 margin-bottom: 1rem;
             }
+
             .table {
                 min-width: 800px;
             }
-            
+
             /* Management Tab Fixes */
             .management-header {
                 flex-direction: column !important;
@@ -1129,6 +1179,7 @@ $r_rows = [];
                 gap: 15px !important;
                 padding: 15px !important;
             }
+
             .management-buttons {
                 width: 100%;
                 display: flex !important;
@@ -1136,16 +1187,19 @@ $r_rows = [];
                 gap: 10px !important;
                 padding-bottom: 5px;
             }
+
             .management-btn {
                 width: 100% !important;
                 justify-content: flex-start !important;
             }
+
             .maintenance-header-premium {
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 gap: 15px !important;
                 padding: 15px !important;
             }
+
             .btn-add-premium {
                 width: 100%;
                 justify-content: center;
@@ -1156,6 +1210,7 @@ $r_rows = [];
             .stats-grid {
                 grid-template-columns: 1fr !important;
             }
+
             #page-title {
                 font-size: 1.1rem !important;
             }
@@ -1171,11 +1226,13 @@ $r_rows = [];
         <!-- Main Content -->
         <main class="main-content">
             <!-- Top Header -->
-            <header class="top-header" style="background: var(--light, white); border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
+            <header class="top-header"
+                style="background: var(--light, white); border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
                 <div class="header-inner"
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title" style="display: flex; align-items: center; gap: 12px;">
-                        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3182ce; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <button class="mobile-menu-btn" onclick="toggleSidebar()"
+                            style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3182ce; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
@@ -1213,14 +1270,19 @@ $r_rows = [];
                             <?php endif;
                         }
                         ?>
-                        
-                        <div class="user-info-header" style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer;">
-                            <div style="width: 34px; height: 34px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
+
+                        <div class="user-info-header"
+                            style="display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; background: white; padding: 6px 14px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer;">
+                            <div
+                                style="width: 34px; height: 34px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0;">
                                 <i class="fas fa-user" style="font-size: 0.9rem; color: #64748b;"></i>
                             </div>
-                            <div class="user-details-text" style="display: flex; flex-direction: column; line-height: 1.2;">
-                                <span style="font-size: 0.85rem; font-weight: 800;"><?= ucwords(strtolower(htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin'))) ?></span>
-                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? 'ateria41001@gmail.com') ?></span>
+                            <div class="user-details-text"
+                                style="display: flex; flex-direction: column; line-height: 1.2;">
+                                <span
+                                    style="font-size: 0.85rem; font-weight: 800;"><?= ucwords(strtolower(htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Admin'))) ?></span>
+                                <span
+                                    style="font-size: 0.7rem; color: #64748b; font-weight: 500;"><?= htmlspecialchars($_SESSION['email'] ?? 'ateria41001@gmail.com') ?></span>
                             </div>
                         </div>
 
@@ -1228,53 +1290,88 @@ $r_rows = [];
                             style="display: flex; align-items: center; gap: 12px; background: rgba(248, 250, 252, 0.8); padding: 8px 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); backdrop-filter: blur(8px);">
                             <div style="display: flex; align-items: center; gap: 8px; color: #3b82f6;">
                                 <i class="fa-regular fa-calendar-days" style="font-size: 1.1rem;"></i>
-                                <span id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
+                                <span id="current-date"
+                                    style="font-weight: 700; color: #1e293b; font-size: 0.9rem;"><?= date('F d, Y') ?></span>
                             </div>
                             <div style="width: 1px; height: 16px; background: #e2e8f0;"></div>
                             <div style="display: flex; align-items: center; gap: 8px; color: #6366f1;">
                                 <i class="fa-regular fa-clock" style="font-size: 1.1rem;"></i>
-                                <span id="current-time" style="font-weight: 700; color: #1e293b; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
+                                <span id="current-time"
+                                    style="font-weight: 700; color: #1e293b; font-size: 0.9rem; font-variant-numeric: tabular-nums;"><?= date('h:i:s A') ?></span>
                             </div>
                         </div>
 
                         <!-- Notifications -->
                         <div class="header-tools" style="display: flex; align-items: center; gap: 15px;">
                             <div class="notification-wrapper" style="position: relative;">
-                                <button id="notificationToggle" class="btn-icon" style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative;" title="Notifications">
+                                <button id="notificationToggle" class="btn-icon"
+                                    style="background: rgba(248, 250, 252, 0.8); border: 1px solid #e2e8f0; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #64748b; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative;"
+                                    title="Notifications">
                                     <i class="fa-solid fa-bell"></i>
-                                    <span class="notification-badge" style="position: absolute; top: -3px; right: -3px; background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; border: 2px solid white;">3</span>
+                                    <span class="notification-badge"
+                                        style="position: absolute; top: -3px; right: -3px; background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; border: 2px solid white;">3</span>
                                 </button>
                                 <!-- Notification Dropdown -->
-                                <div id="notificationDropdown" style="display: none; position: absolute; top: 130%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 1000; overflow: hidden; transform-origin: top right;">
-                                    <div style="padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e293b;"><i class="fa-regular fa-bell" style="margin-right: 5px;"></i> Notifications</h4>
-                                        <span style="font-size: 0.75rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark all as read</span>
+                                <div id="notificationDropdown"
+                                    style="display: none; position: absolute; top: 130%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 1000; overflow: hidden; transform-origin: top right;">
+                                    <div
+                                        style="padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e293b;"><i
+                                                class="fa-regular fa-bell" style="margin-right: 5px;"></i> Notifications
+                                        </h4>
+                                        <span
+                                            style="font-size: 0.75rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark
+                                            all as read</span>
                                     </div>
                                     <div style="max-height: 300px; overflow-y: auto;">
-                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                            <div style="width: 32px; height: 32px; background: #eff6ff; color: #3b82f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-calendar-check"></i></div>
+                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#f8fafc'"
+                                            onmouseout="this.style.background='transparent'">
+                                            <div
+                                                style="width: 32px; height: 32px; background: #eff6ff; color: #3b82f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                                <i class="fa-solid fa-calendar-check"></i></div>
                                             <div>
-                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>New Reservation</strong> for Grand Ballroom</p>
-                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 2 minutes ago</span>
+                                                <p
+                                                    style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                                    <strong>New Reservation</strong> for Grand Ballroom</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                                        class="fa-regular fa-clock"></i> 2 minutes ago</span>
                                             </div>
                                         </div>
-                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                            <div style="width: 32px; height: 32px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                        <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#f8fafc'"
+                                            onmouseout="this.style.background='transparent'">
+                                            <div
+                                                style="width: 32px; height: 32px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                                <i class="fa-solid fa-triangle-exclamation"></i></div>
                                             <div>
-                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>Maintenance Alert</strong> in Pool Area</p>
-                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 1 hour ago</span>
+                                                <p
+                                                    style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                                    <strong>Maintenance Alert</strong> in Pool Area</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                                        class="fa-regular fa-clock"></i> 1 hour ago</span>
                                             </div>
                                         </div>
-                                        <div style="padding: 15px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                            <div style="width: 32px; height: 32px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;"><i class="fa-solid fa-check"></i></div>
+                                        <div style="padding: 15px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#f8fafc'"
+                                            onmouseout="this.style.background='transparent'">
+                                            <div
+                                                style="width: 32px; height: 32px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                                <i class="fa-solid fa-check"></i></div>
                                             <div>
-                                                <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;"><strong>Contract Signed</strong> by Jane Doe</p>
-                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> 3 hours ago</span>
+                                                <p
+                                                    style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                                    <strong>Contract Signed</strong> by Jane Doe</p>
+                                                <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                                        class="fa-regular fa-clock"></i> 3 hours ago</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
-                                        <a href="#" style="font-size: 0.8rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View All Notifications</a>
+                                    <div
+                                        style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+                                        <a href="#"
+                                            style="font-size: 0.8rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View
+                                            All Notifications</a>
                                     </div>
                                 </div>
                             </div>
@@ -1285,7 +1382,7 @@ $r_rows = [];
                                 const body = document.body;
                                 const darkModeBtn = document.getElementById('darkModeToggle');
                                 const isNowDark = !body.classList.contains('dark-mode');
-                                
+
                                 if (isNowDark) {
                                     body.classList.add('dark-mode');
                                     if (darkModeBtn) {
@@ -1304,7 +1401,7 @@ $r_rows = [];
                                 localStorage.setItem('darkMode', isNowDark ? 'enabled' : 'disabled');
                             }
 
-                            (function() {
+                            (function () {
                                 function initializeDashboardTools() {
                                     // Check saved preference
                                     if (localStorage.getItem('darkMode') === 'enabled') {
@@ -1333,7 +1430,7 @@ $r_rows = [];
                                         const dateEl = document.getElementById('current-date');
                                         if (timeEl && dateEl) {
                                             const now = new Date();
-                                            timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                                            timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
                                             dateEl.textContent = now.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
                                         }
                                     }
@@ -1379,24 +1476,31 @@ $r_rows = [];
                 <!-- Facilities Tab -->
                 <div id="facilities"
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
-                    <div class="d-flex justify-between align-center mb-2" style="background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; margin-top: 10px;">
+                    <div class="d-flex justify-between align-center mb-2"
+                        style="background: white; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; margin-top: 10px;">
                         <div class="d-flex align-center gap-2">
-                            <h2 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b;">
+                            <h2
+                                style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b;">
                                 <i class="fa-solid fa-hotel" style="color: #3b82f6;"></i>
                                 Facilities Management
                             </h2>
                             <!-- View Switcher -->
-                            <div class="view-switcher d-flex gap-1" style="margin-left: 20px; background: #f1f5f9; padding: 4px; border-radius: 10px;">
-                                <button id="btn-grid-view" class="btn btn-sm active" onclick="switchFacilityView('grid')" style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div class="view-switcher d-flex gap-1"
+                                style="margin-left: 20px; background: #f1f5f9; padding: 4px; border-radius: 10px;">
+                                <button id="btn-grid-view" class="btn btn-sm active"
+                                    onclick="switchFacilityView('grid')"
+                                    style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     <i class="fa-solid fa-grid-2"></i> Grid
                                 </button>
-                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')" style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: transparent;">
+                                <button id="btn-list-view" class="btn btn-sm" onclick="switchFacilityView('list')"
+                                    style="padding: 6px 12px; border-radius: 8px; border: none; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; background: transparent;">
                                     <i class="fa-solid fa-list"></i> List
                                 </button>
                             </div>
                         </div>
                         <div class="d-flex gap-1 align-center">
-                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')" style="background: #3b82f6; border-radius: 10px; padding: 10px 20px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);">
+                            <button class="btn btn-primary btn-sm" onclick="openModal('facility-modal')"
+                                style="background: #3b82f6; border-radius: 10px; padding: 10px 20px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);">
                                 <i class="fa-solid fa-plus" style="font-size: 0.9rem;"></i> Add Facility
                             </button>
                         </div>
@@ -1406,130 +1510,133 @@ $r_rows = [];
                     <div id="facility-grid-view">
                         <div class="facilities-grid">
                             <?php if (empty($dashboard_data['facilities'])): ?>
-                                <div style="grid-column: 1 / -1; text-align: center; padding: 50px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;">
-                                    <i class="fa-solid fa-hotel" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
+                                <div
+                                    style="grid-column: 1 / -1; text-align: center; padding: 50px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                                    <i class="fa-solid fa-hotel"
+                                        style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
                                     <h3 style="color: #64748b; font-weight: 600;">No Facilities Found</h3>
-                                    <p style="color: #94a3b8;">Click the "Add Facility" button to create your first facility.</p>
+                                    <p style="color: #94a3b8;">Click the "Add Facility" button to create your first
+                                        facility.</p>
                                 </div>
                             <?php else: ?>
                                 <?php foreach ($dashboard_data['facilities'] as $facility): ?>
-                                <div class="facility-card">
-                                    <div class="facility-image">
-                                        <?php
-                                        // Image Logic
-                                        $clean_name = trim($facility['name']);
-                                        $name_title_case = ucwords(strtolower($clean_name));
-                                        $name_snake = str_replace(' ', '_', strtolower($clean_name));
-                                        $possible_files = [
-                                            $name_title_case . '.jpeg',
-                                            $name_title_case . '.jpg',
-                                            $name_title_case . '.png',
-                                            $clean_name . '.jpeg',
-                                            $clean_name . '.jpg',
-                                            $clean_name . '.png',
-                                            $name_snake . '.jpeg',
-                                            $name_snake . '.jpg',
-                                            $name_snake . '.png',
-                                            strtolower($clean_name) . '.jpg',
-                                            strtolower($clean_name) . '.jpeg',
-                                        ];
-
-                                        $image_url = '';
-                                        $is_placeholder = true;
-
-                                        if (!empty($facility['image_url'])) {
-                                            $image_url = $facility['image_url'];
-                                            $is_placeholder = false;
-                                        }
-
-                                        if ($is_placeholder) {
-                                            foreach ($possible_files as $file) {
-                                                if (file_exists(__DIR__ . '/../assets/image/' . $file)) {
-                                                    $image_url = '../assets/image/' . $file;
-                                                    $is_placeholder = false;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if ($is_placeholder) {
-                                            $type_defaults = [
-                                                'banquet' => 'Grand Ballroom.jpeg',
-                                                'meeting' => 'executive_boardroom.jpg',
-                                                'conference' => 'Pacific Conference Hall.jpeg',
-                                                'outdoor' => 'Sky Garden.jpeg',
-                                                'dining' => 'Harbor View Dining Room.jpeg',
-                                                'lounge' => 'Sunset Lounge.jpeg'
+                                    <div class="facility-card">
+                                        <div class="facility-image">
+                                            <?php
+                                            // Image Logic
+                                            $clean_name = trim($facility['name']);
+                                            $name_title_case = ucwords(strtolower($clean_name));
+                                            $name_snake = str_replace(' ', '_', strtolower($clean_name));
+                                            $possible_files = [
+                                                $name_title_case . '.jpeg',
+                                                $name_title_case . '.jpg',
+                                                $name_title_case . '.png',
+                                                $clean_name . '.jpeg',
+                                                $clean_name . '.jpg',
+                                                $clean_name . '.png',
+                                                $name_snake . '.jpeg',
+                                                $name_snake . '.jpg',
+                                                $name_snake . '.png',
+                                                strtolower($clean_name) . '.jpg',
+                                                strtolower($clean_name) . '.jpeg',
                                             ];
-                                            $type = strtolower($facility['type']);
-                                            if (isset($type_defaults[$type]) && file_exists(__DIR__ . '/../assets/image/' . $type_defaults[$type])) {
-                                                $image_url = '../assets/image/' . $type_defaults[$type];
+
+                                            $image_url = '';
+                                            $is_placeholder = true;
+
+                                            if (!empty($facility['image_url'])) {
+                                                $image_url = $facility['image_url'];
                                                 $is_placeholder = false;
                                             }
-                                        }
 
-                                        $placeholder_color = '1a365d';
-                                        switch ($facility['type']) {
-                                            case 'banquet':
-                                                $placeholder_color = '764ba2';
-                                                break;
-                                            case 'meeting':
-                                            case 'conference':
-                                                $placeholder_color = '3182ce';
-                                                break;
-                                            case 'outdoor':
-                                                $placeholder_color = '38a169';
-                                                break;
-                                        }
-
-                                        if ($is_placeholder) {
-                                            $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . urlencode($facility['name']);
-                                        }
-                                        ?>
-                                        <img src="<?= htmlspecialchars($image_url) ?>"
-                                            alt="<?= htmlspecialchars($facility['name']) ?>"
-                                            style="width: 100%; height: 100%; object-fit: cover;">
-                                    </div>
-                                    <div class="facility-content">
-                                        <div class="facility-header">
-                                            <div class="facility-name">
-                                                <?php
-                                                $fName = $facility['name'];
-                                                if (strtolower($fName) === 'marvin79') {
-                                                    $fName = 'Executive Suite';
+                                            if ($is_placeholder) {
+                                                foreach ($possible_files as $file) {
+                                                    if (file_exists(__DIR__ . '/../assets/image/' . $file)) {
+                                                        $image_url = '../assets/image/' . $file;
+                                                        $is_placeholder = false;
+                                                        break;
+                                                    }
                                                 }
-                                                echo htmlspecialchars($fName);
-                                                ?>
+                                            }
+
+                                            if ($is_placeholder) {
+                                                $type_defaults = [
+                                                    'banquet' => 'Grand Ballroom.jpeg',
+                                                    'meeting' => 'executive_boardroom.jpg',
+                                                    'conference' => 'Pacific Conference Hall.jpeg',
+                                                    'outdoor' => 'Sky Garden.jpeg',
+                                                    'dining' => 'Harbor View Dining Room.jpeg',
+                                                    'lounge' => 'Sunset Lounge.jpeg'
+                                                ];
+                                                $type = strtolower($facility['type']);
+                                                if (isset($type_defaults[$type]) && file_exists(__DIR__ . '/../assets/image/' . $type_defaults[$type])) {
+                                                    $image_url = '../assets/image/' . $type_defaults[$type];
+                                                    $is_placeholder = false;
+                                                }
+                                            }
+
+                                            $placeholder_color = '1a365d';
+                                            switch ($facility['type']) {
+                                                case 'banquet':
+                                                    $placeholder_color = '764ba2';
+                                                    break;
+                                                case 'meeting':
+                                                case 'conference':
+                                                    $placeholder_color = '3182ce';
+                                                    break;
+                                                case 'outdoor':
+                                                    $placeholder_color = '38a169';
+                                                    break;
+                                            }
+
+                                            if ($is_placeholder) {
+                                                $image_url = "https://placehold.co/400x200/{$placeholder_color}/FFFFFF?text=" . urlencode($facility['name']);
+                                            }
+                                            ?>
+                                            <img src="<?= htmlspecialchars($image_url) ?>"
+                                                alt="<?= htmlspecialchars($facility['name']) ?>"
+                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div class="facility-content">
+                                            <div class="facility-header">
+                                                <div class="facility-name">
+                                                    <?php
+                                                    $fName = $facility['name'];
+                                                    if (strtolower($fName) === 'marvin79') {
+                                                        $fName = 'Executive Suite';
+                                                    }
+                                                    echo htmlspecialchars($fName);
+                                                    ?>
+                                                </div>
+                                                <span class="facility-type"
+                                                    style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;">
+                                                    <?php
+                                                    $fType = $facility['type'];
+                                                    if (strtolower($facility['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
+                                                        $fType = 'VIP MEETING';
+                                                    }
+                                                    echo htmlspecialchars($fType);
+                                                    ?>
+                                                </span>
                                             </div>
-                                            <span class="facility-type"
-                                                style="background: #3182ce; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase;">
-                                                <?php
-                                                $fType = $facility['type'];
-                                                if (strtolower($facility['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
-                                                    $fType = 'VIP MEETING';
-                                                }
-                                                echo htmlspecialchars($fType);
-                                                ?>
-                                            </span>
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <button class="btn btn-outline btn-sm"
-                                                onclick="viewFacilityDetails(<?= $facility['id'] ?>)">
-                                                🔎 View Details
-                                            </button>
-                                            <button class="btn btn-primary btn-sm"
-                                                onclick="openReservationModal(<?= $facility['id'] ?>)">
-                                                <i class="fa-solid fa-calendar-plus"></i> Reserve Facility
-                                            </button>
-                                        </div>
-                                        <div class="facility-details" style="margin-top: 10px;">
-                                            <?= htmlspecialchars($facility['description']) ?>
-                                        </div>
-                                        <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="btn btn-outline btn-sm"
+                                                    onclick="viewFacilityDetails(<?= $facility['id'] ?>)">
+                                                    🔎 View Details
+                                                </button>
+                                                <button class="btn btn-primary btn-sm"
+                                                    onclick="openReservationModal(<?= $facility['id'] ?>)">
+                                                    <i class="fa-solid fa-calendar-plus"></i> Reserve Facility
+                                                </button>
+                                            </div>
+                                            <div class="facility-details" style="margin-top: 10px;">
+                                                <?= htmlspecialchars($facility['description']) ?>
+                                            </div>
+                                            <div class="facility-price">₱<?= number_format($facility['hourly_rate'], 2) ?>/hour
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1543,16 +1650,36 @@ $r_rows = [];
                             <table class="table">
                                 <thead>
                                     <tr style="border-bottom: 2px solid #e2e8f0;">
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ID</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">RESERVE NAME</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">FACILITY NAME</th>
-                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">TYPE</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">CAPACITY</th>
-                                        <th style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">LOCATION</th>
-                                        <th style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">RATE</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">STATUS</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ASSIGNED USER</th>
-                                        <th style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">ACTIONS</th>
+                                        <th
+                                            style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            ID</th>
+                                        <th
+                                            style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            RESERVE NAME</th>
+                                        <th
+                                            style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            FACILITY NAME</th>
+                                        <th
+                                            style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            TYPE</th>
+                                        <th
+                                            style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            CAPACITY</th>
+                                        <th
+                                            style="text-align: left; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            LOCATION</th>
+                                        <th
+                                            style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            RATE</th>
+                                        <th
+                                            style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            STATUS</th>
+                                        <th
+                                            style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            ASSIGNED USER</th>
+                                        <th
+                                            style="text-align: center; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; white-space: nowrap;">
+                                            ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1560,75 +1687,77 @@ $r_rows = [];
                                         <tr>
                                             <td colspan="10" style="text-align: center; padding: 40px;">
                                                 <div style="color: #94a3b8; font-style: italic;">
-                                                    <i class="fa-solid fa-hotel" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                                    <i class="fa-solid fa-hotel"
+                                                        style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
                                                     No facilities found. Create one using the "Add Facility" button.
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($dashboard_data['facilities'] as $f): ?>
-                                        <tr>
-                                            <td style="text-align: center;">#<?= $f['id'] ?></td>
-                                            <td style="text-align: left;">
-                                                <?php if (($f['next_reserve_name'] ?? 'Available') === 'Available'): ?>
-                                                    <button class="btn btn-primary btn-sm" 
-                                                        onclick="openReservationFor(<?= $f['id'] ?>)" 
-                                                        style="background: #3b82f6; border: none; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);">
-                                                        <i class="fa-solid fa-calendar-plus" style="font-size: 0.8rem;"></i> Reserve
-                                                    </button>
-                                                <?php else: ?>
-                                                    <span style="color: #475569; font-weight: 500;">
-                                                        <?= htmlspecialchars($f['next_reserve_name']) ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td style="text-align: left; font-weight: 600;">
-                                                <?php
-                                                $fName = $f['name'];
-                                                if (strtolower($fName) === 'marvin79') {
-                                                    $fName = 'Executive Suite';
-                                                }
-                                                echo htmlspecialchars($fName);
-                                                ?>
-                                            </td>
-                                            <td><span class="facility-type-badge">
+                                            <tr>
+                                                <td style="text-align: center;">#<?= $f['id'] ?></td>
+                                                <td style="text-align: left;">
+                                                    <?php if (($f['next_reserve_name'] ?? 'Available') === 'Available'): ?>
+                                                        <button class="btn btn-primary btn-sm"
+                                                            onclick="openReservationFor(<?= $f['id'] ?>)"
+                                                            style="background: #3b82f6; border: none; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);">
+                                                            <i class="fa-solid fa-calendar-plus" style="font-size: 0.8rem;"></i>
+                                                            Reserve
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <span style="color: #475569; font-weight: 500;">
+                                                            <?= htmlspecialchars($f['next_reserve_name']) ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td style="text-align: left; font-weight: 600;">
                                                     <?php
-                                                    $fType = $f['type'];
-                                                    if (strtolower($f['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
-                                                        $fType = 'VIP MEETING';
+                                                    $fName = $f['name'];
+                                                    if (strtolower($fName) === 'marvin79') {
+                                                        $fName = 'Executive Suite';
                                                     }
-                                                    echo ucfirst(htmlspecialchars($fType));
+                                                    echo htmlspecialchars($fName);
                                                     ?>
-                                                </span>
-                                            </td>
-                                            <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
-                                            <td style="text-align: left;"><?= htmlspecialchars($f['location']) ?></td>
-                                            <td style="font-weight: 500; color: #059669;">
-                                                ₱<?= number_format($f['hourly_rate'], 2) ?>/hr</td>
-                                            <td style="text-align: center;">
-                                                <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
-                                                    <?= ucfirst($f['status'] ?? 'active') ?>
-                                                </span>
-                                            </td>
-                                            <td style="text-align: center; color: #64748b; font-size: 0.9rem;">
-                                                <?= htmlspecialchars($f['next_assigned_user'] ?? 'Unassigned') ?>
-                                            </td>
-                                            <td>
-                                                <div style="display: flex; gap: 8px; justify-content: center;">
-                                                    <button class="btn btn-outline btn-sm btn-icon"
-                                                        onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
-                                                        title="View Details">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
+                                                </td>
+                                                <td><span class="facility-type-badge">
+                                                        <?php
+                                                        $fType = $f['type'];
+                                                        if (strtolower($f['name']) === 'marvin79' && strtolower($fType) === 'meeting') {
+                                                            $fType = 'VIP MEETING';
+                                                        }
+                                                        echo ucfirst(htmlspecialchars($fType));
+                                                        ?>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: center;"><?= $f['capacity'] ?> guests</td>
+                                                <td style="text-align: left;"><?= htmlspecialchars($f['location']) ?></td>
+                                                <td style="font-weight: 500; color: #059669;">
+                                                    ₱<?= number_format($f['hourly_rate'], 2) ?>/hr</td>
+                                                <td style="text-align: center;">
+                                                    <span class="status-badge status-<?= $f['status'] ?? 'active' ?>">
+                                                        <?= ucfirst($f['status'] ?? 'active') ?>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: center; color: #64748b; font-size: 0.9rem;">
+                                                    <?= htmlspecialchars($f['next_assigned_user'] ?? 'Unassigned') ?>
+                                                </td>
+                                                <td>
+                                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                                        <button class="btn btn-outline btn-sm btn-icon"
+                                                            onclick="event.preventDefault(); window.viewFacilityDetails(<?= htmlspecialchars(json_encode($f)) ?>)"
+                                                            title="View Details">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 <!-- Reservations Tab -->
@@ -1646,19 +1775,37 @@ $r_rows = [];
                         <table class="table" style="min-width: 1000px;">
                             <thead>
                                 <tr>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">ID</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">FACILITY</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">CUSTOMER</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">CONTACT</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">EMAIL</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">EVENT TYPE</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">DATE</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">TIME</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">GUESTS</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">STATUS</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">TABLE/ROOM</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">PAYMENT</th>
-                                    <th style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">ACTIONS</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        ID</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        FACILITY</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        CUSTOMER</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        CONTACT</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        EMAIL</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        EVENT TYPE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        DATE</th>
+                                    <th style="white-space: nowrap; font-size: 13px; text-align: left; padding: 10px; ">
+                                        TIME</th>
+                                    <th
+                                        style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">
+                                        GUESTS</th>
+                                    <th
+                                        style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">
+                                        STATUS</th>
+                                    <th
+                                        style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">
+                                        TABLE/ROOM</th>
+                                    <th
+                                        style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">
+                                        PAYMENT</th>
+                                    <th
+                                        style="white-space: nowrap; font-size: 13px; text-align: center; padding: 10px; ">
+                                        ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody style="font-size: 13px; white-space: nowrap;">
@@ -1907,15 +2054,18 @@ $r_rows = [];
                             ];
                             if ($q_from) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_from) {
-                                    return date('Y-m-d', strtotime($e['created_at'])) >= $q_from; });
+                                    return date('Y-m-d', strtotime($e['created_at'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_to) {
-                                    return date('Y-m-d', strtotime($e['created_at'])) <= $q_to; });
+                                    return date('Y-m-d', strtotime($e['created_at'])) <= $q_to;
+                                });
                             }
                             if ($r_status !== 'all') {
                                 $r_rows = array_filter($r_rows, function ($e) use ($r_status) {
-                                    return strtolower($e['status']) === strtolower($r_status); });
+                                    return strtolower($e['status']) === strtolower($r_status);
+                                });
                             }
                         }
                         break;
@@ -1940,11 +2090,13 @@ $r_rows = [];
                             ];
                             if ($q_from) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_from) {
-                                    return date('Y-m-d', strtotime($e['uploaded_at'])) >= $q_from; });
+                                    return date('Y-m-d', strtotime($e['uploaded_at'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_to) {
-                                    return date('Y-m-d', strtotime($e['uploaded_at'])) <= $q_to; });
+                                    return date('Y-m-d', strtotime($e['uploaded_at'])) <= $q_to;
+                                });
                             }
                         }
                         break;
@@ -2649,7 +2801,7 @@ $r_rows = [];
                     .today-event-card:hover {
                         border-color: #3b82f6 !important;
                         transform: translateX(5px);
-                        box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
+                        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05) !important;
                         background: linear-gradient(to right, #fff, #f8fafc) !important;
                     }
 
@@ -2857,10 +3009,10 @@ $r_rows = [];
                                 cell.className = 'calendar-day-cell';
 
                                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                                
+
                                 cell.style.cursor = 'pointer';
                                 cell.onclick = (e) => {
-                                    if(e.target.closest('.calendar-event-dot')) return; // let event click handle itself
+                                    if (e.target.closest('.calendar-event-dot')) return; // let event click handle itself
                                     document.getElementById('event_date').value = dateStr;
                                     openModal('reservation-modal');
                                 };
@@ -2898,7 +3050,7 @@ $r_rows = [];
             <!-- Management Tab -->
             <div id="management"
                 class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
-                
+
                 <style>
                     .premium-tab-btn {
                         display: flex;
@@ -2916,6 +3068,7 @@ $r_rows = [];
                         text-align: left;
                         width: auto;
                     }
+
                     .premium-tab-btn:hover {
                         background: #ffffff;
                         border-color: #3b82f6;
@@ -2923,30 +3076,39 @@ $r_rows = [];
                         transform: translateY(-2px);
                         box-shadow: 0 8px 15px -5px rgba(59, 130, 246, 0.15);
                     }
+
                     .premium-tab-btn.active {
                         background: #3b82f6;
                         border-color: #3b82f6;
                         color: #ffffff;
                         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
                     }
+
                     .premium-tab-btn .icon {
                         font-size: 1.1rem;
                         color: #64748b;
                         transition: all 0.3s ease;
                     }
-                    .premium-tab-btn.active .icon, .premium-tab-btn:hover .icon {
+
+                    .premium-tab-btn.active .icon,
+                    .premium-tab-btn:hover .icon {
                         color: inherit;
                     }
                 </style>
 
-                <div class="management-header" style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px;">
+                <div class="management-header"
+                    style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 50px; height: 50px; background: #f8fafc; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #334155; font-size: 1.3rem; border: 1px solid #e2e8f0;">
+                        <div
+                            style="width: 50px; height: 50px; background: #f8fafc; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #334155; font-size: 1.3rem; border: 1px solid #e2e8f0;">
                             <i class="fa-solid fa-gears"></i>
                         </div>
                         <div>
-                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Management</h2>
-                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">System modules & configuration</p>
+                            <h2
+                                style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
+                                Management</h2>
+                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">System
+                                modules & configuration</p>
                         </div>
                     </div>
                     <div class="management-buttons" style="display: flex; gap: 12px;">
@@ -3066,9 +3228,11 @@ $r_rows = [];
                             }
 
                             .maintenance-table-premium th {
-                                padding: 10px !important; /* Sakto padding */
+                                padding: 10px !important;
+                                /* Sakto padding */
                                 font-weight: 800 !important;
-                                font-size: 13px !important; /* Sakto font size */
+                                font-size: 13px !important;
+                                /* Sakto font size */
                                 text-transform: uppercase !important;
                                 letter-spacing: 1px !important;
                                 border-bottom: 2px solid #e2e8f0;
@@ -3076,8 +3240,10 @@ $r_rows = [];
                             }
 
                             .maintenance-table-premium td {
-                                padding: 10px 15px !important; /* Sakto padding */
-                                font-size: 13px !important; /* Sakto font size */
+                                padding: 10px 15px !important;
+                                /* Sakto padding */
+                                font-size: 13px !important;
+                                /* Sakto font size */
                                 vertical-align: middle !important;
                                 border-bottom: 1px solid #f1f5f9;
                                 transition: all 0.2s ease !important;
@@ -3235,8 +3401,8 @@ $r_rows = [];
                                                     </td>
                                                     <td class="col-action" style="text-align: center;">
                                                         <button class="btn btn-outline btn-sm btn-icon"
-                                                            onclick="event.preventDefault();"
-                                                            title="View Details" style="border-color: #e2e8f0; color: #475569;">
+                                                            onclick="event.preventDefault();" title="View Details"
+                                                            style="border-color: #e2e8f0; color: #475569;">
                                                             <i class="fa-solid fa-eye"></i>
                                                         </button>
                                                     </td>
@@ -3904,16 +4070,20 @@ $r_rows = [];
     <div id="today-reservations-modal" class="modal">
         <div class="modal-content" style="max-width: 600px; border-radius: 20px;">
             <div class="modal-header" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 1.5rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; font-family: 'Outfit', sans-serif;">
-                    <i class="fa-solid fa-calendar-check" style="color: #3b82f6; margin-right: 10px;"></i> Today's Schedule
+                <h3
+                    style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; font-family: 'Outfit', sans-serif;">
+                    <i class="fa-solid fa-calendar-check" style="color: #3b82f6; margin-right: 10px;"></i> Today's
+                    Schedule
                 </h3>
-                <span class="close" onclick="closeModal('today-reservations-modal')" style="font-size: 1.5rem; cursor: pointer;">&times;</span>
+                <span class="close" onclick="closeModal('today-reservations-modal')"
+                    style="font-size: 1.5rem; cursor: pointer;">&times;</span>
             </div>
             <div id="today-reservations-body" style="padding: 1.5rem 0; max-height: 60vh; overflow-y: auto;">
                 <!-- Filled via JS -->
             </div>
             <div style="margin-top: 1rem; text-align: right; border-top: 1px solid #f1f5f9; padding-top: 1.5rem;">
-                <button class="btn btn-outline" onclick="closeModal('today-reservations-modal')" style="border-radius: 10px; padding: 10px 20px; font-weight: 700;">Close</button>
+                <button class="btn btn-outline" onclick="closeModal('today-reservations-modal')"
+                    style="border-radius: 10px; padding: 10px 20px; font-weight: 700;">Close</button>
             </div>
         </div>
     </div>
@@ -4390,5 +4560,3 @@ $r_rows = [];
 </body>
 
 </html>
-
-

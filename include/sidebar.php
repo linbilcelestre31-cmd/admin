@@ -7,6 +7,20 @@ $is_dashboard = ($current_page == 'dashboard.php');
 
 require_once __DIR__ . '/Config.php';
 
+// Sidebar Notification Counts
+$sb_pending_res = 0;
+$sb_maintenance_fac = 0;
+$sb_pending_mnt = 0;
+try {
+    if (function_exists('get_pdo')) {
+        $sb_db = get_pdo();
+        $sb_pending_res = $sb_db->query("SELECT COUNT(*) FROM reservations WHERE status='pending'")->fetchColumn();
+        $sb_maintenance_fac = $sb_db->query("SELECT COUNT(*) FROM facilities WHERE status='maintenance'")->fetchColumn();
+        $sb_pending_mnt = $sb_db->query("SELECT COUNT(*) FROM maintenance_logs WHERE status='pending' AND is_deleted=0")->fetchColumn();
+    }
+} catch (Exception $e) {}
+$sb_total_mgmt = $sb_pending_res + $sb_maintenance_fac + $sb_pending_mnt;
+
 function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     if ($isSuperAdmin && $tab === 'dashboard') {
         return rtrim(getBaseUrl(), '/') . "/Super-admin/Dashboard.php";
@@ -272,9 +286,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
         <i class="fa-solid fa-scale-balanced"></i>
         <span>Legal</span>
     </a>
-    <a href="javascript:void(0)" onclick="openManagementModal()" class="bottom-nav-item">
+    <a href="javascript:void(0)" onclick="openManagementModal()" class="bottom-nav-item" style="position: relative;">
         <i class="fa-solid fa-list-check"></i>
         <span>Management</span>
+        <?php if($sb_total_mgmt > 0): ?>
+            <span style="position: absolute; top: 5px; right: 25%; background: #ef4444; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid #1e293b;"><?= $sb_total_mgmt ?></span>
+        <?php endif; ?>
     </a>
 </div>
 
@@ -333,8 +350,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
             <li class="has-dropdown">
                 <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
                     onclick="toggleSidebarFolder(event, this)">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
                         <i class="fa-solid fa-list-check"></i> Management
+                        <?php if($sb_total_mgmt > 0): ?>
+                            <span style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 0.65rem; font-weight: bold; margin-left: auto; margin-right: 5px; line-height: 1;"><?= $sb_total_mgmt ?></span>
+                        <?php endif; ?>
                     </div>
                     <i class="fa-solid fa-chevron-down dropdown-arrow"
                         style="transform: <?= $mgr_active ? 'rotate(180deg)' : '0deg' ?>;"></i>
@@ -342,23 +362,32 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
                 <ul class="dropdown-menu" style="display: <?= $mgr_active ? 'block' : 'none' ?>;">
                     <li><a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>"
-                            data-tab="facilities">
+                            data-tab="facilities" style="display: flex; align-items: center;">
                             <i class="fa-solid fa-hotel"></i> Facilities
+                            <?php if($sb_maintenance_fac > 0): ?>
+                                <span style="background: #f59e0b; color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.6rem; font-weight: bold; margin-left: auto;"><?= $sb_maintenance_fac ?></span>
+                            <?php endif; ?>
                         </a></li>
                     <li><a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
-                            data-tab="reservations">
+                            data-tab="reservations" style="display: flex; align-items: center;">
                             <i class="fa-solid fa-calendar-check"></i> Reservations
+                            <?php if($sb_pending_res > 0): ?>
+                                <span style="background: #ef4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.6rem; font-weight: bold; margin-left: auto;"><?= $sb_pending_res ?></span>
+                            <?php endif; ?>
                         </a></li>
                     <li><a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && $_GET['tab'] == 'calendar') ? 'active' : '' ?>"
-                            data-tab="calendar">
+                            data-tab="calendar" style="display: flex; align-items: center;">
                             <i class="fa-solid fa-calendar-days"></i> Calendar
                         </a></li>
                     <li><a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>"
                             class=" <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>"
-                            data-tab="management">
+                            data-tab="management" style="display: flex; align-items: center;">
                             <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                            <?php if($sb_pending_mnt > 0): ?>
+                                <span style="background: #ef4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.6rem; font-weight: bold; margin-left: auto;"><?= $sb_pending_mnt ?></span>
+                            <?php endif; ?>
                         </a></li>
                 </ul>
             </li>
@@ -818,10 +847,16 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     
     <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1" title="Facilities">
         <i class="fa-solid fa-hotel color-purple"></i>
+        <?php if($sb_maintenance_fac > 0): ?>
+            <span class="mgmt-badge" style="position: absolute; top: -5px; right: 0; background: #f59e0b; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?= $sb_maintenance_fac ?></span>
+        <?php endif; ?>
     </a>
     
     <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2" title="Reservations">
         <i class="fa-solid fa-calendar-check color-blue"></i>
+        <?php if($sb_pending_res > 0): ?>
+            <span class="mgmt-badge" style="position: absolute; top: -5px; right: 0; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?= $sb_pending_res ?></span>
+        <?php endif; ?>
     </a>
     
     <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3" title="Calendar">
@@ -830,6 +865,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
     
     <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4" title="Maintenance">
         <i class="fa-solid fa-screwdriver-wrench color-indigo"></i>
+        <?php if($sb_pending_mnt > 0): ?>
+            <span class="mgmt-badge" style="position: absolute; top: -5px; right: 0; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?= $sb_pending_mnt ?></span>
+        <?php endif; ?>
     </a>
     
     <div class="mgmt-radial-close" onclick="closeManagementModal()">
