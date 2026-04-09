@@ -168,6 +168,48 @@ class ReservationSystem
             $stmt = $pdo->prepare("UPDATE reservations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
             $stmt->execute([$status, intval($reservationId)]);
 
+            // If confirmed, send an email to the customer
+            if ($status === 'confirmed') {
+                $q = $pdo->prepare("SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE r.id = ?");
+                $q->execute([intval($reservationId)]);
+                $resData = $q->fetch(PDO::FETCH_ASSOC);
+
+                if ($resData && !empty($resData['customer_email'])) {
+                    $to = $resData['customer_email'];
+                    $subject = "Reservation Confirmed - LSPU Facilities";
+                    
+                    $message = "
+                    <html>
+                    <head><title>Reservation Confirmed</title></head>
+                    <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+                        <h2 style='color: #22c55e;'>Your Reservation is Confirmed!</h2>
+                        <p>Dear {$resData['customer_name']},</p>
+                        <p>We are pleased to inform you that your reservation request has been <strong>confirmed</strong> by our administration.</p>
+                        <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <ul style='list-style: none; padding: 0;'>
+                                <li><strong>Booking ID:</strong> BK-" . date('Y') . "-" . str_pad($resData['id'], 3, '0', STR_PAD_LEFT) . "</li>
+                                <li><strong>Event:</strong> {$resData['event_type']}</li>
+                                <li><strong>Facility:</strong> {$resData['facility_name']}</li>
+                                <li><strong>Date:</strong> " . date('F j, Y', strtotime($resData['event_date'])) . "</li>
+                                <li><strong>Time:</strong> {$resData['start_time']} to {$resData['end_time']}</li>
+                                <li><strong>Guests:</strong> {$resData['guests_count']}</li>
+                            </ul>
+                        </div>
+                        <p>If you have any further questions or modifications, please contact us immediately.</p>
+                        <br>
+                        <p>Best regards,<br>LSPU Facilities Management</p>
+                    </body>
+                    </html>
+                    ";
+                    
+                    $headers = "MIME-Version: 1.0" . "\r\n";
+                    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                    $headers .= "From: no-reply@lspu-facilities.com" . "\r\n";
+
+                    @mail($to, $subject, $message, $headers);
+                }
+            }
+
             return ['success' => true, 'message' => "Reservation status updated successfully!"];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => "Error updating reservation: " . $e->getMessage()];
