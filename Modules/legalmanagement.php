@@ -831,6 +831,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         onload="if(media!='all')media='all'">
 
     <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --premium-blue: #3b82f6;
+            --premium-purple: #8b5cf6;
+            --premium-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --vibrant-pink: #ec4899;
+        }
+
         /* Center all table header and cell content within this module */
         .data-table th,
         .data-table td {
@@ -843,7 +852,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             opacity: 0 !important;
             pointer-events: none !important;
             user-select: none !important;
-            transition: opacity .08s linear;
+            transition: opacity .15s ease-out;
         }
 
         /* Ensure password modal always on top */
@@ -852,19 +861,27 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         .back-btn {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
+            background: var(--premium-gradient);
+            color: white !important;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 16px;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin: 10px 0;
-            text-align: center;
-            font-size: 10px;
-            width: 80px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
+        .back-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
         }
 
         /* Fixed: Remove double container effect in modals */
@@ -884,10 +901,10 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
         /* Blur Effect Styles */
         .blurred-content {
-            filter: blur(8px);
+            filter: blur(15px);
             user-select: none;
             pointer-events: none;
-            transition: all 0.5s ease;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .reveal-overlay {
@@ -900,549 +917,240 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             z-index: 10;
-            border-radius: 8px;
+            border-radius: 24px;
         }
 
         .reveal-btn {
-            padding: 12px 24px;
-            background: #2c3e50;
+            padding: 16px 32px;
+            background: #1e293b;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 18px;
             cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
+            font-weight: 800;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
         }
 
         .reveal-btn:hover {
-            transform: scale(1.05);
-            background: #34495e;
+            transform: scale(1.08) translateY(-4px);
+            background: #0f172a;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        /* Enforce white text on primary actions to fix visibility issues */
-        button[type="submit"],
-        .btn-primary {
-            color: #ffffff !important;
-        }
-
-        /* Added: Scrollable table container to handle large datasets */
-        .table-scroll-container {
-            width: 100%;
-            max-height: 450px;
-            overflow-y: auto;
-            border-radius: 12px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-top: 10px;
-            background: #fff;
-            -ms-overflow-style: none;
-            /* Internet Explorer 10+ */
-            scrollbar-width: none;
-            /* Firefox */
-        }
-
-        /* Ensure forms in tables don't disrupt layout */
-        .data-table form {
-            display: inline-block !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .action-container {
+        /* Enhanced Stat Cards - Mobile Optimized */
+        .stat-card {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             display: flex;
-            gap: 8px;
-            justify-content: center;
             align-items: center;
-            flex-wrap: nowrap;
+            gap: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .action-btn {
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        /* Enhanced Risk Level Styling */
-        .risk-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 2px solid;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .risk-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .risk-badge:hover::before {
-            left: 100%;
-        }
-
-        .risk-high {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border-color: #ef4444;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-            animation: pulse-red 2s infinite;
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.07);
         }
 
         @media (max-width: 768px) {
-            .header {
-                padding: 10px 0;
+            body {
+                background: #f8fafc;
+            }
+
+            .container {
+                padding: 15px !important;
             }
 
             .header-content {
                 flex-direction: column !important;
-                align-items: center !important;
-                gap: 12px !important;
-                text-align: center;
-                padding: 10px 0;
+                gap: 20px !important;
+                padding: 20px 0;
             }
 
             .logo {
-                font-size: 1.1rem !important;
-                margin-bottom: 5px;
+                font-size: 1.5rem !important;
             }
 
             .user-info {
                 width: 100%;
                 justify-content: center;
-                gap: 8px;
-                font-size: 14px;
-            }
-
-            .logout-btn {
-                padding: 6px 12px !important;
-                font-size: 13px !important;
+                background: rgba(255,255,255,0.6);
+                backdrop-filter: blur(12px);
+                padding: 12px 20px;
+                border-radius: 20px;
+                border: 1px solid rgba(255,255,255,0.4);
             }
 
             .content-section {
-                padding: 15px !important;
+                padding: 25px 20px !important;
+                border-radius: 32px !important;
+                background: var(--glass) !important;
+                backdrop-filter: blur(20px) !important;
+                border: 1px solid var(--glass-border) !important;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.05) !important;
+                margin-bottom: 30px !important;
             }
 
             .section-header {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+                gap: 20px;
+                text-align: center;
             }
 
             .section-title {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
+                padding: 0;
+                border: none;
             }
 
             .add-btn {
                 width: 100%;
+                padding: 16px !important;
+                border-radius: 18px !important;
                 justify-content: center;
+                font-weight: 800;
+                font-size: 1rem;
             }
 
-            .filters-container>div {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 15px !important;
-            }
-
-            .filter-group {
-                width: 100% !important;
-                flex: none !important;
-                min-width: 0 !important;
-            }
-
-            .filter-group[style*="display: flex"] {
-                flex-direction: row !important;
-            }
-
-            .filter-group button {
-                flex: 1;
-                justify-content: center;
-            }
-
-            .risk-stats-grid {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 12px !important;
-            }
-
-            .stat-card {
-                padding: 15px !important;
-                gap: 12px !important;
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .stat-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .stat-value {
-                font-size: 1.4rem;
-            }
-
-            .chart-container-wrapper,
-            .high-risk-list-wrapper {
-                padding: 15px !important;
-            }
-
-            .chart-area {
-                height: 300px !important;
-                padding: 15px !important;
-            }
-
-            .chart-container-wrapper>div:first-child {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 15px !important;
-            }
-
-            .chart-container-wrapper button {
-                padding: 8px 15px !important;
-                font-size: 12px !important;
-            }
-
-            .table-container,
-            .table-scroll-container {
-                width: 100% !important;
+            /* Responsive Table Card Layout */
+            .premium-table {
                 display: block !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-                margin-bottom: 20px;
             }
 
-            .data-table {
-                min-width: 900px !important;
+            .premium-table thead {
+                display: none !important;
             }
 
-            /* Responsive Stacking for Contracts Table */
-            .mobile-stack-table thead {
-                display: none;
-            }
-
-            .mobile-stack-table tr {
-                display: block;
-                background: #ffffff;
-                margin-bottom: 20px;
-                border-radius: 16px;
-                border: 1px solid #e2e8f0;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-                padding: 15px;
-            }
-
-            .mobile-stack-table td {
-                display: flex !important;
-                justify-content: space-between;
-                align-items: center;
-                border: none !important;
-                text-align: right !important;
-                padding: 10px 0 !important;
-                border-bottom: 1px solid #f8fafc !important;
+            .premium-table tbody, .premium-table tr, .premium-table td {
+                display: block !important;
                 width: 100% !important;
             }
 
-            .mobile-stack-table td:last-child {
-                border-bottom: none !important;
-                padding-top: 15px !important;
-                flex-direction: column;
-                gap: 10px;
+            .premium-table tr {
+                background: white !important;
+                margin-bottom: 25px !important;
+                border-radius: 28px !important;
+                padding: 24px !important;
+                border: 1px solid #f1f5f9 !important;
+                box-shadow: 0 12px 30px rgba(0,0,0,0.03) !important;
+                transition: transform 0.3s ease;
             }
 
-            .mobile-stack-table td::before {
+            .premium-table tr:active {
+                transform: scale(0.98);
+            }
+
+            .premium-table td {
+                padding: 14px 0 !important;
+                border-bottom: 1px solid #f8fafc !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+
+            .premium-table td:last-child {
+                border-bottom: none !important;
+                padding-top: 20px !important;
+            }
+
+            .premium-table td::before {
                 content: attr(data-label);
                 font-weight: 800;
-                color: #3b82f6;
+                color: #94a3b8;
                 text-transform: uppercase;
-                font-size: 10px;
-                letter-spacing: 0.5px;
-                text-align: left;
+                font-size: 0.7rem;
+                letter-spacing: 0.8px;
             }
 
-            .mobile-stack-table .action-container {
-                width: 100%;
-                justify-content: center !important;
+            .action-container {
+                width: 100% !important;
+                flex-direction: column !important;
+                gap: 12px !important;
             }
 
-            .mobile-stack-table .action-btn {
-                width: 100%;
-                margin: 0;
+            .action-btn {
+                width: 100% !important;
+                padding: 14px !important;
+                border-radius: 16px !important;
+                font-size: 0.95rem !important;
             }
 
-            .nav-tabs {
-                display: flex !important;
-                overflow-x: auto !important;
-                white-space: nowrap !important;
-                padding-bottom: 5px !important;
-                gap: 5px !important;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                border-radius: 10px !important;
-            }
-
-            .nav-tabs::-webkit-scrollbar {
-                display: none;
+            /* Premium Pill Tabs */
+            .premium-nav-tabs {
+                background: rgba(255,255,255,0.8) !important;
+                backdrop-filter: blur(25px) !important;
+                border-radius: 24px !important;
+                padding: 12px !important;
+                margin-bottom: 25px !important;
+                border: 1px solid rgba(255,255,255,0.5) !important;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.04) !important;
             }
 
             .nav-tab {
-                flex: 0 0 auto !important;
-                padding: 10px 15px !important;
-                font-size: 13px !important;
+                padding: 12px 24px !important;
+                border-radius: 18px !important;
+                font-size: 0.9rem !important;
+                font-weight: 800 !important;
             }
         }
 
-        @media (max-width: 480px) {
-            .risk-stats-grid {
-                grid-template-columns: 1fr !important;
-            }
-
-            .filter-group[style*="display: flex"] {
-                flex-direction: column !important;
-            }
-
-            .stat-card {
-                flex-direction: row;
-                text-align: left;
-            }
-        }
-
-
-        .risk-medium {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            border-color: #f59e0b;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
-            animation: pulse-orange 3s infinite;
-        }
-
-        .risk-low {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-color: #10b981;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        @keyframes pulse-red {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        @keyframes pulse-orange {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.03);
-            }
-        }
-
-        /* Enhanced Contract Row Styling */
-        .contract-row {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .contract-row[data-risk="High"] {
-            border-left-color: #ef4444;
-            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
-        }
-
-        .contract-row[data-risk="Medium"] {
-            border-left-color: #f59e0b;
-            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%);
-        }
-
-        .contract-row[data-risk="Low"] {
-            border-left-color: #10b981;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
-        }
-
-        .contract-row:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Enhanced Risk Score Display */
-        .risk-score-display {
-            font-weight: 800;
-            font-size: 0.9rem;
-            padding: 6px 12px;
-            border-radius: 12px;
+        /* Keyboard-Style Category Buttons */
+        .legal-tab-btn, .ext-tab-btn {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 22px !important;
+            padding: 20px !important;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            box-shadow: 0 6px 0 #edeef2, 0 10px 20px rgba(0,0,0,0.05) !important;
             position: relative;
         }
 
-        .risk-score-display.high {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #dc2626;
-            border: 2px solid #ef4444;
+        .legal-tab-btn:active, .ext-tab-btn:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 2px 0 #edeef2, 0 5px 10px rgba(0,0,0,0.05) !important;
         }
 
-        .risk-score-display.medium {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #d97706;
-            border: 2px solid #f59e0b;
+        .legal-tab-btn.active, .ext-tab-btn.active {
+            background: var(--premium-gradient) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 6px 0 #2563eb, 0 15px 30px rgba(59, 130, 246, 0.4) !important;
         }
 
-        .risk-score-display.low {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #059669;
-            border: 2px solid #10b981;
+        .stat-icon {
+            width: 65px !important;
+            height: 65px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08) !important;
         }
 
-
-
-        /* Enhanced Stat Cards */
-        .stat-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+        /* Micro-animations */
+        @keyframes entrance {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s;
+        .content-section.active {
+            animation: entrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
-        .stat-card:hover::before {
-            animation: shimmer 0.5s ease;
+        .premium-table tr {
+            animation: entrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
         }
 
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            }
-
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-            }
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-card.high:hover {
-            border-color: #ef4444;
-            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
-        }
-
-        .stat-card.medium:hover {
-            border-color: #f59e0b;
-            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
-        }
-
-        .stat-card.low:hover {
-            border-color: #10b981;
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
-        }
-
-        /* AI Risk Analysis Modal Animations */
-        @keyframes float {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.4;
-            }
-        }
-
-        @keyframes float-icon {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        @keyframes progress {
-            0% {
-                width: 0%;
-            }
-
-            100% {
-                width: 94%;
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(100%);
-            }
-        }
+        .premium-table tr:nth-child(n) { animation-delay: calc(0.1s * var(--n, 1)); }
     </style>
+
 </head>
 <body>
 
@@ -2066,29 +1774,31 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                     <tbody id="employeesTableBody">
                         <?php foreach ($employees as $employee): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
+                                <td data-label="Employee ID"><?php echo htmlspecialchars($employee['employee_id'] ?? ('E-' . str_pad($employee['id'], 3, '0', STR_PAD_LEFT))); ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($employee['name']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['position']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
-                                <td><?php echo htmlspecialchars($employee['phone']); ?></td>
-                                <td>
+                                <td data-label="Name"><?php echo htmlspecialchars($employee['name']); ?></td>
+                                <td data-label="Position"><?php echo htmlspecialchars($employee['position']); ?></td>
+                                <td data-label="Email"><?php echo htmlspecialchars($employee['email']); ?></td>
+                                <td data-label="Phone"><?php echo htmlspecialchars($employee['phone']); ?></td>
+                                <td data-label="Actions">
                                     <div class="action-container">
                                         <button class="action-btn view-btn"
-                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'>
+                                            data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'
+                                            style="background: #eff6ff; color: #3b82f6; border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700;">
                                             <i class="fa-solid fa-eye"></i> View
                                         </button>
                                         <?php if ($isSuperAdmin): ?>
                                             <button class="action-btn edit-btn"
-                                                style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                style="background:#fff7ed; color:#f59e0b; border:none; border-radius:12px; padding:10px 15px; font-weight:700;"
                                                 onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
                                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                                             </button>
                                             <form method="POST"
-                                                onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                                onsubmit="return confirm('Are you sure you want to delete this employee?');"
+                                                style="display: inline-block;">
                                                 <input type="hidden" name="employee_id" value="<?php echo $employee['id']; ?>">
                                                 <button type="submit" name="delete_employee" class="action-btn delete-btn"
-                                                    style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                    style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;">
                                                     <i class="fa-solid fa-trash"></i> Delete
                                                 </button>
                                             </form>
@@ -2098,6 +1808,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+
                 </table>
             </div>
         </div>
@@ -2380,32 +2091,35 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         ?>
                                         <tr class="external-doc-row contract-row" data-category="<?php echo $docCategory; ?>"
                                             data-risk="<?php echo $docRisk; ?>">
-                                            <td><a href="javascript:void(0)" class="clickable-name"
+                                            <td data-label="Agreement Name"><a href="javascript:void(0)" class="clickable-name"
+                                                    style="font-weight: 700; color: #1e293b; text-decoration: none;"
                                                     onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><?php echo htmlspecialchars($doc['name']); ?></a>
                                             </td>
-                                            <td><?php echo htmlspecialchars($doc['case_id']); ?></td>
-                                            <td><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
+                                            <td data-label="Case ID"><?php echo htmlspecialchars($doc['case_id']); ?></td>
+                                            <td data-label="Expiry Date"><?php echo date('Y-m-d', strtotime($doc['created_at'] . ' +1 year')); ?>
                                             </td>
-                                            <td>
+                                            <td data-label="Actions">
                                                 <div class="action-container">
                                                     <button class="action-btn view-btn"
+                                                        style="background: #eff6ff; color: #3b82f6; border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700;"
                                                         onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
                                                             class="fa-solid fa-eye"></i> View</button>
 
                                                     <?php if ($isSuperAdmin): ?>
                                                         <button class="action-btn edit-btn"
-                                                            style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
+                                                            style="background:#fff7ed; color:#f59e0b; border:none; border-radius:12px; padding:10px 15px; font-weight:700;"
                                                             onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
                                                             <i class="fa-solid fa-pen-to-square"></i> Edit
                                                         </button>
                                                         <form method="POST"
-                                                            onsubmit="return confirm('Delete this external agreement?');">
+                                                            onsubmit="return confirm('Delete this external agreement?');"
+                                                            style="display: inline-block;">
                                                             <input type="hidden" name="contract_id"
                                                                 value="<?php echo $doc['id']; ?>">
                                                             <button type="submit" name="delete_contract"
                                                                 class="action-btn delete-btn"
-                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
-                                                                <i class="fa-solid fa-trash"></i>
+                                                                style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;">
+                                                                <i class="fa-solid fa-trash"></i> Delete
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>

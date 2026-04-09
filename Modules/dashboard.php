@@ -1127,15 +1127,18 @@ $r_rows = [];
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 gap: 15px !important;
+                padding: 15px !important;
             }
             .management-buttons {
                 width: 100%;
-                overflow-x: auto;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 10px !important;
                 padding-bottom: 5px;
             }
             .management-btn {
-                flex-shrink: 0;
-                white-space: nowrap;
+                width: 100% !important;
+                justify-content: flex-start !important;
             }
             .maintenance-header-premium {
                 flex-direction: column !important;
@@ -2895,16 +2898,65 @@ $r_rows = [];
             <!-- Management Tab -->
             <div id="management"
                 class="tab-content <?= (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance')) ? 'active' : '' ?>">
-                <div class="management-header">
-                    <h2><span class="icon-img-placeholder">⚙️</span> Management</h2>
-                    <div class="management-buttons" style="display: flex; gap: 0.75rem;">
-                        <button id="show-maintenance-card" class="btn btn-outline management-btn active"
+                
+                <style>
+                    .premium-tab-btn {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 14px 20px;
+                        background: #f8fafc;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 12px;
+                        color: #475569;
+                        font-weight: 700;
+                        font-size: 0.95rem;
+                        cursor: pointer;
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        text-align: left;
+                        width: auto;
+                    }
+                    .premium-tab-btn:hover {
+                        background: #ffffff;
+                        border-color: #3b82f6;
+                        color: #3b82f6;
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 15px -5px rgba(59, 130, 246, 0.15);
+                    }
+                    .premium-tab-btn.active {
+                        background: #3b82f6;
+                        border-color: #3b82f6;
+                        color: #ffffff;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                    }
+                    .premium-tab-btn .icon {
+                        font-size: 1.1rem;
+                        color: #64748b;
+                        transition: all 0.3s ease;
+                    }
+                    .premium-tab-btn.active .icon, .premium-tab-btn:hover .icon {
+                        color: inherit;
+                    }
+                </style>
+
+                <div class="management-header" style="background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; background: #f8fafc; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #334155; font-size: 1.3rem; border: 1px solid #e2e8f0;">
+                            <i class="fa-solid fa-gears"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Management</h2>
+                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">System modules & configuration</p>
+                        </div>
+                    </div>
+                    <div class="management-buttons" style="display: flex; gap: 12px;">
+                        <button id="show-maintenance-card" class="btn premium-tab-btn management-btn active"
                             onclick="event.preventDefault(); window.showManagementCard('maintenance')">
-                            <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+                            <i class="fa-solid fa-screwdriver-wrench icon"></i> Maintenance
                         </button>
-                        <button id="show-mnt-calendar" class="btn btn-outline management-btn"
+                        <button id="show-mnt-calendar" class="btn premium-tab-btn management-btn"
                             onclick="event.preventDefault(); window.showManagementCard('mnt-calendar')">
-                            <i class="fa-solid fa-calendar-days"></i> Schedules
+                            <i class="fa-solid fa-calendar-days icon"></i> Schedules
                         </button>
                     </div>
                 </div>
