@@ -176,7 +176,7 @@ class ReservationSystem
 
                 if ($resData && !empty($resData['customer_email'])) {
                     $to = $resData['customer_email'];
-                    $subject = "Reservation Confirmed - LSPU Facilities";
+                    $subject = "Reservation Confirmed - Atiera Dashboard";
                     
                     $message = "
                     <html>
@@ -197,20 +197,26 @@ class ReservationSystem
                         </div>
                         <p>If you have any further questions or modifications, please contact us immediately.</p>
                         <br>
-                        <p>Best regards,<br>LSPU Facilities Management</p>
+                        <p>Best regards,<br>Atiera Administration Team</p>
                     </body>
                     </html>
                     ";
                     
                     $headers = "MIME-Version: 1.0" . "\r\n";
                     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                    $headers .= "From: no-reply@lspu-facilities.com" . "\r\n";
+                    $headers .= "From: Atiera System <no-reply@atiera.com>" . "\r\n";
 
-                    @mail($to, $subject, $message, $headers);
+                    $mailSent = @mail($to, $subject, $message, $headers);
+                    
+                    if ($mailSent) {
+                        return ['success' => true, 'message' => "Reservation confirmed and email sent to {$to}!"];
+                    } else {
+                        return ['success' => true, 'message' => "Status updated to 'Confirmed', but email failed to send (Check SMTP settings)."];
+                    }
                 }
             }
 
-            return ['success' => true, 'message' => "Reservation status updated successfully!"];
+            return ['success' => true, 'message' => "Reservation status updated to {$status}!"];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => "Error updating reservation: " . $e->getMessage()];
         }
@@ -623,6 +629,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             case 'update_reservation_status':
                 $result = $reservationSystem->updateReservationStatus($_POST['reservation_id'], $_POST['status']);
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' || isset($_POST['ajax'])) {
+                    header('Content-Type: application/json');
+                    echo json_encode($result);
+                    exit;
+                }
                 if ($result['success']) {
                     $success_message = $result['message'];
                 } else {

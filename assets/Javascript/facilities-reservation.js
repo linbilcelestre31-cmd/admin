@@ -196,10 +196,30 @@ window.updateReservationStatus = function (id, status) {
     formData.append('action', 'update_reservation_status');
     formData.append('reservation_id', id);
     formData.append('status', status);
+    formData.append('ajax', '1');
 
-    fetch('', { method: 'POST', body: formData })
-        .then(() => location.reload())
-        .catch(err => console.error('Status update error:', err));
+    // Show loading if available
+    if (typeof window.runLoadingAnimation === 'function') {
+        window.runLoadingAnimation(() => {
+            fetch('', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                        location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.error('Status update error:', err);
+                    location.reload();
+                });
+        }, false);
+    } else {
+        fetch('', { method: 'POST', body: formData })
+            .then(() => location.reload());
+    }
 };
 
 window.viewReservationDetails = function (data) {
