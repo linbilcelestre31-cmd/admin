@@ -816,24 +816,20 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin) {
 <div id="mgmtRadialWrapper" class="mgmt-radial-wrapper">
     <div class="mgmt-radial-bg"></div>
     
-    <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1">
+    <a href="<?= get_nav_link('facilities', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-1" title="Facilities">
         <i class="fa-solid fa-hotel color-purple"></i>
-        <span>Facilities</span>
     </a>
     
-    <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2">
+    <a href="<?= get_nav_link('reservations', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-2" title="Reservations">
         <i class="fa-solid fa-calendar-check color-blue"></i>
-        <span>Reservations</span>
     </a>
     
-    <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3">
+    <a href="<?= get_nav_link('calendar', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-3" title="Calendar">
         <i class="fa-solid fa-calendar-days color-purple"></i>
-        <span>Calendar</span>
     </a>
     
-    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4">
+    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="mgmt-radial-item item-4" title="Maintenance">
         <i class="fa-solid fa-screwdriver-wrench color-indigo"></i>
-        <span>Maintenance</span>
     </a>
     
     <div class="mgmt-radial-close" onclick="closeManagementModal()">

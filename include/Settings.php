@@ -1234,12 +1234,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
                     <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; flex-wrap: nowrap; overflow-x: auto; width: 100%;">
                         <?php if ($isAdmin): ?>
-                            <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                            <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-download"></i> Backup</button>
                         <?php endif; ?>
-                        <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
-                        <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-sync"></i> Refresh</button>
+                        <button class="btn btn-outline" style="flex: 1; white-space: nowrap;"><i class="fas fa-bell"></i> Alerts</button>
                     </div>
                 </div>
             </div>

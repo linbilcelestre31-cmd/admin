@@ -1785,21 +1785,21 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                         <button class="action-btn view-btn"
                                             data-emp='<?php echo htmlspecialchars(json_encode($employee)); ?>'
                                             style="background: #eff6ff; color: #3b82f6; border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700;">
-                                            <i class="fa-solid fa-eye"></i> View
+                                            <i class="fa-solid fa-eye" title="View"></i>
                                         </button>
                                         <?php if ($isSuperAdmin): ?>
                                             <button class="action-btn edit-btn"
                                                 style="background:#fff7ed; color:#f59e0b; border:none; border-radius:12px; padding:10px 15px; font-weight:700;"
-                                                onclick='editEmployee(<?php echo json_encode($employee); ?>)'>
-                                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                onclick='editEmployee(<?php echo json_encode($employee); ?>)' title="Edit">
+                                                <i class="fa-solid fa-pen-to-square"></i>
                                             </button>
                                             <form method="POST"
                                                 onsubmit="return confirm('Are you sure you want to delete this employee?');"
                                                 style="display: inline-block;">
                                                 <input type="hidden" name="employee_id" value="<?php echo $employee['id']; ?>">
                                                 <button type="submit" name="delete_employee" class="action-btn delete-btn"
-                                                    style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;">
-                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                    style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;" title="Delete">
+                                                    <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -1921,14 +1921,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             <td>
                                                 <div class="action-container">
                                                     <button class="action-btn view-btn"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
-                                                            class="fa-solid fa-eye"></i> View</button>
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'Internal', 'Compliance', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)" title="View"><i
+                                                            class="fa-solid fa-eye"></i></button>
 
                                                     <?php if ($isSuperAdmin): ?>
                                                         <button class="action-btn edit-btn"
                                                             style="background:#f59e0b; color:white; border:none; border-radius:8px; padding:6px 12px;"
-                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")' title="Edit">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
                                                         </button>
                                                         <form method="POST"
                                                             onsubmit="return confirm('Delete this internal document?');">
@@ -1936,7 +1936,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                                 value="<?php echo $doc['id']; ?>">
                                                             <button type="submit" name="delete_contract"
                                                                 class="action-btn delete-btn"
-                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;">
+                                                                style="background:#ef4444; color:white; border:none; border-radius:8px; padding:6px 12px;" title="Delete">
                                                                 <i class="fa-solid fa-trash"></i>
                                                             </button>
                                                         </form>
@@ -2102,14 +2102,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 <div class="action-container">
                                                     <button class="action-btn view-btn"
                                                         style="background: #eff6ff; color: #3b82f6; border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700;"
-                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)"><i
-                                                            class="fa-solid fa-eye"></i> View</button>
+                                                        onclick="showLegalDetails('<?php echo addslashes($doc['name']); ?>', '<?php echo addslashes($doc['case_id']); ?>', '<?php echo date('Y-m-d', strtotime($doc['created_at'])); ?>', 'External', 'Vendor', <?php echo htmlspecialchars(json_encode($doc['description'] ?? ''), ENT_QUOTES); ?>)" title="View"><i
+                                                            class="fa-solid fa-eye"></i></button>
 
                                                     <?php if ($isSuperAdmin): ?>
                                                         <button class="action-btn edit-btn"
                                                             style="background:#fff7ed; color:#f59e0b; border:none; border-radius:12px; padding:10px 15px; font-weight:700;"
-                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")'>
-                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                            onclick='editLegalRecord(<?php echo json_encode($doc); ?>, "contract")' title="Edit">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
                                                         </button>
                                                         <form method="POST"
                                                             onsubmit="return confirm('Delete this external agreement?');"
@@ -2118,8 +2118,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                                 value="<?php echo $doc['id']; ?>">
                                                             <button type="submit" name="delete_contract"
                                                                 class="action-btn delete-btn"
-                                                                style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;">
-                                                                <i class="fa-solid fa-trash"></i> Delete
+                                                                style="background:#fef2f2; color:#ef4444; border:none; border-radius:12px; padding:10px 15px; font-weight:700; width: 100%;" title="Delete">
+                                                                <i class="fa-solid fa-trash"></i>
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>
@@ -2183,15 +2183,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                             <button class="action-btn download-btn" data-type="doc-download"
                                                 data-pdf-type="document"
                                                 data-pdf-content='<?php echo htmlspecialchars(json_encode($doc)); ?>'
-                                                style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);">
-                                                <i class="fa-solid fa-file-pdf"></i> Download
+                                                style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-weight:700; box-shadow:0 4px 12px rgba(5,150,105,0.2);" title="Download">
+                                                <i class="fa-solid fa-file-pdf"></i>
                                             </button>
                                             <?php if ($isSuperAdmin): ?>
                                                 <form method="POST" onsubmit="return confirm('Permanently delete this document?');">
                                                     <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
                                                     <button type="submit" name="delete_document" class="action-btn delete-btn"
-                                                        style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;">
-                                                        <i class="fa-solid fa-trash"></i> Delete
+                                                        style="background:#ef4444; color:white; border:none; border-radius:12px; padding:8px 16px; font-weight:700;" title="Delete">
+                                                        <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </form>
                                             <?php endif; ?>
@@ -2420,14 +2420,14 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                 <td data-label="Actions">
                                     <div class="action-container">
                                         <button class="action-btn analyze-btn" data-type="contract-analyze"
-                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>'>
-                                            <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analysis
+                                            data-contract='<?php echo htmlspecialchars(json_encode($contract)); ?>' title="AI Analysis">
+                                            <i class="fa-solid fa-magnifying-glass-chart"></i>
                                         </button>
                                         <button class="action-btn download-btn" data-type="contract-download"
                                             data-pdf-type="contract"
                                             data-pdf-content='<?php echo htmlspecialchars(json_encode($contract)); ?>'
-                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;">
-                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                            style="background: #059669; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer;" title="PDF">
+                                            <i class="fa-solid fa-file-pdf"></i>
                                         </button>
                                         <?php if ($isSuperAdmin): ?>
                                             <form method="POST"
@@ -2435,8 +2435,8 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                                                 style="width: 100%;">
                                                 <input type="hidden" name="contract_id" value="<?php echo $contract['id']; ?>">
                                                 <button type="submit" name="delete_contract" class="action-btn delete-btn"
-                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer; width: 100%;">
-                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                    style="background:#ef4444; color:white; border:none; border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 13px; cursor: pointer; width: 100%;" title="Delete">
+                                                    <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
