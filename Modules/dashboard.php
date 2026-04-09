@@ -2808,6 +2808,37 @@ $r_rows = [];
                     .today-event-card {
                         border-left: 4px solid #3b82f6 !important;
                     }
+
+                    @media (max-width: 768px) {
+                        .calendar-header {
+                            padding-bottom: 10px !important;
+                        }
+                        .mobile-hide-icon {
+                            display: none !important;
+                        }
+                        #currentMonthYear {
+                            white-space: nowrap !important;
+                            font-size: 1.4rem !important;
+                        }
+                        .btn-today-premium {
+                            padding: 0 10px !important;
+                        }
+                        .calendar-container {
+                            padding: 20px 10px !important;
+                        }
+                        #today-reservations-modal {
+                            display: none;
+                        }
+                        /* Modal Vertically Centered on Mobile */
+                        #today-reservations-modal .modal-content {
+                            margin: 0 auto !important;
+                            top: 50% !important;
+                            position: relative;
+                            transform: translateY(-50%) !important;
+                            max-height: 85vh;
+                            width: 95% !important;
+                        }
+                    }
                 </style>
 
                 <div class="calendar-container"
@@ -3792,7 +3823,7 @@ $r_rows = [];
 
                 <div class="form-group">
                     <label for="customer_phone">Phone Number</label>
-                    <input type="tel" id="customer_phone" name="customer_phone" class="form-control">
+                    <input type="tel" id="customer_phone" name="customer_phone" class="form-control" maxlength="11" pattern="\d{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" title="Please enter exactly 11 numbers" placeholder="09xxxxxxxxx" required>
                 </div>
 
                 <div class="form-group">
