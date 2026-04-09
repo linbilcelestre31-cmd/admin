@@ -2813,34 +2813,44 @@ $r_rows = [];
                 <div class="calendar-container"
                     style="background: var(--light, #ffffff); border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); width: 95%; max-width: 1200px; margin: 0 auto 40px auto; overflow: hidden;">
                     <div class="calendar-header"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div
-                                style="width: 50px; height: 50px; background: #eff6ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.5rem;">
-                                <i class="fa-solid fa-calendar-days"></i>
-                            </div>
-                            <h2 id="currentMonthYear"
-                                style="margin:0; font-size:2rem; font-weight: 800; color: #0f172a; letter-spacing: -0.7px; font-family: 'Outfit', sans-serif;">
-                            </h2>
-                        </div>
-                        <div class="calendar-nav" style="display:flex; gap:15px; align-items: center;">
-                            <button onclick="goToToday()" class="btn-today-premium"
-                                style="height: 45px; padding: 0 20px; border-radius: 12px; font-weight: 800; background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #475569; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-width: 90px; justify-content: center;">
-                                <i class="fa-solid fa-calendar-day" style="font-size: 0.9rem; color: #3b82f6;"></i>
-                                Today
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px; flex-wrap: wrap; gap: 10px;">
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; max-width: 100%; justify-content: space-between; width: 100%;">
+                            <!-- Left: Prev Arrow -->
+                            <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
+                                style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; font-weight: bold; color: #3b82f6; flex-shrink: 0;">
+                                &lt;
                             </button>
-                            <div style="display: flex; gap: 8px;">
-                                <button onclick="changeMonth(-1)" class="btn btn-outline btn-sm"
-                                    style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
-                                    <i class="fa-solid fa-chevron-left"></i>
+
+                            <!-- Center: Month Year -->
+                            <div style="display: flex; align-items: center; gap: 10px; flex-grow: 1; justify-content: center;">
+                                <div class="mobile-hide-icon"
+                                    style="width: 50px; height: 50px; background: #eff6ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.5rem;">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
+                                <h2 id="currentMonthYear"
+                                    style="margin:0; font-size: 1.8rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; font-family: 'Outfit', sans-serif; white-space: nowrap;">
+                                </h2>
+                            </div>
+
+                            <!-- Right: Today and Next Arrow -->
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="goToToday()" class="btn-today-premium"
+                                    style="height: 45px; padding: 0 15px; border-radius: 12px; font-weight: 800; background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+                                    <span class="mobile-hide-icon"><i class="fa-solid fa-calendar-day" style="color: #3b82f6;"></i></span>
+                                    Today
                                 </button>
                                 <button onclick="changeMonth(1)" class="btn btn-outline btn-sm"
-                                    style="width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s;">
-                                    <i class="fa-solid fa-chevron-right"></i>
+                                    style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; font-weight: bold; color: #3b82f6; flex-shrink: 0;">
+                                    &gt;
                                 </button>
                             </div>
-                            <button onclick="openModal('reservation-modal')" class="btn btn-primary btn-sm"
-                                style="min-width: 140px; flex-shrink: 0; height: 45px; padding: 0 25px; border-radius: 12px; font-weight: 700; background: #3b82f6; border: none; cursor: pointer; transition: all 0.3s; color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap;">
+                        </div>
+
+                        <!-- Book Now isolated to wrap if needed -->
+                        <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <button onclick="openModal('reservation-modal')" class="btn btn-primary btn-sm mobile-hide-icon"
+                                style="min-width: 140px; height: 45px; padding: 0 25px; border-radius: 12px; font-weight: 700; background: #3b82f6; border: none; cursor: pointer; color: #fff; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px;">
                                 <i class="fa-solid fa-calendar-plus" style="font-size: 1.1rem;"></i> Book Now
                             </button>
                         </div>

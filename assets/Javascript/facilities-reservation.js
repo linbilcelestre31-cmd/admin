@@ -536,7 +536,8 @@ function initializePage() {
     // Tab wiring
     const urlParams = new URLSearchParams(window.location.search);
     const urlTab = urlParams.get('tab');
-    const activeTab = urlTab || sessionStorage.getItem('activeTab') || 'dashboard';
+    // If there is no tab in the URL (direct visit), default to dashboard
+    const activeTab = urlTab || 'dashboard';
     window.switchTab(activeTab);
 
     // Initial state for management/maintenance
@@ -594,7 +595,8 @@ if (document.readyState === 'loading') {
 // Second insurance for slow loading scripts
 window.addEventListener('load', () => {
     console.log('Page fully loaded, performing final check...');
-    const activeTab = sessionStorage.getItem('activeTab') || 'dashboard';
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('tab') || 'dashboard';
     if (!document.querySelector('.tab-content.active')) {
         window.switchTab(activeTab);
     }
