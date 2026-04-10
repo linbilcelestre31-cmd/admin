@@ -1340,7 +1340,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Dashboard -->
     <header
-        style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
+        style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: visible;">
         <div
             style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); border-radius: 50%; blur: 40px;">
         </div>
@@ -1368,7 +1368,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
             <!-- Unified Status Bar -->
             <div class="header-status-bar"
-                style="display: flex; align-items: center; justify-content: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1); width: fit-content; margin-left: auto; margin-right: auto;">
+                style="display: flex; align-items: center; justify-content: center; gap: 30px; background: rgba(30, 41, 59, 0.5); padding: 18px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); margin-bottom: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1); width: fit-content; margin-left: auto; margin-right: auto; position: relative; z-index: 10000;">
                 
                 <!-- Date -->
                 <div style="display: flex; align-items: center; gap: 12px; color: #60a5fa;">
