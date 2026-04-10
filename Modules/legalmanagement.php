@@ -1149,6 +1149,36 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         }
 
         .premium-table tr:nth-child(n) { animation-delay: calc(0.1s * var(--n, 1)); }
+
+        /* Notification Dropdown Mobile Fix */
+        #notificationDropdown {
+            z-index: 99999 !important;
+        }
+
+        @media (max-width: 768px) {
+            #notificationDropdown {
+                position: fixed !important;
+                top: 85px !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+                width: 90vw !important;
+                max-width: 350px !important;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+                background: white !important;
+            }
+
+            #notificationDropdown::before {
+                content: '';
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-bottom: 10px solid white;
+            }
+        }
     </style>
 
 </head>
@@ -1354,7 +1384,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Bell -->
-                <div class="notif-wrapper" id="notificationToggle" style="position: relative; cursor: pointer; color: #fbbf24;">
+                <div class="notif-wrapper" id="notificationToggle" style="position: relative; cursor: pointer; color: #fbbf24; z-index: 1001;">
                     <div style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(251, 191, 36, 0.2);">
                         <i class="fa-solid fa-bell" style="font-size: 1.3rem;"></i>
                         <span style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 20px; height: 20px; border: 2px solid #1e293b; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
