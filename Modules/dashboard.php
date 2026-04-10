@@ -1268,6 +1268,104 @@ $r_rows = [];
                 font-size: 1.1rem !important;
             }
         }
+
+        /* --- REPORTS & ANALYTICS MOBILE OPTIMIZATION --- */
+        @media (max-width: 768px) {
+            #reports .filters-container, #reports_dates .filters-container {
+                padding: 15px !important;
+            }
+            
+            #reports .filters-container form, #reports_dates .filters-container form {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            .filter-group {
+                width: 100% !important;
+            }
+            
+            .filter-group label {
+                margin-bottom: 4px;
+                display: inline-block;
+            }
+            
+            .filter-group input, .filter-group select {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            
+            .filter-group:nth-last-child(1) {
+                grid-column: span 2;
+            }
+            
+            .filter-group button {
+                width: 100% !important;
+                margin-top: 5px;
+            }
+            
+            .export-container {
+                margin-top: 15px !important;
+            }
+            
+            .export-container button {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            
+            .report-header-banner {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                padding: 15px !important;
+                gap: 10px !important;
+            }
+            
+            .report-header-banner h2 {
+                font-size: 1.15rem !important;
+                line-height: 1.4 !important;
+            }
+            
+            .report-header-banner h2 span {
+                display: block !important;
+                font-size: 0.8rem !important;
+                margin-top: 5px !important;
+                opacity: 0.85 !important;
+            }
+            
+            .table-container.premium-white-card {
+                padding: 5px !important;
+                margin: 0 -10px !important;
+                border-radius: 0 !important;
+                width: calc(100% + 20px) !important;
+            }
+            
+            .table thead th {
+                font-size: 11px !important;
+                padding: 10px 8px !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            .table tbody td {
+                font-size: 12px !important;
+                padding: 12px 8px !important;
+            }
+
+            .table-wrapper {
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #reports .filters-container form, #reports_dates .filters-container form {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .filter-group:nth-last-child(1) {
+                grid-column: span 1;
+            }
+        }
     </style>
 </head>
 
@@ -1298,7 +1396,7 @@ $r_rows = [];
                                 'calendar' => 'Calendar',
                                 'management' => 'Management',
                                 'maintenance' => 'Maintenance',
-                                'reports' => 'Analytics',
+                                'reports' => 'Reports & Analytics',
                                 'reports_dates' => 'Reports'
                             ];
                             $current_tab = $_GET['tab'] ?? 'dashboard';
@@ -2358,7 +2456,7 @@ $r_rows = [];
                         </div>
                     </form>
 
-                    <div style="margin-top: 15px; display: flex; justify-content: flex-start;">
+                    <div class="export-container" style="margin-top: 15px; display: flex; justify-content: flex-start;">
                         <form method="post">
                             <input type="hidden" name="action" value="export_csv">
                             <input type="hidden" name="module" value="<?= htmlspecialchars($r_module) ?>">
@@ -2374,7 +2472,7 @@ $r_rows = [];
                     </div>
                 </div>
 
-                <div class="d-flex align-center gap-1 mb-1"
+                <div class="d-flex align-center gap-1 mb-1 report-header-banner"
                     style="background: #3b82f6; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
                     <i class="fa-solid fa-file-invoice" style="font-size: 1.5rem; color: #ffffff;"></i>
                     <h2 style="margin: 0; color: #ffffff; font-weight: 700;">
@@ -2551,7 +2649,7 @@ $r_rows = [];
                         </div>
                     </form>
 
-                    <div style="margin-top: 15px; display: flex; justify-content: flex-start;">
+                    <div class="export-container" style="margin-top: 15px; display: flex; justify-content: flex-start;">
                         <form method="post">
                             <input type="hidden" name="action" value="export_csv">
                             <input type="hidden" name="module"
@@ -2569,7 +2667,7 @@ $r_rows = [];
                     </div>
                 </div>
 
-                <div class="d-flex align-center gap-1 mb-1">
+                <div class="d-flex align-center gap-1 mb-1 report-header-banner">
                     <i class="fa-solid fa-calendar-days" style="font-size: 1.5rem; color: #3182ce;"></i>
                     <h2 style="margin: 0;">Reports Dates</h2>
                 </div>
