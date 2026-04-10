@@ -1153,6 +1153,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         /* Notification Dropdown Mobile Fix */
         #notificationDropdown {
             z-index: 99999 !important;
+            border: 2px solid #3b82f6 !important;
         }
 
         @media (max-width: 768px) {
@@ -1166,17 +1167,29 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 max-width: 350px !important;
                 box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
                 background: white !important;
+                border: 2px solid #3b82f6 !important;
             }
 
             #notificationDropdown::before {
                 content: '';
                 position: absolute;
-                top: -10px;
+                top: -12px;
                 left: 50%;
                 transform: translateX(-50%);
                 border-left: 10px solid transparent;
                 border-right: 10px solid transparent;
-                border-bottom: 10px solid white;
+                border-bottom: 12px solid #3b82f6;
+            }
+
+            #notificationDropdown::after {
+                content: '';
+                position: absolute;
+                top: -9px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 9px solid transparent;
+                border-right: 9px solid transparent;
+                border-bottom: 9px solid white;
             }
         }
     </style>
