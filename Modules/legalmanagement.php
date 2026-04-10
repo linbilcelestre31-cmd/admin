@@ -1259,6 +1259,20 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         });
 
         updateHeaderClock();
+
+        // Notification Toggle logic
+        const notifToggle = document.getElementById('notificationToggle');
+        const notifDropdown = document.getElementById('notificationDropdown');
+        if (notifToggle && notifDropdown) {
+            notifToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', () => {
+                if (notifDropdown) notifDropdown.style.display = 'none';
+            });
+            notifDropdown.addEventListener('click', (e) => e.stopPropagation());
+        }
     });
 
     window.addEventListener('load', function () {
@@ -1340,10 +1354,74 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
                 <div class="divider" style="width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1);"></div>
 
                 <!-- Bell -->
-                <div class="notif-wrapper" style="position: relative; cursor: pointer; color: #fbbf24;">
+                <div class="notif-wrapper" id="notificationToggle" style="position: relative; cursor: pointer; color: #fbbf24;">
                     <div style="width: 45px; height: 45px; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(251, 191, 36, 0.2);">
                         <i class="fa-solid fa-bell" style="font-size: 1.3rem;"></i>
                         <span style="position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 50%; min-width: 20px; height: 20px; border: 2px solid #1e293b; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800;">3</span>
+                    </div>
+                    <!-- Notification Dropdown -->
+                    <div id="notificationDropdown"
+                        style="display: none; position: absolute; top: 110%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 1000; overflow: hidden; transform-origin: top right;">
+                        <div
+                            style="padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e293b;"><i
+                                    class="fa-regular fa-bell" style="margin-right: 5px;"></i> Notifications
+                            </h4>
+                            <span
+                                style="font-size: 0.75rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark
+                                all as read</span>
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <!-- Sample Notifications -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='#f8fafc'"
+                                onmouseout="this.style.background='transparent'">
+                                <div
+                                    style="width: 32px; height: 32px; background: #eff6ff; color: #3b82f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                    <i class="fa-solid fa-calendar-check"></i></div>
+                                <div style="text-align: left;">
+                                    <p
+                                        style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                        <strong>New Reservation</strong> for Grand Ballroom</p>
+                                    <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                            class="fa-regular fa-clock"></i> 2 minutes ago</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='#f8fafc'"
+                                onmouseout="this.style.background='transparent'">
+                                <div
+                                    style="width: 32px; height: 32px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div style="text-align: left;">
+                                    <p
+                                        style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                        <strong>Maintenance Alert</strong> in Pool Area</p>
+                                    <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                            class="fa-regular fa-clock"></i> 1 hour ago</span>
+                                </div>
+                            </div>
+                            <div style="padding: 15px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='#f8fafc'"
+                                onmouseout="this.style.background='transparent'">
+                                <div
+                                    style="width: 32px; height: 32px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                    <i class="fa-solid fa-check"></i></div>
+                                <div style="text-align: left;">
+                                    <p
+                                        style="margin: 0 0 4px 0; font-size: 0.85rem; color: #334155; line-height: 1.3;">
+                                        <strong>Contract Signed</strong> by Jane Doe</p>
+                                    <span style="font-size: 0.7rem; color: #94a3b8;"><i
+                                            class="fa-regular fa-clock"></i> 3 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+                            <a href="#"
+                                style="font-size: 0.8rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View
+                                All Notifications</a>
+                        </div>
                     </div>
                 </div>
 
