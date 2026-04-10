@@ -465,8 +465,10 @@ function getLastInsertId()
                                     </div>
                                     <div class="form-group">
                                         <label for="phone">Phone</label>
-                                        <input type="text" id="phone" name="phone" class="form-control"
-                                            placeholder="Phone number">
+                                        <input type="tel" id="phone" name="phone" class="form-control"
+                                            placeholder="09123456789" pattern="[0-9]{11}" maxlength="11" minlength="11"
+                                            inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                            title="Please enter exactly 11 digits (e.g., 09123456789)">
                                     </div>
                                     <div class="form-group">
                                         <label for="room_number">Facilities</label>
@@ -566,7 +568,10 @@ function getLastInsertId()
                                     </div>
                                     <div class="form-group">
                                         <label for="visitor-phone">Phone</label>
-                                        <input type="tel" id="visitor-phone" name="visitor-phone">
+                                        <input type="tel" id="visitor-phone" name="visitor-phone" class="form-control"
+                                            placeholder="09123456789" pattern="[0-9]{11}" maxlength="11" minlength="11"
+                                            inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                            title="Please enter exactly 11 digits (e.g., 09123456789)">
                                     </div>
                                     <div class="form-group">
                                         <label for="party-size">Party Size</label>

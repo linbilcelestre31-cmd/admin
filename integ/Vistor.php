@@ -112,6 +112,11 @@ try {
             exit;
         }
 
+        if ($phone && !preg_match('/^[0-9]{11}$/', $phone)) {
+            echo json_encode(['status' => 'error', 'message' => 'Phone number must be exactly 11 digits.']);
+            exit;
+        }
+
         $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')";
 
         if ($db instanceof mysqli) {
