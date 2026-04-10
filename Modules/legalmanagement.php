@@ -1353,7 +1353,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
 
     <!-- Dashboard -->
     <header
-        style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: visible;">
+        style="background: linear-gradient(180deg, #0f172a 0%, #111827 100%); padding: 50px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; overflow: visible; z-index: 1000;">
         <div
             style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); border-radius: 50%; blur: 40px;">
         </div>
@@ -1362,7 +1362,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         </div>
 
         <div class="container"
-            style="display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1;">
+            style="display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1001;">
             <!-- Logo Section -->
             <div class="logo-area" style="margin-bottom: 25px; transform: scale(1.1); transition: transform 0.3s ease;">
                 <img src="<?= getBaseUrl() ?>assets/image/logo2.png" alt="Ateria Logo"
