@@ -113,15 +113,15 @@ function send_email($to, $name, $code)
         $mail->Body = $body;
         
         $mail->send();
-        file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - SMTP SUCCESS to $to\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SMTP SUCCESS to $to\n", FILE_APPEND);
         return true;
     } catch (Exception $e) {
         $error_detail = $mail->ErrorInfo;
-        file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - SMTP FAILED to $to: {$e->getMessage()} | Detail: $error_detail\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SMTP FAILED to $to: {$e->getMessage()} | Detail: $error_detail\n", FILE_APPEND);
         
         // Final fallback to mail()
         if(mail($to, $mail->Subject, $body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8")) {
-            file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - mail() FALLBACK SUCCESS to $to\n", FILE_APPEND);
+            file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - mail() FALLBACK SUCCESS to $to\n", FILE_APPEND);
             return true;
         }
         return false;

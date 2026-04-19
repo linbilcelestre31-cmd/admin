@@ -140,7 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 ";
 
                 $mail->send();
+                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - LOGIN SMTP SUCCESS to {$user['email']}\n", FILE_APPEND);
             } catch (\Exception $e) {
+                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - LOGIN SMTP FAILED: {$e->getMessage()} | Detail: " . $mail->ErrorInfo . "\n", FILE_APPEND);
                 // Fallback to mail() if SMTP fails
                 mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
             }
