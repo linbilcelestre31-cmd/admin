@@ -190,7 +190,9 @@ class ReservationSystem
                         $mail->Username = SMTP_USER;
                         $mail->Password = SMTP_PASS;
                         $mail->Port = SMTP_PORT;
-                        $mail->SMTPSecure = SMTP_SECURE;
+                        $mail->SMTPSecure = 'ssl';
+                        $mail->SMTPAutoTLS = false;
+                        $mail->Timeout = 60;
                         $mail->SMTPOptions = array(
                             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                         );
