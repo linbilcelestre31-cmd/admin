@@ -105,10 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // Send email
             $mail = new PHPMailer(true);
             try {
-              $mail->SMTPDebug = 2; // Enable verbose debug output
-              $mail->Debugoutput = function($str, $level) {
-                  file_put_contents('c:\\Users\\Linbil Celestre\\Desktop\\admin\\smtp_debug.log', date('Y-m-d H:i:s').": $str\n", FILE_APPEND);
-              };
               $mail->isSMTP();
               $mail->Host = SMTP_HOST;
               $mail->SMTPAuth = true;
@@ -116,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->Password = SMTP_PASS;
               $mail->Port = SMTP_PORT;
               $mail->SMTPSecure = SMTP_SECURE;
-              $mail->Timeout = 60;
+              $mail->Timeout = 10;
 
               // SSL Bypass
               $mail->SMTPOptions = array(
@@ -188,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
           $prefill_email = $user['email'];
           $show_verify_modal = true;
-          $success_message = 'Verification code sent (EMERGENCY CODE: ' . $code . '). Please check and enter the code below.';
+          $success_message = 'Verification code sent to your email. Please check and enter the code below.';
         } else {
           $error_message = 'Invalid password.';
         }
