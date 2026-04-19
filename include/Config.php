@@ -7,7 +7,7 @@ define('SMTP_PORT', 587);
 define('SMTP_SECURE', 'tls');
 
 define('SMTP_USER', 'atiera41001@gmail.com');
-define('SMTP_PASS', 'ydxsfsgmnqvgmvzl');
+define('SMTP_PASS', 'sqbh ijuk obzg lnwk');
 define('SMTP_FROM_EMAIL', 'atiera41001@gmail.com');
 define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
