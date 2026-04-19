@@ -99,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->SMTPAuth = true;
                         $mail->Username = SMTP_USER;
                         $mail->Password = SMTP_PASS;
-                        $mail->Port = 587;
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port = SMTP_PORT;
+                        $mail->SMTPSecure = SMTP_SECURE;
                         $mail->SMTPOptions = array(
                             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                         );
@@ -185,8 +185,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $mail->SMTPAuth = true;
                             $mail->Username = SMTP_USER;
                             $mail->Password = SMTP_PASS;
-                            $mail->Port = 587;
-                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->Port = SMTP_PORT;
+                            $mail->SMTPSecure = SMTP_SECURE;
                             $mail->SMTPOptions = array(
                                 'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                             );
@@ -239,8 +239,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $mail->SMTPAuth = true;
                             $mail->Username = SMTP_USER;
                             $mail->Password = SMTP_PASS;
-                            $mail->Port = 587;
-                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->Port = SMTP_PORT;
+                            $mail->SMTPSecure = SMTP_SECURE;
                             $mail->SMTPOptions = array(
                                 'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                             );
@@ -423,8 +423,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $mail->SMTPAuth = true;
                         $mail->Username = SMTP_USER;
                         $mail->Password = SMTP_PASS;
-                        $mail->Port = 587;
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port = SMTP_PORT;
+                        $mail->SMTPSecure = SMTP_SECURE;
                         $mail->SMTPOptions = array(
                             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                         );
