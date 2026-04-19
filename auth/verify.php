@@ -40,14 +40,14 @@ function send_email($to, $name, $code)
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = gethostbyname(SMTP_HOST);
+        $mail->Host = SMTP_HOST;
         $mail->Hostname = 'atierahotelandrestaurant.com';
-        $mail->SMTPAuth = (SMTP_HOST !== 'localhost');
+        $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
         $mail->Port = SMTP_PORT;
-        $mail->SMTPSecure = (SMTP_HOST === 'localhost' ? '' : 'ssl');
-        $mail->SMTPAutoTLS = (SMTP_HOST !== 'localhost');
+        $mail->SMTPSecure = (strpos(SMTP_HOST, 'ssl://') !== false ? '' : 'ssl');
+        $mail->SMTPAutoTLS = false;
         $mail->Timeout = 60;
         $mail->SMTPOptions = array(
             'ssl' => array(

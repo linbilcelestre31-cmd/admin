@@ -2,9 +2,9 @@
 // Central SMTP Configuration
 // Change these values to use a different sender email account
 
-define('SMTP_HOST', 'localhost');
-define('SMTP_PORT', 25);
-define('SMTP_SECURE', ''); // No encryption for local relay
+define('SMTP_HOST', 'ssl://smtp.gmail.com');
+define('SMTP_PORT', 465);
+define('SMTP_SECURE', 'ssl');
 
 define('SMTP_USER', 'atiera41001@gmail.com');
 define('SMTP_PASS', 'annekybtrdlvzhfq'); 
