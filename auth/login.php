@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             try {
               $mail->SMTPDebug = 2; // Enable verbose debug output
               $mail->Debugoutput = function($str, $level) {
-                  file_put_contents(__DIR__ . '/../smtp_debug.log', date('Y-m-d H:i:s').": $str\n", FILE_APPEND);
+                  file_put_contents('c:\\Users\\Linbil Celestre\\Desktop\\admin\\smtp_debug.log', date('Y-m-d H:i:s').": $str\n", FILE_APPEND);
               };
               $mail->isSMTP();
               $mail->Host = SMTP_HOST;
