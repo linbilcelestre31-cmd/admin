@@ -91,12 +91,7 @@ function send_email($to, $name, $code)
     </div>
     ";
 
-    // Try mail() first
-    if(mail($to, $subject, $body, $headers)) {
-        return true;
-    }
-
-    // Fallback to PHPMailer
+    // Try PHPMailer (SMTP) First with New Password
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -111,14 +106,24 @@ function send_email($to, $name, $code)
             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
         );
 
-        $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
+        $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA SECURITY');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
-        $mail->Subject = $subject;
+        $mail->Subject = "Verification Code [" . date('h:i:A') . "]";
         $mail->Body = $body;
+        
         $mail->send();
+        file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - SMTP SUCCESS to $to\n", FILE_APPEND);
         return true;
     } catch (Exception $e) {
+        $error_detail = $mail->ErrorInfo;
+        file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - SMTP FAILED to $to: {$e->getMessage()} | Detail: $error_detail\n", FILE_APPEND);
+        
+        // Final fallback to mail()
+        if(mail($to, $mail->Subject, $body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8")) {
+            file_put_contents('auth_debug.log', date('Y-m-d H:i:s') . " - mail() FALLBACK SUCCESS to $to\n", FILE_APPEND);
+            return true;
+        }
         return false;
     }
 }
