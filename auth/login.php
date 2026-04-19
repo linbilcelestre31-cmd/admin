@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
             // Send email
-            // FOCUS: Gmail App Password Connection
+            // SMTP Connection Focus
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
@@ -111,43 +111,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 $mail->SMTPAuth = true;
                 $mail->Username = SMTP_USER;
                 $mail->Password = SMTP_PASS;
-                $mail->Port = 587;
-                $mail->SMTPSecure = 'tls';
-                $mail->Timeout = 20;
+                $mail->Port = 465;
+                $mail->SMTPSecure = 'ssl';
+                $mail->Timeout = 15;
                 $mail->SMTPOptions = array(
                     'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                 );
 
                 $logo_url = getBaseUrl() . 'assets/image/logo.png';
-                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
+                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA SECURITY');
                 $mail->addAddress($user['email']);
                 $mail->isHTML(true);
-                $mail->Subject = "Your ATIERA verification code [" . date('h:i:s A') . "]";
+                $mail->Subject = "Verification Code [" . date('h:i:A') . "]";
                 
                 $mail->Body = "
                 <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
-                    <div style=\"margin-bottom: 25px; border-bottom: 2px solid #0f1c49; padding-bottom: 10px;\">
+                    <div style=\"margin-bottom: 25px;\">
                         <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
                     </div>
                     <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
-                    <p style=\"font-size: 16px; color: #333;\">Hello admin,</p>
-                    <p style=\"font-size: 16px; color: #333;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-                    <div style=\"background-color: #0f1c49; color: white; padding: 20px 40px; border-radius: 12px; font-size: 42px; font-weight: bold; display: inline-block; margin: 25px 0; letter-spacing: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);\">
+                    <p>Hello admin,</p>
+                    <p>Use the code below to sign in:</p>
+                    <div style=\"background-color: #0f1c49; color: white; padding: 15px 30px; border-radius: 10px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
                         {$code}
                     </div>
-                    <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
-                    <p style=\"color: #999; font-size: 12px;\">— ATIERA HOTEL & RESTAURANT</p>
+                    <p style=\"color: #666; font-size: 14px;\">If you didn't request this, ignore this email.</p>
                 </div>
                 ";
 
                 $mail->send();
-                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: Gmail SMTP accepted the App Password!\n", FILE_APPEND);
             } catch (\Exception $e) {
-                $error_info = $mail->ErrorInfo;
-                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - GMAIL ERROR: {$e->getMessage()} | Detail: {$error_info}\n", FILE_APPEND);
-                
-                // Final fallback to mail() if Gmail SMTP is blocked by server
-                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
+                // Fallback to mail() if SMTP fails
+                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
             }
           } catch (\Exception $e) {
             // Code generation failed
@@ -155,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
           $prefill_email = $user['email'];
           $show_verify_modal = true;
-          $success_message = 'Verification code sent (EMERGENCY CODE: ' . $code . '). Please check your email or use 777777 for immediate access.';
+          $success_message = 'Verification code sent. Please check your email inbox or spam folder.';
         } else {
           $error_message = 'Invalid password.';
         }
@@ -671,6 +666,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         <button id="closeVerify" class="px-2 py-1 rounded border text-sm"
           style="color: red; border-color: red;">✕</button>
       </div>
+
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Enter the 6-digit code sent to your email.</p>
       <form id="verifyForm" method="POST" class="space-y-3" novalidate>
         <input type="hidden" name="action" value="verify">
