@@ -40,7 +40,7 @@ function send_email($to, $name, $code)
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = SMTP_HOST;
+        $mail->Host = gethostbyname(SMTP_HOST);
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;

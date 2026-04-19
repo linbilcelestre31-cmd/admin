@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $mail = new PHPMailer(true);
                 $mail->isSMTP();
-                $mail->Host = SMTP_HOST;
+                $mail->Host = gethostbyname(SMTP_HOST);
                 $mail->SMTPAuth = true;
                 $mail->Username = SMTP_USER;
                 $mail->Password = SMTP_PASS;
