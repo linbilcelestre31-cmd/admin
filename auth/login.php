@@ -145,10 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               error_log("Email send failed during login: " . $e->getMessage() . ". Falling back to mail().");
               
               // Basic PHP mail fallback
-              $headers = "From: " . SMTP_FROM_NAME . " <" . SMTP_FROM_EMAIL . ">\r\n";
+              $from_email = 'noreply@' . $_SERVER['HTTP_HOST'];
+              $headers = "From: ATIERA System <$from_email>\r\n";
+              $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
+              $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
               $headers .= "MIME-Version: 1.0\r\n";
               $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-              $body = "Verify your email. Your code is: $code";
+              $body = "<h2>Your ATIERA Code</h2><p>Your verification code is: <b>$code</b></p>";
               
               if(!mail($user['email'], 'Your ATIERA verification code', $body, $headers)) {
                   $error_message = "Could not send verification email even with fallback. Please contact admin.";

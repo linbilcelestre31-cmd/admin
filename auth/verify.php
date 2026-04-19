@@ -79,23 +79,15 @@ function send_email($to, $name, $code)
         error_log("PHPMailer SMTP Error: " . $mail->ErrorInfo . ". Attempting fallback to PHP mail().");
         
         // Fallback to basic PHP mail() function
-        $headers = "From: " . SMTP_FROM_NAME . " <" . SMTP_FROM_EMAIL . ">\r\n";
+        $from_email = 'noreply@' . $_SERVER['HTTP_HOST'];
+        $headers = "From: ATIERA System <$from_email>\r\n";
         $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         
         $subject = "Your ATIERA Verification Code";
-        $message = "
-            <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b;\">
-                <h2 style=\"color: #0f172a;\">Verify Login</h2>
-                <p>Hello {$name},</p>
-                <p>Please use the following code to complete your login:</p>
-                <div style=\"font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e40af; margin: 20px 0;\">
-                    {$code}
-                </div>
-                <p>This code expires in 15 minutes.</p>
-            </div>
-        ";
+        $message = "<h2>Your ATIERA Code</h2><p>Hello {$name},</p><p>Your verification code is: <b>{$code}</b></p>";
         
         return mail($to, $subject, $message, $headers);
     }
