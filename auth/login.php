@@ -119,23 +119,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 );
 
                 $logo_url = getBaseUrl() . 'assets/image/logo.png';
-                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA SECURITY');
+                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
                 $mail->addAddress($user['email']);
                 $mail->isHTML(true);
-                $mail->Subject = "Verification Code [" . date('h:i:A') . "]";
+                $mail->Subject = "Your ATIERA Verification Code";
                 
                 $mail->Body = "
-                <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
-                    <div style=\"margin-bottom: 25px;\">
-                        <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
+                <div style=\"font-family: Arial, sans-serif; color: #333;\">
+                    <div style=\"margin-bottom: 20px;\">
+                        <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 50px;\">
                     </div>
-                    <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
+                    <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
                     <p>Hello admin,</p>
-                    <p>Use the code below to sign in:</p>
-                    <div style=\"background-color: #0f1c49; color: white; padding: 15px 30px; border-radius: 10px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
+                    <p>Please use the following code to complete your login:</p>
+                    <div style=\"background-color: #3b82f6; color: white; padding: 10px 15px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
                         {$code}
                     </div>
-                    <p style=\"color: #666; font-size: 14px;\">If you didn't request this, ignore this email.</p>
+                    <p>This code expires in 15 minutes.</p>
                 </div>
                 ";
 

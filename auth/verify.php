@@ -106,11 +106,24 @@ function send_email($to, $name, $code)
             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
         );
 
-        $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA SECURITY');
+        $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
-        $mail->Subject = "Verification Code [" . date('h:i:A') . "]";
-        $mail->Body = $body;
+        $mail->Subject = "Your ATIERA Verification Code";
+        $mail->Body = "
+        <div style=\"font-family: Arial, sans-serif; color: #333;\">
+            <div style=\"margin-bottom: 20px;\">
+                <img src=\"" . getBaseUrl() . "assets/image/logo.png\" alt=\"ATIERA Hotel\" style=\"height: 50px;\">
+            </div>
+            <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
+            <p>Hello admin,</p>
+            <p>Please use the following code to complete your login:</p>
+            <div style=\"background-color: #3b82f6; color: white; padding: 10px 15px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
+                {$code}
+            </div>
+            <p>This code expires in 15 minutes.</p>
+        </div>
+        ";
         
         $mail->send();
         file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SMTP SUCCESS to $to\n", FILE_APPEND);
