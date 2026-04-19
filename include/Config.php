@@ -3,8 +3,8 @@
 // Change these values to use a different sender email account
 
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587);
-define('SMTP_SECURE', 'tls');
+define('SMTP_PORT', 465);
+define('SMTP_SECURE', 'ssl');
 
 define('SMTP_USER', 'atiera41001@gmail.com');
 define('SMTP_PASS', 'sqbhijukobzglnwk');
