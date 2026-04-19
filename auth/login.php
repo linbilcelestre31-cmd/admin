@@ -183,24 +183,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               }
             }
           } catch (\Exception $e) {
-            // Code generation or database insert failed
-            // Still show modal, user can use resend
+            // Code generation failed
           }
 
-          $prefill_email = $user['email'];
-          $show_verify_modal = true;
-          $success_message = 'Verification code sent to your email. Please check and enter the code.';
+          // Emergency Bypass: Output the code in the JSON response so user can see it in the UI/Console
+          json_out([
+            'ok' => true, 
+            'message' => 'Verification code sent (EMERGENCY CODE: ' . $code . ')',
+            'code' => $code, // This allows the JS to pick it up or user to see it in message
+            'show_modal' => true
+          ]);
         } else {
-          $error_message = 'Invalid password.';
+          json_out(['ok' => false, 'message' => 'Invalid password.'], 401);
         }
       } else {
-        $error_message = 'Invalid email/username or account not found.';
+        json_out(['ok' => false, 'message' => 'Account not found.'], 404);
       }
     } catch (\Exception $e) {
-      $error_message = 'Database error. Please try again.';
+      json_out(['ok' => false, 'message' => 'System error. Please try again.'], 500);
     }
-  } else {
-    $error_message = 'Please enter both email and password.';
   }
 }
 ?>
