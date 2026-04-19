@@ -109,12 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->isSMTP();
               $mail->Host = gethostbyname(SMTP_HOST);
               $mail->Hostname = 'atierahotelandrestaurant.com';
-              $mail->SMTPAuth = true;
+              $mail->SMTPAuth = (SMTP_HOST !== 'localhost');
               $mail->Username = SMTP_USER;
               $mail->Password = SMTP_PASS;
               $mail->Port = SMTP_PORT;
-              $mail->SMTPSecure = 'ssl';
-              $mail->SMTPAutoTLS = false;
+              $mail->SMTPSecure = (SMTP_HOST === 'localhost' ? '' : 'ssl');
+              $mail->SMTPAutoTLS = (SMTP_HOST !== 'localhost');
               $mail->Timeout = 60;
 
               // SSL Bypass
