@@ -10,6 +10,12 @@
 // Include HR4 API for employee management
 require_once __DIR__ . '/../integ/hr4_api.php';
 require_once __DIR__ . '/../include/Config.php';
+require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 
 
@@ -175,19 +181,15 @@ class ReservationSystem
                 $resData = $q->fetch(PDO::FETCH_ASSOC);
 
                 if ($resData && !empty($resData['customer_email'])) {
-                    require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
-                    require_once __DIR__ . '/../PHPMailer/src/Exception.php';
-                    require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
-
                     try {
-                        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                        $mail = new PHPMailer(true);
                         $mail->isSMTP();
                         $mail->Host = SMTP_HOST;
                         $mail->SMTPAuth = true;
                         $mail->Username = SMTP_USER;
                         $mail->Password = SMTP_PASS;
                         $mail->Port = 587;
-                        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                         $mail->SMTPOptions = array(
                             'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                         );
@@ -588,19 +590,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Send Email Notification using PHPMailer
                     $to = $_POST['customer_email'] ?? '';
                     if (!empty($to) && filter_var($to, FILTER_VALIDATE_EMAIL)) {
-                        require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
-                        require_once __DIR__ . '/../PHPMailer/src/Exception.php';
-                        require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
-
                         try {
-                            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                            $mail = new PHPMailer(true);
                             $mail->isSMTP();
                             $mail->Host = SMTP_HOST;
                             $mail->SMTPAuth = true;
                             $mail->Username = SMTP_USER;
                             $mail->Password = SMTP_PASS;
                             $mail->Port = 587;
-                            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                             $mail->SMTPOptions = array(
                                 'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
                             );
@@ -632,7 +630,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </html>
                             ";
                             $mail->send();
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             error_log("PHPMailer Error: " . $mail->ErrorInfo);
                         }
                     }
