@@ -140,11 +140,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 ";
 
                 $mail->send();
-                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - LOGIN SMTP SUCCESS to {$user['email']}\n", FILE_APPEND);
+                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SUCCESS: Sent to {$user['email']}\n", FILE_APPEND);
             } catch (\Exception $e) {
-                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - LOGIN SMTP FAILED: {$e->getMessage()} | Detail: " . $mail->ErrorInfo . "\n", FILE_APPEND);
-                // Fallback to mail() if SMTP fails
-                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
+                $error_info = $mail->ErrorInfo;
+                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - ERROR: {$error_info}\n", FILE_APPEND);
+                
+                // Show the error to the user so they know WHY it failed
+                $error_display = str_replace('"', "'", $error_info);
+                $success_message = "Email failed to send. Mailer Error: {$error_display}";
+                
+                // Final fallback to mail()
+                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
             }
           } catch (\Exception $e) {
             // Code generation failed
@@ -152,7 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
           $prefill_email = $user['email'];
           $show_verify_modal = true;
-          $success_message = 'Verification code sent. Please check your email inbox or spam folder.';
+          // If SMTP failed, $success_message is already set to the error above
+          if(!isset($success_message)) {
+              $success_message = 'Verification code sent. Please check your email inbox or spam folder.';
+          }
         } else {
           $error_message = 'Invalid password.';
         }

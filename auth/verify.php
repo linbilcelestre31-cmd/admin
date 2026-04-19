@@ -156,7 +156,17 @@ try {
         if (send_email($email, $name, $code)) {
             json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
         } else {
-            json_out(['ok' => false, 'message' => 'Failed to send email.'], 500);
+            // Try to find the last error from log
+            $log = @file_get_contents(__DIR__ . '/auth_debug.log');
+            $lines = explode("\n", trim($log));
+            $last_error = "Check SMTP settings.";
+            foreach(array_reverse($lines) as $line) {
+                if(strpos($line, 'ERROR:') !== false) {
+                   $last_error = substr($line, strpos($line, 'ERROR:') + 7);
+                   break;
+                }
+            }
+            json_out(['ok' => false, 'message' => 'Email Failed: ' . $last_error], 500);
         }
     }
 
