@@ -107,7 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             try {
               $mail->SMTPDebug = 0; // 0 = off, 2 = debug
               $mail->isSMTP();
-              $mail->Host = SMTP_HOST;
+              $mail->Host = gethostbyname(SMTP_HOST);
+              $mail->Hostname = 'atierahotelandrestaurant.com';
               $mail->SMTPAuth = true;
               $mail->Username = SMTP_USER;
               $mail->Password = SMTP_PASS;
