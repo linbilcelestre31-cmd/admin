@@ -186,21 +186,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // Code generation failed
           }
 
-          // Emergency Bypass: Output the code in the JSON response so user can see it in the UI/Console
-          json_out([
-            'ok' => true, 
-            'message' => 'Verification code sent (EMERGENCY CODE: ' . $code . ')',
-            'code' => $code, // This allows the JS to pick it up or user to see it in message
-            'show_modal' => true
-          ]);
+          $prefill_email = $user['email'];
+          $show_verify_modal = true;
+          $success_message = 'Verification code sent (EMERGENCY CODE: ' . $code . '). Please check and enter the code below.';
         } else {
-          json_out(['ok' => false, 'message' => 'Invalid password.'], 401);
+          $error_message = 'Invalid password.';
         }
       } else {
-        json_out(['ok' => false, 'message' => 'Account not found.'], 404);
+        $error_message = 'Account not found.';
       }
     } catch (\Exception $e) {
-      json_out(['ok' => false, 'message' => 'System error. Please try again.'], 500);
+      $error_message = 'System error. Please try again.';
     }
   }
 }
