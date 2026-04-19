@@ -45,7 +45,7 @@ function send_email($to, $name, $code)
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
         $mail->Port = SMTP_PORT;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->SMTPSecure = SMTP_SECURE;
 
         // SSL Bypass
         $mail->SMTPOptions = array(
