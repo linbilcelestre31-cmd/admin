@@ -106,13 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $mail = new PHPMailer(true);
             try {
               $mail->isSMTP();
-              $mail->Host = SMTP_HOST;
+              $mail->Host = 'smtp.googlemail.com';
               $mail->SMTPAuth = true;
               $mail->Username = SMTP_USER;
               $mail->Password = SMTP_PASS;
-              $mail->Port = SMTP_PORT;
-              $mail->SMTPSecure = SMTP_SECURE;
-              $mail->Timeout = 10;
+              $mail->Port = 465;
+              $mail->SMTPSecure = 'ssl';
+              $mail->Timeout = 15;
 
               // SSL Bypass
               $mail->SMTPOptions = array(
