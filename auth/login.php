@@ -103,80 +103,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
             // Send email
-            $mail = new PHPMailer(true);
-            try {
-              $mail->isSMTP();
-              $mail->Host = 'smtp.googlemail.com';
-              $mail->SMTPAuth = true;
-              $mail->Username = SMTP_USER;
-              $mail->Password = SMTP_PASS;
-              $mail->Port = 465;
-              $mail->SMTPSecure = 'ssl';
-              $mail->Timeout = 15;
+            // Force Server Mail (Priority) because SMTP is blocked
+            $logo_url = getBaseUrl() . 'assets/image/logo.png';
+            $from_name = "ATIERA Hotel";
+            $from_email = SMTP_FROM_EMAIL;
+            
+            $headers = "From: $from_name <$from_email>\r\n";
+            $headers .= "Reply-To: $from_email\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "X-Mailer: PHP/" . phpversion();
 
-              // SSL Bypass
-              $mail->SMTPOptions = array(
-                'ssl' => array(
-                  'verify_peer' => false,
-                  'verify_peer_name' => false,
-                  'allow_self_signed' => true
-                )
-              );
+            $subject = "Your ATIERA verification code";
+            $body = "
+            <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\">
+                <div style=\"display: flex; align-items: center; margin-bottom: 20px;\">
+                    <img src=\"{$logo_url}\" alt=\"Logo\" style=\"width: 50px; height: 50px; margin-right: 15px;\">
+                    <h2 style=\"margin: 0; font-size: 24px;\">Your ATIERA verification code</h2>
+                </div>
+                <h3 style=\"margin-top: 0;\">Verify your email</h3>
+                <p>Hello admin,</p>
+                <p>Use the verification code below to sign in. It expires in 15 minutes.</p>
+                <div style=\"background-color: #0f1c49; color: white; padding: 15px 30px; border-radius: 10px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 2px;\">
+                    {$code}
+                </div>
+                <p style=\"color: #666; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
+                <p style=\"color: #999;\">— ATIERA</p>
+            </div>
+            ";
 
-              $logo_url = getBaseUrl() . 'assets/image/logo.png';
-              $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-              $mail->addAddress($user['email'], $user['full_name'] ?: $user['email']);
-              $mail->isHTML(true);
-              $mail->Subject = 'Your ATIERA verification code';
-              $mail->Body = "
-                <div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #ffffff;\">
-                  <div style=\"text-align: left; margin-bottom: 25px;\">
-                    <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 60px; width: auto;\">
-                  </div>
-                  <h2 style=\"color: #1e293b; margin: 0 0 15px; font-size: 24px; font-weight: 700;\">Verify your email</h2>
-                  <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 10px;\">Hello " . htmlspecialchars($user['full_name'] ?: 'admin') . ",</p>
-                  <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 25px;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-                  <div style=\"background-color: #0f1c49; color: #ffffff; padding: 15px 25px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 5px; display: inline-block; margin-bottom: 25px;\">
-                    {$code}
-                  </div>
-                  <p style=\"color: #64748b; font-size: 14px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;\">
-                    If you didn't request this, you can ignore this email.
-                  </p>
-                  <p style=\"color: #94a3b8; font-size: 12px; margin-top: 10px;\">— ATIERA</p>
-                </div>
-              ";
-              $mail->AltBody = "Your ATIERA verification code is: {$code}";
-              $mail->send();
-            } catch (\Exception $e) {
-              error_log("Email send failed during login: " . $e->getMessage() . ". Falling back to mail().");
-              
-              // Basic PHP mail fallback
-              $from_email = 'noreply@' . $_SERVER['HTTP_HOST'];
-              $headers = "From: ATIERA System <$from_email>\r\n";
-              $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
-              $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-              $headers .= "MIME-Version: 1.0\r\n";
-              $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-              $body = "
-                <div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #ffffff;\">
-                  <div style=\"text-align: left; margin-bottom: 25px;\">
-                    <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 60px; width: auto;\">
-                  </div>
-                  <h2 style=\"color: #1e293b; margin: 0 0 15px; font-size: 24px; font-weight: 700;\">Verify your email</h2>
-                  <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 25px;\">Hello " . htmlspecialchars($user['full_name'] ?: 'admin') . ",<br>Use the verification code below to sign in. It expires in 15 minutes.</p>
-                  <div style=\"background-color: #0f1c49; color: #ffffff; padding: 15px 25px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 5px; display: inline-block; margin-bottom: 25px;\">
-                    {$code}
-                  </div>
-                  <p style=\"color: #64748b; font-size: 14px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;\">
-                    If you didn't request this, you can ignore this email.
-                  </p>
-                  <p style=\"color: #94a3b8; font-size: 12px; margin-top: 10px;\">— ATIERA</p>
-                </div>
-              ";
-              
-              if(!mail($user['email'], 'Your ATIERA verification code', $body, $headers)) {
-                  $error_message = "Could not send verification email even with fallback. Please contact admin.";
-              }
+            if(!mail($user['email'], $subject, $body, $headers)) {
+                // Fallback to PHPMailer if mail() fails
+                try {
+                    $mail = new PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.googlemail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = SMTP_USER;
+                    $mail->Password = SMTP_PASS;
+                    $mail->Port = 465;
+                    $mail->SMTPSecure = 'ssl';
+                    $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
+                    $mail->addAddress($user['email']);
+                    $mail->isHTML(true);
+                    $mail->Subject = $subject;
+                    $mail->Body = $body;
+                    $mail->send();
+                } catch (\Exception $e) {
+                    error_log("All mail methods failed.");
+                }
             }
           } catch (\Exception $e) {
             // Code generation failed

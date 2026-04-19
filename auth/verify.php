@@ -64,6 +64,40 @@ if ($action === 'verify' || $action === 'resend') {
 // --- HELPER: Send Email ---
 function send_email($to, $name, $code)
 {
+    $logo_url = getBaseUrl() . 'assets/image/logo.png';
+    $from_name = "ATIERA Hotel";
+    $from_email = SMTP_FROM_EMAIL;
+    
+    $headers = "From: $from_name <$from_email>\r\n";
+    $headers .= "Reply-To: $from_email\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+
+    $subject = "Your ATIERA verification code";
+    $body = "
+    <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\">
+        <div style=\"display: flex; align-items: center; margin-bottom: 20px;\">
+            <img src=\"{$logo_url}\" alt=\"Logo\" style=\"width: 50px; height: 50px; margin-right: 15px;\">
+            <h2 style=\"margin: 0; font-size: 24px;\">Your ATIERA verification code</h2>
+        </div>
+        <h3 style=\"margin-top: 0;\">Verify your email</h3>
+        <p>Hello admin,</p>
+        <p>Use the verification code below to sign in. It expires in 15 minutes.</p>
+        <div style=\"background-color: #0f1c49; color: white; padding: 15px 30px; border-radius: 10px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 2px;\">
+            {$code}
+        </div>
+        <p style=\"color: #666; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
+        <p style=\"color: #999;\">— ATIERA</p>
+    </div>
+    ";
+
+    // Try mail() first
+    if(mail($to, $subject, $body, $headers)) {
+        return true;
+    }
+
+    // Fallback to PHPMailer
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -71,73 +105,22 @@ function send_email($to, $name, $code)
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
-        $mail->Port = 25; // Trying Port 25 as a last resort
-        $mail->SMTPSecure = 'tls';
-        $mail->Timeout = 20;
+        $mail->Port = SMTP_PORT;
+        $mail->SMTPSecure = SMTP_SECURE;
+        $mail->Timeout = 15;
         $mail->SMTPOptions = array(
-            'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            )
+            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
         );
 
-        $logo_url = getBaseUrl() . 'assets/image/logo.png';
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
-        $mail->Subject = 'Your ATIERA Verification Code';
-        $mail->Body = "
-            <div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #ffffff;\">
-                <div style=\"text-align: left; margin-bottom: 25px;\">
-                    <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 60px; width: auto;\">
-                </div>
-                <h2 style=\"color: #1e293b; margin: 0 0 15px; font-size: 24px; font-weight: 700;\">Verify your email</h2>
-                <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 10px;\">Hello " . htmlspecialchars($name) . ",</p>
-                <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 25px;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-                <div style=\"background-color: #0f1c49; color: #ffffff; padding: 15px 25px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 5px; display: inline-block; margin-bottom: 25px;\">
-                    {$code}
-                </div>
-                <p style=\"color: #64748b; font-size: 14px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;\">
-                    If you didn't request this, you can ignore this email.
-                </p>
-                <p style=\"color: #94a3b8; font-size: 12px; margin-top: 10px;\">— ATIERA</p>
-            </div>
-        ";
+        $mail->Subject = $subject;
+        $mail->Body = $body;
         $mail->send();
         return true;
     } catch (Exception $e) {
-        error_log("PHPMailer SMTP Error: " . $mail->ErrorInfo . ". Attempting fallback to PHP mail().");
-        
-        $logo_url = getBaseUrl() . 'assets/image/logo.png';
-        // Fallback to basic PHP mail() function
-        $from_email = 'noreply@' . $_SERVER['HTTP_HOST'];
-        $headers = "From: ATIERA System <$from_email>\r\n";
-        $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        
-        $subject = "Your ATIERA Verification Code";
-        $message = "
-            <div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #ffffff;\">
-                <div style=\"text-align: left; margin-bottom: 25px;\">
-                    <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 60px; width: auto;\">
-                </div>
-                <h2 style=\"color: #1e293b; margin: 0 0 15px; font-size: 24px; font-weight: 700;\">Verify your email</h2>
-                <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 10px;\">Hello " . htmlspecialchars($name) . ",</p>
-                <p style=\"color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 25px;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-                <div style=\"background-color: #0f1c49; color: #ffffff; padding: 15px 25px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 5px; display: inline-block; margin-bottom: 25px;\">
-                    {$code}
-                </div>
-                <p style=\"color: #64748b; font-size: 14px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;\">
-                    If you didn't request this, you can ignore this email.
-                </p>
-                <p style=\"color: #94a3b8; font-size: 12px; margin-top: 10px;\">— ATIERA</p>
-            </div>
-        ";
-        
-        return mail($to, $subject, $message, $headers);
+        return false;
     }
 }
 
