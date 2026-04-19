@@ -103,58 +103,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
             // Send email
-            // Force Server Mail (Priority) because SMTP is blocked
-            $logo_url = getBaseUrl() . 'assets/image/logo.png';
-            $from_name = "ATIERA Hotel";
-            $from_email = SMTP_FROM_EMAIL;
-            
-            $headers = "From: $from_name <$from_email>\r\n";
-            $headers .= "Reply-To: $from_email\r\n";
-            $headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-            $headers .= "X-Mailer: PHP/" . phpversion();
+            // FOCUS: Gmail App Password Connection
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = SMTP_USER;
+                $mail->Password = SMTP_PASS;
+                $mail->Port = 587;
+                $mail->SMTPSecure = 'tls';
+                $mail->Timeout = 20;
+                $mail->SMTPOptions = array(
+                    'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
+                );
 
-            $subject = "Your ATIERA verification code [" . date('h:i:s A') . "]";
-            $body = "
-            <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
-                <div style=\"margin-bottom: 25px; border-bottom: 2px solid #0f1c49; padding-bottom: 10px;\">
-                    <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
+                $logo_url = getBaseUrl() . 'assets/image/logo.png';
+                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
+                $mail->addAddress($user['email']);
+                $mail->isHTML(true);
+                $mail->Subject = "Your ATIERA verification code [" . date('h:i:s A') . "]";
+                
+                $mail->Body = "
+                <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
+                    <div style=\"margin-bottom: 25px; border-bottom: 2px solid #0f1c49; padding-bottom: 10px;\">
+                        <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
+                    </div>
+                    <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
+                    <p style=\"font-size: 16px; color: #333;\">Hello admin,</p>
+                    <p style=\"font-size: 16px; color: #333;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
+                    <div style=\"background-color: #0f1c49; color: white; padding: 20px 40px; border-radius: 12px; font-size: 42px; font-weight: bold; display: inline-block; margin: 25px 0; letter-spacing: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);\">
+                        {$code}
+                    </div>
+                    <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
+                    <p style=\"color: #999; font-size: 12px;\">— ATIERA HOTEL & RESTAURANT</p>
                 </div>
-                <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
-                <p style=\"font-size: 16px; color: #333;\">Hello admin,</p>
-                <p style=\"font-size: 16px; color: #333;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-                <div style=\"background-color: #0f1c49; color: white; padding: 20px 40px; border-radius: 12px; font-size: 42px; font-weight: bold; display: inline-block; margin: 25px 0; letter-spacing: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);\">
-                    {$code}
-                </div>
-                <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
-                <p style=\"color: #999; font-size: 12px;\">— ATIERA HOTEL & RESTAURANT</p>
-            </div>
-            ";
+                ";
 
-            if(mail($user['email'], $subject, $body, $headers)) {
-                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: Mail sent to {$user['email']} with code {$code}\n", FILE_APPEND);
-            } else {
-                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - FAILED: Server mail() rejected for {$user['email']}\n", FILE_APPEND);
-                // Fallback to PHPMailer if mail() fails
-                try {
-                    $mail = new PHPMailer(true);
-                    $mail->isSMTP();
-                    $mail->Host = 'smtp.googlemail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = SMTP_USER;
-                    $mail->Password = SMTP_PASS;
-                    $mail->Port = 465;
-                    $mail->SMTPSecure = 'ssl';
-                    $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
-                    $mail->addAddress($user['email']);
-                    $mail->isHTML(true);
-                    $mail->Subject = $subject;
-                    $mail->Body = $body;
-                    $mail->send();
-                    file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: PHPMailer fallback sent to {$user['email']}\n", FILE_APPEND);
-                } catch (\Exception $e) {
-                    file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - CRITICAL FAILED: All mail methods failed for {$user['email']} - Error: {$e->getMessage()}\n", FILE_APPEND);
-                }
+                $mail->send();
+                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: Gmail SMTP accepted the App Password!\n", FILE_APPEND);
+            } catch (\Exception $e) {
+                $error_info = $mail->ErrorInfo;
+                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - GMAIL ERROR: {$e->getMessage()} | Detail: {$error_info}\n", FILE_APPEND);
+                
+                // Final fallback to mail() if Gmail SMTP is blocked by server
+                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
             }
           } catch (\Exception $e) {
             // Code generation failed
