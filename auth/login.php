@@ -114,25 +114,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
             $headers .= "X-Mailer: PHP/" . phpversion();
 
-            $subject = "Your ATIERA verification code";
+            $subject = "Your ATIERA verification code [" . date('h:i:s A') . "]";
             $body = "
-            <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\">
-                <div style=\"display: flex; align-items: center; margin-bottom: 20px;\">
-                    <img src=\"{$logo_url}\" alt=\"Logo\" style=\"width: 50px; height: 50px; margin-right: 15px;\">
-                    <h2 style=\"margin: 0; font-size: 24px;\">Your ATIERA verification code</h2>
+            <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
+                <div style=\"margin-bottom: 25px; border-bottom: 2px solid #0f1c49; padding-bottom: 10px;\">
+                    <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
                 </div>
-                <h3 style=\"margin-top: 0;\">Verify your email</h3>
-                <p>Hello admin,</p>
-                <p>Use the verification code below to sign in. It expires in 15 minutes.</p>
-                <div style=\"background-color: #0f1c49; color: white; padding: 15px 30px; border-radius: 10px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 2px;\">
+                <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
+                <p style=\"font-size: 16px; color: #333;\">Hello admin,</p>
+                <p style=\"font-size: 16px; color: #333;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
+                <div style=\"background-color: #0f1c49; color: white; padding: 20px 40px; border-radius: 12px; font-size: 42px; font-weight: bold; display: inline-block; margin: 25px 0; letter-spacing: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);\">
                     {$code}
                 </div>
-                <p style=\"color: #666; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
-                <p style=\"color: #999;\">— ATIERA</p>
+                <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
+                <p style=\"color: #999; font-size: 12px;\">— ATIERA HOTEL & RESTAURANT</p>
             </div>
             ";
 
-            if(!mail($user['email'], $subject, $body, $headers)) {
+            if(mail($user['email'], $subject, $body, $headers)) {
+                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: Mail sent to {$user['email']} with code {$code}\n", FILE_APPEND);
+                return true;
+            } else {
+                file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - FAILED: Server mail() rejected for {$user['email']}\n", FILE_APPEND);
                 // Fallback to PHPMailer if mail() fails
                 try {
                     $mail = new PHPMailer(true);
@@ -149,8 +152,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                     $mail->Subject = $subject;
                     $mail->Body = $body;
                     $mail->send();
+                    file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: PHPMailer fallback sent to {$user['email']}\n", FILE_APPEND);
                 } catch (\Exception $e) {
-                    error_log("All mail methods failed.");
+                    file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - CRITICAL FAILED: All mail methods failed for {$user['email']} - Error: {$e->getMessage()}\n", FILE_APPEND);
                 }
             }
           } catch (\Exception $e) {
