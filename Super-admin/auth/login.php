@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->Username = SMTP_USER;
                 $mail->Password = SMTP_PASS;
                 $mail->Port = SMTP_PORT;
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->SMTPSecure = SMTP_SECURE;
                 $mail->SMTPOptions = array(
                     'ssl' => array(
                         'verify_peer' => false,

@@ -46,6 +46,7 @@ function send_email($to, $name, $code)
         $mail->Password = SMTP_PASS;
         $mail->Port = SMTP_PORT;
         $mail->SMTPSecure = SMTP_SECURE;
+        $mail->Timeout = 30; // Increased timeout
 
         // SSL Bypass
         $mail->SMTPOptions = array(

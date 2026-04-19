@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     $mail->Username = SMTP_USER;
                     $mail->Password = SMTP_PASS;
                     $mail->Port = SMTP_PORT;
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->SMTPSecure = SMTP_SECURE;
                     $mail->SMTPOptions = array(
                         'ssl' => array(
                             'verify_peer' => false,

@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->Username = SMTP_USER;
               $mail->Password = SMTP_PASS;
               $mail->Port = SMTP_PORT;
-              $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+              $mail->SMTPSecure = SMTP_SECURE;
               $mail->Timeout = 10;
 
               // SSL Bypass
