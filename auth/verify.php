@@ -71,9 +71,9 @@ function send_email($to, $name, $code)
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
-        $mail->Port = SMTP_PORT;
-        $mail->SMTPSecure = SMTP_SECURE;
-        $mail->Timeout = 60;
+        $mail->Port = 25; // Trying Port 25 as a last resort
+        $mail->SMTPSecure = 'tls';
+        $mail->Timeout = 20;
         $mail->SMTPOptions = array(
             'ssl' => array(
                 'verify_peer' => false,
