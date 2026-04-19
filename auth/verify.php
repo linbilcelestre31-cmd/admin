@@ -41,13 +41,11 @@ function send_email($to, $name, $code)
     try {
         $mail->isSMTP();
         $mail->Host = SMTP_HOST;
-        $mail->Hostname = 'atierahotelandrestaurant.com';
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
         $mail->Port = SMTP_PORT;
-        $mail->SMTPSecure = (strpos(SMTP_HOST, 'ssl://') !== false ? '' : 'ssl');
-        $mail->SMTPAutoTLS = false;
+        $mail->SMTPSecure = SMTP_SECURE;
         $mail->Timeout = 60;
         $mail->SMTPOptions = array(
             'ssl' => array(
