@@ -133,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
             if(mail($user['email'], $subject, $body, $headers)) {
                 file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - SUCCESS: Mail sent to {$user['email']} with code {$code}\n", FILE_APPEND);
-                return true;
             } else {
                 file_put_contents('mail_log.txt', date('Y-m-d H:i:s') . " - FAILED: Server mail() rejected for {$user['email']}\n", FILE_APPEND);
                 // Fallback to PHPMailer if mail() fails
