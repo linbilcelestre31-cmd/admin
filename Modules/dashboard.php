@@ -168,50 +168,64 @@ class ReservationSystem
             $stmt = $pdo->prepare("UPDATE reservations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
             $stmt->execute([$status, intval($reservationId)]);
 
-            // If confirmed, send an email to the customer
+            // If confirmed, send an email to the customer using PHPMailer
             if ($status === 'confirmed') {
                 $q = $pdo->prepare("SELECT r.*, f.name as facility_name FROM reservations r LEFT JOIN facilities f ON r.facility_id = f.id WHERE r.id = ?");
                 $q->execute([intval($reservationId)]);
                 $resData = $q->fetch(PDO::FETCH_ASSOC);
 
                 if ($resData && !empty($resData['customer_email'])) {
-                    $to = $resData['customer_email'];
-                    $subject = "Reservation Confirmed - Atiera Dashboard";
-                    
-                    $message = "
-                    <html>
-                    <head><title>Reservation Confirmed</title></head>
-                    <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
-                        <h2 style='color: #22c55e;'>Your Reservation is Confirmed!</h2>
-                        <p>Dear {$resData['customer_name']},</p>
-                        <p>We are pleased to inform you that your reservation request has been <strong>confirmed</strong> by our administration.</p>
-                        <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
-                            <ul style='list-style: none; padding: 0;'>
-                                <li><strong>Booking ID:</strong> BK-" . date('Y') . "-" . str_pad($resData['id'], 3, '0', STR_PAD_LEFT) . "</li>
-                                <li><strong>Event:</strong> {$resData['event_type']}</li>
-                                <li><strong>Facility:</strong> {$resData['facility_name']}</li>
-                                <li><strong>Date:</strong> " . date('F j, Y', strtotime($resData['event_date'])) . "</li>
-                                <li><strong>Time:</strong> {$resData['start_time']} to {$resData['end_time']}</li>
-                                <li><strong>Guests:</strong> {$resData['guests_count']}</li>
-                            </ul>
-                        </div>
-                        <p>If you have any further questions or modifications, please contact us immediately.</p>
-                        <br>
-                        <p>Best regards,<br>Atiera Administration Team</p>
-                    </body>
-                    </html>
-                    ";
-                    
-                    $headers = "MIME-Version: 1.0" . "\r\n";
-                    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                    $headers .= "From: Atiera System <no-reply@atiera.com>" . "\r\n";
+                    require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+                    require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+                    require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
 
-                    $mailSent = @mail($to, $subject, $message, $headers);
-                    
-                    if ($mailSent) {
-                        return ['success' => true, 'message' => "Reservation confirmed and email sent to {$to}!"];
-                    } else {
-                        return ['success' => true, 'message' => "Status updated to 'Confirmed', but email failed to send (Check SMTP settings)."];
+                    try {
+                        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                        $mail->isSMTP();
+                        $mail->Host = SMTP_HOST;
+                        $mail->SMTPAuth = true;
+                        $mail->Username = SMTP_USER;
+                        $mail->Password = SMTP_PASS;
+                        $mail->Port = 587;
+                        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->SMTPOptions = array(
+                            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
+                        );
+
+                        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                        $mail->addAddress($resData['customer_email'], $resData['customer_name']);
+                        $mail->isHTML(true);
+                        $mail->Subject = "Reservation Confirmed - Atiera Dashboard";
+
+                        $message = "
+                        <html>
+                        <head><title>Reservation Confirmed</title></head>
+                        <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+                            <h2 style='color: #22c55e;'>Your Reservation is Confirmed!</h2>
+                            <p>Dear {$resData['customer_name']},</p>
+                            <p>We are pleased to inform you that your reservation request has been <strong>confirmed</strong> by our administration.</p>
+                            <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                                <ul style='list-style: none; padding: 0;'>
+                                    <li><strong>Booking ID:</strong> BK-" . date('Y') . "-" . str_pad($resData['id'], 3, '0', STR_PAD_LEFT) . "</li>
+                                    <li><strong>Event:</strong> {$resData['event_type']}</li>
+                                    <li><strong>Facility:</strong> {$resData['facility_name']}</li>
+                                    <li><strong>Date:</strong> " . date('F j, Y', strtotime($resData['event_date'])) . "</li>
+                                    <li><strong>Time:</strong> {$resData['start_time']} to {$resData['end_time']}</li>
+                                    <li><strong>Guests:</strong> {$resData['guests_count']}</li>
+                                </ul>
+                            </div>
+                            <p>If you have any further questions or modifications, please contact us immediately.</p>
+                            <br>
+                            <p>Best regards,<br>Atiera Administration Team</p>
+                        </body>
+                        </html>
+                        ";
+
+                        $mail->Body = $message;
+                        $mail->send();
+                        return ['success' => true, 'message' => "Reservation confirmed and email sent to {$resData['customer_email']}!"];
+                    } catch (Exception $e) {
+                        return ['success' => true, 'message' => "Status updated to 'Confirmed', but email failed to send: " . $mail->ErrorInfo];
                     }
                 }
             }
@@ -571,39 +585,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'make_reservation':
                 $result = $reservationSystem->makeReservation($_POST);
                 if ($result['success']) {
-                    // Send Email Notification
+                    // Send Email Notification using PHPMailer
                     $to = $_POST['customer_email'] ?? '';
                     if (!empty($to) && filter_var($to, FILTER_VALIDATE_EMAIL)) {
-                        $subject = "Reservation Confirmation - Atiera";
-                        $facility_name = $_POST['facility_id']; // This would ideally be fetched, but we use the ID or POST data
-                        $date = date('F d, Y', strtotime($_POST['event_date']));
-                        $start = date('g:i A', strtotime($_POST['start_time']));
-                        $end = date('g:i A', strtotime($_POST['end_time']));
+                        require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+                        require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+                        require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
 
-                        $message = "
-                        <html>
-                        <head><title>Reservation Confirmation</title></head>
-                        <body>
-                            <h2 style='color:#3b82f6;'>Booking Confirmed!</h2>
-                            <p>Hi {$_POST['customer_name']},</p>
-                            <p>Your reservation has been successfully booked. Here are the details:</p>
-                            <ul>
-                                <li><strong>Event Type:</strong> {$_POST['event_type']}</li>
-                                <li><strong>Date:</strong> $date</li>
-                                <li><strong>Time:</strong> $start - $end</li>
-                                <li><strong>Guests:</strong> {$_POST['guests_count']}</li>
-                            </ul>
-                            <p>Thank you for choosing Atiera!</p>
-                        </body>
-                        </html>
-                        ";
+                        try {
+                            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                            $mail->isSMTP();
+                            $mail->Host = SMTP_HOST;
+                            $mail->SMTPAuth = true;
+                            $mail->Username = SMTP_USER;
+                            $mail->Password = SMTP_PASS;
+                            $mail->Port = 587;
+                            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                            $mail->SMTPOptions = array(
+                                'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
+                            );
 
-                        $headers = "MIME-Version: 1.0" . "\r\n";
-                        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                        $headers .= "From: no-reply@atiera.com" . "\r\n";
+                            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                            $mail->addAddress($to, $_POST['customer_name']);
+                            $mail->isHTML(true);
+                            $mail->Subject = "Reservation Confirmation - Atiera";
 
-                        // Send the email (requires SMTP configuration on the server to work fully)
-                        @mail($to, $subject, $message, $headers);
+                            $date = date('F d, Y', strtotime($_POST['event_date']));
+                            $start = date('g:i A', strtotime($_POST['start_time']));
+                            $end = date('g:i A', strtotime($_POST['end_time']));
+
+                            $mail->Body = "
+                            <html>
+                            <head><title>Reservation Confirmation</title></head>
+                            <body>
+                                <h2 style='color:#3b82f6;'>Booking Confirmed!</h2>
+                                <p>Hi {$_POST['customer_name']},</p>
+                                <p>Your reservation has been successfully booked. Here are the details:</p>
+                                <ul>
+                                    <li><strong>Event Type:</strong> {$_POST['event_type']}</li>
+                                    <li><strong>Date:</strong> $date</li>
+                                    <li><strong>Time:</strong> $start - $end</li>
+                                    <li><strong>Guests:</strong> {$_POST['guests_count']}</li>
+                                </ul>
+                                <p>Thank you for choosing Atiera!</p>
+                            </body>
+                            </html>
+                            ";
+                            $mail->send();
+                        } catch (\Exception $e) {
+                            error_log("PHPMailer Error: " . $mail->ErrorInfo);
+                        }
                     }
 
                     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
