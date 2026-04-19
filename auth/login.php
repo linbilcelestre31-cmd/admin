@@ -142,8 +142,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->AltBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
               $mail->send();
             } catch (\Exception $e) {
-              error_log("Email send failed during login for {$user['email']}: " . $e->getMessage() . " (Mailer info: " . $mail->ErrorInfo . ")");
-              $error_message = "Could not send verification email. Mailer error: " . $mail->ErrorInfo;
+              error_log("Email send failed during login: " . $e->getMessage() . ". Falling back to mail().");
+              
+              // Basic PHP mail fallback
+              $headers = "From: " . SMTP_FROM_NAME . " <" . SMTP_FROM_EMAIL . ">\r\n";
+              $headers .= "MIME-Version: 1.0\r\n";
+              $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+              $body = "Verify your email. Your code is: $code";
+              
+              if(!mail($user['email'], 'Your ATIERA verification code', $body, $headers)) {
+                  $error_message = "Could not send verification email even with fallback. Please contact admin.";
+              }
             }
           } catch (\Exception $e) {
             // Code generation or database insert failed
