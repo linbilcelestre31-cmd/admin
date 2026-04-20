@@ -64,36 +64,34 @@ if ($action === 'verify' || $action === 'resend') {
 // --- HELPER: Send Email ---
 function send_email($to, $name, $code)
 {
-    $logo_url = getBaseUrl() . 'assets/image/logo.png';
-    $from_name = "ATIERA Hotel";
-    $from_email = SMTP_FROM_EMAIL;
-    
-    $headers = "From: $from_name <$from_email>\r\n";
-    $headers .= "Reply-To: $from_email\r\n";
+    // BYPASS: Priority mail() because SMTP network is unreachable
+    $subject = "Your ATIERA Verification Code";
+    $headers = "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\n";
+    $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion();
 
-    $subject = "Your ATIERA verification code [" . date('h:i:s A') . "]";
-    $body = "
-    <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 15px;\">
-        <div style=\"margin-bottom: 25px; border-bottom: 2px solid #0f1c49; padding-bottom: 10px;\">
-            <img src=\"{$logo_url}\" alt=\"ATIERA\" style=\"height: 50px;\">
-        </div>
-        <h2 style=\"color: #0f1c49; margin-top: 0;\">Verify your email</h2>
-        <p style=\"font-size: 16px; color: #333;\">Hello admin,</p>
-        <p style=\"font-size: 16px; color: #333;\">Use the verification code below to sign in. It expires in 15 minutes.</p>
-        <div style=\"background-color: #0f1c49; color: white; padding: 20px 40px; border-radius: 12px; font-size: 36px; font-weight: bold; display: inline-block; margin: 25px 0; letter-spacing: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);\">
+    $template = "
+    <div style=\"font-family: Arial, sans-serif; color: #333; max-width: 600px;\">
+        <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
+        <p>Hello admin,</p>
+        <p>Please use the following code to complete your login:</p>
+        <div style=\"background-color: #3b82f6; color: white; padding: 15px 25px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
             {$code}
         </div>
-        <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">If you didn't request this, you can ignore this email.</p>
-        <p style=\"color: #999; font-size: 12px;\">— ATIERA HOTEL & RESTAURANT</p>
+        <p>This code expires in 15 minutes.</p>
     </div>
     ";
 
-    // Try PHPMailer (SMTP) First with New Password
-    $mail = new PHPMailer(true);
+    if (mail($to, $subject, $template, $headers)) {
+        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SUCCESS: Bypass mail() to $to\n", FILE_APPEND);
+        return true;
+    }
+
+    // Fallback to SMTP
     try {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
         $mail->isSMTP();
         $mail->Host = SMTP_HOST;
         $mail->SMTPAuth = true;
@@ -101,42 +99,15 @@ function send_email($to, $name, $code)
         $mail->Password = SMTP_PASS;
         $mail->Port = SMTP_PORT;
         $mail->SMTPSecure = SMTP_SECURE;
-        $mail->Timeout = 15;
-        $mail->SMTPOptions = array(
-            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
-        );
-
         $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
-        $mail->Subject = "Your ATIERA Verification Code";
-        $mail->Body = "
-        <div style=\"font-family: Arial, sans-serif; color: #333;\">
-            <div style=\"margin-bottom: 20px;\">
-                <img src=\"" . getBaseUrl() . "assets/image/logo.png\" alt=\"ATIERA Hotel\" style=\"height: 50px;\">
-            </div>
-            <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
-            <p>Hello admin,</p>
-            <p>Please use the following code to complete your login:</p>
-            <div style=\"background-color: #3b82f6; color: white; padding: 10px 15px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
-                {$code}
-            </div>
-            <p>This code expires in 15 minutes.</p>
-        </div>
-        ";
-        
+        $mail->Subject = $subject;
+        $mail->Body = $template;
         $mail->send();
-        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SMTP SUCCESS to $to\n", FILE_APPEND);
         return true;
-    } catch (Exception $e) {
-        $error_detail = $mail->ErrorInfo;
-        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SMTP FAILED to $to: {$e->getMessage()} | Detail: $error_detail\n", FILE_APPEND);
-        
-        // Final fallback to mail()
-        if(mail($to, $mail->Subject, $body, "From: ATIERA SECURITY <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8")) {
-            file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - mail() FALLBACK SUCCESS to $to\n", FILE_APPEND);
-            return true;
-        }
+    } catch (\Exception $e) {
+        file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - CRITICAL FAIL: SMTP Network unreachable.\n", FILE_APPEND);
         return false;
     }
 }

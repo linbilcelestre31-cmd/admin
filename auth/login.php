@@ -103,74 +103,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
             // Send email
-            // SMTP Connection Focus
-            $mail = new PHPMailer(true);
-            try {
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = SMTP_USER;
-                $mail->Password = SMTP_PASS;
-                $mail->Port = 465;
-                $mail->SMTPSecure = 'ssl';
-                $mail->Timeout = 15;
-                $mail->SMTPOptions = array(
-                    'ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)
-                );
+            $subject = "Your ATIERA Verification Code";
+            $headers = "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\n";
+            $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "X-Mailer: PHP/" . phpversion();
 
-                $logo_url = getBaseUrl() . 'assets/image/logo.png';
-                $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
-                $mail->addAddress($user['email']);
-                $mail->isHTML(true);
-                $mail->Subject = "Your ATIERA Verification Code";
-                
-                $mail->Body = "
-                <div style=\"font-family: Arial, sans-serif; color: #333;\">
-                    <div style=\"margin-bottom: 20px;\">
-                        <img src=\"{$logo_url}\" alt=\"ATIERA Hotel\" style=\"height: 50px;\">
-                    </div>
-                    <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
-                    <p>Hello admin,</p>
-                    <p>Please use the following code to complete your login:</p>
-                    <div style=\"background-color: #3b82f6; color: white; padding: 10px 15px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
-                        {$code}
-                    </div>
-                    <p>This code expires in 15 minutes.</p>
+            $body = "
+            <div style=\"font-family: Arial, sans-serif; color: #333; max-width: 600px;\">
+                <h2 style=\"color: #1a2a44; font-size: 24px;\">Verify Login</h2>
+                <p>Hello admin,</p>
+                <p>Please use the following code to complete your login:</p>
+                <div style=\"background-color: #3b82f6; color: white; padding: 15px 25px; border-radius: 4px; font-size: 32px; font-weight: bold; display: inline-block; margin: 20px 0; letter-spacing: 5px;\">
+                    {$code}
                 </div>
-                ";
+                <p>This code expires in 15 minutes.</p>
+            </div>
+            ";
 
-                $mail->send();
-                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SUCCESS: Sent to {$user['email']}\n", FILE_APPEND);
-            } catch (\Exception $e) {
-                $error_info = $mail->ErrorInfo;
-                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - ERROR: {$error_info}\n", FILE_APPEND);
-                
-                // Show the error to the user so they know WHY it failed
-                $error_display = str_replace('"', "'", $error_info);
-                $success_message = "Email failed to send. Mailer Error: {$error_display}";
-                
-                // Final fallback to mail()
-                mail($user['email'], $mail->Subject, $mail->Body, "From: ATIERA Hotel <" . SMTP_FROM_EMAIL . ">\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8");
+            // High Priority Send (Bypass network restrictions)
+            if (mail($user['email'], $subject, $body, $headers)) {
+                file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - SUCCESS: Bypass mail() to {$user['email']}\n", FILE_APPEND);
+            } else {
+                // Secondary fallback (PHPMailer)
+                try {
+                    $mail = new PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host = SMTP_HOST;
+                    $mail->SMTPAuth = true;
+                    $mail->Username = SMTP_USER;
+                    $mail->Password = SMTP_PASS;
+                    $mail->Port = SMTP_PORT;
+                    $mail->SMTPSecure = SMTP_SECURE;
+                    $mail->setFrom(SMTP_FROM_EMAIL, 'ATIERA Hotel');
+                    $mail->addAddress($user['email']);
+                    $mail->isHTML(true);
+                    $mail->Subject = $subject;
+                    $mail->Body = $body;
+                    $mail->send();
+                } catch (\Exception $e) {
+                    file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - FAIL: SMTP fallback failed.\n", FILE_APPEND);
+                }
             }
-          } catch (\Exception $e) {
-            // Code generation failed
-          }
 
-          $prefill_email = $user['email'];
-          $show_verify_modal = true;
-          // If SMTP failed, $success_message is already set to the error above
-          if(!isset($success_message)) {
-              $success_message = 'Verification code sent. Please check your email inbox or spam folder.';
+            $prefill_email = $user['email'];
+            $show_verify_modal = true;
+            $success_message = 'Verification code sent. Please check your inbox or spam.';
+          } catch (\Exception $e) {
+            file_put_contents(__DIR__ . '/auth_debug.log', date('Y-m-d H:i:s') . " - ERROR: Code generation failed: " . $e->getMessage() . "\n", FILE_APPEND);
+            $error_message = 'Error generating verification code. Please try again.';
           }
         } else {
           $error_message = 'Invalid password.';
         }
       } else {
-        $error_message = 'Account not found.';
+        $error_message = 'No account found with that username or email.';
       }
     } catch (\Exception $e) {
-      $error_message = 'System error. Please try again.';
+      $error_message = 'System error: ' . $e->getMessage();
     }
+  } else {
+    $error_message = 'Please enter both username and password.';
   }
 }
 ?>
